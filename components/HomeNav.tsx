@@ -25,24 +25,24 @@ export default function HomeNav({ onBook }: { onBook: () => void }) {
         borderBottom: '1px solid transparent',
       }}
     >
-      <a href="#top" className="navtx" style={{ color: '#F4F3EF' }}>
-        <Marca />
+      <a href="#top" className="navtx" style={{ color: 'var(--tx)' }}>
+        <Marca auto />
       </a>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px,1.2vw,20px)' }}>
-        <a href="#metodo" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
+        <a href="#metodo" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: 'var(--tx)', whiteSpace: 'nowrap' }}>
           {t.n1}
         </a>
-        <Link href="/sinergia" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
+        <Link href="/sinergia" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: 'var(--tx)', whiteSpace: 'nowrap' }}>
           {t.n2}
         </Link>
-        <Link href="/cursos" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
+        <Link href="/cursos" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: 'var(--tx)', whiteSpace: 'nowrap' }}>
           {t.n3}
         </Link>
-        <Link href="/membresia" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
+        <Link href="/membresia" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: 'var(--tx)', whiteSpace: 'nowrap' }}>
           {t.n4}
         </Link>
         <LangSwitch />
-        <div id="navbtn" onClick={onBook} data-mag className="nav-cta" style={{ color: '#0A0A0C', background: '#F4F3EF', whiteSpace: 'nowrap' }}>
+        <div id="navbtn" onClick={onBook} data-mag className="nav-cta" style={{ color: '#FBF6EE', background: 'var(--vino)', whiteSpace: 'nowrap' }}>
           {t.book}
         </div>
       </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Cursor from '@/components/Cursor';
 import DustField from '@/components/DustField';
-import ParticleField from '@/components/ParticleField';
+import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import SubNav from '@/components/SubNav';
@@ -22,9 +22,9 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
   const claro = index % 2 === 0;
   const bg = claro ? '#F5F4F0' : '#0A0A0C';
   const fg = claro ? '#0A0A0C' : '#F4F3EF';
-  const suave = claro ? '#6B6B72' : 'rgba(244,243,239,.58)';
-  const linea = claro ? 'rgba(10,10,12,.14)' : 'rgba(244,243,239,.14)';
-  const acento = claro ? '#8F6B18' : '#C89B4A';
+  const suave = claro ? 'var(--tx-2)' : 'var(--linea-2)';
+  const linea = claro ? 'var(--linea)' : 'var(--linea)';
+  const acento = claro ? '#8F6B18' : 'var(--acento)';
 
   return (
     <div id={curso.id} style={{ position: 'relative', zIndex: 3, background: bg, color: fg, padding: 'clamp(50px,7vw,104px) clamp(14px,3vw,36px)', scrollMarginTop: 74 }}>
@@ -78,7 +78,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
           {/* Vídeo + descripción */}
           <Reveal style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {curso.videoUrl ? (
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: 20, overflow: 'hidden', background: '#131318', border: `1px solid ${linea}` }}>
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: 20, overflow: 'hidden', background: 'var(--superficie)', border: `1px solid ${linea}` }}>
                 <iframe
                   src={curso.videoUrl}
                   title={falta(curso.titulo) ? 'Presentación del curso' : curso.titulo}
@@ -94,10 +94,10 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
                   width: '100%',
                   aspectRatio: '16/9',
                   borderRadius: 20,
-                  border: `1px dashed ${claro ? 'rgba(10,10,12,.22)' : 'rgba(244,243,239,.22)'}`,
+                  border: `1px dashed ${claro ? 'var(--linea-2)' : 'var(--linea-2)'}`,
                   background: claro
-                    ? 'repeating-linear-gradient(135deg,rgba(10,10,12,.04) 0 1px,transparent 1px 12px)'
-                    : 'repeating-linear-gradient(135deg,rgba(244,243,239,.04) 0 1px,transparent 1px 12px)',
+                    ? 'repeating-linear-gradient(135deg,var(--linea) 0 1px,transparent 1px 12px)'
+                    : 'repeating-linear-gradient(135deg,var(--linea) 0 1px,transparent 1px 12px)',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
@@ -122,7 +122,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
             <div
               style={{
                 background: claro ? '#FFFFFF' : 'transparent',
-                border: `1px solid ${claro ? 'rgba(10,10,12,.1)' : 'rgba(244,243,239,.13)'}`,
+                border: `1px solid ${claro ? 'var(--linea)' : 'var(--linea)'}`,
                 borderRadius: 20,
                 padding: 'clamp(18px,2vw,26px)',
                 display: 'flex',
@@ -133,7 +133,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: acento }}>Lo que se ve</span>
               {curso.bloques.map((b, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
-                  <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-.022em', color: claro ? 'rgba(10,10,12,.16)' : 'rgba(244,243,239,.18)', width: 26, flexShrink: 0 }}>
+                  <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-.022em', color: claro ? 'var(--linea-2)' : 'var(--linea-2)', width: 26, flexShrink: 0 }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -148,9 +148,9 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
 
             <div
               style={{
-                background: claro ? '#0A0A0C' : 'linear-gradient(155deg,rgba(200,155,74,.12),rgba(10,10,12,0) 62%)',
+                background: claro ? 'var(--vino)' : 'linear-gradient(155deg,rgba(200,163,92,.14),transparent 62%)',
                 border: claro ? 'none' : '1px solid rgba(200,155,74,.34)',
-                color: '#F4F3EF',
+                color: 'var(--tx)',
                 borderRadius: 20,
                 padding: 'clamp(18px,2vw,26px)',
                 display: 'flex',
@@ -160,7 +160,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
             >
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-.025em' }}>Guardar mi plaza</span>
-                {curso.plazas !== null && <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(244,243,239,.5)' }}>{curso.plazas} plazas</span>}
+                {curso.plazas !== null && <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--tx-2)' }}>{curso.plazas} plazas</span>}
               </div>
               <LeadForm
                 origen="curso"
@@ -184,32 +184,32 @@ export default function Cursos() {
   useSiteScroll();
 
   return (
-    <div style={{ width: '100%', background: '#0A0A0C', color: '#F4F3EF', overflowX: 'hidden' }}>
+    <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
       <Cursor hitSelector="[data-mag],a,input,label,[data-card]" />
       <DustField />
-      <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: '#C89B4A', zIndex: 130 }} />
+      <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <SubNav links={CURSOS.map((c) => ({ href: `#${c.id}`, label: falta(c.titulo) ? 'Próximo curso' : c.titulo }))} cta="La membresía" ctaHref="/membresia" />
 
       {/* HERO */}
-      <div style={{ position: 'relative', padding: 'clamp(104px,16vh,170px) clamp(14px,3vw,36px) clamp(40px,5vw,70px)', overflow: 'hidden' }}>
-        <ParticleField />
+      <div className="vino" style={{ position: 'relative', color: 'var(--tx)', background: 'var(--bg)', padding: 'clamp(104px,16vh,170px) clamp(14px,3vw,36px) clamp(40px,5vw,70px)', overflow: 'hidden' }}>
+        <CampoNumeros />
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(ellipse 60% 55% at 12% 0%,rgba(200,155,74,.16),transparent 60%),linear-gradient(to bottom,rgba(10,10,12,.5),rgba(10,10,12,.94))',
+            background: 'radial-gradient(ellipse 60% 55% at 12% 0%,rgba(200,163,92,.13),transparent 60%)',
             pointerEvents: 'none',
           }}
         />
         <div style={{ position: 'relative', zIndex: 3, maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.8vw,36px)' }}>
           <Reveal>
-            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>Cursos y talleres en directo</div>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--acento)' }}>Cursos y talleres en directo</div>
           </Reveal>
           <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'clamp(38px,6.2vw,88px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", lineHeight: 0.96, letterSpacing: '-.028em', maxWidth: '16ch', textWrap: 'pretty' }}>
             Unas tardes que cambian la conversación en tu casa.
           </Reveal>
           <Reveal delay={140}>
-            <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.55, color: 'rgba(244,243,239,.6)', maxWidth: '44ch' }}>
+            <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '44ch' }}>
               Formatos cortos, en directo y con caso propio: sales con tu historia mirada, no con apuntes.
             </p>
           </Reveal>
@@ -227,7 +227,7 @@ export default function Cursos() {
       ))}
 
       {/* PUENTE A LA MEMBRESÍA + FOOTER */}
-      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', borderTop: '1px solid rgba(244,243,239,.1)', padding: 'clamp(38px,5vw,68px) clamp(14px,3vw,36px) 26px' }}>
+      <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(38px,5vw,68px) clamp(14px,3vw,36px) 26px' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
           <Reveal
             style={{
@@ -235,7 +235,7 @@ export default function Cursos() {
               gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))',
               gap: 'clamp(18px,2.4vw,40px)',
               alignItems: 'center',
-              border: '1px solid rgba(244,243,239,.13)',
+              border: '1px solid var(--linea)',
               borderRadius: 20,
               padding: 'clamp(20px,2.4vw,30px)',
             }}
@@ -244,7 +244,7 @@ export default function Cursos() {
               <span style={{ fontSize: 'clamp(20px,2.4vw,30px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", letterSpacing: '-.02em', lineHeight: 1.05, maxWidth: '22ch' }}>
                 Un curso es una tarde. La comunidad es cada mes.
               </span>
-              <span style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(244,243,239,.5)', maxWidth: '40ch' }}>
+              <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '40ch' }}>
                 Todavía no ha abierto. Quien reserva ahora entra por {eur(MEMBRESIA.precioReserva)} en vez de {eur(MEMBRESIA.precio)}.
               </span>
             </div>
@@ -253,21 +253,21 @@ export default function Cursos() {
               <span className="pill-arrow">→</span>
             </Link>
           </Reveal>
-          <div style={{ borderTop: '1px solid rgba(244,243,239,.1)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <div style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: '#F4F3EF' }}>
-                <Marca tam={52} apilado />
+              <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: 'var(--tx)' }}>
+                <Marca tam={52} apilado claro />
               </Link>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
-                <Link href="/sinergia" style={{ fontSize: 13, color: 'rgba(244,243,239,.7)' }}>Prueba gratis</Link>
-                <Link href="/membresia" style={{ fontSize: 13, color: 'rgba(244,243,239,.7)' }}>La membresía</Link>
-                <Link href="/#cita" style={{ fontSize: 13, color: 'rgba(244,243,239,.7)' }}>Sesión con Iris</Link>
+                <Link href="/sinergia" style={{ fontSize: 13, color: 'var(--tx-2)' }}>Prueba gratis</Link>
+                <Link href="/membresia" style={{ fontSize: 13, color: 'var(--tx-2)' }}>La membresía</Link>
+                <Link href="/#cita" style={{ fontSize: 13, color: 'var(--tx-2)' }}>Sesión con Iris</Link>
               </div>
-              <span style={{ fontSize: 11, lineHeight: 1.7, color: 'rgba(244,243,239,.3)', maxWidth: '58ch' }}>
+              <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
                 Los cursos no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
               </span>
             </div>
-            <span style={{ fontSize: 11, color: 'rgba(244,243,239,.28)' }}>© 2026 · Cursos</span>
+            <span style={{ fontSize: 11, color: 'var(--tx-4)' }}>© 2026 · Cursos</span>
           </div>
         </div>
       </div>

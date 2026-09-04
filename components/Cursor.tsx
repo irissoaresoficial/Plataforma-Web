@@ -56,7 +56,7 @@ export default function Cursor({ hitSelector = '[data-mag],[data-hov-img],a,inpu
       ring.style.width = size + 'px';
       ring.style.height = size + 'px';
       ring.style.margin = -size / 2 + 'px 0 0 ' + -size / 2 + 'px';
-      ring.style.background = big ? '#F4F3EF' : med ? 'rgba(244,243,239,.14)' : 'transparent';
+      ring.style.background = big ? '#F4F3EF' : med ? 'var(--linea)' : 'transparent';
       ring.style.mixBlendMode = big ? 'normal' : 'difference';
       ring.style.color = '#0A0A0C';
       ring.style.borderColor = '#F4F3EF';
@@ -75,12 +75,12 @@ export default function Cursor({ hitSelector = '[data-mag],[data-hov-img],a,inpu
       }
 
       document.querySelectorAll<HTMLElement>('[data-cardnum]').forEach((n) => {
-        n.style.color = 'rgba(244,243,239,.14)';
+        n.style.color = 'var(--linea)';
       });
       const card = tg && tg.closest ? (tg.closest('[data-card]') as HTMLElement | null) : null;
       if (card) {
         const n = card.querySelector<HTMLElement>('[data-cardnum]');
-        if (n) n.style.color = '#C89B4A';
+        if (n) n.style.color = 'var(--acento)';
       }
 
       const magEl = tg && tg.closest ? (tg.closest('[data-mag]') as HTMLElement | null) : null;

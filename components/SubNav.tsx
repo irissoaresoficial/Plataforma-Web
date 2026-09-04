@@ -31,23 +31,23 @@ export default function SubNav({
         borderBottom: '1px solid transparent',
       }}
     >
-      <Link href="/" className="navtx" style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 15, fontWeight: 700, letterSpacing: '-.02em', color: '#F4F3EF' }}>
+      <Link href="/" className="navtx" style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 15, fontWeight: 700, letterSpacing: '-.02em', color: 'var(--tx)' }}>
         <span>←</span>
-        <Marca tam={28} />
+        <Marca tam={28} auto />
       </Link>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px,1.4vw,20px)' }}>
         {links.map((l) =>
           l.external ? (
-            <a key={l.href} href={l.href} data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
+            <a key={l.href} href={l.href} data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: 'var(--tx)', whiteSpace: 'nowrap' }}>
               {l.label}
             </a>
           ) : (
-            <Link key={l.href} href={l.href} data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
+            <Link key={l.href} href={l.href} data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: 'var(--tx)', whiteSpace: 'nowrap' }}>
               {l.label}
             </Link>
           )
         )}
-        <Link href={ctaHref} data-mag className="nav-cta" style={{ color: '#0A0A0C', background: '#C89B4A', whiteSpace: 'nowrap' }}>
+        <Link href={ctaHref} data-mag className="nav-cta" style={{ color: '#FBF6EE', background: 'var(--vino)', whiteSpace: 'nowrap' }}>
           {cta}
         </Link>
       </div>

@@ -30,7 +30,7 @@ export default function ParticleField({ density = 16000 }: { density?: number })
         vx: (Math.random() - 0.5) * 0.16,
         vy: (Math.random() - 0.5) * 0.16,
         r: Math.random() * 1.4 + 0.4,
-        a: Math.random() * 0.45 + 0.18,
+        a: Math.random() * 0.2 + 0.07,
       }));
     };
     build();
@@ -65,7 +65,7 @@ export default function ParticleField({ density = 16000 }: { density?: number })
         }
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 6.283);
-        ctx.fillStyle = `rgba(200,155,74,${p.a})`;
+        ctx.fillStyle = `rgba(74,18,32,${p.a})`;
         ctx.fill();
         for (let j = i + 1; j < pts.length; j++) {
           const q = pts[j],
@@ -76,7 +76,7 @@ export default function ParticleField({ density = 16000 }: { density?: number })
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(q.x, q.y);
-            ctx.strokeStyle = `rgba(200,155,74,${(0.09 * (1 - dd / 11000)).toFixed(3)})`;
+            ctx.strokeStyle = `rgba(74,18,32,${(0.075 * (1 - dd / 11000)).toFixed(3)})`;
             ctx.lineWidth = 1;
             ctx.stroke();
           }

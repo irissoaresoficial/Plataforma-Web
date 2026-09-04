@@ -209,7 +209,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     lineHeight: 1.5,
     padding: '11px 14px',
     borderRadius: me ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-    background: me ? '#C89B4A' : 'rgba(244,243,239,.07)',
+    background: me ? 'var(--acento)' : 'var(--linea)',
     color: me ? '#0A0A0C' : '#F4F3EF',
   });
 
@@ -228,13 +228,13 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: 'linear-gradient(140deg,#15151B,#0A0A0C 60%)',
-          color: '#F4F3EF',
+          background: 'linear-gradient(140deg,#5c1a2b,#4a1220 62%)',
+          color: 'var(--tx)',
           border: '1px solid rgba(200,155,74,.34)',
           borderRadius: 100,
           padding: '8px 10px 8px 8px',
           cursor: 'pointer',
-          boxShadow: '0 18px 46px rgba(0,0,0,.46),inset 0 1px 0 rgba(244,243,239,.06)',
+          boxShadow: '0 18px 46px rgba(0,0,0,.46),inset 0 1px 0 var(--linea)',
           transition: 'opacity .35s ease,transform .45s cubic-bezier(.16,1,.3,1),border-color .4s ease',
           opacity: open ? 0 : 1,
           pointerEvents: open ? 'none' : 'auto',
@@ -251,16 +251,16 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
               animation: 'pulseRing 2.6s ease-out infinite',
             }}
           />
-          <div style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden', background: '#131318', border: '1px solid rgba(200,155,74,.5)' }}>
+          <div style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden', background: 'var(--superficie)', border: '1px solid rgba(200,155,74,.5)' }}>
             <Image src="/images/iris.jpg" alt="Iris" width={38} height={38} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 18%', display: 'block' }} />
           </div>
           <span style={{ position: 'absolute', right: -1, bottom: -1, width: 11, height: 11, borderRadius: '50%', background: '#7CC48A', border: '2px solid #0A0A0C' }} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
           <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(244,243,239,.5)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
         </div>
-        <span style={{ width: 30, height: 30, borderRadius: '50%', background: '#C89B4A', color: '#0A0A0C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
+        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--acento)', color: 'var(--tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
           →
         </span>
       </div>
@@ -275,8 +275,8 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           height: 'min(calc(100vh - 20px),560px)',
           display: 'flex',
           flexDirection: 'column',
-          background: '#0A0A0C',
-          border: '1px solid rgba(244,243,239,.14)',
+          background: 'var(--bg)',
+          border: '1px solid var(--linea)',
           borderRadius: 22,
           boxShadow: '0 30px 80px rgba(0,0,0,.55)',
           overflow: 'hidden',
@@ -287,21 +287,21 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           transform: open ? 'translateY(0) scale(1)' : 'translateY(18px) scale(.95)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '15px 17px', borderBottom: '1px solid rgba(244,243,239,.12)', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '15px 17px', borderBottom: '1px solid var(--linea)', flexShrink: 0 }}>
           {/* El sello de la escuela: quien escribe no es Iris, es su casa. */}
           <div style={{ width: 40, height: 40, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Image src={LOGO} alt="" width={40} height={40} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: 14, fontWeight: 700 }}>{t.ch_title}</span>
-            <span style={{ fontSize: 11, color: 'rgba(244,243,239,.42)' }}>{done ? t.ch_done : t.ch_sub}</span>
+            <span style={{ fontSize: 11, color: 'var(--tx-3)' }}>{done ? t.ch_done : t.ch_sub}</span>
           </div>
-          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: '#C89B4A', border: '1px solid rgba(200,155,74,.4)', borderRadius: 100, padding: '4px 8px', flexShrink: 0 }}>
+          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.4)', borderRadius: 100, padding: '4px 8px', flexShrink: 0 }}>
             IA
           </span>
           <div
             onClick={() => setOpen(false)}
-            style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(244,243,239,.6)', fontSize: 16, cursor: 'pointer', flexShrink: 0 }}
+            style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--tx-2)', fontSize: 16, cursor: 'pointer', flexShrink: 0 }}
           >
             ×
           </div>
@@ -334,7 +334,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
             </div>
           )}
           {typing && (
-            <div className="burbuja-in" style={{ display: 'flex', gap: 5, alignItems: 'center', padding: '13px 15px', background: 'rgba(244,243,239,.07)', borderRadius: '14px 14px 14px 4px', alignSelf: 'flex-start' }}>
+            <div className="burbuja-in" style={{ display: 'flex', gap: 5, alignItems: 'center', padding: '13px 15px', background: 'var(--linea)', borderRadius: '14px 14px 14px 4px', alignSelf: 'flex-start' }}>
               <span className="punto" />
               <span className="punto" />
               <span className="punto" />
@@ -347,21 +347,21 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
               <div
                 onClick={() => setCalOffset((o) => Math.max(0, o - 1))}
-                style={{ width: 26, height: 26, borderRadius: '50%', border: '1px solid rgba(244,243,239,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}
+                style={{ width: 26, height: 26, borderRadius: '50%', border: '1px solid var(--linea-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}
               >
                 ‹
               </div>
               <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '-.01em', textTransform: 'capitalize' }}>{calMonth}</span>
               <div
                 onClick={() => setCalOffset((o) => Math.min(6, o + 1))}
-                style={{ width: 26, height: 26, borderRadius: '50%', border: '1px solid rgba(244,243,239,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}
+                style={{ width: 26, height: 26, borderRadius: '50%', border: '1px solid var(--linea-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}
               >
                 ›
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 3 }}>
               {calWeekdays.map((w, i) => (
-                <span key={i} style={{ textAlign: 'center', fontSize: 9, fontWeight: 700, letterSpacing: '.06em', color: 'rgba(244,243,239,.32)' }}>
+                <span key={i} style={{ textAlign: 'center', fontSize: 9, fontWeight: 700, letterSpacing: '.06em', color: 'var(--tx-4)' }}>
                   {w}
                 </span>
               ))}
@@ -380,16 +380,16 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
                     fontWeight: 600,
                     borderRadius: 9,
                     cursor: d.free ? 'pointer' : undefined,
-                    color: d.free ? (d.sel ? '#0A0A0C' : '#F4F3EF') : 'rgba(244,243,239,.18)',
-                    background: d.free ? (d.sel ? '#C89B4A' : 'rgba(244,243,239,.07)') : 'transparent',
-                    border: d.free ? `1px solid ${d.sel ? '#C89B4A' : 'rgba(244,243,239,.12)'}` : '1px solid transparent',
+                    color: d.free ? (d.sel ? '#0A0A0C' : '#F4F3EF') : 'var(--linea-2)',
+                    background: d.free ? (d.sel ? 'var(--acento)' : 'var(--linea)') : 'transparent',
+                    border: d.free ? `1px solid ${d.sel ? 'var(--acento)' : 'var(--linea)'}` : '1px solid transparent',
                   }}
                 >
                   {d.label}
                 </div>
               ))}
             </div>
-            <span style={{ fontSize: 10, lineHeight: 1.5, color: 'rgba(244,243,239,.34)' }}>{t.ch_cal}</span>
+            <span style={{ fontSize: 10, lineHeight: 1.5, color: 'var(--tx-3)' }}>{t.ch_cal}</span>
           </div>
         )}
 
@@ -399,7 +399,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
               <div
                 key={o}
                 onClick={() => submit(o)}
-                style={{ border: '1px solid rgba(200,155,74,.5)', color: '#C89B4A', borderRadius: 100, padding: '9px 14px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                style={{ border: '1px solid rgba(200,155,74,.5)', color: 'var(--acento)', borderRadius: 100, padding: '9px 14px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
               >
                 {o}
               </div>
@@ -407,7 +407,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           </div>
         )}
 
-        <div style={{ display: typable ? 'flex' : 'none', alignItems: 'center', gap: 9, margin: '0 16px 12px', padding: '7px 7px 7px 14px', border: '1px solid rgba(244,243,239,.18)', borderRadius: 100, flexShrink: 0 }}>
+        <div style={{ display: typable ? 'flex' : 'none', alignItems: 'center', gap: 9, margin: '0 16px 12px', padding: '7px 7px 7px 14px', border: '1px solid var(--linea-2)', borderRadius: 100, flexShrink: 0 }}>
           <input
             id="chat-input"
             ref={inputRef}
@@ -421,16 +421,16 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
                 submit(draft);
               }
             }}
-            style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', fontSize: 15, color: '#F4F3EF', padding: '6px 0' }}
+            style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', fontSize: 15, color: 'var(--tx)', padding: '6px 0' }}
           />
           <div
             onClick={() => submit(draft)}
-            style={{ width: 34, height: 34, borderRadius: '50%', background: '#C89B4A', color: '#0A0A0C', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+            style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--acento)', color: 'var(--tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
           >
             →
           </div>
         </div>
-        <div style={{ padding: '0 17px 13px', fontSize: 10, lineHeight: 1.6, color: 'rgba(244,243,239,.3)' }}>{t.ch_priv}</div>
+        <div style={{ padding: '0 17px 13px', fontSize: 10, lineHeight: 1.6, color: 'var(--tx-4)' }}>{t.ch_priv}</div>
       </div>
     </>
   );

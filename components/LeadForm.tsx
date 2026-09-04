@@ -40,8 +40,8 @@ export default function LeadForm({
 
   const dark = variant === 'dark';
   const inputStyle: React.CSSProperties = dark
-    ? { background: 'rgba(244,243,239,.06)', border: '1px solid rgba(244,243,239,.18)', color: '#F4F3EF' }
-    : { background: '#FFFFFF', border: '1px solid rgba(10,10,12,.14)', color: '#0A0A0C' };
+    ? { background: 'var(--linea)', border: '1px solid var(--linea-2)', color: 'var(--tx)' }
+    : { background: '#FFFFFF', border: '1px solid var(--linea)', color: 'var(--tx)' };
 
   const enviar = async () => {
     if (pedirNombre && nombre.trim().length < 2) return setErr('Escribe tu nombre.');
@@ -69,7 +69,7 @@ export default function LeadForm({
         }}
       >
         <span style={{ fontSize: 16, fontWeight: 700, color: dark ? '#7CC48A' : '#2F5D50' }}>{successTitle}</span>
-        <span style={{ fontSize: 14, lineHeight: 1.55, color: dark ? 'rgba(244,243,239,.62)' : '#5C5972' }}>{successText}</span>
+        <span style={{ fontSize: 14, lineHeight: 1.55, color: dark ? 'var(--linea-2)' : 'var(--tx-2)' }}>{successText}</span>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function LeadForm({
         <span>→</span>
       </div>
       {err && <span style={{ fontSize: 13, color: dark ? '#E08585' : '#A33B3B' }}>{err}</span>}
-      <span style={{ fontSize: 12, lineHeight: 1.6, color: dark ? 'rgba(244,243,239,.42)' : '#8A8A92' }}>{privacidad}</span>
+      <span style={{ fontSize: 12, lineHeight: 1.6, color: dark ? 'var(--linea-2)' : 'var(--tx-3)' }}>{privacidad}</span>
     </div>
   );
 }

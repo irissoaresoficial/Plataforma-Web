@@ -1,11 +1,72 @@
 :root {
   --serif: 'Fraunces', 'Newsreader', Georgia, 'Times New Roman', serif;
   --sans: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Helvetica, sans-serif;
-  --ink: #0a0a0c;
-  --paper: #f5f4f0;
-  --cream: #f4f3ef;
-  --gold: #c89b4a;
-  --gold-light: #e0b15c;
+
+  /* La marca: granate profundo y dorado, sobre papel claro. */
+  --vino: #4a1220;
+  --vino-claro: #63202f;
+  --oro: #b8924f;
+  --oro-tinta: #8a6518; /* el dorado que sí se lee como texto sobre claro */
+  --oro-luz: #e8cf9a;
+  --papel: #fdfbf7;
+  --arena: #f6eee3;
+  --tinta: #2b1a1e;
+}
+
+/*
+ * El sitio se compone de bloques claros y bloques de granate. Cada bloque
+ * declara cuál es con una clase, y dentro de él los colores se piden siempre
+ * por su papel —fondo, texto, línea, acento— nunca por su valor. Así un bloque
+ * se cambia de tema con una palabra y nada se queda ilegible por el camino.
+ */
+.claro {
+  --bg: var(--papel);
+  --tx: var(--tinta);
+  --tx-2: #6f6058;
+  --tx-3: #8e8177;
+  --tx-4: #b5a99c;
+  --acento: var(--oro-tinta);
+  --acento-2: var(--oro);
+  --linea: #eae0d2;
+  --linea-2: #dbccb4;
+  --superficie: var(--arena);
+  --sombra: rgba(74, 18, 32, 0.09);
+  --boton: var(--vino);
+  --boton-tx: #fbf6ee;
+  --boton-flecha: var(--oro);
+}
+.arena {
+  --bg: var(--arena);
+  --tx: var(--tinta);
+  --tx-2: #6f6058;
+  --tx-3: #877a6f;
+  --tx-4: #ab9e90;
+  --acento: var(--oro-tinta);
+  --acento-2: var(--oro);
+  --linea: #e5d8c4;
+  --linea-2: #d4c2a6;
+  --superficie: #fdfbf7;
+  --sombra: rgba(74, 18, 32, 0.1);
+  --boton: var(--vino);
+  --boton-tx: #fbf6ee;
+  --boton-flecha: var(--oro);
+}
+.vino {
+  --bg: var(--vino);
+  --tx: #fbf6ee;
+  --tx-2: rgba(251, 246, 238, 0.74);
+  --tx-3: rgba(251, 246, 238, 0.54);
+  --tx-4: rgba(251, 246, 238, 0.34);
+  --acento: var(--oro-luz);
+  --acento-2: var(--oro);
+  --linea: rgba(251, 246, 238, 0.16);
+  --linea-2: rgba(251, 246, 238, 0.3);
+  --superficie: rgba(251, 246, 238, 0.07);
+  --sombra: rgba(0, 0, 0, 0.3);
+  /* Sobre granate el botón se invierte: dorado lleno con el granate dentro. */
+  --boton: var(--oro);
+  --boton-tx: var(--vino);
+  --boton-flecha: var(--vino);
 }
 
 * {
@@ -18,20 +79,20 @@ html {
 
 body {
   margin: 0;
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--papel);
+  color: var(--tinta);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
 a {
-  color: var(--gold);
+  color: var(--oro-tinta);
   text-decoration: none;
 }
 
 a:hover {
-  color: var(--gold-light);
+  color: var(--vino);
 }
 
 input,
@@ -42,11 +103,11 @@ button {
 
 input::placeholder,
 textarea::placeholder {
-  color: rgba(244, 243, 239, 0.32);
+  color: var(--tx-4, #b5a99c);
 }
 
 ::selection {
-  background: rgba(200, 155, 74, 0.3);
+  background: rgba(184, 146, 79, 0.28);
 }
 
 @media (pointer: fine) {
@@ -108,7 +169,9 @@ textarea::placeholder {
   letter-spacing: -0.005em;
 }
 
-/* ---- shared interactive utilities ---- */
+/* ---- piezas compartidas ---- */
+/* Todas piden los colores por su papel, así funcionan igual sobre papel claro,
+   sobre arena y sobre granate sin escribir tres versiones de cada una. */
 .pill {
   display: inline-flex;
   align-items: center;
@@ -117,7 +180,8 @@ textarea::placeholder {
   font-size: 15px;
   font-weight: 700;
   padding: 6px 6px 6px 22px;
-  transition: gap 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: gap 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.45s ease;
   cursor: pointer;
   border: none;
 }
@@ -134,63 +198,46 @@ textarea::placeholder {
   justify-content: center;
   flex-shrink: 0;
 }
-.pill-cream {
-  background: #f4f3ef;
-  color: #0a0a0c;
-}
-.pill-cream:hover {
-  color: #0a0a0c;
-}
-.pill-cream .pill-arrow {
-  background: #0a0a0c;
-  color: #c89b4a;
-}
+
+/* El botón principal se invierte solo: granate sobre papel, dorado sobre
+   granate. Así nunca desaparece por quedar del color de su propio fondo. */
+.pill-cream,
+.pill-dark,
 .pill-gold {
-  background: #c89b4a;
-  color: #0a0a0c;
+  background: var(--boton, #4a1220);
+  color: var(--boton-tx, #fbf6ee);
+  box-shadow: 0 12px 30px var(--sombra, rgba(74, 18, 32, 0.22));
 }
+.pill-cream:hover,
+.pill-dark:hover,
 .pill-gold:hover {
-  color: #0a0a0c;
+  color: var(--boton-tx, #fbf6ee);
+  box-shadow: 0 18px 40px var(--sombra, rgba(74, 18, 32, 0.28));
 }
+.pill-cream .pill-arrow,
+.pill-dark .pill-arrow,
 .pill-gold .pill-arrow {
-  background: #0a0a0c;
-  color: #c89b4a;
-}
-.pill-dark {
-  background: #0a0a0c;
-  color: #f4f3ef;
-}
-.pill-dark:hover {
-  color: #f4f3ef;
-}
-.pill-dark .pill-arrow {
-  background: #c89b4a;
-  color: #0a0a0c;
+  background: var(--boton-tx, #fbf6ee);
+  color: var(--boton, #4a1220);
 }
 
-.btn-outline {
+.btn-outline,
+.btn-outline-dark {
   display: inline-flex;
   align-items: center;
   font-size: 14px;
   font-weight: 600;
-  border: 1px solid rgba(244, 243, 239, 0.2);
+  border: 1px solid var(--linea-2, #dbccb4);
   padding: 13px 20px;
   border-radius: 100px;
-  transition: border-color 0.4s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  color: #f4f3ef;
+  transition: border-color 0.4s ease, color 0.4s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--tx, #2b1a1e);
 }
-.btn-outline:hover {
-  border-color: #c89b4a;
-  color: #f4f3ef;
-  transform: translateY(-3px);
-}
-.btn-outline-dark {
-  border-color: rgba(10, 10, 12, 0.16);
-  color: #0a0a0c;
-}
+.btn-outline:hover,
 .btn-outline-dark:hover {
-  border-color: #c89b4a;
-  color: #0a0a0c;
+  border-color: var(--acento-2, #b8924f);
+  color: var(--acento, #8a6518);
+  transform: translateY(-3px);
 }
 
 .nav-cta {
@@ -198,28 +245,23 @@ textarea::placeholder {
   font-weight: 700;
   padding: 11px 18px;
   border-radius: 100px;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
   cursor: pointer;
 }
 .nav-cta:hover {
   transform: translateY(-2px);
 }
 
-.card-hover {
-  transition: border-color 0.5s ease, background 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.card-hover:hover {
-  border-color: #c89b4a;
-  background: rgba(200, 155, 74, 0.05);
-  transform: translateY(-6px);
-}
+.card-hover,
 .card-hover-light {
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s ease, box-shadow 0.6s ease;
+  transition: border-color 0.5s ease, background 0.5s ease, box-shadow 0.6s ease,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.card-hover:hover,
 .card-hover-light:hover {
+  border-color: var(--acento-2, #b8924f);
+  box-shadow: 0 22px 50px var(--sombra, rgba(74, 18, 32, 0.1));
   transform: translateY(-6px);
-  border-color: #c89b4a;
-  box-shadow: 0 22px 50px rgba(10, 10, 12, 0.1);
 }
 
 .line-hover {
@@ -227,15 +269,15 @@ textarea::placeholder {
 }
 .line-hover:hover {
   padding-left: 16px;
-  border-color: #c89b4a;
+  border-color: var(--acento-2, #b8924f);
 }
 
 .chip {
-  transition: border-color 0.4s ease, color 0.4s ease;
+  transition: border-color 0.4s ease, color 0.4s ease, background 0.4s ease;
 }
 .chip:hover {
-  border-color: #c89b4a;
-  color: #c89b4a;
+  border-color: var(--acento-2, #b8924f);
+  color: var(--acento, #8a6518);
 }
 
 .nav-link {
@@ -254,10 +296,11 @@ textarea::placeholder {
   padding: 15px 16px;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .field-input:focus {
-  border-color: #c89b4a;
+  border-color: var(--acento-2, #b8924f);
+  box-shadow: 0 0 0 3px rgba(184, 146, 79, 0.16);
 }
 
 /* ---- el chat escribe ---- */
@@ -397,7 +440,12 @@ textarea::placeholder {
   height: 100%;
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 66%, transparent 100%);
   mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 66%, transparent 100%);
-  filter: saturate(0.62) contrast(1.04) blur(1.5px);
+  /* La foto se funde con el granate en vez de flotar encima como un recorte
+     a todo color: se desatura y el modo de fusión la deja tomar el tono del
+     fondo. Queda como un grabado, que es lo que pide un hero de marca. */
+  filter: saturate(0.35) contrast(1.06) brightness(1.04) blur(1.2px);
+  mix-blend-mode: luminosity;
+  opacity: 0.9;
 }
 
 /* En pantalla estrecha no hay dos columnas: la foto pasa a ser un fondo muy
@@ -427,4 +475,21 @@ textarea::placeholder {
   .hero-texto {
     max-width: min(620px, 52%);
   }
+}
+
+/* El sello de la barra fija: se pintan las dos versiones y se enseña la que
+   corresponda al fondo que la barra tenga debajo (lo marca useSiteScroll). */
+.sello-blanco {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.sello-color {
+  opacity: 0.92;
+  transition: opacity 0.4s ease;
+}
+body[data-nav-claro='si'] .sello-blanco {
+  opacity: 0.92;
+}
+body[data-nav-claro='si'] .sello-color {
+  opacity: 0;
 }

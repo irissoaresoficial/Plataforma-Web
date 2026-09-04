@@ -29,7 +29,7 @@ export default function DustField() {
         vx: (Math.random() - 0.5) * 0.07,
         vy: -(Math.random() * 0.14 + 0.03),
         r: Math.random() * 1.5 + 0.4,
-        a: Math.random() * 0.16 + 0.05,
+        a: Math.random() * 0.09 + 0.03,
       }));
     };
     build();
@@ -49,7 +49,7 @@ export default function DustField() {
         if (p.x > w + 8) p.x = -8;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 6.283);
-        ctx.fillStyle = `rgba(200,155,74,${p.a})`;
+        ctx.fillStyle = `rgba(74,18,32,${p.a})`;
         ctx.fill();
       }
       raf = requestAnimationFrame(tick);

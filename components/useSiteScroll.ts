@@ -40,24 +40,27 @@ export default function useSiteScroll({ methodProgress = false }: { methodProgre
       }
       const solid = y > vh * 0.7;
       if (nav) {
-        nav.style.background = solid ? (light ? 'rgba(245,244,240,.85)' : 'rgba(10,10,12,.78)') : 'transparent';
+        nav.style.background = solid ? (light ? 'rgba(253,251,247,.88)' : 'rgba(74,18,32,.86)') : 'transparent';
         nav.style.backdropFilter = solid ? 'blur(16px)' : 'none';
         (nav.style as any).webkitBackdropFilter = solid ? 'blur(16px)' : 'none';
-        nav.style.borderBottomColor = solid ? (light ? 'rgba(10,10,12,.1)' : 'rgba(244,243,239,.1)') : 'transparent';
+        nav.style.borderBottomColor = solid ? (light ? 'rgba(43,26,30,.1)' : 'rgba(251,246,238,.14)') : 'transparent';
       }
-      const fg = light ? '#0A0A0C' : '#F4F3EF';
+      const fg = light ? '#2B1A1E' : '#FBF6EE';
+      // El sello tiene dos versiones y aquí se decide cuál toca: la de color
+      // sobre papel, la blanca sobre granate.
+      document.body.dataset.navClaro = light ? 'no' : 'si';
       document.querySelectorAll<HTMLElement>('.navtx').forEach((el2) => {
         el2.style.color = fg;
       });
       const langbox = document.getElementById('langbox');
       if (langbox) {
-        langbox.style.borderColor = light ? 'rgba(10,10,12,.18)' : 'rgba(244,243,239,.18)';
+        langbox.style.borderColor = light ? 'rgba(43,26,30,.2)' : 'rgba(251,246,238,.24)';
         langbox.style.color = fg;
       }
       const navbtn = document.getElementById('navbtn');
       if (navbtn) {
-        navbtn.style.background = light ? '#0A0A0C' : '#F4F3EF';
-        navbtn.style.color = light ? '#F4F3EF' : '#0A0A0C';
+        navbtn.style.background = light ? '#4A1220' : '#B8924F';
+        navbtn.style.color = light ? '#FBF6EE' : '#4A1220';
       }
 
       document.querySelectorAll<HTMLElement>('[data-par]').forEach((el2) => {

@@ -41,8 +41,8 @@ export default function Foto({
         aspectRatio: llenar ? undefined : ratio,
         borderRadius: radius,
         overflow: 'hidden',
-        background: '#131318',
-        border: falla ? '1px dashed rgba(244,243,239,.18)' : 'none',
+        background: 'var(--superficie)',
+        border: falla ? '1px dashed var(--linea-2)' : 'none',
       }}
     >
       {falla ? (
@@ -55,13 +55,13 @@ export default function Foto({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 10,
-            background: 'repeating-linear-gradient(135deg,rgba(244,243,239,.03) 0 1px,transparent 1px 14px)',
+            background: 'repeating-linear-gradient(135deg,var(--linea) 0 1px,transparent 1px 14px)',
           }}
         >
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: '#A33B3B', border: '1px solid #A33B3B', borderRadius: 100, padding: '4px 11px' }}>
             Foto pendiente
           </span>
-          <code style={{ fontSize: 11, color: 'rgba(244,243,239,.32)' }}>{src.replace('/images/', '')}</code>
+          <code style={{ fontSize: 11, color: 'var(--tx-4)' }}>{src.replace('/images/', '')}</code>
         </div>
       ) : (
         <Image
@@ -89,8 +89,8 @@ export default function Foto({
             fontWeight: 600,
             letterSpacing: '.06em',
             textTransform: 'uppercase',
-            color: 'rgba(244,243,239,.85)',
-            background: 'rgba(10,10,12,.4)',
+            color: 'var(--tx)',
+            background: 'var(--linea-2)',
             backdropFilter: 'blur(8px)',
             borderRadius: 100,
             padding: '6px 12px',

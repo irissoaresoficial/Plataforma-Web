@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import Cursor from '@/components/Cursor';
 import DustField from '@/components/DustField';
-import ParticleField from '@/components/ParticleField';
+import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import SubNav from '@/components/SubNav';
@@ -82,36 +82,36 @@ export default function Sinergia() {
     width: i === step ? 18 : 6,
     height: 6,
     borderRadius: 100,
-    background: i <= step ? '#C89B4A' : 'rgba(10,10,12,.16)',
+    background: i <= step ? 'var(--acento)' : 'var(--linea-2)',
     transition: 'width .4s cubic-bezier(.16,1,.3,1),background .4s ease',
   });
 
   return (
-    <div id="page" style={{ width: '100%', background: '#0A0A0C', color: '#F4F3EF', overflowX: 'hidden' }}>
+    <div id="page" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
       <Cursor hitSelector="[data-mag],a,input,[data-card]" />
       <DustField />
       <SubNav links={[]} cta="Probarlo gratis" ctaHref="#calc" />
 
-      <div style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
-        <ParticleField />
+      <div className="vino" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
+        <CampoNumeros />
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(ellipse 70% 60% at 78% 30%,rgba(200,155,74,.16),transparent 62%),linear-gradient(to bottom,rgba(10,10,12,.5),rgba(10,10,12,.92))',
+            background: 'radial-gradient(ellipse 70% 60% at 78% 30%,rgba(200,163,92,.13),transparent 62%)',
             pointerEvents: 'none',
           }}
         />
         <div style={{ position: 'relative', zIndex: 3, maxWidth: 1240, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(26px,3.4vw,58px)', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,28px)' }}>
             <Reveal>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>Gratis · resultado al momento</div>
+              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--acento)' }}>Gratis · resultado al momento</div>
             </Reveal>
             <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", lineHeight: 0.99, letterSpacing: '-.026em', maxWidth: '16ch' }}>
-              Con tu madre, con tu socio, con tu pareja: <span style={{ color: '#C89B4A' }}>siempre acabas en el mismo sitio</span>.
+              Con tu madre, con tu socio, con tu pareja: <span style={{ color: 'var(--acento)' }}>siempre acabas en el mismo sitio</span>.
             </Reveal>
             <Reveal delay={150}>
-              <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.5, color: 'rgba(244,243,239,.6)', maxWidth: '40ch' }}>
+              <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.5, color: 'var(--tx-2)', maxWidth: '40ch' }}>
                 Elige a cualquier persona de tu vida —tu madre, tu padre, tu abuela, tu hijo, tu socio, tu pareja— y mira qué se activa entre los dos. Dos nombres, dos fechas y lo tienes.
               </p>
             </Reveal>
@@ -119,7 +119,7 @@ export default function Sinergia() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {['Tu número y el de esa persona', 'Lo que se activa entre los dos', 'Tres frases concretas para trabajarlo'].map((f) => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15 }}>
-                    <span style={{ color: '#C89B4A' }}>✓</span>
+                    <span style={{ color: 'var(--acento)' }}>✓</span>
                     <span>{f}</span>
                   </div>
                 ))}
@@ -134,7 +134,7 @@ export default function Sinergia() {
           </div>
 
           <Reveal delay={120}>
-            <div id="calc" style={{ background: '#FFFFFF', color: '#0A0A0C', borderRadius: 22, padding: 'clamp(20px,2.4vw,32px)', display: 'flex', flexDirection: 'column', gap: 18, boxShadow: '0 34px 80px rgba(0,0,0,.5)', scrollMarginTop: 90 }}>
+            <div id="calc" style={{ background: '#FFFFFF', color: 'var(--tx)', borderRadius: 22, padding: 'clamp(20px,2.4vw,32px)', display: 'flex', flexDirection: 'column', gap: 18, boxShadow: '0 34px 80px rgba(0,0,0,.5)', scrollMarginTop: 90 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>{stepLabel}</span>
                 <div style={{ display: 'flex', gap: 5 }}>
@@ -147,7 +147,7 @@ export default function Sinergia() {
               {isForm && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   <div style={{ fontSize: 'clamp(20px,2.2vw,27px)', fontWeight: 700, letterSpacing: '-.03em', lineHeight: 1.15 }}>{step === 0 ? 'Tus datos' : 'La otra persona'}</div>
-                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: '#6B6B72' }}>
+                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>
                     {step === 0 ? 'Tu nombre completo y tu fecha de nacimiento.' : 'Cualquiera: alguien de tu familia, de tu trabajo o de tu casa.'}
                   </p>
                   {step === 1 && (
@@ -166,9 +166,9 @@ export default function Sinergia() {
                               borderRadius: 100,
                               cursor: 'pointer',
                               transition: 'background .3s ease,border-color .3s ease,color .3s ease',
-                              border: `1px solid ${on ? '#C89B4A' : 'rgba(10,10,12,.14)'}`,
-                              background: on ? '#C89B4A' : 'transparent',
-                              color: on ? '#0A0A0C' : '#6B6B72',
+                              border: `1px solid ${on ? 'var(--acento)' : 'var(--linea)'}`,
+                              background: on ? 'var(--acento)' : 'transparent',
+                              color: on ? '#0A0A0C' : 'var(--tx-2)',
                             }}
                           >
                             {r}
@@ -187,7 +187,7 @@ export default function Sinergia() {
                     }}
                     onKeyDown={(e) => e.key === 'Enter' && next()}
                     className="field-input"
-                    style={{ background: '#F5F4F0', border: '1px solid rgba(10,10,12,.1)', color: '#0A0A0C' }}
+                    style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
                   />
                   <input
                     type="date"
@@ -198,7 +198,7 @@ export default function Sinergia() {
                     }}
                     onKeyDown={(e) => e.key === 'Enter' && next()}
                     className="field-input"
-                    style={{ background: '#F5F4F0', border: '1px solid rgba(10,10,12,.1)', color: '#0A0A0C' }}
+                    style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
                   />
                   <div onClick={next} data-mag className="pill pill-dark" style={{ justifyContent: 'center' }}>
                     <span>{step === 0 ? 'Siguiente' : 'Calcular'}</span>
@@ -211,22 +211,22 @@ export default function Sinergia() {
               {isGate && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res?.a.nombrePila}</span>
+                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res?.a.nombrePila}</span>
                       <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', lineHeight: 1 }}>{res?.a.camino.valor}</span>
                     </div>
-                    <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res?.b.nombrePila}</span>
+                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res?.b.nombrePila}</span>
                       <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', lineHeight: 1 }}>{res?.b.camino.valor}</span>
                     </div>
                   </div>
-                  <div style={{ position: 'relative', background: '#0A0A0C', color: '#F4F3EF', borderRadius: 16, padding: 22, overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', background: 'var(--bg)', color: 'var(--tx)', borderRadius: 16, padding: 22, overflow: 'hidden' }}>
                     <div style={{ filter: 'blur(7px)', opacity: 0.4, display: 'flex', flexDirection: 'column', gap: 8 }}>
                       <span style={{ fontSize: 44, fontWeight: 900, letterSpacing: '-.028em', lineHeight: 1 }}>{res?.comun}</span>
-                      <div style={{ height: 9, borderRadius: 100, background: 'rgba(244,243,239,.3)' }} />
-                      <div style={{ height: 9, borderRadius: 100, background: 'rgba(244,243,239,.3)', width: '68%' }} />
+                      <div style={{ height: 9, borderRadius: 100, background: 'var(--linea-2)' }} />
+                      <div style={{ height: 9, borderRadius: 100, background: 'var(--linea-2)', width: '68%' }} />
                     </div>
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--acento)' }}>
                       Para verlo, tu correo
                     </div>
                   </div>
@@ -240,14 +240,14 @@ export default function Sinergia() {
                     }}
                     onKeyDown={(e) => e.key === 'Enter' && next()}
                     className="field-input"
-                    style={{ background: '#F5F4F0', border: '1px solid rgba(10,10,12,.1)', color: '#0A0A0C' }}
+                    style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
                   />
                   <div onClick={next} data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
                     <span>Ver mi resultado</span>
                     <span>→</span>
                   </div>
                   {err && <div style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>}
-                  <span style={{ fontSize: 11, lineHeight: 1.6, color: '#8A8A92' }}>
+                  <span style={{ fontSize: 11, lineHeight: 1.6, color: 'var(--tx-3)' }}>
                     Te mando el resultado y, durante unos días, lo que significa y de dónde viene. Te borras en un clic cuando quieras.
                   </span>
                 </div>
@@ -261,48 +261,48 @@ export default function Sinergia() {
                     </span>
                   )}
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res.a.nombrePila}</span>
+                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res.a.nombrePila}</span>
                       <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', lineHeight: 1 }}>{res.a.camino.valor}</span>
-                      <span style={{ fontSize: 13, color: '#6B6B72' }}>{SENTIDO[res.a.camino.valor]?.clave}</span>
+                      <span style={{ fontSize: 13, color: 'var(--tx-2)' }}>{SENTIDO[res.a.camino.valor]?.clave}</span>
                     </div>
-                    <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res.b.nombrePila}</span>
+                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res.b.nombrePila}</span>
                       <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', lineHeight: 1 }}>{res.b.camino.valor}</span>
-                      <span style={{ fontSize: 13, color: '#6B6B72' }}>{SENTIDO[res.b.camino.valor]?.clave}</span>
+                      <span style={{ fontSize: 13, color: 'var(--tx-2)' }}>{SENTIDO[res.b.camino.valor]?.clave}</span>
                     </div>
                   </div>
-                  <div style={{ background: '#0A0A0C', color: '#F4F3EF', borderRadius: 16, padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ background: 'var(--bg)', color: 'var(--tx)', borderRadius: 16, padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(244,243,239,.45)' }}>Lo que se activa entre los dos</span>
-                        <span style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-.028em', lineHeight: 1, color: '#C89B4A' }}>{res.comun}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--tx-3)' }}>Lo que se activa entre los dos</span>
+                        <span style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-.028em', lineHeight: 1, color: 'var(--acento)' }}>{res.comun}</span>
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 700, border: '1px solid rgba(200,155,74,.5)', color: '#C89B4A', borderRadius: 100, padding: '7px 13px' }}>{res.nombreVinculo}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, border: '1px solid rgba(200,155,74,.5)', color: 'var(--acento)', borderRadius: 100, padding: '7px 13px' }}>{res.nombreVinculo}</span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14, lineHeight: 1.55, color: 'rgba(244,243,239,.7)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>
                       {res.lineas.map((l, i) => (
                         <div key={i} style={{ display: 'flex', gap: 9 }}>
-                          <span style={{ color: '#C89B4A' }}>·</span>
+                          <span style={{ color: 'var(--acento)' }}>·</span>
                           <span>{l}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                   {res.repeticiones.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: '#F5F4F0', borderRadius: 16, padding: 20 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg)', borderRadius: 16, padding: 20 }}>
                       <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>
                         Lo que se repite entre los dos
                       </span>
                       {res.repeticiones.map((r, i) => (
                         <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                           <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-.02em' }}>{r.titulo}</span>
-                          <span style={{ fontSize: 14, lineHeight: 1.55, color: '#6B6B72' }}>{r.detalle}</span>
+                          <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>{r.detalle}</span>
                         </div>
                       ))}
                     </div>
                   )}
-                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: '#6B6B72' }}>
+                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tx-2)' }}>
                     Esto explica el roce, pero no de dónde viene. Eso está en tu línea familiar, y se mira entera.
                   </p>
                   <Link href="/#lista-espera" data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
@@ -323,7 +323,7 @@ export default function Sinergia() {
                       No he podido guardar tu correo, así que no te llegará nada por email. Descárgate el resultado en PDF con el botón de arriba.
                     </span>
                   )}
-                  <div onClick={reset} style={{ fontSize: 13, color: '#8A8A92', cursor: 'pointer', textAlign: 'center' }}>
+                  <div onClick={reset} style={{ fontSize: 13, color: 'var(--tx-3)', cursor: 'pointer', textAlign: 'center' }}>
                     Probar con otra persona
                   </div>
                 </div>
@@ -333,12 +333,12 @@ export default function Sinergia() {
         </div>
       </div>
 
-      <div style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: 'clamp(60px,8vw,120px) clamp(14px,3vw,36px)' }}>
+      <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(60px,8vw,120px) clamp(14px,3vw,36px)' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
           <Reveal>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>
               <span>Cómo se calcula</span>
-              <span style={{ flex: 1, height: 1, background: 'rgba(10,10,12,.12)' }} />
+              <span style={{ flex: 1, height: 1, background: 'var(--linea)' }} />
             </div>
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(230px,1fr))', gap: 10 }}>
@@ -348,11 +348,11 @@ export default function Sinergia() {
               ['03', 'Y el de los dos', 'Sumando los vuestros sale lo que se activa cuando estáis juntos.'],
             ].map(([n, title, desc], i) => (
               <Reveal key={n} delay={i * 90}>
-                <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid rgba(10,10,12,.1)', borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
-                  <span data-cardnum style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-.022em', color: 'rgba(10,10,12,.14)', transition: 'color .5s ease' }}>{n}</span>
+                <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid var(--linea)', borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
+                  <span data-cardnum style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-.022em', color: 'var(--tx-4)', transition: 'color .5s ease' }}>{n}</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                     <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: '-.02em' }}>{title}</span>
-                    <span style={{ fontSize: 14, lineHeight: 1.55, color: '#6B6B72' }}>{desc}</span>
+                    <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>{desc}</span>
                   </div>
                 </div>
               </Reveal>
@@ -367,7 +367,7 @@ export default function Sinergia() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
               <Link href="/#lista-espera" data-mag data-cur-label="Ver" className="pill pill-dark">
                 <span>Ver la comunidad</span>
-                <span className="pill-arrow" style={{ background: '#C89B4A', color: '#0A0A0C' }}>→</span>
+                <span className="pill-arrow" style={{ background: 'var(--acento)', color: 'var(--tx)' }}>→</span>
               </Link>
               <Link href="/#cita" data-mag className="btn-outline btn-outline-dark">
                 O reservar una sesión
@@ -377,17 +377,17 @@ export default function Sinergia() {
         </div>
       </div>
 
-      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', borderTop: '1px solid rgba(244,243,239,.1)', padding: 'clamp(34px,5vw,60px) clamp(14px,3vw,36px) 26px' }}>
+      <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(34px,5vw,60px) clamp(14px,3vw,36px) 26px' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: '#F4F3EF' }}>
-                <Marca tam={52} apilado />
+            <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: 'var(--tx)' }}>
+                <Marca tam={52} apilado claro />
             </Link>
-            <span style={{ fontSize: 11, lineHeight: 1.7, color: 'rgba(244,243,239,.3)', maxWidth: '58ch' }}>
+            <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
               Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
             </span>
           </div>
-          <span style={{ fontSize: 11, color: 'rgba(244,243,239,.28)' }}>© 2026</span>
+          <span style={{ fontSize: 11, color: 'var(--tx-4)' }}>© 2026</span>
         </div>
       </div>
 
