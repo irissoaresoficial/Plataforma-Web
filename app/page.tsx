@@ -378,41 +378,108 @@ export default function Home() {
       </div>
 
       {/* MEMBRESÍA / LISTA DE ESPERA */}
-      <div id="lista-espera" style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: SECTION_PAD, scrollMarginTop: 80 }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.8vw,34px)', alignItems: 'flex-start' }}>
-          <Reveal>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>
-              <span>{t.wl_lab}</span>
+      <div id="lista-espera" style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: SECTION_PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '-30%',
+            right: '-10%',
+            width: 'min(620px,70vw)',
+            height: 'min(620px,70vw)',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle,rgba(200,155,74,.16),transparent 62%)',
+            pointerEvents: 'none',
+          }}
+        />
+        <div
+          style={{
+            position: 'relative',
+            maxWidth: 1240,
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))',
+            gap: 'clamp(28px,4vw,72px)',
+            alignItems: 'center',
+          }}
+        >
+          {/* Columna izquierda: la promesa */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,26px)' }}>
+            <Reveal>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>
+                <span>{t.wl_lab}</span>
+                <span style={{ flex: 1, height: 1, background: 'rgba(10,10,12,.12)' }} />
+              </div>
+            </Reveal>
+            <Reveal delay={70}>
+              <div style={{ fontSize: 'clamp(30px,4.2vw,56px)', fontWeight: 900, lineHeight: 1.02, letterSpacing: '-.045em', maxWidth: '15ch', textWrap: 'pretty' }}>{t.wl_h}</div>
+            </Reveal>
+            <Reveal delay={130}>
+              <p style={{ margin: 0, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.65, color: '#5C5972', maxWidth: '46ch' }}>{t.wl_p}</p>
+            </Reveal>
+
+            {/* Un paso al mes, sin final: la idea que vende la membresía */}
+            <Reveal delay={190}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 460 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 68 }}>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        flex: 1,
+                        height: `${26 + i * 6}%`,
+                        borderRadius: '5px 5px 2px 2px',
+                        background: i < 3 ? 'linear-gradient(to top,#C89B4A,#E0B15C)' : 'rgba(10,10,12,.09)',
+                      }}
+                    />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, letterSpacing: '.04em', textTransform: 'uppercase', color: '#8A8A92' }}>
+                  <span>{t.wl_month1}</span>
+                  <span>{t.wl_nofin}</span>
+                </div>
+                <span style={{ fontSize: 14, lineHeight: 1.6, color: '#5C5972' }}>{t.wl_rail}</span>
+              </div>
+            </Reveal>
+          </div>
+
+          {/* Columna derecha: la tarjeta */}
+          <Reveal
+            delay={150}
+            style={{
+              background: 'linear-gradient(150deg,#15151B,#0A0A0C 65%)',
+              color: '#F4F3EF',
+              border: '1px solid rgba(200,155,74,.32)',
+              borderRadius: 24,
+              padding: 'clamp(24px,2.6vw,36px)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 20,
+              boxShadow: '0 34px 80px rgba(10,10,12,.3)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(244,243,239,.5)' }}>{t.wl_badge}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A', border: '1px solid rgba(200,155,74,.45)', borderRadius: 100, padding: '5px 11px' }}>
+                {t.e_c2}
+              </span>
             </div>
-          </Reveal>
-          <Reveal delay={70}>
-            <div style={{ fontSize: 'clamp(28px,4vw,50px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-.04em', maxWidth: '17ch' }}>{t.wl_h}</div>
-          </Reveal>
-          <Reveal delay={130}>
-            <p style={{ margin: 0, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.6, color: '#5C5972', maxWidth: '52ch' }}>{t.wl_p}</p>
-          </Reveal>
-          <Reveal delay={180} style={{ width: '100%' }}>
-            <div
-              style={{
-                width: '100%',
-                boxSizing: 'border-box',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                background: '#FBF7EE',
-                border: '1px solid rgba(168,135,63,.35)',
-                borderRadius: 14,
-                padding: '16px 20px',
-                fontSize: 14,
-                lineHeight: 1.55,
-                color: '#5C4A1E',
-              }}
-            >
-              <span>🔥</span>
-              <span>{t.wl_urgent}</span>
+
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14 }}>
+              <span style={{ fontSize: 'clamp(58px,7vw,88px)', fontWeight: 900, letterSpacing: '-.06em', lineHeight: 0.85, color: '#C89B4A' }}>10</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, paddingBottom: 6 }}>
+                <span style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.25 }}>{t.wl_seats}</span>
+                <span style={{ fontSize: 13, lineHeight: 1.45, color: 'rgba(244,243,239,.5)' }}>{t.wl_seats_sub}</span>
+              </div>
             </div>
-          </Reveal>
-          <Reveal delay={230} style={{ width: '100%', maxWidth: 440 }}>
+
+            <div style={{ display: 'flex', gap: 5 }}>
+              {Array.from({ length: 10 }, (_, i) => (
+                <span key={i} style={{ flex: 1, height: 6, borderRadius: 100, border: '1px solid rgba(200,155,74,.45)', background: 'rgba(200,155,74,.12)' }} />
+              ))}
+            </div>
+
+            <div style={{ height: 1, background: 'rgba(244,243,239,.12)' }} />
+
             {!wlDone ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <input
@@ -425,19 +492,19 @@ export default function Home() {
                   }}
                   onKeyDown={(e) => e.key === 'Enter' && sendWaitlist()}
                   className="field-input"
-                  style={{ background: '#FFFFFF', border: '1px solid rgba(10,10,12,.14)', color: '#0A0A0C' }}
+                  style={{ background: 'rgba(244,243,239,.06)', border: '1px solid rgba(244,243,239,.18)', color: '#F4F3EF' }}
                 />
-                <div onClick={sendWaitlist} data-mag className="pill pill-dark" style={{ justifyContent: 'center', padding: '15px 20px', opacity: wlSending ? 0.6 : 1 }}>
+                <div onClick={sendWaitlist} data-mag data-cur-label={t.csee} className="pill pill-gold" style={{ justifyContent: 'center', padding: '15px 20px', opacity: wlSending ? 0.6 : 1 }}>
                   <span>{wlSending ? t.wl_sending : t.wl_cta}</span>
                   <span>→</span>
                 </div>
-                {wlErr && <span style={{ fontSize: 13, color: '#A33B3B' }}>{wlErr}</span>}
-                <span style={{ fontSize: 12, color: '#8A8A92' }}>{t.wl_priv}</span>
+                {wlErr && <span style={{ fontSize: 13, color: '#E08585' }}>{wlErr}</span>}
+                <span style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(244,243,239,.42)' }}>{t.wl_priv}</span>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, border: '1px solid rgba(47,93,80,.35)', background: '#EFF5F2', borderRadius: 14, padding: 18 }}>
-                <span style={{ fontSize: 15, fontWeight: 700, color: '#2F5D50' }}>{t.wl_done_h}</span>
-                <span style={{ fontSize: 14, lineHeight: 1.55, color: '#5C5972' }}>{t.wl_done_p}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7, border: '1px solid rgba(124,196,138,.4)', background: 'rgba(124,196,138,.08)', borderRadius: 16, padding: 20 }}>
+                <span style={{ fontSize: 16, fontWeight: 700, color: '#7CC48A' }}>{t.wl_done_h}</span>
+                <span style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(244,243,239,.62)' }}>{t.wl_done_p}</span>
               </div>
             )}
           </Reveal>

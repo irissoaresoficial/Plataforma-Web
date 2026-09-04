@@ -13,6 +13,8 @@ import { sendLead } from '@/lib/sendLead';
 
 type Result = ReturnType<typeof computeSynergy>;
 
+const RELACIONES = ['Mi madre', 'Mi padre', 'Mi pareja', 'Mi hijo/a', 'Mi hermano/a', 'Mi socio/a', 'Mi jefe/a', 'Otra persona'];
+
 export default function Sinergia() {
   useSiteScroll();
   const [step, setStep] = useState(0);
@@ -24,6 +26,7 @@ export default function Sinergia() {
   const [err, setErr] = useState('');
   const [res, setRes] = useState<Result | null>(null);
   const [leadOk, setLeadOk] = useState<boolean | null>(null);
+  const [rel, setRel] = useState('');
 
   const isForm = step === 0 || step === 1;
   const isGate = step === 2;
@@ -57,7 +60,7 @@ export default function Sinergia() {
         email,
         nombre: aName,
         origen: 'sinergia',
-        detalle: `${r.aName} ${r.aLp} · ${r.bName} ${r.bLp} · juntos ${r.vib} (${r.arch})`,
+        detalle: `${rel ? rel + ': ' : ''}${r.aName} ${r.aLp} · ${r.bName} ${r.bLp} · juntos ${r.vib} (${r.arch})`,
       }).then(setLeadOk);
     }
   };
@@ -66,8 +69,10 @@ export default function Sinergia() {
     setStep(0);
     setBName('');
     setBDate('');
+    setRel('');
     setErr('');
     setRes(null);
+    setLeadOk(null);
   };
 
   const dot = (i: number) => ({
@@ -102,16 +107,16 @@ export default function Sinergia() {
               <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>Gratis · resultado al momento</div>
             </Reveal>
             <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontWeight: 900, lineHeight: 0.99, letterSpacing: '-.045em', maxWidth: '16ch' }}>
-              ¿Por qué con esa persona <span style={{ color: '#C89B4A' }}>siempre acabáis igual</span>?
+              Con tu madre, con tu socio, con tu pareja: <span style={{ color: '#C89B4A' }}>siempre acabas en el mismo sitio</span>.
             </Reveal>
             <Reveal delay={150}>
               <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.5, color: 'rgba(244,243,239,.6)', maxWidth: '40ch' }}>
-                Dos nombres y dos fechas. Te digo qué se enciende cuando estáis juntos, por qué chocáis siempre en lo mismo y qué te toca mirar a ti. Te lo puedes guardar en PDF.
+                Elige a cualquier persona de tu vida —tu madre, tu padre, tu abuela, tu hijo, tu socio, tu pareja— y mira qué se activa entre los dos. Dos nombres, dos fechas y lo tienes.
               </p>
             </Reveal>
             <Reveal delay={220}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                {['Tu número y el de la otra persona', 'Lo que se activa entre los dos', 'Tres frases concretas para trabajarlo'].map((f) => (
+                {['Tu número y el de esa persona', 'Lo que se activa entre los dos', 'Tres frases concretas para trabajarlo'].map((f) => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15 }}>
                     <span style={{ color: '#C89B4A' }}>✓</span>
                     <span>{f}</span>
@@ -121,7 +126,7 @@ export default function Sinergia() {
             </Reveal>
             <Reveal delay={290}>
               <a href="#calc" data-mag data-cur-label="Empezar" className="pill pill-cream" style={{ alignSelf: 'flex-start' }}>
-                <span>Ver qué pasa entre vosotros</span>
+                <span>Elegir a una persona</span>
                 <span className="pill-arrow">↓</span>
               </a>
             </Reveal>
@@ -142,8 +147,35 @@ export default function Sinergia() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   <div style={{ fontSize: 'clamp(20px,2.2vw,27px)', fontWeight: 700, letterSpacing: '-.03em', lineHeight: 1.15 }}>{step === 0 ? 'Tus datos' : 'La otra persona'}</div>
                   <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: '#6B6B72' }}>
-                    {step === 0 ? 'Tu nombre completo y tu fecha de nacimiento.' : 'Pareja, madre, socio, hijo. Quien quieras mirar.'}
+                    {step === 0 ? 'Tu nombre completo y tu fecha de nacimiento.' : 'Cualquiera: alguien de tu familia, de tu trabajo o de tu casa.'}
                   </p>
+                  {step === 1 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {RELACIONES.map((r) => {
+                        const on = rel === r;
+                        return (
+                          <span
+                            key={r}
+                            onClick={() => setRel(on ? '' : r)}
+                            data-mag
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 600,
+                              padding: '8px 13px',
+                              borderRadius: 100,
+                              cursor: 'pointer',
+                              transition: 'background .3s ease,border-color .3s ease,color .3s ease',
+                              border: `1px solid ${on ? '#C89B4A' : 'rgba(10,10,12,.14)'}`,
+                              background: on ? '#C89B4A' : 'transparent',
+                              color: on ? '#0A0A0C' : '#6B6B72',
+                            }}
+                          >
+                            {r}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                   <input
                     type="text"
                     value={step === 0 ? aName : bName}
@@ -222,6 +254,11 @@ export default function Sinergia() {
 
               {isResult && res && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+                  {rel && (
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#8F6B18' }}>
+                      {rel === 'Otra persona' ? 'Con esa persona' : `Con ${rel.toLowerCase()}`}
+                    </span>
+                  )}
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res.aName}</span>
