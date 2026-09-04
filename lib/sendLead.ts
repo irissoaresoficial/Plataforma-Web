@@ -7,13 +7,14 @@ export async function sendLead(payload: {
   nombre?: string;
   origen: string;
   detalle?: string;
+  whatsapp?: string;
   lang?: string;
 }): Promise<boolean> {
   try {
     const res = await fetch('/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lang: 'es', nombre: '', detalle: '', ...payload }),
+      body: JSON.stringify({ lang: 'es', nombre: '', detalle: '', whatsapp: '', ...payload }),
     });
     const data = await res.json().catch(() => null);
     return !!data?.ok;

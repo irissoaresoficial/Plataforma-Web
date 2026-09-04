@@ -55,10 +55,11 @@ export type Lead = {
   nombre: string;
   origen: string;
   detalle: string; // resultado de la sinergia, curso al que se apunta, etc.
+  whatsapp: string;
   lang: string;
 };
 
-export const LEAD_SOURCES = ['sinergia', 'lista-espera', 'curso-numerologia', 'curso-nombre', 'curso-dinero'] as const;
+export const LEAD_SOURCES = ['sinergia', 'membresia', 'curso'] as const;
 
 export function parseLead(input: unknown): { lead: Lead | null; error: string } {
   if (!input || typeof input !== 'object') return { lead: null, error: 'payload' };
@@ -73,6 +74,7 @@ export function parseLead(input: unknown): { lead: Lead | null; error: string } 
     nombre: str('nombre', 120),
     origen: str('origen', 40),
     detalle: str('detalle', 500),
+    whatsapp: str('whatsapp', 40),
     lang: str('lang', 2) || 'es',
   };
 

@@ -1,13 +1,18 @@
 # Web de Iris Soares
 
-Web en Next.js (App Router) + Framer Motion. Cuatro páginas:
+Web en Next.js (App Router) + Framer Motion.
+
+La web es el núcleo y cada apartado es una landing propia, enlazada desde el pie:
 
 | Ruta | Qué es |
 | --- | --- |
-| `/` | Página principal. Dolor → por qué pasa → cómo funciona → lista de espera de la comunidad. Lleva el chat que reserva sesiones. |
-| `/sinergia` | Herramienta gratuita de captación: dos nombres, dos fechas y un resultado a cambio del correo. |
-| `/escuela` | La formación y la membresía. |
-| `/cursos` | Los cursos sueltos con fecha. |
+| `/` | Marca personal. Cuenta el problema, quién es Iris y qué plantea. Lleva el chat que reserva sesiones. |
+| `/sinergia` | La prueba gratis: la herramienta de captación por la que entra el tráfico de redes. |
+| `/cursos` | Los cursos y talleres en directo, con vídeo de presentación y reserva de plaza. |
+| `/membresia` | La comunidad, en lista de espera: reservas ahora y guardas el precio de lanzamiento. |
+
+Lo que se cambia a mano (cursos, precios, vídeo, contacto) está todo en
+**`content/site.ts`**. No hace falta tocar nada más.
 
 ## Arrancar en local
 
@@ -72,9 +77,8 @@ en la pestaña **Leads** con su origen:
 | Origen | De dónde viene | Qué pasa después |
 | --- | --- | --- |
 | `sinergia` | La prueba gratis (`/sinergia`) | Recibe el resultado por correo y entra en la secuencia |
-| `lista-espera` | La comunidad, en la portada | Se guarda y avisa a Iris |
-| `curso-numerologia` | El curso grabado, en `/escuela` | Se guarda y avisa a Iris |
-| `curso-nombre` / `curso-dinero` | Los dos cursos con fecha | Se guarda y avisa a Iris para que mande el enlace de pago |
+| `membresia` | La lista de espera, en la portada y en `/membresia` | Se guarda (con WhatsApp si lo deja) y avisa a Iris |
+| `curso` | La reserva de plaza en `/cursos` | Se guarda y avisa a Iris para que mande el enlace de pago |
 
 **La secuencia** solo se manda a quien llega por la prueba gratis, que es por donde
 entra el tráfico de redes. Son cinco correos repartidos en cinco días: el resultado,
@@ -114,5 +118,18 @@ Todo está en el bloque `CONFIG` de `reservas.gs`:
 
 ## Contenido pendiente
 
-Marcado en el propio diseño: foto y vídeo reales de Iris, testimonios y los ponentes
-invitados de la formación.
+Todo lo que falta por rellenar sale **marcado en rojo en la propia web**, para verlo de
+un vistazo. Se rellena en `content/site.ts`:
+
+- El curso: título, fechas, horario, precio, descripción, lo que se ve y el enlace del vídeo.
+- Lo que incluye la membresía (tres huecos).
+- El correo de contacto y el WhatsApp.
+
+Aparte, sigue pendiente una foto de Iris mejor que la actual, que tiene el equipo de
+cámara detrás.
+
+## Archivo
+
+En `app/_archive/` está la landing de la formación de 12 semanas, retirada de la web
+porque todavía no está lanzada. No se publica: las carpetas que empiezan por `_` no
+crean ninguna dirección.

@@ -75,7 +75,7 @@ export default function Home() {
     if (!isValidEmail(wlEmail)) return setWlErr(t.wl_err);
     setWlErr('');
     setWlSending(true);
-    const ok = await sendLead({ email: wlEmail, origen: 'lista-espera', lang });
+    const ok = await sendLead({ email: wlEmail, origen: 'membresia', lang });
     setWlSending(false);
     // Solo se dice "guardado" si de verdad se ha guardado.
     if (ok) setWlDone(true);
@@ -500,6 +500,9 @@ export default function Home() {
                 </div>
                 {wlErr && <span style={{ fontSize: 13, color: '#E08585' }}>{wlErr}</span>}
                 <span style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(244,243,239,.42)' }}>{t.wl_priv}</span>
+                <Link href="/membresia" data-mag style={{ fontSize: 13, fontWeight: 600, color: '#C89B4A' }}>
+                  {t.wl_more}
+                </Link>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7, border: '1px solid rgba(124,196,138,.4)', background: 'rgba(124,196,138,.08)', borderRadius: 16, padding: 20 }}>
@@ -530,7 +533,7 @@ export default function Home() {
               </Reveal>
             </div>
             <Reveal delay={180} style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'flex-start' }}>
-              <PillCTA href="/escuela" variant="cream" label={t.e_cta} curLabel={t.cgo} />
+              <PillCTA href="/cursos" variant="cream" label={t.e_cta} curLabel={t.csee} />
             </Reveal>
           </div>
         </div>
@@ -613,10 +616,10 @@ export default function Home() {
               <Link href="/sinergia" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
                 {t.ft_2}
               </Link>
-              <Link href="/escuela" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
+              <Link href="/cursos" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
                 {t.ft_3}
               </Link>
-              <Link href="/cursos" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
+              <Link href="/membresia" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
                 {t.ft_4}
               </Link>
             </div>

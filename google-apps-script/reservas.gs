@@ -55,7 +55,7 @@ var CONFIG = {
 
   // Adónde manda la gente la secuencia de correos (la sección de la comunidad).
   WEB_URL: 'https://irissoares.com',
-  COMUNIDAD_URL: 'https://irissoares.com/#lista-espera',
+  COMUNIDAD_URL: 'https://irissoares.com/membresia',
 
   // Pon false si quieres guardar los correos pero no enviar todavía la secuencia.
   SECUENCIA_ACTIVA: true,
@@ -362,26 +362,30 @@ function guardarLead(lead) {
   return json({ ok: true });
 }
 
+// Columnas de la pestaña Leads (empezando en 0).
+var COL = { ALTA: 0, EMAIL: 1, NOMBRE: 2, WHATSAPP: 3, ORIGEN: 4, DETALLE: 5, IDIOMA: 6, ULTIMO: 7, BAJA: 8 };
+
 /** Añade el lead a la pestaña "Leads". Devuelve true si ese correo ya estaba con ese origen. */
 function saveLeadRow(lead) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(CONFIG.LEADS_SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(CONFIG.LEADS_SHEET_NAME);
-    sheet.appendRow(['Alta', 'Correo', 'Nombre', 'Origen', 'Detalle', 'Idioma', 'Último correo enviado', 'Baja']);
-    sheet.getRange(1, 1, 1, 8).setFontWeight('bold');
+    sheet.appendRow(['Alta', 'Correo', 'Nombre', 'WhatsApp', 'Origen', 'Detalle', 'Idioma', 'Último correo enviado', 'Baja']);
+    sheet.getRange(1, 1, 1, 9).setFontWeight('bold');
     sheet.setFrozenRows(1);
   }
 
   var datos = sheet.getDataRange().getValues();
   for (var i = 1; i < datos.length; i++) {
-    if (String(datos[i][1]).toLowerCase() === lead.email && String(datos[i][3]) === lead.origen) return true;
+    if (String(datos[i][COL.EMAIL]).toLowerCase() === lead.email && String(datos[i][COL.ORIGEN]) === lead.origen) return true;
   }
 
   sheet.appendRow([
     new Date(),
     lead.email,
     lead.nombre || '',
+    lead.whatsapp || '',
     lead.origen || '',
     lead.detalle || '',
     (lead.lang || 'es').toUpperCase(),
@@ -407,8 +411,8 @@ function enviarSecuencia() {
 
   for (var i = 1; i < datos.length && enviados < MAX_POR_TANDA; i++) {
     var fila = datos[i];
-    var alta = fila[0], email = fila[1], nombre = fila[2], origen = fila[3];
-    var ultimo = Number(fila[6]) || 0, baja = fila[7];
+    var alta = fila[COL.ALTA], email = fila[COL.EMAIL], nombre = fila[COL.NOMBRE], origen = fila[COL.ORIGEN];
+    var ultimo = Number(fila[COL.ULTIMO]) || 0, baja = fila[COL.BAJA];
 
     if (origen !== 'sinergia' || baja || !email || !(alta instanceof Date)) continue;
 
@@ -420,7 +424,7 @@ function enviarSecuencia() {
       if (paso.dia <= dias && paso.dia > ultimo) {
         try {
           enviarPaso(email, nombre, paso);
-          sheet.getRange(i + 1, 7).setValue(paso.dia);
+          sheet.getRange(i + 1, COL.ULTIMO + 1).setValue(paso.dia);
           enviados++;
         } catch (err) {
           Logger.log('No se pudo enviar a ' + email + ': ' + err);
@@ -465,10 +469,8 @@ function correoResultado(lead) {
 /** Los leads que no son de la prueba gratis los tiene que atender Iris a mano. */
 function notificarIrisLead(lead) {
   var nombres = {
-    'lista-espera': 'lista de espera de la comunidad',
-    'curso-numerologia': 'curso de numerología transgeneracional',
-    'curso-nombre': 'curso "El nombre que te pusieron"',
-    'curso-dinero': 'curso "El dinero de tu familia"'
+    'membresia': 'lista de espera de la membresía',
+    'curso': 'un curso'
   };
   var que = nombres[lead.origen] || lead.origen;
   MailApp.sendEmail({
@@ -480,6 +482,7 @@ function notificarIrisLead(lead) {
       '<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.6">' +
       '<p><b>' + (lead.nombre || 'Sin nombre') + '</b> se ha apuntado a: ' + que + '</p>' +
       '<p>Correo: <a href="mailto:' + lead.email + '">' + lead.email + '</a>' +
+      (lead.whatsapp ? '<br>WhatsApp: ' + lead.whatsapp : '') +
       (lead.detalle ? '<br>Detalle: ' + lead.detalle : '') + '</p>' +
       '<p style="color:#6b6b72">Está guardado en la pestaña Leads.</p></div>'
   });
@@ -530,8 +533,8 @@ function darDeBaja(email, token) {
 
   var datos = sheet.getDataRange().getValues();
   for (var i = 1; i < datos.length; i++) {
-    if (String(datos[i][1]).toLowerCase() === String(email).toLowerCase()) {
-      sheet.getRange(i + 1, 8).setValue('SÍ');
+    if (String(datos[i][COL.EMAIL]).toLowerCase() === String(email).toLowerCase()) {
+      sheet.getRange(i + 1, COL.BAJA + 1).setValue('SÍ');
     }
   }
   return pagina('Listo, no recibirás más correos.');

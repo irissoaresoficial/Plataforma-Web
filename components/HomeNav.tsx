@@ -34,10 +34,10 @@ export default function HomeNav({ onBook }: { onBook: () => void }) {
         <Link href="/sinergia" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
           {t.n2}
         </Link>
-        <Link href="/escuela" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
+        <Link href="/cursos" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
           {t.n3}
         </Link>
-        <Link href="/cursos" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
+        <Link href="/membresia" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>
           {t.n4}
         </Link>
         <LangSwitch />
