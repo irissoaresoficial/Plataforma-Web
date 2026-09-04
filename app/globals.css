@@ -1,0 +1,253 @@
+:root {
+  --ink: #0a0a0c;
+  --paper: #f5f4f0;
+  --cream: #f4f3ef;
+  --gold: #c89b4a;
+  --gold-light: #e0b15c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: 'Satoshi', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--gold-light);
+}
+
+input,
+textarea,
+button {
+  font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(244, 243, 239, 0.32);
+}
+
+::selection {
+  background: rgba(200, 155, 74, 0.3);
+}
+
+@media (pointer: fine) {
+  body[data-cur='on'],
+  body[data-cur='on'] * {
+    cursor: none !important;
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  70% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+#chat-body::-webkit-scrollbar {
+  width: 0;
+}
+
+/* ---- shared interactive utilities ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px 6px 6px 22px;
+  transition: gap 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  border: none;
+}
+.pill:hover {
+  gap: 18px;
+  transform: translateY(-3px);
+}
+.pill-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pill-cream {
+  background: #f4f3ef;
+  color: #0a0a0c;
+}
+.pill-cream:hover {
+  color: #0a0a0c;
+}
+.pill-cream .pill-arrow {
+  background: #0a0a0c;
+  color: #c89b4a;
+}
+.pill-gold {
+  background: #c89b4a;
+  color: #0a0a0c;
+}
+.pill-gold:hover {
+  color: #0a0a0c;
+}
+.pill-gold .pill-arrow {
+  background: #0a0a0c;
+  color: #c89b4a;
+}
+.pill-dark {
+  background: #0a0a0c;
+  color: #f4f3ef;
+}
+.pill-dark:hover {
+  color: #f4f3ef;
+}
+.pill-dark .pill-arrow {
+  background: #c89b4a;
+  color: #0a0a0c;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(244, 243, 239, 0.2);
+  padding: 13px 20px;
+  border-radius: 100px;
+  transition: border-color 0.4s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #f4f3ef;
+}
+.btn-outline:hover {
+  border-color: #c89b4a;
+  color: #f4f3ef;
+  transform: translateY(-3px);
+}
+.btn-outline-dark {
+  border-color: rgba(10, 10, 12, 0.16);
+  color: #0a0a0c;
+}
+.btn-outline-dark:hover {
+  border-color: #c89b4a;
+  color: #0a0a0c;
+}
+
+.nav-cta {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 18px;
+  border-radius: 100px;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+.nav-cta:hover {
+  transform: translateY(-2px);
+}
+
+.card-hover {
+  transition: border-color 0.5s ease, background 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover:hover {
+  border-color: #c89b4a;
+  background: rgba(200, 155, 74, 0.05);
+  transform: translateY(-6px);
+}
+.card-hover-light {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s ease, box-shadow 0.6s ease;
+}
+.card-hover-light:hover {
+  transform: translateY(-6px);
+  border-color: #c89b4a;
+  box-shadow: 0 22px 50px rgba(10, 10, 12, 0.1);
+}
+
+.line-hover {
+  transition: padding-left 0.55s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s ease;
+}
+.line-hover:hover {
+  padding-left: 16px;
+  border-color: #c89b4a;
+}
+
+.chip {
+  transition: border-color 0.4s ease, color 0.4s ease;
+}
+.chip:hover {
+  border-color: #c89b4a;
+  color: #c89b4a;
+}
+
+.nav-link {
+  display: none;
+}
+@media (min-width: 860px) {
+  .nav-link {
+    display: block;
+  }
+}
+
+.field-input {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  padding: 15px 16px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+.field-input:focus {
+  border-color: #c89b4a;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  #page > *:not(#sheet) {
+    display: none !important;
+  }
+  #sheet {
+    display: block !important;
+  }
+}
