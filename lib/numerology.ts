@@ -60,7 +60,7 @@ export const ARCH: Record<string, { n: string; l: string[] }> = {
   espejo: {
     n: 'Espejo',
     l: [
-      'Compartís el mismo camino: lo que te molesta de esa persona es tuyo también.',
+      'Tenéis el mismo número: lo que te molesta de esa persona también es tuyo.',
       'La fuerza está duplicada; también el punto ciego.',
       '¿Quién de los dos repite el patrón primero?',
     ],
@@ -68,7 +68,7 @@ export const ARCH: Record<string, { n: string; l: string[] }> = {
   complemento: {
     n: 'Complemento',
     l: [
-      'Vuestros caminos se sostienen: donde uno se cansa, el otro empuja.',
+      'Os sostenéis el uno al otro: donde uno se cansa, el otro empuja.',
       'El riesgo es la comodidad: repartir papeles y no crecer.',
       '¿Qué dejas de hacer porque lo hace la otra persona?',
     ],
@@ -84,7 +84,7 @@ export const ARCH: Record<string, { n: string; l: string[] }> = {
   maestra: {
     n: 'Relación que enseña',
     l: [
-      'La vibración común coincide con el camino de uno de los dos: hay una enseñanza clara.',
+      'Lo que se activa entre los dos es justo el número de uno de vosotros: ahí hay algo que aprender.',
       'Uno enseña sin querer, el otro aprende sin saberlo.',
       '¿Qué te pide esta persona que ya te pedía otra antes?',
     ],

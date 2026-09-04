@@ -9,6 +9,7 @@ import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import SubNav from '@/components/SubNav';
 import { clean, computeSynergy, isValidEmail } from '@/lib/numerology';
+import { sendLead } from '@/lib/sendLead';
 
 type Result = ReturnType<typeof computeSynergy>;
 
@@ -22,6 +23,7 @@ export default function Sinergia() {
   const [email, setEmail] = useState('');
   const [err, setErr] = useState('');
   const [res, setRes] = useState<Result | null>(null);
+  const [leadOk, setLeadOk] = useState<boolean | null>(null);
 
   const isForm = step === 0 || step === 1;
   const isGate = step === 2;
@@ -48,6 +50,15 @@ export default function Sinergia() {
       if (!isValidEmail(email)) return setErr('Ese correo no parece válido.');
       setErr('');
       setStep(3);
+
+      // El resultado se enseña igual: si el correo no se puede guardar, se avisa abajo.
+      const r = res || computeSynergy(aName, aDate, bName, bDate);
+      sendLead({
+        email,
+        nombre: aName,
+        origen: 'sinergia',
+        detalle: `${r.aName} ${r.aLp} · ${r.bName} ${r.bLp} · juntos ${r.vib} (${r.arch})`,
+      }).then(setLeadOk);
     }
   };
 
@@ -203,7 +214,9 @@ export default function Sinergia() {
                     <span>→</span>
                   </div>
                   {err && <div style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>}
-                  <span style={{ fontSize: 11, lineHeight: 1.6, color: '#8A8A92' }}>Te mando el resultado y nada más. Sin listas raras.</span>
+                  <span style={{ fontSize: 11, lineHeight: 1.6, color: '#8A8A92' }}>
+                    Te mando el resultado y, durante unos días, lo que significa y de dónde viene. Te borras en un clic cuando quieras.
+                  </span>
                 </div>
               )}
 
@@ -238,15 +251,27 @@ export default function Sinergia() {
                       ))}
                     </div>
                   </div>
+                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: '#6B6B72' }}>
+                    Esto explica el roce, pero no de dónde viene. Eso está en tu línea familiar, y se mira entera.
+                  </p>
+                  <Link href="/#lista-espera" data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
+                    <span>Mirar la mía entera</span>
+                    <span>→</span>
+                  </Link>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <div onClick={() => window.print()} data-mag data-cur-label="PDF" className="pill pill-dark" style={{ flex: 1, minWidth: 148, justifyContent: 'center' }}>
                       <span>Descargar PDF</span>
                       <span>↓</span>
                     </div>
                     <Link href="/#cita" data-mag className="btn-outline btn-outline-dark" style={{ flex: 1, minWidth: 148, justifyContent: 'center' }}>
-                      Quiero la sesión
+                      Sesión con Iris
                     </Link>
                   </div>
+                  {leadOk === false && (
+                    <span style={{ fontSize: 12, lineHeight: 1.6, color: '#A33B3B' }}>
+                      No he podido guardar tu correo, así que no te llegará nada por email. Descárgate el resultado en PDF con el botón de arriba.
+                    </span>
+                  )}
                   <div onClick={reset} style={{ fontSize: 13, color: '#8A8A92', cursor: 'pointer', textAlign: 'center' }}>
                     Probar con otra persona
                   </div>
@@ -289,12 +314,12 @@ export default function Sinergia() {
           </Reveal>
           <Reveal delay={80}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-              <Link href="/#cita" data-mag data-cur-label="Reservar" className="pill pill-dark">
-                <span>Reservar sesión de 90 min</span>
+              <Link href="/#lista-espera" data-mag data-cur-label="Ver" className="pill pill-dark">
+                <span>Ver la comunidad</span>
                 <span className="pill-arrow" style={{ background: '#C89B4A', color: '#0A0A0C' }}>→</span>
               </Link>
-              <Link href="/escuela" data-mag className="btn-outline btn-outline-dark">
-                Aprenderlo en La Escuela
+              <Link href="/#cita" data-mag className="btn-outline btn-outline-dark">
+                O reservar una sesión
               </Link>
             </div>
           </Reveal>

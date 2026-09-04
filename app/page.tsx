@@ -13,6 +13,7 @@ import HomeNav from '@/components/HomeNav';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
 import { isValidEmail } from '@/lib/numerology';
+import { sendLead } from '@/lib/sendLead';
 
 const SECTION_PAD = 'clamp(70px,10vw,150px) clamp(14px,3vw,36px)';
 
@@ -53,7 +54,7 @@ function PillCTA({
 }
 
 export default function Home() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   useSiteScroll({ methodProgress: true });
   const chatRef = useRef<ChatWidgetHandle>(null);
   const openChat = () => chatRef.current?.open();
@@ -69,10 +70,16 @@ export default function Home() {
   const [wlEmail, setWlEmail] = useState('');
   const [wlErr, setWlErr] = useState('');
   const [wlDone, setWlDone] = useState(false);
-  const sendWaitlist = () => {
+  const [wlSending, setWlSending] = useState(false);
+  const sendWaitlist = async () => {
     if (!isValidEmail(wlEmail)) return setWlErr(t.wl_err);
     setWlErr('');
-    setWlDone(true);
+    setWlSending(true);
+    const ok = await sendLead({ email: wlEmail, origen: 'lista-espera', lang });
+    setWlSending(false);
+    // Solo se dice "guardado" si de verdad se ha guardado.
+    if (ok) setWlDone(true);
+    else setWlErr(t.wl_fail);
   };
 
   const chips = [t.w1, t.w2, t.w3, t.w4, t.w5, t.w6];
@@ -420,8 +427,8 @@ export default function Home() {
                   className="field-input"
                   style={{ background: '#FFFFFF', border: '1px solid rgba(10,10,12,.14)', color: '#0A0A0C' }}
                 />
-                <div onClick={sendWaitlist} data-mag className="pill pill-dark" style={{ justifyContent: 'center', padding: '15px 20px' }}>
-                  <span>{t.wl_cta}</span>
+                <div onClick={sendWaitlist} data-mag className="pill pill-dark" style={{ justifyContent: 'center', padding: '15px 20px', opacity: wlSending ? 0.6 : 1 }}>
+                  <span>{wlSending ? t.wl_sending : t.wl_cta}</span>
                   <span>→</span>
                 </div>
                 {wlErr && <span style={{ fontSize: 13, color: '#A33B3B' }}>{wlErr}</span>}

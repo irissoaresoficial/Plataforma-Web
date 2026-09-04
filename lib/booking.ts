@@ -46,6 +46,42 @@ export function parseBooking(input: unknown): { booking: Booking | null; error: 
   return { booking, error: '' };
 }
 
+/**
+ * Un lead es cualquier correo que entra por la web. El origen decide qué pasa después:
+ * los de 'sinergia' entran en la secuencia de correos; el resto solo se guardan y avisan a Iris.
+ */
+export type Lead = {
+  email: string;
+  nombre: string;
+  origen: string;
+  detalle: string; // resultado de la sinergia, curso al que se apunta, etc.
+  lang: string;
+};
+
+export const LEAD_SOURCES = ['sinergia', 'lista-espera', 'curso-numerologia', 'curso-nombre', 'curso-dinero'] as const;
+
+export function parseLead(input: unknown): { lead: Lead | null; error: string } {
+  if (!input || typeof input !== 'object') return { lead: null, error: 'payload' };
+  const raw = input as Record<string, unknown>;
+  const str = (key: string, max: number) => {
+    const v = raw[key];
+    return typeof v === 'string' ? v.trim().slice(0, max) : '';
+  };
+
+  const lead: Lead = {
+    email: str('email', 160).toLowerCase(),
+    nombre: str('nombre', 120),
+    origen: str('origen', 40),
+    detalle: str('detalle', 500),
+    lang: str('lang', 2) || 'es',
+  };
+
+  if (!EMAIL_RE.test(lead.email)) return { lead: null, error: 'email' };
+  if (!(LEAD_SOURCES as readonly string[]).includes(lead.origen)) return { lead: null, error: 'origen' };
+
+  return { lead, error: '' };
+}
+
 export type Availability = { iso: string; hours: string[] }[];
 
 /** Forma que devuelve el Apps Script en /availability, validada antes de dársela al chat. */

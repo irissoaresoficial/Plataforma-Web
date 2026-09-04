@@ -64,12 +64,42 @@ horas que tiene libres.
 > Cada vez que cambies el código del script hay que volver a **Implementar → Gestionar
 > implementaciones → editar → Nueva versión**, o la URL seguirá sirviendo lo anterior.
 
+## Correos captados y secuencia de venta
+
+Los cuatro formularios de la web mandan el correo al mismo Apps Script, que lo guarda
+en la pestaña **Leads** con su origen:
+
+| Origen | De dónde viene | Qué pasa después |
+| --- | --- | --- |
+| `sinergia` | La prueba gratis (`/sinergia`) | Recibe el resultado por correo y entra en la secuencia |
+| `lista-espera` | La comunidad, en la portada | Se guarda y avisa a Iris |
+| `curso-numerologia` | El curso grabado, en `/escuela` | Se guarda y avisa a Iris |
+| `curso-nombre` / `curso-dinero` | Los dos cursos con fecha | Se guarda y avisa a Iris para que mande el enlace de pago |
+
+**La secuencia** solo se manda a quien llega por la prueba gratis, que es por donde
+entra el tráfico de redes. Son cinco correos repartidos en cinco días: el resultado,
+por qué se repite, un caso real, la diferencia entre entenderlo y cambiarlo, y la
+oferta de la comunidad. El texto está en la constante `SECUENCIA` del script: se
+edita ahí, sin tocar la web, y se puede cambiar la oferta del final por un curso.
+
+Para que salgan solos hay que crear el activador diario (paso 8 de la instalación).
+Cada persona recibe como mucho un correo al día, y todos llevan enlace de baja en un
+clic, que marca la columna **Baja** de la hoja.
+
+Si Gmail se queda sin cuota diaria (unos 100 correos en cuentas gratuitas), lo que
+falte sale al día siguiente: no se pierde nadie.
+
 ### Qué pasa si el script no está configurado
 
 La web funciona igual, pero el chat no puede reservar: ofrece huecos de plantilla
 (laborables) y, al terminar, avisa a la persona de que escriba por correo en lugar de
 decirle que la cita está confirmada. Nunca da por buena una reserva que no se ha
 guardado en ningún sitio.
+
+Los formularios se comportan igual: si el correo no se puede guardar, lo dicen en vez
+de mostrar "guardado". La única excepción es la prueba gratis, que enseña el resultado
+en pantalla de todas formas (ya se lo ha ganado) y avisa de que no le llegará nada por
+correo.
 
 ### Ajustes habituales del script
 

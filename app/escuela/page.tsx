@@ -10,6 +10,7 @@ import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import SubNav from '@/components/SubNav';
 import { isValidEmail } from '@/lib/numerology';
+import { sendLead } from '@/lib/sendLead';
 
 const MODULES = [
   { id: 'M1', title: 'Los cimientos', desc: 'Qué es y qué no es el método. Cálculo base y vocabulario común.', weeks: 'Semanas 1–2' },
@@ -55,10 +56,15 @@ export default function Escuela() {
     [annual]
   );
 
-  const sendWait = () => {
+  const [waitSending, setWaitSending] = useState(false);
+  const sendWait = async () => {
     if (!isValidEmail(waitEmail)) return setWaitErr('Ese correo no parece válido.');
     setWaitErr('');
-    setWaitDone(true);
+    setWaitSending(true);
+    const ok = await sendLead({ email: waitEmail, origen: 'curso-numerologia' });
+    setWaitSending(false);
+    if (ok) setWaitDone(true);
+    else setWaitErr('No he podido guardarlo ahora mismo. Inténtalo en un minuto o escribe a hola@irissoares.com.');
   };
 
   return (
@@ -596,7 +602,7 @@ export default function Escuela() {
                     style={{ background: 'rgba(244,243,239,.05)', border: '1px solid rgba(244,243,239,.16)', color: '#F4F3EF' }}
                   />
                   <div onClick={sendWait} data-mag className="pill pill-cream" style={{ justifyContent: 'center', padding: '15px 20px' }}>
-                    <span>Apuntarme a la lista</span>
+                    <span>{waitSending ? 'Guardando…' : 'Apuntarme a la lista'}</span>
                     <span>→</span>
                   </div>
                   {waitErr && <span style={{ fontSize: 13, color: '#E08585' }}>{waitErr}</span>}

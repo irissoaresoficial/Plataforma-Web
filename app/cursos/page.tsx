@@ -9,6 +9,7 @@ import ParticleField from '@/components/ParticleField';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import SubNav from '@/components/SubNav';
+import { sendLead } from '@/lib/sendLead';
 
 const eur = (n: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0, useGrouping: true }).format(n);
 
@@ -63,17 +64,34 @@ export default function Cursos() {
   const left1 = CAP1 - INSCRITOS1;
   const left2 = CAP2 - INSCRITOS2;
 
-  const send1 = () => {
+  const [sending, setSending] = useState(0);
+  const FALLO = 'No he podido guardarlo ahora mismo. Inténtalo en un minuto o escribe a hola@irissoares.com.';
+
+  const send1 = async () => {
     if (n1.trim().split(/\s+/).length < 2) return setE1('Escribe tu nombre completo.');
     if (!isValidEmail(m1)) return setE1('Ese correo no parece válido.');
     setE1('');
-    setD1(true);
+    setSending(1);
+    const ok = await sendLead({
+      email: m1,
+      nombre: n1,
+      origen: 'curso-nombre',
+      detalle: case1 ? 'Ofrece su nombre para leerlo en directo' : '',
+    });
+    setSending(0);
+    if (ok) setD1(true);
+    else setE1(FALLO);
   };
-  const send2 = () => {
+
+  const send2 = async () => {
     if (n2.trim().split(/\s+/).length < 2) return setE2('Escribe tu nombre completo.');
     if (!isValidEmail(m2)) return setE2('Ese correo no parece válido.');
     setE2('');
-    setD2(true);
+    setSending(2);
+    const ok = await sendLead({ email: m2, nombre: n2, origen: 'curso-dinero' });
+    setSending(0);
+    if (ok) setD2(true);
+    else setE2(FALLO);
   };
 
   const ring = (taken: number, cap: number, hero: boolean) => {
@@ -298,7 +316,7 @@ export default function Cursos() {
                       <span>Ofrezco mi nombre para que Iris lo lea en directo</span>
                     </label>
                     <div onClick={send1} data-mag data-cur-label="Enviar" className="pill pill-gold" style={{ justifyContent: 'center' }}>
-                      <span>Reservar · {eur(PRECIO1)}</span>
+                      <span>{sending === 1 ? 'Guardando…' : `Reservar · ${eur(PRECIO1)}`}</span>
                       <span>→</span>
                     </div>
                     {e1 && <span style={{ fontSize: 13, color: '#E08585' }}>{e1}</span>}
@@ -306,7 +324,7 @@ export default function Cursos() {
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 7, border: '1px solid rgba(124,196,138,.4)', background: 'rgba(124,196,138,.08)', borderRadius: 14, padding: 16 }}>
                     <span style={{ fontSize: 15, fontWeight: 700, color: '#7CC48A' }}>Plaza guardada</span>
-                    <span style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(244,243,239,.62)' }}>Te llega a {m1} el enlace de pago y la sala del 25 de septiembre.</span>
+                    <span style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(244,243,239,.62)' }}>Iris te escribe a {m1} con el enlace de pago y la sala del 25 de septiembre.</span>
                   </div>
                 )}
               </div>
@@ -429,7 +447,7 @@ export default function Cursos() {
                     style={{ background: 'rgba(244,243,239,.06)', border: '1px solid rgba(244,243,239,.16)', color: '#F4F3EF' }}
                   />
                   <div onClick={send2} data-mag data-cur-label="Enviar" className="pill pill-gold" style={{ justifyContent: 'center' }}>
-                    <span>Reservar · {eur(PRECIO2)}</span>
+                    <span>{sending === 2 ? 'Guardando…' : `Reservar · ${eur(PRECIO2)}`}</span>
                     <span>→</span>
                   </div>
                   {e2 && <span style={{ fontSize: 13, color: '#E08585' }}>{e2}</span>}
@@ -437,7 +455,7 @@ export default function Cursos() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 7, border: '1px solid rgba(124,196,138,.4)', background: 'rgba(124,196,138,.08)', borderRadius: 14, padding: 16 }}>
                   <span style={{ fontSize: 15, fontWeight: 700, color: '#7CC48A' }}>Plaza guardada</span>
-                  <span style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(244,243,239,.62)' }}>Te llega a {m2} el enlace de pago y las dos sesiones de noviembre.</span>
+                  <span style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(244,243,239,.62)' }}>Iris te escribe a {m2} con el enlace de pago y las dos sesiones de noviembre.</span>
                 </div>
               )}
             </Reveal>

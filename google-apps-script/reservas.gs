@@ -1,14 +1,21 @@
 /**
- * RESERVAS DE LA WEB DE IRIS — Google Apps Script
+ * RESERVAS Y CORREOS DE LA WEB DE IRIS — Google Apps Script
  * ------------------------------------------------------------------
- * Este script hace tres cosas cada vez que alguien reserva en el chat de la web:
+ * RESERVAS. Cada vez que alguien reserva en el chat de la web:
  *   1. Guarda la reserva como una fila en la hoja de cálculo.
  *   2. Crea el evento en el Google Calendar de Iris e invita a la persona
  *      (Google le manda la invitación y se le guarda en su calendario).
  *   3. Envía un correo de confirmación a la persona y un aviso a Iris.
+ * Además, el chat le pregunta a este script qué huecos tiene Iris libres de
+ * verdad, en vez de inventárselos.
  *
- * Además, el chat de la web le pregunta a este script qué huecos tiene Iris
- * libres de verdad, en vez de inventárselos.
+ * CORREOS. Cada vez que alguien deja su correo en la web (la prueba gratis, la
+ * lista de espera de la comunidad o un curso):
+ *   4. Guarda el lead en la pestaña "Leads".
+ *   5. Si viene de la prueba gratis, arranca una secuencia de correos que
+ *      explica lo que ha visto y termina ofreciendo la comunidad.
+ *      El texto de esa secuencia está abajo, en SECUENCIA: se edita ahí.
+ *   6. Si viene de un curso o de la lista de espera, avisa a Iris.
  *
  * CÓMO SE INSTALA (una sola vez, 10 minutos)
  * ------------------------------------------------------------------
@@ -23,6 +30,9 @@
  *     Acepta los permisos que pida (calendario, hoja y correo).
  *  7. Copia la URL que acaba en /exec y pégala en la web como APPS_SCRIPT_URL.
  *     El mismo SECRET de aquí va en APPS_SCRIPT_SECRET.
+ *  8. Para que salgan los correos diarios de la secuencia: reloj (Activadores)
+ *     → Añadir activador → función "enviarSecuencia", según tiempo, temporizador
+ *     por días, sobre las 9:00. Con eso basta; el script decide a quién le toca.
  *
  * Cada vez que cambies este código hay que volver a Implementar → Gestionar
  * implementaciones → editar → Nueva versión, para que la URL sirva lo nuevo.
@@ -39,8 +49,16 @@ var CONFIG = {
   // Contraseña compartida con la web. Inventa una larga y pégala también en la web.
   SECRET: 'cambia-esto-por-una-clave-larga',
 
-  // Nombre de la pestaña donde se guardan las reservas. Se crea sola si no existe.
+  // Nombres de las pestañas. Se crean solas si no existen.
   SHEET_NAME: 'Reservas',
+  LEADS_SHEET_NAME: 'Leads',
+
+  // Adónde manda la gente la secuencia de correos (la sección de la comunidad).
+  WEB_URL: 'https://irissoares.com',
+  COMUNIDAD_URL: 'https://irissoares.com/#lista-espera',
+
+  // Pon false si quieres guardar los correos pero no enviar todavía la secuencia.
+  SECUENCIA_ACTIVA: true,
 
   // Enlace fijo de la videollamada (Meet, Zoom…). Déjalo vacío si lo mandas a mano.
   MEETING_URL: '',
@@ -58,23 +76,30 @@ var CONFIG = {
   TIMEZONE: 'Europe/Madrid'
 };
 
-/** El chat pide aquí los huecos libres reales. */
+/** El chat pide aquí los huecos libres reales, y aquí llegan también las bajas. */
 function doGet(e) {
   try {
-    var action = (e && e.parameter && e.parameter.action) || '';
+    var p = (e && e.parameter) || {};
+    var action = p.action || '';
+
+    // La baja la abre la persona desde el enlace del correo: no lleva secret, lleva firma.
+    if (action === 'baja') return darDeBaja(p.e, p.t);
+
     if (action !== 'availability') return json({ ok: false, reason: 'accion_desconocida' });
-    if (!checkSecret(e && e.parameter && e.parameter.secret)) return json({ ok: false, reason: 'secret' });
+    if (!checkSecret(p.secret)) return json({ ok: false, reason: 'secret' });
     return json({ ok: true, days: getAvailability() });
   } catch (err) {
     return json({ ok: false, reason: String(err) });
   }
 }
 
-/** La web manda aquí cada reserva confirmada. */
+/** La web manda aquí las reservas confirmadas y los correos captados. */
 function doPost(e) {
   try {
     var body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     if (!checkSecret(body.secret)) return json({ ok: false, reason: 'secret' });
+
+    if (body.action === 'lead') return guardarLead(body.lead || {});
     if (body.action !== 'book') return json({ ok: false, reason: 'accion_desconocida' });
 
     var b = body.booking || {};
@@ -263,6 +288,253 @@ function notifyIris(b, start) {
     subject: 'Reserva: ' + (b.nombre || '') + ' — ' + fmt(start, 'dd/MM') + ' ' + fmt(start, 'HH:mm'),
     htmlBody: html
   });
+}
+
+/* ==================================================================
+ *  CORREOS CAPTADOS Y SECUENCIA DE VENTA
+ * ================================================================== */
+
+/**
+ * La secuencia que recibe quien prueba la calculadora gratis.
+ * 'dia' son los días que pasan desde que dejó el correo (el día 0 es el resultado).
+ * Cambia los textos a tu gusto: {nombre} se sustituye solo.
+ * El orden está pensado para explicar primero y ofrecer al final.
+ */
+var SECUENCIA = [
+  {
+    dia: 1,
+    asunto: 'Por qué se te repite',
+    cuerpo:
+      '<p>Hola {nombre},</p>' +
+      '<p>Ayer viste dos números y lo que se activa entre esa persona y tú. Hoy te cuento de dónde sale eso.</p>' +
+      '<p>En todas las familias hay algo que no se habló: una deuda, alguien que se fue, una muerte temprana, un negocio que se hundió. Nadie lo cuenta, pero se hereda igual. Y no se hereda en forma de historia, sino de conducta: prisa por irte, miedo a pedir, dificultad para quedarte donde estás bien.</p>' +
+      '<p>Por eso cambias de trabajo, de ciudad o de pareja y a los seis meses estás en el mismo punto. No es tu carácter. Es una historia que sigue abierta y que se resuelve sola en cada generación hasta que alguien la mira.</p>' +
+      '<p>Mañana te cuento qué pasa cuando alguien la mira.</p>'
+  },
+  {
+    dia: 2,
+    asunto: 'El mismo mes malo, tres generaciones seguidas',
+    cuerpo:
+      '<p>Hola {nombre},</p>' +
+      '<p>Una mujer vino porque cada octubre se le hundía el negocio. Lo había probado todo: cambiar de proveedor, de local, de precios. Cada octubre, lo mismo.</p>' +
+      '<p>Levantamos su línea familiar. Su padre perdió la empresa un octubre. Su abuelo perdió la casa otro octubre. Nadie se lo había contado nunca con esas palabras: en su casa eso era "la mala racha de otoño".</p>' +
+      '<p>No hizo falta nada mágico. Lo vio, entendió qué parte era suya y qué parte no, y ese año hizo algo distinto en octubre a propósito. Ya van dos octubres seguidos sin caída.</p>' +
+      '<p>Lo que cambia no es la fecha. Es que dejas de repetir a ciegas.</p>'
+  },
+  {
+    dia: 3,
+    asunto: 'Entenderlo no es cambiarlo',
+    cuerpo:
+      '<p>Hola {nombre},</p>' +
+      '<p>Te voy a decir algo que va contra mi propio interés: entender de dónde viene lo tuyo, por sí solo, no te cambia la vida.</p>' +
+      '<p>Lo he visto muchas veces. La persona sale de la sesión con todo clarísimo, y a los tres meses está otra vez en lo mismo. Porque un patrón que lleva tres generaciones funcionando no se desmonta en una tarde. Se desmonta a base de mirarlo por partes, una cada vez, durante meses.</p>' +
+      '<p>Por eso estoy abriendo un grupo pequeño: cada mes miramos una parte de tu historia familiar y sueltas algo concreto. Un paso al mes, no un curso de seis meses que se acaba.</p>' +
+      '<p><a href="{comunidad}">Aquí puedes ver de qué va</a>. Si no es tu momento, no pasa nada: los correos de estos días son tuyos igualmente.</p>'
+  },
+  {
+    dia: 5,
+    asunto: 'Las diez primeras',
+    cuerpo:
+      '<p>Hola {nombre},</p>' +
+      '<p>Te escribo por última vez sobre esto.</p>' +
+      '<p>El grupo abre con diez personas y las diez primeras se quedan con el precio de lanzamiento mientras sigan dentro. No es una prisa inventada: es un grupo pequeño porque cada mes se revisa un caso en voz alta, y con cuarenta personas eso no se puede hacer.</p>' +
+      '<p><b>Para quién no es:</b> si lo que buscas es que te digan qué va a pasar, esto no es para ti. Aquí se trabaja con lo que ya está pasando.</p>' +
+      '<p><b>Para quién sí:</b> si llevas años viendo el mismo final y ya te has cansado de explicártelo con la fuerza de voluntad.</p>' +
+      '<p><a href="{comunidad}">Guardar mi sitio</a></p>'
+  }
+];
+
+// Tope por tanda: Gmail gratuito permite unos 100 correos al día.
+// Lo que no salga hoy sale mañana, sin perderse.
+var MAX_POR_TANDA = 80;
+
+/** Guarda el correo que llega de la web y arranca lo que toque según el origen. */
+function guardarLead(lead) {
+  if (!lead.email) return json({ ok: false, reason: 'faltan_datos' });
+
+  var yaEstaba = saveLeadRow(lead);
+
+  if (lead.origen === 'sinergia') {
+    if (!yaEstaba) correoResultado(lead);
+  } else {
+    notificarIrisLead(lead);
+  }
+  return json({ ok: true });
+}
+
+/** Añade el lead a la pestaña "Leads". Devuelve true si ese correo ya estaba con ese origen. */
+function saveLeadRow(lead) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(CONFIG.LEADS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(CONFIG.LEADS_SHEET_NAME);
+    sheet.appendRow(['Alta', 'Correo', 'Nombre', 'Origen', 'Detalle', 'Idioma', 'Último correo enviado', 'Baja']);
+    sheet.getRange(1, 1, 1, 8).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+
+  var datos = sheet.getDataRange().getValues();
+  for (var i = 1; i < datos.length; i++) {
+    if (String(datos[i][1]).toLowerCase() === lead.email && String(datos[i][3]) === lead.origen) return true;
+  }
+
+  sheet.appendRow([
+    new Date(),
+    lead.email,
+    lead.nombre || '',
+    lead.origen || '',
+    lead.detalle || '',
+    (lead.lang || 'es').toUpperCase(),
+    lead.origen === 'sinergia' ? 0 : '',
+    ''
+  ]);
+  return false;
+}
+
+/**
+ * Manda a cada lead el correo de la secuencia que le toque hoy.
+ * Se ejecuta sola una vez al día con el activador (paso 8 de la instalación).
+ */
+function enviarSecuencia() {
+  if (!CONFIG.SECUENCIA_ACTIVA) return;
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.LEADS_SHEET_NAME);
+  if (!sheet) return;
+
+  var datos = sheet.getDataRange().getValues();
+  var hoy = new Date();
+  var enviados = 0;
+
+  for (var i = 1; i < datos.length && enviados < MAX_POR_TANDA; i++) {
+    var fila = datos[i];
+    var alta = fila[0], email = fila[1], nombre = fila[2], origen = fila[3];
+    var ultimo = Number(fila[6]) || 0, baja = fila[7];
+
+    if (origen !== 'sinergia' || baja || !email || !(alta instanceof Date)) continue;
+
+    var dias = Math.floor((hoy - alta) / 86400000);
+
+    // Solo el siguiente paso pendiente: un correo por persona y día como mucho.
+    for (var p = 0; p < SECUENCIA.length; p++) {
+      var paso = SECUENCIA[p];
+      if (paso.dia <= dias && paso.dia > ultimo) {
+        try {
+          enviarPaso(email, nombre, paso);
+          sheet.getRange(i + 1, 7).setValue(paso.dia);
+          enviados++;
+        } catch (err) {
+          Logger.log('No se pudo enviar a ' + email + ': ' + err);
+        }
+        break;
+      }
+    }
+  }
+  Logger.log('Secuencia: ' + enviados + ' correos enviados.');
+}
+
+function enviarPaso(email, nombre, paso) {
+  var cuerpo = paso.cuerpo
+    .replace(/{nombre}/g, primerNombre(nombre))
+    .replace(/{comunidad}/g, CONFIG.COMUNIDAD_URL);
+  MailApp.sendEmail({
+    to: email,
+    name: 'Iris Soares',
+    replyTo: CONFIG.IRIS_EMAIL,
+    subject: paso.asunto,
+    htmlBody: plantilla(cuerpo, email)
+  });
+}
+
+/** Día 0: el resultado de la calculadora, nada más dejar el correo. */
+function correoResultado(lead) {
+  var cuerpo =
+    '<p>Hola ' + primerNombre(lead.nombre) + ',</p>' +
+    '<p>Aquí tienes lo que ha salido:</p>' +
+    '<p style="background:#f5f4f0;border-radius:12px;padding:16px;font-size:16px">' + (lead.detalle || '') + '</p>' +
+    '<p>Esto es una foto de lo que se activa entre vosotros dos. Explica el roce, pero no de dónde viene: eso está en tu línea familiar, y hace falta mirarla entera.</p>' +
+    '<p>Mañana te escribo para contarte por qué se repite. Si prefieres que no lo haga, te puedes borrar abajo en un clic.</p>';
+  MailApp.sendEmail({
+    to: lead.email,
+    name: 'Iris Soares',
+    replyTo: CONFIG.IRIS_EMAIL,
+    subject: 'Tu resultado',
+    htmlBody: plantilla(cuerpo, lead.email)
+  });
+}
+
+/** Los leads que no son de la prueba gratis los tiene que atender Iris a mano. */
+function notificarIrisLead(lead) {
+  var nombres = {
+    'lista-espera': 'lista de espera de la comunidad',
+    'curso-numerologia': 'curso de numerología transgeneracional',
+    'curso-nombre': 'curso "El nombre que te pusieron"',
+    'curso-dinero': 'curso "El dinero de tu familia"'
+  };
+  var que = nombres[lead.origen] || lead.origen;
+  MailApp.sendEmail({
+    to: CONFIG.IRIS_EMAIL,
+    name: 'Web de Iris',
+    replyTo: lead.email,
+    subject: 'Nuevo apuntado: ' + que,
+    htmlBody:
+      '<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.6">' +
+      '<p><b>' + (lead.nombre || 'Sin nombre') + '</b> se ha apuntado a: ' + que + '</p>' +
+      '<p>Correo: <a href="mailto:' + lead.email + '">' + lead.email + '</a>' +
+      (lead.detalle ? '<br>Detalle: ' + lead.detalle : '') + '</p>' +
+      '<p style="color:#6b6b72">Está guardado en la pestaña Leads.</p></div>'
+  });
+}
+
+function primerNombre(nombre) {
+  return String(nombre || '').trim().split(/\s+/)[0] || 'hola';
+}
+
+/** Marco común de los correos, con el pie y el enlace de baja obligatorio. */
+function plantilla(cuerpoHtml, email) {
+  return (
+    '<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#0a0a0c;line-height:1.65;font-size:16px;max-width:520px">' +
+    cuerpoHtml +
+    '<p style="margin-top:28px">Iris</p>' +
+    '<hr style="border:none;border-top:1px solid #e3e2dd;margin:24px 0">' +
+    '<p style="font-size:12px;color:#8a8a92;line-height:1.6">' +
+    'Recibes esto porque dejaste tu correo en ' + CONFIG.WEB_URL + '. ' +
+    '<a href="' + urlBaja(email) + '" style="color:#8a8a92">Darme de baja</a>.<br>' +
+    'Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.' +
+    '</p></div>'
+  );
+}
+
+function tokenBaja(email) {
+  var firma = Utilities.computeHmacSha256Signature(String(email).toLowerCase(), CONFIG.SECRET);
+  return Utilities.base64EncodeWebSafe(firma).substring(0, 16);
+}
+
+function urlBaja(email) {
+  return ScriptApp.getService().getUrl() + '?action=baja&e=' + encodeURIComponent(email) + '&t=' + encodeURIComponent(tokenBaja(email));
+}
+
+/** Marca la baja en la hoja. El token evita que nadie dé de baja a otro. */
+function darDeBaja(email, token) {
+  var pagina = function (mensaje) {
+    return HtmlService.createHtmlOutput(
+      '<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:460px;margin:80px auto;line-height:1.6;color:#0a0a0c">' +
+      '<h2 style="font-weight:700">' + mensaje + '</h2>' +
+      '<p><a href="' + CONFIG.WEB_URL + '" style="color:#8f6b18">Volver a la web</a></p></div>'
+    );
+  };
+
+  if (!email || token !== tokenBaja(email)) return pagina('Ese enlace no es válido.');
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.LEADS_SHEET_NAME);
+  if (!sheet) return pagina('Listo, no recibirás más correos.');
+
+  var datos = sheet.getDataRange().getValues();
+  for (var i = 1; i < datos.length; i++) {
+    if (String(datos[i][1]).toLowerCase() === String(email).toLowerCase()) {
+      sheet.getRange(i + 1, 8).setValue('SÍ');
+    }
+  }
+  return pagina('Listo, no recibirás más correos.');
 }
 
 /**
