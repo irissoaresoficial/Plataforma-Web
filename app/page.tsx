@@ -10,6 +10,7 @@ import Counter from '@/components/Counter';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import HomeNav from '@/components/HomeNav';
+import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
 import { FOTOS, MEMBRESIA, eur } from '@/content/site';
@@ -85,9 +86,15 @@ export default function Home() {
             <Reveal>
               <Rotulo>{t.kick}</Rotulo>
             </Reveal>
-            <Reveal as="h1" delay={70} className="display" style={{ margin: 0, fontSize: 'min(clamp(42px,5.4vw,78px),13vh)', maxWidth: '16ch' }}>
-              {t.h1a}{' '}
-              <em style={{ color: '#C89B4A' }}>{t.h1b}</em>
+            {/* Dos voces en el mismo titular: la afirmación en seco, y el giro
+                en cursiva. El contraste es lo que lo hace legible de un vistazo. */}
+            <Reveal as="h1" delay={70} style={{ margin: 0, maxWidth: '19ch', lineHeight: 1.06 }}>
+              <span style={{ display: 'block', fontFamily: 'var(--sans)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-.025em', fontSize: 'min(clamp(24px,2.5vw,36px),5.2vh)' }}>
+                {t.h1a}
+              </span>
+              <span className="display" style={{ display: 'block', fontStyle: 'italic', color: '#C89B4A', letterSpacing: '-.01em', lineHeight: 1.0, fontSize: 'min(clamp(34px,4.1vw,62px),9vh)', marginTop: '.12em' }}>
+                {t.h1b}
+              </span>
             </Reveal>
             <Reveal delay={150}>
               <p style={{ margin: 0, fontSize: 'clamp(16px,1.15vw,19px)', lineHeight: 1.55, color: 'rgba(244,243,239,.55)', maxWidth: '30ch' }}>{t.hsub}</p>
@@ -116,7 +123,7 @@ export default function Home() {
             </Reveal>
           </div>
 
-          <Reveal delay={120} style={{ justifySelf: 'end', width: '100%', maxWidth: 'min(440px,44vh)' }}>
+          <Reveal delay={120} style={{ justifySelf: 'end', width: '100%', maxWidth: 'min(440px,46vh)' }}>
             <Foto src={FOTOS.retrato} alt="Iris Soares" ratio="4/5" radius={24} priority />
           </Reveal>
         </div>
@@ -124,15 +131,16 @@ export default function Home() {
 
       {/* ── FRANJA DE IMÁGENES: sin una palabra ─────────────── */}
       <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: '0 clamp(16px,4vw,56px) clamp(70px,9vw,120px)' }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 'clamp(10px,1.4vw,18px)' }}>
-          <Reveal>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 'clamp(10px,1.4vw,18px)', alignItems: 'start' }}>
+          {/* Tamaños y alturas distintos: una rejilla perfecta se lee como catálogo. */}
+          <Reveal style={{ paddingTop: 'clamp(0px,5vw,72px)' }}>
             <Foto src={FOTOS.hablando} alt="Iris en directo" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
           </Reveal>
-          <Reveal delay={90} style={{ paddingTop: 'clamp(0px,4vw,56px)' }}>
+          <Reveal delay={90}>
             <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
           </Reveal>
-          <Reveal delay={180}>
-            <Foto src={FOTOS.sala} alt="Sala" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+          <Reveal delay={180} style={{ paddingTop: 'clamp(0px,9vw,128px)' }}>
+            <Foto src={FOTOS.sala} alt="Sala" ratio="1/1" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
           </Reveal>
         </div>
       </div>
@@ -187,7 +195,14 @@ export default function Home() {
       </div>
 
       {/* ── QUIÉN SOY ────────────────────────────────────────── */}
-      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: '0 clamp(16px,4vw,56px) clamp(76px,10vw,150px)' }}>
+      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: '0 clamp(16px,4vw,56px) clamp(76px,10vw,150px)', overflow: 'hidden' }}>
+        {/* Su nombre a lo ancho de la sección, muy tenue: firma la página sin
+            gastar una línea de texto. Aquí sí hay aire para que respire. */}
+        <div aria-hidden style={{ maxWidth: ANCHO, margin: '0 auto clamp(-14px,-1.4vw,-30px)', pointerEvents: 'none' }}>
+          <span className="display" style={{ display: 'block', fontSize: 'clamp(54px,11vw,168px)', lineHeight: 0.9, letterSpacing: '-.02em', whiteSpace: 'nowrap', color: '#F4F3EF', opacity: 0.07 }}>
+            Iris Soares
+          </span>
+        </div>
         <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(32px,5vw,84px)', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,26px)' }}>
             <Reveal>
@@ -353,7 +368,7 @@ export default function Home() {
         <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 40 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(190px,1fr))', gap: 32 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span className="display" style={{ fontSize: 22 }}>iris soares</span>
+              <Marca tam={68} apilado />
               <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'rgba(244,243,239,.42)', maxWidth: '28ch' }}>{t.ft_p}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

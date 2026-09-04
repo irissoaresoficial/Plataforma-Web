@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import Marca from './Marca';
 
 export default function SubNav({
   links,
@@ -32,7 +33,7 @@ export default function SubNav({
     >
       <Link href="/" className="navtx" style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 15, fontWeight: 700, letterSpacing: '-.02em', color: '#F4F3EF' }}>
         <span>←</span>
-        <span>iris soares</span>
+        <Marca tam={28} />
       </Link>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px,1.4vw,20px)' }}>
         {links.map((l) =>

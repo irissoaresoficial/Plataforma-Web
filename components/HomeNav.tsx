@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useLang } from '@/lib/i18n';
 import LangSwitch from './LangSwitch';
+import Marca from './Marca';
 
 export default function HomeNav({ onBook }: { onBook: () => void }) {
   const { t } = useLang();
@@ -24,8 +25,8 @@ export default function HomeNav({ onBook }: { onBook: () => void }) {
         borderBottom: '1px solid transparent',
       }}
     >
-      <a href="#top" className="navtx" style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-.02em', color: '#F4F3EF' }}>
-        iris soares
+      <a href="#top" className="navtx" style={{ color: '#F4F3EF' }}>
+        <Marca />
       </a>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px,1.2vw,20px)' }}>
         <a href="#metodo" data-mag className="navtx nav-link" style={{ fontSize: 13, fontWeight: 500, color: '#F4F3EF', whiteSpace: 'nowrap' }}>

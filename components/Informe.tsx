@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { SENTIDO, type Estudio } from '@/lib/numerologia';
-import { LOGO } from '@/content/site';
+import { LOGO_COLOR } from '@/content/site';
 
 const INK = '#0A0A0C';
 const GOLD = '#8F6B18';
@@ -45,7 +45,7 @@ export default function Informe({ e }: { e: Estudio }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           {logoOk && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={LOGO} alt="" width={44} height={44} onError={() => setLogoOk(false)} style={{ display: 'block', width: 44, height: 44, objectFit: 'contain' }} />
+            <img src={LOGO_COLOR} alt="" width={52} height={52} onError={() => setLogoOk(false)} style={{ display: 'block', width: 52, height: 52, objectFit: 'contain' }} />
           )}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-.02em' }}>Iris Soares</span>

@@ -10,11 +10,13 @@
 export const PENDIENTE = 'PENDIENTE';
 
 /**
- * Logo de la Escuela de Sabiduría 33. Guarda el archivo en `public/images/`
- * con este mismo nombre y aparece solo en el informe descargable.
- * Si el archivo no está, el informe sale igual, solo que sin el símbolo.
+ * Logo de la Escuela de Sabiduría 33, en dos versiones y las dos sin fondo.
+ * LOGO va sobre el negro de la web: es la versión en blanco, de una sola tinta.
+ * LOGO_COLOR va sobre el papel blanco del informe: conserva los colores.
+ * Si falta el archivo, la página y el informe salen igual, solo que sin símbolo.
  */
-export const LOGO = '/images/logo-33.png';
+export const LOGO = '/images/logo-33-blanco.png';
+export const LOGO_COLOR = '/images/logo-33.png';
 
 /**
  * FOTOS DE IRIS

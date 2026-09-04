@@ -7,6 +7,7 @@ import ParticleField from '@/components/ParticleField';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import SubNav from '@/components/SubNav';
+import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 import Pendiente from '@/components/Pendiente';
 import { MEMBRESIA, PENDIENTE, eur } from '@/content/site';
@@ -231,7 +232,7 @@ export default function Membresia() {
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: '#F4F3EF' }}>
-              iris soares
+                <Marca tam={52} apilado />
             </Link>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
               <Link href="/sinergia" style={{ fontSize: 13, color: 'rgba(244,243,239,.7)' }}>Prueba gratis</Link>

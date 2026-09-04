@@ -8,6 +8,7 @@ import ParticleField from '@/components/ParticleField';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import SubNav from '@/components/SubNav';
+import Marca from '@/components/Marca';
 import { estudio, emailValido, limpiar, SENTIDO, type Estudio } from '@/lib/numerologia';
 import { sendLead } from '@/lib/sendLead';
 import Informe from '@/components/Informe';
@@ -380,7 +381,7 @@ export default function Sinergia() {
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: '#F4F3EF' }}>
-              iris soares
+                <Marca tam={52} apilado />
             </Link>
             <span style={{ fontSize: 11, lineHeight: 1.7, color: 'rgba(244,243,239,.3)', maxWidth: '58ch' }}>
               Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
