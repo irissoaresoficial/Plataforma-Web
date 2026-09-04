@@ -32,7 +32,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   const [avail, setAvail] = useState<Availability | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const botTimer = useRef<ReturnType<typeof setTimeout>>();
+  // React 19 ya no deja `useRef` sin valor inicial: hay que decir que empieza
+  // vacío, en vez de dejarlo sobreentendido.
+  const botTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const flow = [
     { key: 'nombre' as const, ask: t.ch_a1, ph: t.ch_p1 },

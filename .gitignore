@@ -1,9 +1,12 @@
 node_modules
 .next
 out
+dist
 .DS_Store
 *.log
 .env*.local
+.vercel
 
 # lo genera tsc al comprobar tipos, no es del proyecto
-tsconfig.tsbuildinfo
+*.tsbuildinfo
+next-env.d.ts
