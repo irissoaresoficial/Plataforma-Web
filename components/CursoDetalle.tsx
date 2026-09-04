@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { falta, eur, type Curso } from '@/content/site';
-import Pendiente from './Pendiente';
+import Pendiente, { Hueco } from './Pendiente';
 import LeadForm from './LeadForm';
 
 /**
@@ -57,15 +57,35 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
         </button>
 
         <div className="modal-cuerpo">
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--acento)' }}>
+          {/* Se para antes del botón de cerrar: en el móvil el rótulo le pasaba
+              por debajo y la última palabra quedaba tachada por la ×. */}
+          <span
+            style={{
+              display: 'block',
+              paddingRight: 46,
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: '.14em',
+              textTransform: 'uppercase',
+              color: 'var(--acento)',
+            }}
+          >
             {curso.fechas} · {curso.duracion}
           </span>
-          <h2 className="display" style={{ margin: '10px 0 6px', fontSize: 'clamp(26px,3.4vw,40px)' }}>
-            {falta(curso.titulo) ? <Pendiente /> : curso.titulo}
-          </h2>
-          <p style={{ margin: '0 0 22px', fontSize: 17, lineHeight: 1.55, color: 'var(--tx-2)' }}>
-            {falta(curso.claim) ? <Pendiente /> : curso.claim}
-          </p>
+          {falta(curso.titulo) ? (
+            <div style={{ margin: '14px 0 20px' }}>
+              <Hueco lineas={2} alto={30} etiqueta="Falta el título" />
+            </div>
+          ) : (
+            <h2 className="display" style={{ margin: '10px 0 6px', fontSize: 'clamp(26px,3.4vw,40px)' }}>{curso.titulo}</h2>
+          )}
+          {falta(curso.claim) ? (
+            <div style={{ margin: '0 0 22px' }}>
+              <Hueco lineas={2} alto={15} etiqueta="Falta la frase" />
+            </div>
+          ) : (
+            <p style={{ margin: '0 0 22px', fontSize: 17, lineHeight: 1.55, color: 'var(--tx-2)' }}>{curso.claim}</p>
+          )}
 
           {/* El vídeo donde ella lo cuenta con su voz: es lo que más vende. */}
           <div className="modal-video">

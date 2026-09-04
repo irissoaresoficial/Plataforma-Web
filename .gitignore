@@ -4,3 +4,6 @@ out
 .DS_Store
 *.log
 .env*.local
+
+# lo genera tsc al comprobar tipos, no es del proyecto
+tsconfig.tsbuildinfo

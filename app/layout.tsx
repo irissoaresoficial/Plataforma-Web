@@ -13,14 +13,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Una sola familia en toda la web: Libre Bodoni. Tiene el contraste
-            alto y los remates finos de una didone —el aire de revista— pero
-            está dibujada para leerse en párrafo, que es donde las bodoni de
-            display se caen. Su único eje variable es el peso: no hay forma de
-            que dos sitios de la web acaben con dos dibujos distintos. */}
+        {/* Una sola familia en toda la web, en tres pesos: 300 light, 400
+            regular y 700 bold. Hanken Grotesk es la grotesca geométrica más
+            cercana a Objektiv de las que tienen un light de verdad —Objektiv es
+            de Dinamo y de pago, y varias alternativas empiezan en 400. */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap"
         />
       </head>
       <body>

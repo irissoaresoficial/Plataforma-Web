@@ -1,7 +1,7 @@
 :root {
   /* Una sola familia. Las dos variables apuntan a lo mismo a propósito: así
      el código sigue distinguiendo titular de cuerpo, pero la letra es una. */
-  --serif: 'Libre Bodoni', 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --serif: 'Hanken Grotesk', -apple-system, 'Helvetica Neue', Arial, sans-serif;
   --sans: var(--serif);
 
   /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
@@ -12,7 +12,14 @@
   --oro-tinta: #7d5f1e; /* el dorado que sí se lee como texto sobre blanco */
   --oro-luz: #e2cda2;
   --papel: #ffffff;
-  --arena: #f7f5f1;
+  /* La web es blanca, pero blanca no quiere decir plana. Este arena está lo
+     bastante lejos del papel como para que una banda se lea como una banda sin
+     mirar dos veces, y lo bastante cerca como para que la página siga siendo
+     clara. Cuando era #f7f5f1 la diferencia existía en el código y no en la
+     pantalla: dos bloques distintos parecían el mismo bloque. */
+  --arena: #f1ede4;
+  /* El tercer registro, para el bloque que tiene que pesar más que los demás. */
+  --arena-honda: #e7e1d4;
   --tinta: #221d1f;
 }
 
@@ -53,14 +60,15 @@
 .arena {
   --bg: var(--arena);
   --tx: var(--tinta);
-  --tx-2: #665c58;
-  --tx-3: #6f6560;
-  --tx-4: #6f6560;
-  --deco: #c8c0b8;
+  --tx-2: #625852;
+  --tx-3: #6b615b;
+  --tx-4: #6b615b;
+  --deco: #cfc6b6;
   --acento: var(--oro-tinta);
   --acento-2: var(--oro);
-  --linea: #e4dfd7;
-  --linea-2: #d2ccc3;
+  --linea: #ddd6c8;
+  --linea-2: #cbc2b1;
+  /* Sobre arena, la tarjeta es papel: es lo que la levanta del fondo. */
   --superficie: #ffffff;
   --sombra: rgba(34, 29, 31, 0.09);
   --boton: var(--vino);
@@ -90,16 +98,73 @@
   box-sizing: border-box;
 }
 
+/*
+ * EL SCROLL
+ *
+ * `scroll-behavior: smooth` solo para quien no ha pedido lo contrario, y
+ * `scroll-padding-top` para que al saltar a un ancla el título no quede
+ * escondido debajo de la barra fija de arriba.
+ *
+ * `text-size-adjust` evita que Safari en el móvil agrande la letra por su
+ * cuenta al girar el teléfono, que es lo que hace que un bloque se recoloque
+ * solo mientras estás bajando.
+ */
 html {
-  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/*
+ * BANDAS
+ *
+ * Cada tramo de la página es una banda, y todas respiran igual. Tener el ritmo
+ * en un sitio evita que un bloque acabe con el doble de aire que el de al lado
+ * porque se escribió otro día.
+ */
+.banda {
+  position: relative;
+  z-index: 3;
+  padding: clamp(56px, 8vw, 116px) clamp(16px, 3vw, 36px);
+}
+.banda-corta {
+  padding-top: clamp(38px, 5vw, 68px);
+  padding-bottom: clamp(38px, 5vw, 68px);
+}
+.banda-dentro {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.banda-estrecha {
+  max-width: 900px;
+  margin: 0 auto;
+}
+/*
+ * El filete de separación. La diferencia de tono ya hace casi todo el trabajo;
+ * esto solo remata el borde para que dos bandas claras seguidas no se toquen
+ * con un canto sucio.
+ */
+.banda-filete {
+  border-top: 1px solid var(--linea);
 }
 
 /*
  * UN SOLO DIBUJO DE LETRA EN TODA LA WEB.
  *
- * Libre Bodoni solo tiene un eje variable, el peso, así que no hay manera de
- * que dos partes de la web acaben con dos dibujos distintos. Lo único que
- * cambia de un sitio a otro es el peso, el tamaño y la cursiva.
+ * Hanken Grotesk, en tres pesos: 300 light, 400 regular y 700 bold. Es lo más
+ * cercano a Objektiv que se puede servir sin licencia —Objektiv es de Dinamo y
+ * es de pago— y de las alternativas es la única con un light de verdad.
+ *
+ * Solo tiene un eje variable, el peso, así que no hay manera de que dos partes
+ * de la web acaben con dos dibujos distintos: lo único que cambia de un sitio a
+ * otro es el peso, el tamaño y la cursiva. Esto no es una manía: cuando la
+ * familia anterior tenía ejes de óptica y de suavidad, moverlos por bloques
+ * dibujaba letras distintas y la web parecía hecha con siete tipografías.
  */
 body,
 button,
@@ -125,7 +190,7 @@ body {
   background: var(--papel);
   color: var(--tinta);
   font-weight: 400;
-  letter-spacing: 0.002em;
+  letter-spacing: -0.006em;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -190,21 +255,21 @@ textarea::placeholder {
   width: 0;
 }
 
-/* Titulares. Fraunces es variable: SOFT redondea los remates —de ahí que sea
-   cálida y no severa— y opsz la dibuja para tamaño grande, con más contraste
-   entre los trazos gruesos y finos. El cuerpo y los datos siguen en sans. */
+/* Titulares: la misma familia en bold, apretada de espaciado. En tamaño grande
+   una grotesca necesita menos aire entre letras que en un párrafo; si no se
+   aprieta, un titular de setenta píxeles parece deletreado. */
 .display {
   font-family: var(--serif);
-  font-weight: 400;
-  letter-spacing: -0.018em;
-  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.026em;
+  line-height: 1.04;
 }
 .display em,
 .display i {
   font-style: italic;
 }
 
-/* La misma serif en tamaño de lectura: menos contraste para que no se rompa. */
+/* La misma letra en tamaño de lectura: peso normal y casi sin apretar. */
 .display-sm {
   font-family: var(--serif);
   font-weight: 400;
@@ -294,8 +359,15 @@ textarea::placeholder {
   transform: translateY(-2px);
 }
 
+/*
+ * Una tarjeta se rellena, no se dibuja solo con una raya. Sobre papel blanco un
+ * borde de un píxel casi no existe: tres tarjetas seguidas parecían tres huecos
+ * en la misma hoja. Con el relleno del tema —arena sobre blanco, blanco sobre
+ * arena, un velo claro sobre granate— se leen como tres objetos.
+ */
 .card-hover,
 .card-hover-light {
+  background: var(--superficie);
   transition: border-color 0.5s ease, background 0.5s ease, box-shadow 0.6s ease,
     transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -522,6 +594,10 @@ textarea::placeholder {
   background: radial-gradient(ellipse at center, rgba(74, 18, 32, 0.62), transparent 70%);
   animation: flota-sombra 9s ease-in-out infinite;
   pointer-events: none;
+  /* Solo se mueve y se aclara: las dos cosas las hace la tarjeta gráfica sola
+     si la sombra vive en su propia capa. Sin esto, cada latido le pide al
+     navegador que vuelva a pintar el degradado. */
+  will-change: transform, opacity;
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-flota,
@@ -1210,8 +1286,14 @@ body[data-nav-claro='si'] .sello-color {
 }
 .cuenta.compacta {
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 10px;
+}
+/* Dentro de un panel estrecho las cuatro cifras reparten el ancho a partes
+   iguales, en vez de quedarse encogidas contra el borde izquierdo. */
+.cuenta.compacta .cuenta-cifras > div {
+  flex: 1;
+  min-width: 0;
 }
 .cuenta-rotulo {
   display: block;
@@ -1249,4 +1331,155 @@ body[data-nav-claro='si'] .sello-color {
   text-transform: uppercase;
   color: var(--tx-3);
   margin-top: 4px;
+}
+
+/* ---- la tarjeta de un curso ----
+ *
+ * En pantalla ancha la tarjeta se parte en dos: a la izquierda lo que te dice
+ * de qué va —rótulo, fecha, título, frase— y a la derecha lo práctico, en su
+ * propio panel: los datos, cuánto falta y el botón.
+ *
+ * Antes era una sola columna a todo lo ancho. Con un curso dentro, eso dejaba
+ * un titular corto flotando en un rectángulo de mil píxeles y tres celdas de
+ * datos perdidas debajo: mucho hueco y ninguna jerarquía. Partirla en dos hace
+ * que cada mitad tenga el ancho que le corresponde a lo que lleva dentro.
+ */
+.curso-card {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: 24px;
+  padding: clamp(24px, 3.2vw, 40px);
+  box-shadow: 0 1px 2px var(--sombra), 0 14px 40px -22px var(--sombra);
+  display: grid;
+  gap: clamp(24px, 3vw, 40px);
+}
+@media (min-width: 900px) {
+  .curso-card {
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    align-items: start;
+  }
+}
+.curso-cab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.curso-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--acento);
+}
+.curso-fecha {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx-2);
+  border: 1px solid var(--linea-2);
+  border-radius: 100px;
+  padding: 4px 12px;
+}
+.curso-titulo {
+  font-size: clamp(28px, 4.2vw, 46px);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+  margin: 0 0 10px;
+}
+.curso-claim {
+  font-size: clamp(16px, 1.35vw, 19px);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--tx-2);
+  max-width: 42ch;
+  margin: 0;
+}
+/* La columna de la izquierda: rótulo, título y frase, sin más. */
+.curso-texto {
+  display: flex;
+  flex-direction: column;
+}
+
+/* El panel de la derecha: lo que hace falta para decidir e inscribirse. */
+.curso-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: clamp(18px, 2vw, 24px);
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  background: var(--bg);
+}
+
+/* Los datos, uno debajo de otro y separados por un filete. En una columna
+   estrecha esto se lee mucho mejor que tres celdas apretadas al lado. */
+.curso-datos {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+.curso-datos > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--linea);
+}
+.curso-datos > div:first-child {
+  padding-top: 0;
+}
+.curso-datos dt {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  white-space: nowrap;
+}
+.curso-datos dd {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  text-align: right;
+}
+
+.curso-pie {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.curso-pie .pill {
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* El bloque de cierre que lleva a la membresía. Texto y botón se ponen en dos
+   columnas solo cuando hay sitio; por debajo el botón baja y ocupa el ancho,
+   que en el móvil es más fácil de dar que un botón pequeño alineado a la
+   derecha. */
+.puente-caja {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+.puente-caja .pill {
+  width: 100%;
+  justify-content: space-between;
+}
+@media (min-width: 780px) {
+  .puente-caja {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .puente-caja .pill {
+    width: auto;
+    flex: none;
+  }
 }

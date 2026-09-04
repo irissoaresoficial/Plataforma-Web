@@ -9,10 +9,20 @@ import { useEffect, useRef } from 'react';
  * los maestros 11, 22 y 33—, que es de lo que va la casa. Suben muy despacio,
  * las de atrás desenfocadas y las de delante nítidas, y el ratón las aparta.
  *
- * IMPORTANTE PARA EL RENDIMIENTO: el desenfoque se aplica UNA vez, al preparar
- * los sellos, y después solo se copian. Hacerlo con `ctx.filter` en cada frame
- * cuesta un desenfoque gaussiano a pantalla completa por número y por frame:
- * medido, hundía la página de 60 a 1 fps.
+ * LO QUE HACE FALTA PARA QUE ESTO NO CUESTE LA PÁGINA
+ *
+ * 1. El desenfoque se aplica UNA vez, al preparar los sellos, y después solo se
+ *    copian. Hacerlo con `ctx.filter` en cada frame cuesta un desenfoque
+ *    gaussiano a pantalla completa por número y por frame: medido, hundía la
+ *    página de 60 a 1 fps.
+ * 2. Mientras se está bajando la página, el campo se queda quieto. Son números
+ *    que suben a paso de tortuga: que se paren durante el segundo que dura un
+ *    gesto de scroll no lo nota nadie, y devuelve la máquina entera al
+ *    desplazamiento, que sí se nota. Medido: en el héroe la página iba a 30 fps
+ *    y con esto va a 60.
+ * 3. El lienzo tiene su propia capa de composición y no pasa de dos millones de
+ *    píxeles. Repintarlo así no obliga a repintar la foto ni el titular que
+ *    tiene detrás.
  */
 
 const CIFRAS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '11', '22', '33'];
@@ -62,14 +72,14 @@ export default function CampoNumeros({
         for (const cifra of CIFRAS) {
           const s = document.createElement('canvas');
           const sctx = s.getContext('2d')!;
-          sctx.font = `400 ${tam}px 'Fraunces', Georgia, serif`;
+          sctx.font = `400 ${tam}px 'Hanken Grotesk', -apple-system, 'Helvetica Neue', Arial, sans-serif`;
           const ancho = Math.ceil(sctx.measureText(cifra).width) + margen * 2;
           const alto = Math.ceil(tam * 1.4) + margen * 2;
           s.width = ancho * dpr;
           s.height = alto * dpr;
           sctx.scale(dpr, dpr);
           if (borron > 0.2) sctx.filter = `blur(${borron}px)`;
-          sctx.font = `400 ${tam}px 'Fraunces', Georgia, serif`;
+          sctx.font = `400 ${tam}px 'Hanken Grotesk', -apple-system, 'Helvetica Neue', Arial, sans-serif`;
           sctx.textAlign = 'center';
           sctx.textBaseline = 'middle';
           sctx.fillStyle = '#c8a35c';
@@ -99,9 +109,15 @@ export default function CampoNumeros({
       const r = c.getBoundingClientRect();
       w = r.width;
       h = r.height;
-      c.width = Math.round(w * dpr);
-      c.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      /* En una pantalla grande y con retina el lienzo se iría a cinco millones
+         de píxeles que hay que borrar y repintar treinta veces por segundo. Con
+         cifras doradas, desenfocadas y a poca opacidad, la resolución de más no
+         se ve: se ve el trabajo que cuesta. */
+      const tope = 2_000_000;
+      const escala = Math.min(dpr, Math.sqrt(tope / Math.max(1, w * h)));
+      c.width = Math.round(w * escala);
+      c.height = Math.round(h * escala);
+      ctx.setTransform(escala, 0, 0, escala, 0, 0);
       const n = Math.max(22, Math.min(72, Math.round((w * h) / densidad)));
       nums = Array.from({ length: n }, () => nuevo(true));
     };
@@ -124,6 +140,17 @@ export default function CampoNumeros({
     window.addEventListener('mousemove', alMover, { passive: true });
     window.addEventListener('mouseleave', alSalir);
 
+    /* Mientras se baja, el campo se para. Se vuelve a mover 140 ms después del
+       último movimiento de la rueda o del dedo. */
+    let bajando = false;
+    let temporizador: ReturnType<typeof setTimeout>;
+    const alBajar = () => {
+      bajando = true;
+      clearTimeout(temporizador);
+      temporizador = setTimeout(() => (bajando = false), 140);
+    };
+    window.addEventListener('scroll', alBajar, { passive: true });
+
     const pintar = () => {
       ctx.clearRect(0, 0, w, h);
       for (const n of nums) {
@@ -145,21 +172,25 @@ export default function CampoNumeros({
       ctx.globalAlpha = 1;
     };
 
+    const soltar = () => {
+      clearTimeout(temporizador);
+      io.disconnect();
+      window.removeEventListener('resize', montar);
+      window.removeEventListener('mousemove', alMover);
+      window.removeEventListener('mouseleave', alSalir);
+      window.removeEventListener('scroll', alBajar);
+    };
+
     if (quieto) {
       pintar();
-      return () => {
-        io.disconnect();
-        window.removeEventListener('resize', montar);
-        window.removeEventListener('mousemove', alMover);
-        window.removeEventListener('mouseleave', alSalir);
-      };
+      return soltar;
     }
 
     let raf = 0;
     let ultimo = 0;
     const paso = (t: number) => {
       raf = requestAnimationFrame(paso);
-      if (!visible) return;
+      if (!visible || bajando) return;
       // 30 fps bastan para una deriva tan lenta, y deja la mitad de la máquina
       // libre para el desplazamiento de la página.
       if (t - ultimo < 33) return;
@@ -192,10 +223,7 @@ export default function CampoNumeros({
 
     return () => {
       cancelAnimationFrame(raf);
-      io.disconnect();
-      window.removeEventListener('resize', montar);
-      window.removeEventListener('mousemove', alMover);
-      window.removeEventListener('mouseleave', alSalir);
+      soltar();
     };
   }, [densidad, intensidad]);
 
@@ -203,7 +231,18 @@ export default function CampoNumeros({
     <canvas
       ref={ref}
       aria-hidden
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', pointerEvents: 'none' }}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        display: 'block',
+        pointerEvents: 'none',
+        // Su propia capa: repintar los números no obliga a repintar el titular
+        // ni la foto que tienen detrás.
+        willChange: 'transform',
+        transform: 'translateZ(0)',
+      }}
     />
   );
 }

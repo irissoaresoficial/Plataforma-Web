@@ -9,7 +9,7 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
-import Pendiente from '@/components/Pendiente';
+import Pendiente, { Hueco } from '@/components/Pendiente';
 import CursoDetalle from '@/components/CursoDetalle';
 import CuentaAtras from '@/components/CuentaAtras';
 import { CURSOS, MEMBRESIA, PENDIENTE, eur, falta, type Curso } from '@/content/site';
@@ -20,175 +20,70 @@ function T({ v, style }: { v: string; style?: React.CSSProperties }) {
   return <span style={style}>{v}</span>;
 }
 
-function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
+/**
+ * La tarjeta de un curso en la página.
+ *
+ * Solo lo justo para decidir si te interesa: cuándo es, cómo se llama, qué te
+ * llevas en una frase, cuánto falta y un botón. Todo el detalle —el vídeo, el
+ * programa, para quién es, la reserva— vive en la ficha que abre ese botón.
+ * Antes la página enseñaba también todo eso y encima el botón que lo abría: el
+ * mismo contenido dos veces, y en el móvil quedaba un revoltijo sin jerarquía.
+ */
+function CursoBloque({ curso }: { curso: Curso }) {
   const [detalle, setDetalle] = useState(false);
-  const claro = index % 2 === 0;
-  const bg = 'var(--bg)';
-  const fg = 'var(--tx)';
-  const suave = 'var(--tx-2)';
-  const linea = 'var(--linea)';
-  const acento = 'var(--acento)';
+  const sinFecha = falta(curso.fechas);
 
   return (
-    <div id={curso.id} style={{ position: 'relative', zIndex: 3, background: bg, color: fg, padding: 'clamp(50px,7vw,104px) clamp(14px,3vw,36px)', scrollMarginTop: 74 }}>
-      <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3.2vw,44px)' }}>
-        {/* Cabecera */}
-        <Reveal
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))',
-            gap: 'clamp(18px,2.6vw,44px)',
-            alignItems: 'end',
-            borderBottom: `1px solid ${linea}`,
-            paddingBottom: 'clamp(18px,2.2vw,28px)',
-          }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: acento }}>Próximo curso</span>
-              {falta(curso.fechas) ? <Pendiente>Fechas por confirmar</Pendiente> : <span style={{ fontSize: 13, fontWeight: 600, color: suave }}>{curso.fechas}</span>}
-            </div>
-            <span style={{ fontSize: 'clamp(30px,4.4vw,64px)', fontFamily: 'var(--serif)', lineHeight: 0.98, letterSpacing: '-.026em', maxWidth: '15ch', textWrap: 'pretty' }}>
-              <T v={curso.titulo} />
-            </span>
-            <span style={{ fontSize: 'clamp(15px,1.2vw,19px)', lineHeight: 1.55, color: suave, maxWidth: '40ch' }}>
-              <T v={curso.claim} />
-            </span>
+    <>
+      <article id={curso.id} className="curso-card" style={{ scrollMarginTop: 96 }}>
+        <div className="curso-texto">
+          <div className="curso-cab">
+            <span className="curso-eyebrow">Próximo curso</span>
+            {sinFecha ? <Pendiente>Fechas por confirmar</Pendiente> : <span className="curso-fecha">{curso.fechas}</span>}
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(16px,2.4vw,38px)', justifySelf: 'end' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', letterSpacing: '-.022em', lineHeight: 1 }}>
-                <T v={curso.duracion} />
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: suave }}>duración</span>
+
+          {falta(curso.titulo) ? (
+            <div style={{ marginBottom: 22 }}>
+              <Hueco lineas={2} alto={34} etiqueta="Falta el título" />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', letterSpacing: '-.022em', lineHeight: 1 }}>
-                <T v={curso.horario} />
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: suave }}>horario</span>
+          ) : (
+            <h2 className="curso-titulo">{curso.titulo}</h2>
+          )}
+          {falta(curso.claim) ? (
+            <Hueco lineas={2} alto={15} etiqueta="Falta la frase" />
+          ) : (
+            <p className="curso-claim">{curso.claim}</p>
+          )}
+        </div>
+
+        <div className="curso-panel">
+          <dl className="curso-datos">
+            <div>
+              <dt>Duración</dt>
+              <dd><T v={curso.duracion} /></dd>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', letterSpacing: '-.022em', lineHeight: 1, color: acento }}>
-                {curso.precio === null ? <Pendiente>Precio</Pendiente> : eur(curso.precio)}
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: suave }}>con grabación</span>
+            <div>
+              <dt>Horario</dt>
+              <dd><T v={curso.horario} /></dd>
             </div>
-            {/* Todo el detalle del curso vive en la ventana, no en la página:
-                aquí se ve de un vistazo y quien quiera más, entra. */}
-            <CuentaAtras fechaISO={curso.fechaISO} abiertoDesdeISO={curso.inscripcionDesdeISO} />
-            <button onClick={() => setDetalle(true)} data-mag data-cur-label="Ver" className="pill pill-cream" style={{ alignSelf: 'center' }}>
-              <span>Ver detalles</span>
+            <div>
+              <dt>Precio</dt>
+              <dd>{curso.precio === null ? <Pendiente>Por confirmar</Pendiente> : eur(curso.precio)}</dd>
+            </div>
+          </dl>
+
+          <div className="curso-pie">
+            <CuentaAtras fechaISO={curso.fechaISO} abiertoDesdeISO={curso.inscripcionDesdeISO} compacto />
+            <button onClick={() => setDetalle(true)} data-mag data-cur-label="Ver" className="pill pill-cream">
+              <span>Ver el curso</span>
               <span className="pill-arrow">→</span>
             </button>
           </div>
-        </Reveal>
-
-        <CursoDetalle curso={curso} abierto={detalle} onCerrar={() => setDetalle(false)} />
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(14px,2.2vw,28px)', alignItems: 'start' }}>
-          {/* Vídeo + descripción */}
-          <Reveal style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {curso.videoUrl ? (
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: 20, overflow: 'hidden', background: 'var(--superficie)', border: `1px solid ${linea}` }}>
-                <iframe
-                  src={curso.videoUrl}
-                  title={falta(curso.titulo) ? 'Presentación del curso' : curso.titulo}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
-                />
-              </div>
-            ) : (
-              <div
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  aspectRatio: '16/9',
-                  borderRadius: 20,
-                  border: '1px dashed var(--linea-2)',
-                  background: claro
-                    ? 'repeating-linear-gradient(135deg,var(--linea) 0 1px,transparent 1px 12px)'
-                    : 'repeating-linear-gradient(135deg,var(--linea) 0 1px,transparent 1px 12px)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 14,
-                }}
-              >
-                <span style={{ width: 68, height: 68, borderRadius: '50%', border: `1px solid ${acento}`, color: acento, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>▶</span>
-                <Pendiente>Vídeo de Iris</Pendiente>
-                <span style={{ fontSize: 13, color: suave, maxWidth: '34ch', textAlign: 'center', lineHeight: 1.5 }}>
-                  Pega aquí el enlace del vídeo en <code style={{ fontSize: 12 }}>content/site.ts</code> y aparece solo.
-                </span>
-              </div>
-            )}
-            <p style={{ margin: 0, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.65, color: suave }}>
-              <T v={curso.descripcion} />
-            </p>
-          </Reveal>
-
-          {/* Programa + reserva */}
-          <Reveal delay={100} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div
-              style={{
-                background: 'var(--superficie)',
-                border: '1px solid var(--linea)',
-                borderRadius: 20,
-                padding: 'clamp(18px,2vw,26px)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 14,
-              }}
-            >
-              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: acento }}>Lo que se ve</span>
-              {curso.bloques.map((b, i) => (
-                <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
-                  <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-.022em', color: 'var(--acento-2)', width: 26, flexShrink: 0 }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-.02em' }}>
-                      <T v={b.t} />
-                    </span>
-                    {!falta(b.d) && <span style={{ fontSize: 14, lineHeight: 1.5, color: suave }}>{b.d}</span>}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div
-              style={{
-                background: claro ? 'var(--vino)' : 'linear-gradient(155deg,rgba(200,163,92,.14),transparent 62%)',
-                border: claro ? 'none' : '1px solid rgba(200,155,74,.34)',
-                color: 'var(--tx)',
-                borderRadius: 20,
-                padding: 'clamp(18px,2vw,26px)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 14,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-.025em' }}>Guardar mi plaza</span>
-                {curso.plazas !== null && <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--tx-2)' }}>{curso.plazas} plazas</span>}
-              </div>
-              <LeadForm
-                origen="curso"
-                detalle={`Curso: ${falta(curso.titulo) ? curso.id : curso.titulo}${curso.fechas && !falta(curso.fechas) ? ` (${curso.fechas})` : ''}`}
-                cta={curso.precio === null ? 'Avisadme cuando abra' : `Reservar · ${eur(curso.precio)}`}
-                successTitle="Plaza guardada."
-                successText="Iris te escribe con el enlace de pago y los detalles de la sala."
-                privacidad="No se cobra nada aquí. El pago llega por correo."
-                pedirNombre
-                pedirWhatsapp
-              />
-            </div>
-          </Reveal>
         </div>
-      </div>
-    </div>
+      </article>
+
+      <CursoDetalle curso={curso} abierto={detalle} onCerrar={() => setDetalle(false)} />
+    </>
   );
 }
 
@@ -212,15 +107,15 @@ export default function Cursos() {
             pointerEvents: 'none',
           }}
         />
-        <div style={{ position: 'relative', zIndex: 3, maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.8vw,36px)' }}>
+        <div style={{ position: 'relative', zIndex: 3, maxWidth: 1180, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(20px,2.4vw,30px)' }}>
           <Reveal>
-            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--acento)' }}>Cursos y talleres en directo</div>
+            <div className="espaciado" style={{ fontSize: 11, fontWeight: 700, color: 'var(--acento)' }}>Cursos y talleres en directo</div>
           </Reveal>
-          <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'clamp(38px,6.2vw,88px)', fontFamily: 'var(--serif)', lineHeight: 0.96, letterSpacing: '-.028em', maxWidth: '16ch', textWrap: 'pretty' }}>
+          <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'clamp(36px,5vw,70px)', fontWeight: 700, lineHeight: 1.0, letterSpacing: '-.03em', maxWidth: '15ch', textWrap: 'balance' }}>
             Unas tardes que cambian la conversación en tu casa.
           </Reveal>
           <Reveal delay={140}>
-            <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '44ch' }}>
+            <p style={{ margin: 0, fontSize: 'clamp(16px,1.2vw,19px)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '44ch' }}>
               Formatos cortos, en directo y con caso propio: sales con tu historia mirada, no con apuntes.
             </p>
           </Reveal>
@@ -233,36 +128,55 @@ export default function Cursos() {
         </div>
       </div>
 
-      {CURSOS.map((curso, i) => (
-        <CursoBloque key={curso.id} curso={curso} index={i} />
-      ))}
+      {/* Las tarjetas van sobre arena: es lo que separa "el cartel de la página"
+          de "los cursos", sin necesidad de una línea ni de un titular más. */}
+      <div className="arena banda">
+        <div className="banda-dentro" style={{ display: 'grid', gap: 'clamp(16px,2.2vw,26px)' }}>
+          <Reveal style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 4 }}>
+            <h2 style={{ margin: 0, fontSize: 'clamp(22px,2.4vw,30px)', fontWeight: 700, letterSpacing: '-.025em' }}>
+              Lo que hay abierto ahora
+            </h2>
+            <span style={{ fontSize: 13, color: 'var(--tx-2)' }}>
+              {CURSOS.length === 1 ? '1 convocatoria' : `${CURSOS.length} convocatorias`}
+            </span>
+          </Reveal>
+          {CURSOS.map((curso) => (
+            <CursoBloque key={curso.id} curso={curso} />
+          ))}
+        </div>
+      </div>
 
       {/* PUENTE A LA MEMBRESÍA + FOOTER */}
-      <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(38px,5vw,68px) clamp(14px,3vw,36px) 26px' }}>
-        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div className="claro banda banda-corta">
+        <div className="banda-dentro" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(34px,5vw,56px)' }}>
+          {/* El único bloque de granate de la página: es el cierre, y por eso
+              es el que pesa. Al llevar la clase, dentro de él los colores se
+              recalculan solos y nada hereda la tinta oscura de fuera. */}
           <Reveal
+            className="vino"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))',
-              gap: 'clamp(18px,2.4vw,40px)',
+              gap: 'clamp(20px,2.6vw,44px)',
               alignItems: 'center',
-              border: '1px solid var(--linea)',
-              borderRadius: 20,
-              padding: 'clamp(20px,2.4vw,30px)',
+              borderRadius: 24,
+              padding: 'clamp(26px,3.4vw,44px)',
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-              <span style={{ fontSize: 'clamp(20px,2.4vw,30px)', fontFamily: 'var(--serif)', letterSpacing: '-.02em', lineHeight: 1.05, maxWidth: '22ch' }}>
-                Un curso es una tarde. La comunidad es cada mes.
-              </span>
-              <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '40ch' }}>
-                Todavía no ha abierto. Quien reserva ahora entra por {eur(MEMBRESIA.precioReserva)} en vez de {eur(MEMBRESIA.precio)}.
-              </span>
+            <div className="puente-caja">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <span className="espaciado" style={{ fontSize: 10, fontWeight: 700, color: 'var(--acento)' }}>La membresía</span>
+                <span style={{ fontSize: 'clamp(22px,2.5vw,34px)', fontWeight: 700, letterSpacing: '-.025em', lineHeight: 1.1, maxWidth: '26ch', textWrap: 'balance' }}>
+                  Un curso es una tarde. La comunidad es cada mes.
+                </span>
+                <span style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '40ch' }}>
+                  Todavía no ha abierto. Quien reserva ahora entra por {eur(MEMBRESIA.precioReserva)} en vez de {eur(MEMBRESIA.precio)}.
+                </span>
+              </div>
+              <Link href="/membresia" data-mag data-cur-label="Ver" className="pill pill-cream">
+                <span>Ver la membresía</span>
+                <span className="pill-arrow">→</span>
+              </Link>
             </div>
-            <Link href="/membresia" data-mag data-cur-label="Ver" className="pill pill-cream" style={{ justifySelf: 'end' }}>
-              <span>Ver la membresía</span>
-              <span className="pill-arrow">→</span>
-            </Link>
           </Reveal>
           <div style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
