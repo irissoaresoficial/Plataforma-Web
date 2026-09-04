@@ -19,7 +19,9 @@
  *
  * CÓMO SE INSTALA (una sola vez, 10 minutos)
  * ------------------------------------------------------------------
- *  1. Crea una hoja de cálculo nueva en Google Drive (será el "excel" de reservas).
+ *  1. Abre la hoja de cálculo "Datos" (su ID ya está puesto abajo, en SPREADSHEET_ID).
+ *     Las pestañas "Reservas" y "Leads" se crean solas con sus cabeceras la
+ *     primera vez que entre un dato: no hay que preparar nada a mano.
  *  2. Dentro de la hoja: Extensiones → Apps Script. Borra lo que haya y pega este archivo.
  *  3. Cambia los valores de CONFIG que hay justo debajo (sobre todo IRIS_EMAIL y SECRET).
  *  4. Arriba a la izquierda, en el nombre del proyecto, ponle "Reservas web Iris".
@@ -49,7 +51,12 @@ var CONFIG = {
   // Contraseña compartida con la web. Inventa una larga y pégala también en la web.
   SECRET: 'cambia-esto-por-una-clave-larga',
 
-  // Nombres de las pestañas. Se crean solas si no existen.
+  // La hoja de cálculo donde se guarda todo. Es el trozo largo de la URL de la
+  // hoja, el que va entre /d/ y /edit. Ya está puesto el de la hoja "Datos".
+  // Si lo dejas vacío, el script escribe en la hoja a la que esté pegado.
+  SPREADSHEET_ID: '10Y0-trXMFklashg_TBAicQe9GOPKqtChxznWo6418LY',
+
+  // Nombres de las pestañas dentro de esa hoja. Se crean solas si no existen.
   SHEET_NAME: 'Reservas',
   LEADS_SHEET_NAME: 'Leads',
 
@@ -195,9 +202,19 @@ function getAvailability() {
   return days;
 }
 
+/**
+ * La hoja de cálculo donde escribimos. Usa SPREADSHEET_ID si está puesto, y si
+ * no, la hoja a la que esté pegado el script. Así da igual dónde lo pegues.
+ */
+function libro() {
+  return CONFIG.SPREADSHEET_ID
+    ? SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID)
+    : SpreadsheetApp.getActiveSpreadsheet();
+}
+
 /** Guarda la reserva en la hoja de cálculo, creando la pestaña y las cabeceras si hace falta. */
 function saveRow(b, start) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = libro();
   var sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(CONFIG.SHEET_NAME);
@@ -367,7 +384,7 @@ var COL = { ALTA: 0, EMAIL: 1, NOMBRE: 2, WHATSAPP: 3, ORIGEN: 4, DETALLE: 5, ID
 
 /** Añade el lead a la pestaña "Leads". Devuelve true si ese correo ya estaba con ese origen. */
 function saveLeadRow(lead) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = libro();
   var sheet = ss.getSheetByName(CONFIG.LEADS_SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(CONFIG.LEADS_SHEET_NAME);
@@ -402,7 +419,7 @@ function saveLeadRow(lead) {
 function enviarSecuencia() {
   if (!CONFIG.SECUENCIA_ACTIVA) return;
 
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.LEADS_SHEET_NAME);
+  var sheet = libro().getSheetByName(CONFIG.LEADS_SHEET_NAME);
   if (!sheet) return;
 
   var datos = sheet.getDataRange().getValues();
@@ -528,7 +545,7 @@ function darDeBaja(email, token) {
 
   if (!email || token !== tokenBaja(email)) return pagina('Ese enlace no es válido.');
 
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.LEADS_SHEET_NAME);
+  var sheet = libro().getSheetByName(CONFIG.LEADS_SHEET_NAME);
   if (!sheet) return pagina('Listo, no recibirás más correos.');
 
   var datos = sheet.getDataRange().getValues();
