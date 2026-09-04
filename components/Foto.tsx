@@ -16,6 +16,7 @@ export default function Foto({
   priority = false,
   sizes = '(max-width: 900px) 100vw, 45vw',
   etiqueta,
+  llenar = false,
 }: {
   src: string;
   alt: string;
@@ -25,6 +26,8 @@ export default function Foto({
   priority?: boolean;
   sizes?: string;
   etiqueta?: string;
+  /** Ocupa todo el alto del contenedor en vez de guardar una proporción. */
+  llenar?: boolean;
 }) {
   const [falla, setFalla] = useState(false);
 
@@ -34,7 +37,8 @@ export default function Foto({
       style={{
         position: 'relative',
         width: '100%',
-        aspectRatio: ratio,
+        height: llenar ? '100%' : undefined,
+        aspectRatio: llenar ? undefined : ratio,
         borderRadius: radius,
         overflow: 'hidden',
         background: '#131318',

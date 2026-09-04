@@ -107,7 +107,7 @@ export default function Sinergia() {
             <Reveal>
               <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>Gratis · resultado al momento</div>
             </Reveal>
-            <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontFamily: 'var(--serif)', lineHeight: 0.99, letterSpacing: '-.045em', maxWidth: '16ch' }}>
+            <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", lineHeight: 0.99, letterSpacing: '-.026em', maxWidth: '16ch' }}>
               Con tu madre, con tu socio, con tu pareja: <span style={{ color: '#C89B4A' }}>siempre acabas en el mismo sitio</span>.
             </Reveal>
             <Reveal delay={150}>
@@ -213,16 +213,16 @@ export default function Sinergia() {
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res?.a.nombrePila}</span>
-                      <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1 }}>{res?.a.camino.valor}</span>
+                      <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', lineHeight: 1 }}>{res?.a.camino.valor}</span>
                     </div>
                     <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res?.b.nombrePila}</span>
-                      <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1 }}>{res?.b.camino.valor}</span>
+                      <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', lineHeight: 1 }}>{res?.b.camino.valor}</span>
                     </div>
                   </div>
                   <div style={{ position: 'relative', background: '#0A0A0C', color: '#F4F3EF', borderRadius: 16, padding: 22, overflow: 'hidden' }}>
                     <div style={{ filter: 'blur(7px)', opacity: 0.4, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <span style={{ fontSize: 44, fontWeight: 900, letterSpacing: '-.05em', lineHeight: 1 }}>{res?.comun}</span>
+                      <span style={{ fontSize: 44, fontWeight: 900, letterSpacing: '-.028em', lineHeight: 1 }}>{res?.comun}</span>
                       <div style={{ height: 9, borderRadius: 100, background: 'rgba(244,243,239,.3)' }} />
                       <div style={{ height: 9, borderRadius: 100, background: 'rgba(244,243,239,.3)', width: '68%' }} />
                     </div>
@@ -263,12 +263,12 @@ export default function Sinergia() {
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res.a.nombrePila}</span>
-                      <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1 }}>{res.a.camino.valor}</span>
+                      <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', lineHeight: 1 }}>{res.a.camino.valor}</span>
                       <span style={{ fontSize: 13, color: '#6B6B72' }}>{SENTIDO[res.a.camino.valor]?.clave}</span>
                     </div>
                     <div style={{ flex: 1, minWidth: 118, background: '#F5F4F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: '#8A8A92' }}>{res.b.nombrePila}</span>
-                      <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1 }}>{res.b.camino.valor}</span>
+                      <span style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', lineHeight: 1 }}>{res.b.camino.valor}</span>
                       <span style={{ fontSize: 13, color: '#6B6B72' }}>{SENTIDO[res.b.camino.valor]?.clave}</span>
                     </div>
                   </div>
@@ -276,7 +276,7 @@ export default function Sinergia() {
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(244,243,239,.45)' }}>Lo que se activa entre los dos</span>
-                        <span style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-.05em', lineHeight: 1, color: '#C89B4A' }}>{res.comun}</span>
+                        <span style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-.028em', lineHeight: 1, color: '#C89B4A' }}>{res.comun}</span>
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 700, border: '1px solid rgba(200,155,74,.5)', color: '#C89B4A', borderRadius: 100, padding: '7px 13px' }}>{res.nombreVinculo}</span>
                     </div>
@@ -349,7 +349,7 @@ export default function Sinergia() {
             ].map(([n, title, desc], i) => (
               <Reveal key={n} delay={i * 90}>
                 <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid rgba(10,10,12,.1)', borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
-                  <span data-cardnum style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-.04em', color: 'rgba(10,10,12,.14)', transition: 'color .5s ease' }}>{n}</span>
+                  <span data-cardnum style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-.022em', color: 'rgba(10,10,12,.14)', transition: 'color .5s ease' }}>{n}</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                     <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: '-.02em' }}>{title}</span>
                     <span style={{ fontSize: 14, lineHeight: 1.55, color: '#6B6B72' }}>{desc}</span>
@@ -359,7 +359,7 @@ export default function Sinergia() {
             ))}
           </div>
           <Reveal>
-            <div style={{ fontSize: 'clamp(22px,3vw,40px)', fontFamily: 'var(--serif)', lineHeight: 1.06, letterSpacing: '-.04em', maxWidth: '24ch' }}>
+            <div style={{ fontSize: 'clamp(22px,3vw,40px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", lineHeight: 1.06, letterSpacing: '-.022em', maxWidth: '24ch' }}>
               Esto es una foto. En consulta se ve la película entera: de dónde viene y en qué generación empezó.
             </div>
           </Reveal>

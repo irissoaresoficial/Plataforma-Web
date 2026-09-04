@@ -42,7 +42,7 @@ export default function Membresia() {
                 Aún no ha abierto · lista de espera
               </div>
             </Reveal>
-            <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,5.8vw,78px),15vh)', fontFamily: 'var(--serif)', lineHeight: 0.99, letterSpacing: '-.045em', maxWidth: '15ch', textWrap: 'pretty' }}>
+            <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,5.8vw,78px),15vh)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", lineHeight: 0.99, letterSpacing: '-.026em', maxWidth: '15ch', textWrap: 'pretty' }}>
               Entenderlo lleva una sesión. <span style={{ color: '#C89B4A' }}>Cambiarlo lleva meses.</span>
             </Reveal>
             <Reveal delay={150}>
@@ -102,7 +102,7 @@ export default function Membresia() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'clamp(52px,6.5vw,80px)', fontFamily: 'var(--serif)', letterSpacing: '-.06em', lineHeight: 0.85, color: '#C89B4A' }}>
+              <span style={{ fontSize: 'clamp(52px,6.5vw,80px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", letterSpacing: '-.032em', lineHeight: 0.85, color: '#C89B4A' }}>
                 {eur(MEMBRESIA.precioReserva)}
               </span>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingBottom: 8 }}>
@@ -159,7 +159,7 @@ export default function Membresia() {
                     minHeight: 150,
                   }}
                 >
-                  <span data-cardnum style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.04em', color: 'rgba(10,10,12,.14)', transition: 'color .5s ease' }}>
+                  <span data-cardnum style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', color: 'rgba(10,10,12,.14)', transition: 'color .5s ease' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   {item === PENDIENTE ? <Pendiente /> : <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.3 }}>{item}</span>}
@@ -211,7 +211,7 @@ export default function Membresia() {
       <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: '0 clamp(14px,3vw,36px) clamp(60px,8vw,110px)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 20 }}>
           <Reveal>
-            <div style={{ fontSize: 'clamp(26px,3.6vw,48px)', fontFamily: 'var(--serif)', lineHeight: 1.04, letterSpacing: '-.04em', maxWidth: '18ch', textWrap: 'pretty' }}>
+            <div style={{ fontSize: 'clamp(26px,3.6vw,48px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", lineHeight: 1.04, letterSpacing: '-.022em', maxWidth: '18ch', textWrap: 'pretty' }}>
               Cuando abra, los de la lista entran primero.
             </div>
           </Reveal>

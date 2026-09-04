@@ -64,7 +64,7 @@ export default function Escuela() {
     const ok = await sendLead({ email: waitEmail, origen: 'curso-numerologia' });
     setWaitSending(false);
     if (ok) setWaitDone(true);
-    else setWaitErr('No he podido guardarlo ahora mismo. Inténtalo en un minuto o escribe a hola@irissoares.com.');
+    else setWaitErr('No he podido guardarlo ahora mismo. Inténtalo en un minuto o escribe a irissoaresoficial@gmail.com.');
   };
 
   return (

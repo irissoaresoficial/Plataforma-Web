@@ -76,20 +76,31 @@ export default function Home() {
       <HomeNav onBook={openChat} />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
+      {/* La foto sale a sangre por el borde derecho y ocupa todo el alto. Antes
+          era una tarjeta centrada y dejaba un agujero negro en medio del hero. */}
       <div id="top" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', padding: 'clamp(96px,13vh,150px) clamp(16px,4vw,56px) clamp(40px,6vh,70px)', overflow: 'hidden' }}>
         <ParticleField />
         <div id="glow" style={{ position: 'absolute', width: 760, height: 760, left: 0, top: 0, margin: '-380px 0 0 -380px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,155,74,.13),transparent 60%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(115deg,rgba(10,10,12,.92) 6%,rgba(10,10,12,.3) 58%,rgba(10,10,12,.88))', pointerEvents: 'none' }} />
 
-        <div style={{ position: 'relative', zIndex: 3, maxWidth: ANCHO, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 'clamp(32px,5vw,80px)', alignItems: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.6vw,32px)' }}>
+        <div className="hero-foto">
+          <Foto src={FOTOS.retrato} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 100vw, 52vw" objectPosition="center 16%" />
+          {/* Funde la foto con el negro por la izquierda y por abajo, para que el
+              titular se apoye en ella en vez de chocar con un recorte duro. */}
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(90deg,#0A0A0C 0%,rgba(10,10,12,.82) 22%,rgba(10,10,12,.08) 62%,transparent 100%)' }} />
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(0deg,#0A0A0C 0%,transparent 34%)' }} />
+        </div>
+
+        <div style={{ position: 'relative', zIndex: 3, maxWidth: ANCHO, margin: '0 auto', width: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.6vw,32px)', maxWidth: 'min(620px,52%)' }}>
             <Reveal>
               <Rotulo>{t.kick}</Rotulo>
             </Reveal>
             {/* Dos voces en el mismo titular: la afirmación en seco, y el giro
                 en cursiva. El contraste es lo que lo hace legible de un vistazo. */}
             <Reveal as="h1" delay={70} style={{ margin: 0, maxWidth: '19ch', lineHeight: 1.06 }}>
-              <span style={{ display: 'block', fontFamily: 'var(--sans)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '-.025em', fontSize: 'min(clamp(24px,2.5vw,36px),5.2vh)' }}>
+              {/* Las mayúsculas piden aire, no tracking negativo: apretadas se
+                  leen como un bloque en vez de como una frase. */}
+              <span style={{ display: 'block', fontFamily: 'var(--sans)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.004em', wordSpacing: '.06em', fontSize: 'min(clamp(24px,2.5vw,36px),5.2vh)' }}>
                 {t.h1a}
               </span>
               <span className="display" style={{ display: 'block', fontStyle: 'italic', color: '#C89B4A', letterSpacing: '-.01em', lineHeight: 1.0, fontSize: 'min(clamp(34px,4.1vw,62px),9vh)', marginTop: '.12em' }}>
@@ -107,25 +118,17 @@ export default function Home() {
                 </Link>
               </div>
             </Reveal>
+            {/* Un solo dato, el que dice algo: cuánta gente ha pasado por aquí.
+                "3 idiomas" y "desde 2010" no le resuelven nada a quien llega. */}
             <Reveal delay={300}>
-              <div style={{ display: 'flex', gap: 'clamp(26px,4vw,52px)', borderTop: '1px solid rgba(244,243,239,.12)', paddingTop: 18 }}>
-                {[
-                  [<Counter key="c" to={2200} group />, t.s1, false],
-                  ['2010', t.s2, true],
-                  ['3', t.s3, false],
-                ].map(([v, l, oro], i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <span className="display" style={{ fontSize: 'clamp(28px,2.8vw,38px)', lineHeight: 1, color: oro ? '#C89B4A' : undefined }}>{v as React.ReactNode}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '.04em', color: 'rgba(244,243,239,.4)' }}>{l as string}</span>
-                  </div>
-                ))}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, fontSize: 13, color: 'rgba(244,243,239,.42)' }}>
+                <span className="display" style={{ fontSize: 'clamp(22px,2.1vw,28px)', lineHeight: 1, color: '#C89B4A' }}>
+                  <Counter to={2200} group />
+                </span>
+                <span>{t.s1}</span>
               </div>
             </Reveal>
           </div>
-
-          <Reveal delay={120} style={{ justifySelf: 'end', width: '100%', maxWidth: 'min(440px,46vh)' }}>
-            <Foto src={FOTOS.retrato} alt="Iris Soares" ratio="4/5" radius={24} priority />
-          </Reveal>
         </div>
       </div>
 

@@ -42,7 +42,7 @@
 
 var CONFIG = {
   // Correo de Iris: recibe el aviso de cada reserva y es la dueña del calendario.
-  IRIS_EMAIL: 'iris@ejemplo.com',
+  IRIS_EMAIL: 'irissoaresoficial@gmail.com',
 
   // 'primary' usa el calendario principal de la cuenta que despliega el script.
   // Si quieres uno aparte, crea un calendario y pega aquí su ID.

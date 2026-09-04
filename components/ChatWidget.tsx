@@ -4,8 +4,13 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import Image from 'next/image';
 import { useLang } from '@/lib/i18n';
 import { DEFAULT_HOURS } from '@/lib/booking';
+import { LOGO } from '@/content/site';
 
 type Msg = { from: 'bot' | 'user'; text: string };
+type Escribiendo = { texto: string; n: number };
+
+/** Parte el texto en palabras conservando el espacio que va detrás de cada una. */
+const partir = (s: string) => s.match(/\S+\s*/g) || [];
 type Data = { nombre?: string; fecha?: string; motivo?: string; dia?: string; diaISO?: string; hora?: string; email?: string };
 type Availability = Record<string, string[]>;
 
@@ -20,6 +25,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [draft, setDraft] = useState('');
   const [typing, setTyping] = useState(false);
+  const [escrito, setEscrito] = useState<Escribiendo | null>(null);
   const [data, setData] = useState<Data>({});
   const [done, setDone] = useState(false);
   const [calOffset, setCalOffset] = useState(0);
@@ -49,17 +55,42 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
 
   useEffect(() => {
     scrollDown();
-  }, [msgs, typing]);
+  }, [msgs, typing, escrito]);
 
   useEffect(() => () => clearTimeout(botTimer.current), []);
 
+  /**
+   * El bot piensa un momento (los tres puntos) y después escribe: las palabras
+   * van apareciendo una a una en vez de soltar el mensaje entero de golpe.
+   * `escrito` es lo que se está tecleando; al acabar pasa a la lista de mensajes.
+   */
   const bot = (text: string, delay = 700) => {
     setTyping(true);
     botTimer.current = setTimeout(() => {
       setTyping(false);
-      setMsgs((m) => [...m, { from: 'bot', text }]);
+      setEscrito({ texto: text, n: 0 });
     }, delay);
   };
+
+  useEffect(() => {
+    if (!escrito) return;
+
+    const total = partir(escrito.texto).length;
+    if (escrito.n >= total) {
+      // Ya está escrito entero: se guarda como mensaje y se libera la entrada.
+      const fin = setTimeout(() => {
+        setMsgs((m) => [...m, { from: 'bot', text: escrito.texto }]);
+        setEscrito(null);
+      }, 260);
+      return () => clearTimeout(fin);
+    }
+
+    // Un respiro más largo después de un punto o una coma: se lee como habla.
+    const ultima = partir(escrito.texto)[escrito.n] || '';
+    const pausa = /[.!?]$/.test(ultima.trim()) ? 260 : /[,;:]$/.test(ultima.trim()) ? 150 : 0;
+    const paso = setTimeout(() => setEscrito({ ...escrito, n: escrito.n + 1 }), 46 + pausa);
+    return () => clearTimeout(paso);
+  }, [escrito]);
 
   const openChat = () => {
     setOpen(true);
@@ -93,18 +124,15 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
       setTyping(false);
 
       if (out?.ok) {
-        setMsgs((m) => [
-          ...m,
-          { from: 'bot', text: t.ch_sum.replace('{d}', booking.dia || '').replace('{h}', booking.hora || '') },
-        ]);
-        setTimeout(() => bot(t.ch_conf.replace('{e}', booking.email || ''), 600), 900);
+        bot(t.ch_sum.replace('{d}', booking.dia || '').replace('{h}', booking.hora || ''), 260);
+        setTimeout(() => bot(t.ch_conf.replace('{e}', booking.email || ''), 500), 2600);
         return;
       }
 
       // A quien reserva no le sirve saber qué variable falta, pero a quien lleva
       // la web sí: queda en la consola del navegador y en /api/diagnostico.
       console.warn('[reserva] no se ha podido guardar. Motivo:', out?.reason ?? res.status, '— abre /api/diagnostico');
-      setMsgs((m) => [...m, { from: 'bot', text: out?.reason === 'taken' ? t.ch_taken : t.ch_err }]);
+      bot(out?.reason === 'taken' ? t.ch_taken : t.ch_err, 260);
       if (out?.reason === 'taken') {
         // El hueco se ocupó mientras escribía: se vuelve al calendario en lugar de dejarlo colgado.
         setData((d) => ({ ...d, dia: undefined, diaISO: undefined, hora: undefined }));
@@ -113,13 +141,13 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
       }
     } catch {
       setTyping(false);
-      setMsgs((m) => [...m, { from: 'bot', text: t.ch_err }]);
+      bot(t.ch_err, 260);
     }
   };
 
   const submit = (raw: string, meta?: Partial<Data>) => {
     const val = (raw || '').trim();
-    if (!val || typing || done) return;
+    if (!val || typing || escrito || done) return;
 
     if (cur.key === 'email' && !EMAIL_RE.test(val)) {
       setMsgs((m) => [...m, { from: 'user', text: val }]);
@@ -168,9 +196,10 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     cells.push({ label: String(d), value: free ? label : '', iso, free, sel: data.diaISO === iso });
   }
 
-  const calOn = !typing && cur?.calendar;
+  const ocupado = typing || Boolean(escrito);
+  const calOn = !ocupado && cur?.calendar;
   const hourOptions = data.diaISO && avail?.[data.diaISO] ? avail[data.diaISO] : DEFAULT_HOURS;
-  const opts = !typing && cur?.options ? hourOptions : [];
+  const opts = !ocupado && cur?.options ? hourOptions : [];
   const typable = !done && cur && !cur.options && !cur.calendar;
 
   const bubbleWrap = (me: boolean): React.CSSProperties => ({ display: 'flex', justifyContent: me ? 'flex-end' : 'flex-start' });
@@ -187,6 +216,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   return (
     <>
       <div
+        id="chat-launcher"
         onClick={openChat}
         data-mag
         data-cur-label={t.cbook}
@@ -258,8 +288,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '15px 17px', borderBottom: '1px solid rgba(244,243,239,.12)', flexShrink: 0 }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', background: '#131318', flexShrink: 0 }}>
-            <Image src="/images/iris.jpg" alt="Iris" width={32} height={32} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 18%', display: 'block' }} />
+          {/* El sello de la escuela: quien escribe no es Iris, es su casa. */}
+          <div style={{ width: 40, height: 40, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Image src={LOGO} alt="" width={40} height={40} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: 14, fontWeight: 700 }}>{t.ch_title}</span>
@@ -276,17 +307,37 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           </div>
         </div>
 
-        <div id="chat-body" ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 9 }}>
+        {/* Los mensajes se apoyan abajo: si se apilan arriba queda un vacío
+            entre la conversación y el campo de escribir, y se ve roto. */}
+        <div id="chat-body" ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: 9 }}>
           {msgs.map((m, i) => (
             <div key={i} style={bubbleWrap(m.from === 'user')}>
-              <div style={bubbleStyle(m.from === 'user')}>{m.text}</div>
+              {/* Lo que escribe la persona entra con su fade; lo del bot ya se
+                  animó palabra a palabra mientras se tecleaba. */}
+              <div className={m.from === 'user' ? 'burbuja-in' : undefined} style={bubbleStyle(m.from === 'user')}>
+                {m.text}
+              </div>
             </div>
           ))}
+          {escrito && (
+            <div style={bubbleWrap(false)}>
+              <div className="burbuja-in" style={bubbleStyle(false)}>
+                {partir(escrito.texto)
+                  .slice(0, escrito.n)
+                  .map((palabra, i) => (
+                    <span key={i} className="palabra">
+                      {palabra}
+                    </span>
+                  ))}
+                {escrito.n < partir(escrito.texto).length && <span className="cursor-chat" />}
+              </div>
+            </div>
+          )}
           {typing && (
-            <div style={{ display: 'flex', gap: 5, alignItems: 'center', padding: '12px 14px', background: 'rgba(244,243,239,.07)', borderRadius: '14px 14px 14px 4px', alignSelf: 'flex-start' }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(244,243,239,.5)' }} />
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(244,243,239,.3)' }} />
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(244,243,239,.18)' }} />
+            <div className="burbuja-in" style={{ display: 'flex', gap: 5, alignItems: 'center', padding: '13px 15px', background: 'rgba(244,243,239,.07)', borderRadius: '14px 14px 14px 4px', alignSelf: 'flex-start' }}>
+              <span className="punto" />
+              <span className="punto" />
+              <span className="punto" />
             </div>
           )}
         </div>

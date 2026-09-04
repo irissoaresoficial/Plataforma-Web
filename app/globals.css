@@ -1,6 +1,6 @@
 :root {
-  --serif: 'Instrument Serif', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  --sans: 'Satoshi', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+  --serif: 'Fraunces', 'Newsreader', Georgia, 'Times New Roman', serif;
+  --sans: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Helvetica, sans-serif;
   --ink: #0a0a0c;
   --paper: #f5f4f0;
   --cream: #f4f3ef;
@@ -85,15 +85,27 @@ textarea::placeholder {
   width: 0;
 }
 
-/* Titulares: serif editorial. El cuerpo y los datos siguen en sans. */
+/* Titulares. Fraunces es variable: SOFT redondea los remates —de ahí que sea
+   cálida y no severa— y opsz la dibuja para tamaño grande, con más contraste
+   entre los trazos gruesos y finos. El cuerpo y los datos siguen en sans. */
 .display {
   font-family: var(--serif);
   font-weight: 400;
-  letter-spacing: -0.015em;
+  font-variation-settings: 'opsz' 144, 'SOFT' 100;
+  letter-spacing: -0.018em;
   line-height: 1.02;
 }
-.display em {
+.display em,
+.display i {
   font-style: italic;
+}
+
+/* La misma serif en tamaño de lectura: menos contraste para que no se rompa. */
+.display-sm {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-variation-settings: 'opsz' 24, 'SOFT' 100;
+  letter-spacing: -0.005em;
 }
 
 /* ---- shared interactive utilities ---- */
@@ -248,6 +260,103 @@ textarea::placeholder {
   border-color: #c89b4a;
 }
 
+/* ---- el chat escribe ---- */
+
+/* Cada palabra entra por su cuenta: es lo que da la sensación de que alguien
+   está escribiendo al otro lado, en vez de pegar el mensaje de golpe. */
+@keyframes palabra-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.22em);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.palabra {
+  display: inline-block;
+  animation: palabra-in 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+  white-space: pre;
+}
+
+@keyframes burbuja-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.burbuja-in {
+  animation: burbuja-in 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Los tres puntos de "está escribiendo". */
+@keyframes punto {
+  0%,
+  70%,
+  100% {
+    opacity: 0.22;
+    transform: translateY(0);
+  }
+  35% {
+    opacity: 0.95;
+    transform: translateY(-3px);
+  }
+}
+.punto {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cream);
+  animation: punto 1.25s ease-in-out infinite;
+}
+.punto:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.punto:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+/* El cursor que va delante del texto mientras el bot escribe. */
+@keyframes cursor-chat {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+.cursor-chat {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 2px;
+  vertical-align: -0.13em;
+  background: var(--gold);
+  animation: cursor-chat 0.9s steps(1) infinite;
+}
+
+/* Quien pide menos movimiento lo recibe entero, sin animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  .palabra,
+  .burbuja-in {
+    animation: none;
+  }
+  .punto,
+  .cursor-chat {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    opacity: 0.6;
+  }
+}
+
 @media print {
   @page {
     size: A4;
@@ -262,5 +371,22 @@ textarea::placeholder {
   }
   #sheet {
     display: block !important;
+  }
+}
+
+/* La foto del hero: a sangre por el borde derecho y a toda altura. En móvil
+   pasa a ser un fondo a pantalla completa, muy atenuado bajo el texto. */
+.hero-foto {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: min(42vw, 640px);
+  z-index: 1;
+}
+@media (max-width: 900px) {
+  .hero-foto {
+    width: 100%;
+    opacity: 0.42;
   }
 }

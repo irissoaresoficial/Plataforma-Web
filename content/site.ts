@@ -37,7 +37,7 @@ export const FOTOS = {
 
 export const CONTACTO = {
   /** Correo al que se escribe la gente si algo falla. */
-  email: 'hola@irissoares.com',
+  email: 'irissoaresoficial@gmail.com',
   /** Con prefijo y sin espacios: 34600111222. Vacío = no se muestra el botón de WhatsApp. */
   whatsapp: '',
 };
