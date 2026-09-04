@@ -54,7 +54,7 @@ export default function CuentaAtras({ fechaISO, abiertoDesdeISO }: { fechaISO?: 
           transform="rotate(-90 62 62)"
           style={{ transition: 'stroke-dashoffset 1s ease' }}
         />
-        <text x="62" y="58" textAnchor="middle" fill="var(--tx)" style={{ fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 40, 'SOFT' 90", fontSize: 30 }}>
+        <text x="62" y="58" textAnchor="middle" fill="var(--tx)" style={{ fontFamily: 'var(--serif)', fontSize: 30 }}>
           {dias}
         </text>
         <text x="62" y="78" textAnchor="middle" fill="var(--tx-3)" style={{ fontSize: 11, letterSpacing: '.1em' }}>

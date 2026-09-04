@@ -48,7 +48,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: acento }}>Próximo curso</span>
               {falta(curso.fechas) ? <Pendiente>Fechas por confirmar</Pendiente> : <span style={{ fontSize: 13, fontWeight: 600, color: suave }}>{curso.fechas}</span>}
             </div>
-            <span style={{ fontSize: 'clamp(30px,4.4vw,64px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", lineHeight: 0.98, letterSpacing: '-.026em', maxWidth: '15ch', textWrap: 'pretty' }}>
+            <span style={{ fontSize: 'clamp(30px,4.4vw,64px)', fontFamily: 'var(--serif)', lineHeight: 0.98, letterSpacing: '-.026em', maxWidth: '15ch', textWrap: 'pretty' }}>
               <T v={curso.titulo} />
             </span>
             <span style={{ fontSize: 'clamp(15px,1.2vw,19px)', lineHeight: 1.55, color: suave, maxWidth: '40ch' }}>
@@ -57,19 +57,19 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(16px,2.4vw,38px)', justifySelf: 'end' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", letterSpacing: '-.022em', lineHeight: 1 }}>
+              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', letterSpacing: '-.022em', lineHeight: 1 }}>
                 <T v={curso.duracion} />
               </span>
               <span style={{ fontSize: 11, fontWeight: 600, color: suave }}>duración</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", letterSpacing: '-.022em', lineHeight: 1 }}>
+              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', letterSpacing: '-.022em', lineHeight: 1 }}>
                 <T v={curso.horario} />
               </span>
               <span style={{ fontSize: 11, fontWeight: 600, color: suave }}>horario</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", letterSpacing: '-.022em', lineHeight: 1, color: acento }}>
+              <span style={{ fontSize: 'clamp(20px,2.2vw,30px)', fontFamily: 'var(--serif)', letterSpacing: '-.022em', lineHeight: 1, color: acento }}>
                 {curso.precio === null ? <Pendiente>Precio</Pendiente> : eur(curso.precio)}
               </span>
               <span style={{ fontSize: 11, fontWeight: 600, color: suave }}>con grabación</span>
@@ -216,7 +216,7 @@ export default function Cursos() {
           <Reveal>
             <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--acento)' }}>Cursos y talleres en directo</div>
           </Reveal>
-          <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'clamp(38px,6.2vw,88px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", lineHeight: 0.96, letterSpacing: '-.028em', maxWidth: '16ch', textWrap: 'pretty' }}>
+          <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'clamp(38px,6.2vw,88px)', fontFamily: 'var(--serif)', lineHeight: 0.96, letterSpacing: '-.028em', maxWidth: '16ch', textWrap: 'pretty' }}>
             Unas tardes que cambian la conversación en tu casa.
           </Reveal>
           <Reveal delay={140}>
@@ -252,7 +252,7 @@ export default function Cursos() {
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-              <span style={{ fontSize: 'clamp(20px,2.4vw,30px)', fontFamily: 'var(--serif)', fontVariationSettings: "'opsz' 144, 'SOFT' 100", letterSpacing: '-.02em', lineHeight: 1.05, maxWidth: '22ch' }}>
+              <span style={{ fontSize: 'clamp(20px,2.4vw,30px)', fontFamily: 'var(--serif)', letterSpacing: '-.02em', lineHeight: 1.05, maxWidth: '22ch' }}>
                 Un curso es una tarde. La comunidad es cada mes.
               </span>
               <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '40ch' }}>

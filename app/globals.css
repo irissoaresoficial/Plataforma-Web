@@ -93,32 +93,35 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
-  margin: 0;
-  background: var(--papel);
-  color: var(--tinta);
-  font-family: var(--serif);
-  font-variation-settings: 'opsz' 14, 'SOFT' 60;
-  font-weight: 400;
-  letter-spacing: 0.004em;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
-/* Los elementos de interfaz —botones, campos, rótulos— piden un dibujo más
-   compacto y algo más de cuerpo para no parecer texto corrido. */
+/*
+ * UN SOLO DIBUJO DE LETRA EN TODA LA WEB.
+ *
+ * Fraunces es variable, y es tentador mover su eje óptico según el tamaño: es
+ * lo que manda el manual. Pero cada valor de opsz y de SOFT dibuja una letra
+ * distinta, y con siete combinaciones repartidas por el sitio el resultado se
+ * lee como siete tipografías, no como una. Así que los ejes se fijan aquí, una
+ * vez, y no se tocan en ningún otro sitio: lo único que varía es el peso, el
+ * tamaño y la cursiva. Eso es "una tipografía con sus variantes".
+ */
+body,
 button,
 input,
 textarea,
 select,
-.pill,
-.btn-outline,
-.btn-outline-dark,
-.nav-cta,
-.chip,
-.field-input {
+.display,
+.display-sm {
   font-family: var(--serif);
-  font-variation-settings: 'opsz' 20, 'SOFT' 40;
+  font-variation-settings: 'opsz' 48, 'SOFT' 100;
+}
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-weight: 400;
+  letter-spacing: 0.004em;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 a {
@@ -187,7 +190,6 @@ textarea::placeholder {
 .display {
   font-family: var(--serif);
   font-weight: 400;
-  font-variation-settings: 'opsz' 144, 'SOFT' 100;
   letter-spacing: -0.018em;
   line-height: 1.02;
 }
@@ -200,7 +202,6 @@ textarea::placeholder {
 .display-sm {
   font-family: var(--serif);
   font-weight: 400;
-  font-variation-settings: 'opsz' 24, 'SOFT' 100;
   letter-spacing: -0.005em;
 }
 
@@ -616,7 +617,6 @@ body[data-nav-claro='si'] .sello-color {
 /* Una columna de lectura: jerarquía clara, líneas cortas y nada más. */
 .texto-legal h2 {
   font-family: var(--serif);
-  font-variation-settings: 'opsz' 48, 'SOFT' 90;
   font-weight: 400;
   font-size: clamp(23px, 2.4vw, 30px);
   line-height: 1.18;
@@ -625,7 +625,6 @@ body[data-nav-claro='si'] .sello-color {
 }
 .texto-legal h3 {
   font-family: var(--serif);
-  font-variation-settings: 'opsz' 22, 'SOFT' 60;
   font-weight: 600;
   font-size: 17px;
   margin: 28px 0 8px;
@@ -688,6 +687,8 @@ body[data-nav-claro='si'] .sello-color {
   display: flex;
   flex-direction: column;
   width: min(760px, 100%);
+  max-width: 100%;
+  overflow: hidden;
   max-height: 92vh;
   background: var(--bg);
   border-radius: 22px 22px 0 0;
@@ -729,8 +730,18 @@ body[data-nav-claro='si'] .sello-color {
 
 .modal-cuerpo {
   overflow-y: auto;
-  padding: clamp(24px, 4vw, 38px);
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: clamp(20px, 4vw, 38px);
   padding-bottom: 8px;
+}
+/* En el móvil la ficha ocupa casi toda la pantalla, pero deja ver que hay
+   página detrás y respeta la barra del navegador. */
+@media (max-width: 759px) {
+  .modal-caja {
+    max-height: 88vh;
+    max-height: 88dvh;
+  }
 }
 
 .modal-video {
@@ -767,7 +778,7 @@ body[data-nav-claro='si'] .sello-color {
 
 .modal-datos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
   background: var(--linea);
   border: 1px solid var(--linea);
@@ -792,6 +803,12 @@ body[data-nav-claro='si'] .sello-color {
 .modal-datos strong {
   font-size: 15px;
   font-weight: 600;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 620px) {
+  .modal-datos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .modal-pestanas {
@@ -836,7 +853,6 @@ body[data-nav-claro='si'] .sello-color {
 }
 .modal-num {
   font-family: var(--serif);
-  font-variation-settings: 'opsz' 30, 'SOFT' 90;
   font-size: 17px;
   color: var(--acento-2);
 }
@@ -875,7 +891,6 @@ body[data-nav-claro='si'] .sello-color {
 }
 .modal-pie strong {
   font-family: var(--serif);
-  font-variation-settings: 'opsz' 40, 'SOFT' 90;
   font-size: 26px;
   line-height: 1.1;
 }
@@ -897,7 +912,6 @@ body[data-nav-claro='si'] .sello-color {
 .modal-reserva strong {
   display: block;
   font-family: var(--serif);
-  font-variation-settings: 'opsz' 30, 'SOFT' 90;
   font-size: 19px;
   margin-bottom: 4px;
 }
