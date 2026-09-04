@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
-import DustField from '@/components/DustField';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import Counter from '@/components/Counter';
@@ -71,15 +70,14 @@ export default function Home() {
   return (
     <div id="app" className="claro" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
       <Cursor />
-      <DustField />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <HomeNav onBook={openChat} />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
       {/* La foto sale a sangre por el borde derecho y ocupa todo el alto. Antes
           era una tarjeta centrada y dejaba un agujero negro en medio del hero. */}
-      <div id="top" className="vino" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(96px,13vh,150px) clamp(16px,4vw,56px) clamp(40px,6vh,70px)', overflow: 'hidden' }}>
-        <CampoNumeros intensidad={1} />
+      <div id="top" className="claro" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(96px,13vh,150px) clamp(16px,4vw,56px) clamp(40px,6vh,70px)', overflow: 'hidden' }}>
+        <CampoNumeros intensidad={0.7} />
         <div id="glow" style={{ position: 'absolute', width: 820, height: 820, left: 0, top: 0, margin: '-410px 0 0 -410px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,163,92,.14),transparent 64%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
 
         {/* El desvanecido lo hacen las máscaras de .hero-foto y .hero-foto-inner,
@@ -107,7 +105,7 @@ export default function Home() {
                 {t.h1b}
               </span>
             </Reveal>
-            <Reveal delay={150}>
+            <Reveal delay={150} desde="izq">
               <p style={{ margin: 0, fontSize: 'clamp(16px,1.15vw,19px)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '30ch' }}>{t.hsub}</p>
             </Reveal>
             <Reveal delay={220}>
@@ -136,13 +134,13 @@ export default function Home() {
       <div className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: 'clamp(70px,9vw,120px) clamp(16px,4vw,56px)' }}>
         <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 'clamp(10px,1.4vw,18px)', alignItems: 'start' }}>
           {/* Tamaños y alturas distintos: una rejilla perfecta se lee como catálogo. */}
-          <Reveal style={{ paddingTop: 'clamp(0px,5vw,72px)' }}>
+          <Reveal desde="crece" style={{ paddingTop: 'clamp(0px,5vw,72px)' }}>
             <Foto src={FOTOS.hablando} alt="Iris en directo" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
           </Reveal>
-          <Reveal delay={90}>
+          <Reveal delay={90} desde="crece">
             <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
           </Reveal>
-          <Reveal delay={180} style={{ paddingTop: 'clamp(0px,9vw,128px)' }}>
+          <Reveal delay={180} desde="crece" style={{ paddingTop: 'clamp(0px,9vw,128px)' }}>
             <Foto src={FOTOS.sala} alt="Sala" ratio="1/1" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
           </Reveal>
         </div>
@@ -367,11 +365,11 @@ export default function Home() {
       </div>
 
       {/* ── PIE: el mapa de la web ───────────────────────────── */}
-      <div className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: 'none', padding: 'clamp(44px,6vw,72px) clamp(16px,4vw,56px) 30px' }}>
+      <div className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(44px,6vw,72px) clamp(16px,4vw,56px) 30px' }}>
         <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 40 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(190px,1fr))', gap: 32 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <Marca tam={68} apilado claro />
+              <Marca tam={68} apilado />
               <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tx-3)', maxWidth: '28ch' }}>{t.ft_p}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

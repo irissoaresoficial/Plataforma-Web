@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import Cursor from '@/components/Cursor';
-import DustField from '@/components/DustField';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
@@ -186,13 +185,12 @@ export default function Cursos() {
   return (
     <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
       <Cursor hitSelector="[data-mag],a,input,label,[data-card]" />
-      <DustField />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <SubNav links={CURSOS.map((c) => ({ href: `#${c.id}`, label: falta(c.titulo) ? 'Próximo curso' : c.titulo }))} cta="La membresía" ctaHref="/membresia" />
 
       {/* HERO */}
-      <div className="vino" style={{ position: 'relative', color: 'var(--tx)', background: 'var(--bg)', padding: 'clamp(104px,16vh,170px) clamp(14px,3vw,36px) clamp(40px,5vw,70px)', overflow: 'hidden' }}>
-        <CampoNumeros />
+      <div className="claro" style={{ position: 'relative', color: 'var(--tx)', background: 'var(--bg)', padding: 'clamp(104px,16vh,170px) clamp(14px,3vw,36px) clamp(40px,5vw,70px)', overflow: 'hidden' }}>
+        <CampoNumeros intensidad={0.7} />
         <div
           style={{
             position: 'absolute',
@@ -256,7 +254,7 @@ export default function Cursos() {
           <div style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: 'var(--tx)' }}>
-                <Marca tam={52} apilado claro />
+                <Marca tam={52} apilado />
               </Link>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
                 <Link href="/sinergia" style={{ fontSize: 13, color: 'var(--tx-2)' }}>Prueba gratis</Link>

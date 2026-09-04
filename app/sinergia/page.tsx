@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import Cursor from '@/components/Cursor';
-import DustField from '@/components/DustField';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
@@ -89,11 +88,10 @@ export default function Sinergia() {
   return (
     <div id="page" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
       <Cursor hitSelector="[data-mag],a,input,[data-card]" />
-      <DustField />
       <SubNav links={[]} cta="Probarlo gratis" ctaHref="#calc" />
 
-      <div className="vino" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
-        <CampoNumeros />
+      <div className="claro" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
+        <CampoNumeros intensidad={0.7} />
         <div
           style={{
             position: 'absolute',
@@ -381,7 +379,7 @@ export default function Sinergia() {
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: 'var(--tx)' }}>
-                <Marca tam={52} apilado claro />
+                <Marca tam={52} apilado />
             </Link>
             <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
               Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.

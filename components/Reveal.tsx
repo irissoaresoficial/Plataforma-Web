@@ -16,10 +16,23 @@ const TAGS = {
  * a safety-net timeout) rather than framer-motion's `whileInView` alone, mirroring the
  * belt-and-braces approach ("sweep" + safety timeout) the original vanilla implementation used.
  */
+/**
+ * De dónde entra cada cosa. Que todo suba igual acaba pareciendo una sola
+ * animación repetida cincuenta veces; alternar la dirección hace que la página
+ * se lea como una secuencia y no como un bucle.
+ */
+const ENTRADAS = {
+  sube: { x: 0, y: 22, scale: 1 },
+  izq: { x: -28, y: 0, scale: 1 },
+  der: { x: 28, y: 0, scale: 1 },
+  crece: { x: 0, y: 10, scale: 0.965 },
+} as const;
+
 export default function Reveal({
   as = 'div',
   delay = 0,
   line = false,
+  desde = 'sube',
   style,
   className,
   children,
@@ -27,6 +40,8 @@ export default function Reveal({
   as?: keyof typeof TAGS;
   delay?: number;
   line?: boolean;
+  /** Por dónde entra: sube, izq, der o crece. */
+  desde?: keyof typeof ENTRADAS;
   style?: CSSProperties;
   className?: string;
   children?: ReactNode;
@@ -34,7 +49,7 @@ export default function Reveal({
   const reduced = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
   const [shown, setShown] = useState(false);
-  const distance = line ? 26 : 20;
+  const partida = line ? { ...ENTRADAS[desde], y: ENTRADAS[desde].y ? 28 : 0 } : ENTRADAS[desde];
 
   useEffect(() => {
     if (reduced) {
@@ -73,11 +88,11 @@ export default function Reveal({
       ref={ref as any}
       style={style}
       className={className}
-      initial={{ opacity: 0, y: distance }}
-      animate={shown ? { opacity: 1, y: 0 } : { opacity: 0, y: distance }}
+      initial={{ opacity: 0, ...partida }}
+      animate={shown ? { opacity: 1, x: 0, y: 0, scale: 1 } : { opacity: 0, ...partida }}
       transition={{
-        opacity: { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: delay / 1000 },
-        y: { duration: 0.95, ease: [0.16, 1, 0.3, 1], delay: delay / 1000 },
+        opacity: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: delay / 1000 },
+        default: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: delay / 1000 },
       }}
     >
       {children}

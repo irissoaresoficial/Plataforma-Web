@@ -18,7 +18,17 @@
  * declara cuál es con una clase, y dentro de él los colores se piden siempre
  * por su papel —fondo, texto, línea, acento— nunca por su valor. Así un bloque
  * se cambia de tema con una palabra y nada se queda ilegible por el camino.
+ *
+ * La clase pinta también el fondo y el texto. Si solo definiera las variables,
+ * un bloque que se olvidara de aplicarlas heredaría el color del tema de fuera
+ * —texto oscuro sobre granate— y eso ya ha pasado dos veces.
  */
+.claro,
+.arena,
+.vino {
+  background: var(--bg);
+  color: var(--tx);
+}
 .claro {
   --bg: var(--papel);
   --tx: var(--tinta);
@@ -428,7 +438,7 @@ textarea::placeholder {
   right: 0;
   width: min(44vw, 660px);
   z-index: 1;
-  opacity: 0.5;
+  opacity: 0.72;
   /* El desvanecido horizontal: se apaga hacia el texto. */
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.3) 30%, #000 78%);
   mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.3) 30%, #000 78%);
@@ -440,12 +450,9 @@ textarea::placeholder {
   height: 100%;
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 66%, transparent 100%);
   mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 66%, transparent 100%);
-  /* La foto se funde con el granate en vez de flotar encima como un recorte
-     a todo color: se desatura y el modo de fusión la deja tomar el tono del
-     fondo. Queda como un grabado, que es lo que pide un hero de marca. */
-  filter: saturate(0.35) contrast(1.06) brightness(1.04) blur(1.2px);
-  mix-blend-mode: luminosity;
-  opacity: 0.9;
+  /* Solo desaturada. Nada de mix-blend-mode ni de blur: con un canvas animado
+     al lado, obligan al navegador a recomponer la capa entera en cada frame. */
+  filter: saturate(0.82) contrast(1.02);
 }
 
 /* En pantalla estrecha no hay dos columnas: la foto pasa a ser un fondo muy

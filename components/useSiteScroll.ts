@@ -22,8 +22,11 @@ export default function useSiteScroll({ methodProgress = false }: { methodProgre
       const h = document.documentElement.scrollHeight - vh;
       if (bar) bar.style.width = (h > 0 ? Math.min(100, (y / h) * 100) : 0) + '%';
 
-      let light = false;
-      if (y > vh * 0.7) {
+      // Qué hay justo debajo de la barra, siempre: la barra es fija y cruza
+      // bloques claros y de granate, incluido el primero. Mirarlo solo después
+      // de bajar dejaba la barra pintada para fondo oscuro sobre el hero claro.
+      let light = true;
+      {
         const el = document.elementFromPoint(Math.max(8, window.innerWidth - 14), 32);
         let node: Element | null = el,
           bg = '';
@@ -36,7 +39,7 @@ export default function useSiteScroll({ methodProgress = false }: { methodProgre
           node = node.parentElement;
         }
         const m = bg.match(/\d+/g);
-        light = m ? Number(m[0]) * 0.299 + Number(m[1]) * 0.587 + Number(m[2]) * 0.114 > 140 : false;
+        light = m ? Number(m[0]) * 0.299 + Number(m[1]) * 0.587 + Number(m[2]) * 0.114 > 140 : true;
       }
       const solid = y > vh * 0.7;
       if (nav) {
