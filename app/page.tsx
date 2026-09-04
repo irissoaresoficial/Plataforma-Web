@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
@@ -8,83 +7,61 @@ import DustField from '@/components/DustField';
 import ParticleField from '@/components/ParticleField';
 import Reveal from '@/components/Reveal';
 import Counter from '@/components/Counter';
+import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import HomeNav from '@/components/HomeNav';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
-import { emailValido } from '@/lib/numerologia';
-import { sendLead } from '@/lib/sendLead';
+import { FOTOS, MEMBRESIA, eur } from '@/content/site';
 
-const SECTION_PAD = 'clamp(70px,10vw,150px) clamp(14px,3vw,36px)';
+const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
+const ANCHO = 1320;
 
-function PillCTA({
-  onClick,
-  href,
-  variant,
-  label,
-  arrow = '→',
-  curLabel,
-}: {
-  onClick?: () => void;
-  href?: string;
-  variant: 'cream' | 'gold' | 'dark';
-  label: string;
-  arrow?: string;
-  curLabel?: string;
-}) {
+/** Rótulo de sección: línea fina + palabra pequeña. */
+function Rotulo({ children, claro = false }: { children: React.ReactNode; claro?: boolean }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: claro ? '#8F6B18' : '#C89B4A' }}>
+      <span style={{ width: 22, height: 1, background: 'currentColor', opacity: 0.5 }} />
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function PillCTA({ onClick, href, variant, label, curLabel }: { onClick?: () => void; href?: string; variant: 'cream' | 'gold' | 'dark'; label: string; curLabel?: string }) {
   const cls = `pill pill-${variant}`;
-  const content = (
+  const inner = (
     <>
       <span>{label}</span>
-      <span className="pill-arrow">{arrow}</span>
+      <span className="pill-arrow">→</span>
     </>
   );
-  if (href) {
-    return (
-      <Link href={href} data-mag data-cur-label={curLabel} className={cls}>
-        {content}
-      </Link>
-    );
-  }
-  return (
+  return href ? (
+    <Link href={href} data-mag data-cur-label={curLabel} className={cls}>
+      {inner}
+    </Link>
+  ) : (
     <div onClick={onClick} data-mag data-cur-label={curLabel} className={cls}>
-      {content}
+      {inner}
     </div>
   );
 }
 
 export default function Home() {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   useSiteScroll({ methodProgress: true });
   const chatRef = useRef<ChatWidgetHandle>(null);
   const openChat = () => chatRef.current?.open();
-
   const [faq, setFaq] = useState(-1);
+
   const faqs: [string, string][] = [
     [t.f_q1, t.f_a1],
     [t.f_q2, t.f_a2],
     [t.f_q3, t.f_a3],
     [t.f_q4, t.f_a4],
   ];
-
-  const [wlEmail, setWlEmail] = useState('');
-  const [wlErr, setWlErr] = useState('');
-  const [wlDone, setWlDone] = useState(false);
-  const [wlSending, setWlSending] = useState(false);
-  const sendWaitlist = async () => {
-    if (!emailValido(wlEmail)) return setWlErr(t.wl_err);
-    setWlErr('');
-    setWlSending(true);
-    const ok = await sendLead({ email: wlEmail, origen: 'membresia', lang });
-    setWlSending(false);
-    // Solo se dice "guardado" si de verdad se ha guardado.
-    if (ok) setWlDone(true);
-    else setWlErr(t.wl_fail);
-  };
-
   const chips = [t.w1, t.w2, t.w3, t.w4, t.w5, t.w6];
-  const problemLines = [t.p1, t.p2, t.p3, t.p4];
-  const methodSteps: [string, string][] = [
+  const dolor = [t.p1, t.p2, t.p3, t.p4];
+  const pasos: [string, string][] = [
     [t.m1t, t.m1p],
     [t.m2t, t.m2p],
     [t.m3t, t.m3p],
@@ -97,84 +74,25 @@ export default function Home() {
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: '#C89B4A', zIndex: 130 }} />
       <HomeNav onBook={openChat} />
 
-      {/* HERO */}
-      <div
-        id="top"
-        style={{
-          position: 'relative',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          padding: 'clamp(90px,12vh,130px) clamp(14px,3vw,36px) clamp(28px,5vh,54px)',
-          overflow: 'hidden',
-        }}
-      >
+      {/* ── APERTURA ─────────────────────────────────────────── */}
+      <div id="top" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', padding: 'clamp(96px,13vh,150px) clamp(16px,4vw,56px) clamp(40px,6vh,70px)', overflow: 'hidden' }}>
         <ParticleField />
-        <div
-          id="glow"
-          style={{
-            position: 'absolute',
-            width: 760,
-            height: 760,
-            left: 0,
-            top: 0,
-            margin: '-380px 0 0 -380px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle,rgba(200,155,74,.14),transparent 60%)',
-            pointerEvents: 'none',
-            transition: 'opacity .6s ease',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(120deg,rgba(10,10,12,.9) 8%,rgba(10,10,12,.35) 55%,rgba(10,10,12,.85))',
-            pointerEvents: 'none',
-          }}
-        />
+        <div id="glow" style={{ position: 'absolute', width: 760, height: 760, left: 0, top: 0, margin: '-380px 0 0 -380px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,155,74,.13),transparent 60%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(115deg,rgba(10,10,12,.92) 6%,rgba(10,10,12,.3) 58%,rgba(10,10,12,.88))', pointerEvents: 'none' }} />
 
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 3,
-            maxWidth: 1360,
-            margin: '0 auto',
-            width: '100%',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(310px,1fr))',
-            gap: 'clamp(28px,4vw,72px)',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(20px,2.4vw,30px)' }}>
+        <div style={{ position: 'relative', zIndex: 3, maxWidth: ANCHO, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 'clamp(32px,5vw,80px)', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.6vw,32px)' }}>
             <Reveal>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 12, fontWeight: 500, letterSpacing: '.02em', color: 'rgba(244,243,239,.5)' }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C89B4A' }} />
-                {t.kick}
-              </div>
+              <Rotulo>{t.kick}</Rotulo>
             </Reveal>
-            <Reveal
-              as="h1"
-              delay={70}
-              style={{
-                margin: 0,
-                fontSize: 'min(clamp(38px,5.4vw,74px),13vh)',
-                fontWeight: 900,
-                lineHeight: 1,
-                letterSpacing: '-.042em',
-                maxWidth: '17ch',
-              }}
-            >
-              {t.h1a}
-              <span style={{ color: '#C89B4A' }}> {t.h1b}</span>
+            <Reveal as="h1" delay={70} className="display" style={{ margin: 0, fontSize: 'min(clamp(42px,5.4vw,78px),13vh)', maxWidth: '16ch' }}>
+              {t.h1a}{' '}
+              <em style={{ color: '#C89B4A' }}>{t.h1b}</em>
             </Reveal>
             <Reveal delay={150}>
-              <p style={{ margin: 0, fontSize: 'clamp(16px,1.2vw,19px)', fontWeight: 400, lineHeight: 1.5, color: 'rgba(244,243,239,.58)', maxWidth: '34ch' }}>
-                {t.hsub}
-              </p>
+              <p style={{ margin: 0, fontSize: 'clamp(16px,1.15vw,19px)', lineHeight: 1.55, color: 'rgba(244,243,239,.55)', maxWidth: '30ch' }}>{t.hsub}</p>
             </Reveal>
-            <Reveal delay={230}>
+            <Reveal delay={220}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
                 <PillCTA onClick={openChat} variant="cream" label={t.hcta} curLabel={t.cbook} />
                 <Link href="/sinergia" data-mag className="btn-outline">
@@ -182,193 +100,148 @@ export default function Home() {
                 </Link>
               </div>
             </Reveal>
-            <Reveal delay={310}>
-              <div style={{ display: 'flex', gap: 'clamp(22px,3.4vw,48px)', borderTop: '1px solid rgba(244,243,239,.12)', paddingTop: 16 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: 'clamp(24px,2.6vw,34px)', fontWeight: 700, letterSpacing: '-.03em', lineHeight: 1 }}>
-                    <Counter to={2200} group />
-                  </span>
-                  <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(244,243,239,.42)' }}>{t.s1}</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: 'clamp(24px,2.6vw,34px)', fontWeight: 700, letterSpacing: '-.03em', lineHeight: 1, color: '#C89B4A' }}>2010</span>
-                  <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(244,243,239,.42)' }}>{t.s2}</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: 'clamp(24px,2.6vw,34px)', fontWeight: 700, letterSpacing: '-.03em', lineHeight: 1 }}>3</span>
-                  <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(244,243,239,.42)' }}>{t.s3}</span>
-                </div>
+            <Reveal delay={300}>
+              <div style={{ display: 'flex', gap: 'clamp(26px,4vw,52px)', borderTop: '1px solid rgba(244,243,239,.12)', paddingTop: 18 }}>
+                {[
+                  [<Counter key="c" to={2200} group />, t.s1, false],
+                  ['2010', t.s2, true],
+                  ['3', t.s3, false],
+                ].map(([v, l, oro], i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <span className="display" style={{ fontSize: 'clamp(28px,2.8vw,38px)', lineHeight: 1, color: oro ? '#C89B4A' : undefined }}>{v as React.ReactNode}</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: '.04em', color: 'rgba(244,243,239,.4)' }}>{l as string}</span>
+                  </div>
+                ))}
               </div>
             </Reveal>
           </div>
 
-          <Reveal delay={130} style={{ position: 'relative', justifySelf: 'end', width: '100%', maxWidth: 'min(400px,42vh)' }}>
-            <div data-hov-img data-cur-label={t.clook} style={{ position: 'relative', overflow: 'hidden', borderRadius: 18, aspectRatio: '4/5', background: '#131318' }}>
-              <Image
-                src="/images/iris.jpg"
-                alt="Iris Soares"
-                fill
-                sizes="400px"
-                style={{ objectFit: 'cover', objectPosition: 'center 18%', transition: 'transform 1.1s cubic-bezier(.16,1,.3,1),filter .8s ease', filter: 'saturate(.92)' }}
-              />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom,rgba(10,10,12,.5),transparent 45%)' }} />
-            </div>
+          <Reveal delay={120} style={{ justifySelf: 'end', width: '100%', maxWidth: 'min(440px,44vh)' }}>
+            <Foto src={FOTOS.retrato} alt="Iris Soares" ratio="4/5" radius={24} priority />
           </Reveal>
         </div>
       </div>
 
-      {/* EL SÍNTOMA */}
-      <div style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: SECTION_PAD }}>
-        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(34px,4vw,58px)' }}>
+      {/* ── FRANJA DE IMÁGENES: sin una palabra ─────────────── */}
+      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: '0 clamp(16px,4vw,56px) clamp(70px,9vw,120px)' }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 'clamp(10px,1.4vw,18px)' }}>
           <Reveal>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>
-              <span>{t.p_lab}</span>
-              <span style={{ flex: 1, height: 1, background: 'rgba(10,10,12,.12)' }} />
-            </div>
+            <Foto src={FOTOS.hablando} alt="Iris en directo" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+          </Reveal>
+          <Reveal delay={90} style={{ paddingTop: 'clamp(0px,4vw,56px)' }}>
+            <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+          </Reveal>
+          <Reveal delay={180}>
+            <Foto src={FOTOS.sala} alt="Sala" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+          </Reveal>
+        </div>
+      </div>
+
+      {/* ── EL DOLOR ─────────────────────────────────────────── */}
+      <div style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: PAD }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(34px,4vw,56px)' }}>
+          <Reveal>
+            <Rotulo claro>{t.p_lab}</Rotulo>
           </Reveal>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {problemLines.map((line, i) => (
+            {dolor.map((linea, i) => (
               <Reveal key={i} line delay={i * 70}>
-                <div
-                  className="line-hover"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'clamp(12px,2vw,26px)',
-                    padding: 'clamp(14px,1.8vw,24px) 0',
-                    borderBottom: '1px solid rgba(10,10,12,.1)',
-                  }}
-                >
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#C89B4A', flexShrink: 0, width: 20 }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span style={{ fontSize: 'clamp(20px,3vw,42px)', fontWeight: 500, lineHeight: 1.15, letterSpacing: '-.03em', color: i === 3 ? '#6B6B72' : undefined }}>
-                    {line}
-                  </span>
+                <div className="line-hover" style={{ display: 'flex', alignItems: 'baseline', gap: 'clamp(14px,2.4vw,32px)', padding: 'clamp(16px,2vw,26px) 0', borderBottom: '1px solid rgba(10,10,12,.1)' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#C89B4A', flexShrink: 0, width: 18 }}>{String(i + 1).padStart(2, '0')}</span>
+                  <span className="display" style={{ fontSize: 'clamp(24px,3.4vw,48px)', color: i === 3 ? '#6B6B72' : undefined }}>{linea}</span>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal>
-            <div style={{ fontSize: 'clamp(26px,4.6vw,62px)', fontWeight: 900, lineHeight: 1.04, letterSpacing: '-.04em', maxWidth: '20ch' }}>{t.p_punch}</div>
-          </Reveal>
-        </div>
-      </div>
-
-      {/* LA BISAGRA — por qué pasa */}
-      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: SECTION_PAD }}>
-        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <Reveal>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>
-                <span>{t.b_lab}</span>
-                <span style={{ flex: 1, height: 1, background: 'rgba(244,243,239,.12)' }} />
-              </div>
-            </Reveal>
-            <Reveal delay={70}>
-              <div style={{ fontSize: 'clamp(30px,4.4vw,60px)', fontWeight: 900, lineHeight: 1.02, letterSpacing: '-.045em', maxWidth: '15ch', textWrap: 'pretty' }}>{t.b_h}</div>
-            </Reveal>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingTop: 'clamp(0px,1.6vw,26px)' }}>
-            <Reveal delay={120}>
-              <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.62, color: 'rgba(244,243,239,.62)', maxWidth: '48ch' }}>{t.b_p1}</p>
-            </Reveal>
-            <Reveal delay={190}>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 'clamp(16px,1.25vw,20px)',
-                  lineHeight: 1.62,
-                  color: '#F4F3EF',
-                  maxWidth: '48ch',
-                  borderLeft: '2px solid #C89B4A',
-                  paddingLeft: 18,
-                }}
-              >
-                {t.b_p2}
-              </p>
-            </Reveal>
-          </div>
-        </div>
-      </div>
-
-      {/* QUIÉN SOY */}
-      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: SECTION_PAD }}>
-        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(28px,4vw,72px)', alignItems: 'center' }}>
-          <Reveal style={{ position: 'relative' }}>
-            <div data-par="-.04" data-hov-img data-cur-label={t.clook} style={{ position: 'relative', overflow: 'hidden', borderRadius: 18, aspectRatio: '1/1', background: '#131318' }}>
-              <Image src="/images/iris.jpg" alt="Iris Soares" fill sizes="500px" style={{ objectFit: 'cover', objectPosition: 'center 16%', transition: 'transform 1.1s cubic-bezier(.16,1,.3,1),filter .8s ease' }} />
+            <div className="display" style={{ fontSize: 'clamp(30px,5vw,68px)', maxWidth: '18ch' }}>
+              <em>{t.p_punch}</em>
             </div>
           </Reveal>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,26px)' }}>
+        </div>
+      </div>
+
+      {/* ── POR QUÉ PASA ─────────────────────────────────────── */}
+      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: PAD }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(32px,5vw,84px)', alignItems: 'center' }}>
+          <Reveal>
+            <div data-par="-.04">
+              <Foto src={FOTOS.hablando} alt="Iris Soares" ratio="4/5" radius={22} sizes="(max-width:900px) 100vw, 42vw" />
+            </div>
+          </Reveal>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(20px,2.4vw,28px)' }}>
             <Reveal>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>
-                <span>{t.w_lab}</span>
-                <span style={{ flex: 1, height: 1, background: 'rgba(244,243,239,.12)' }} />
-              </div>
+              <Rotulo>{t.b_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70}>
-              <div style={{ fontSize: 'clamp(28px,3.6vw,52px)', fontWeight: 900, lineHeight: 1.02, letterSpacing: '-.04em', maxWidth: '16ch' }}>{t.w_h}</div>
+            <Reveal delay={70} className="display" style={{ fontSize: 'clamp(32px,4.4vw,62px)', maxWidth: '14ch' }}>
+              {t.b_h}
             </Reveal>
             <Reveal delay={140}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.62, color: 'rgba(244,243,239,.58)', maxWidth: '46ch' }}>
+              <p style={{ margin: 0, fontSize: 'clamp(16px,1.2vw,19px)', lineHeight: 1.65, color: 'rgba(244,243,239,.58)', maxWidth: '40ch' }}>{t.b_p1}</p>
+            </Reveal>
+            <Reveal delay={200}>
+              <p style={{ margin: 0, fontSize: 'clamp(16px,1.2vw,19px)', lineHeight: 1.65, color: '#F4F3EF', maxWidth: '40ch', borderLeft: '2px solid #C89B4A', paddingLeft: 20 }}>{t.b_p2}</p>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+
+      {/* ── QUIÉN SOY ────────────────────────────────────────── */}
+      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: '0 clamp(16px,4vw,56px) clamp(76px,10vw,150px)' }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(32px,5vw,84px)', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,26px)' }}>
+            <Reveal>
+              <Rotulo>{t.w_lab}</Rotulo>
+            </Reveal>
+            <Reveal delay={70} className="display" style={{ fontSize: 'clamp(32px,4.2vw,58px)', maxWidth: '14ch' }}>
+              {t.w_h}
+            </Reveal>
+            <Reveal delay={140}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 'clamp(15px,1.1vw,18px)', lineHeight: 1.65, color: 'rgba(244,243,239,.58)', maxWidth: '42ch' }}>
                 <p style={{ margin: 0 }}>{t.w_p1}</p>
                 <p style={{ margin: 0 }}>{t.w_p2}</p>
               </div>
             </Reveal>
-            <Reveal delay={210}>
+            <Reveal delay={200}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {chips.map((c) => (
-                  <span
-                    key={c}
-                    className="chip"
-                    style={{ fontSize: 12, fontWeight: 500, color: 'rgba(244,243,239,.62)', border: '1px solid rgba(244,243,239,.14)', borderRadius: 100, padding: '7px 13px' }}
-                  >
+                  <span key={c} className="chip" style={{ fontSize: 12, fontWeight: 500, color: 'rgba(244,243,239,.6)', border: '1px solid rgba(244,243,239,.14)', borderRadius: 100, padding: '7px 14px' }}>
                     {c}
                   </span>
                 ))}
               </div>
             </Reveal>
           </div>
+          <Reveal delay={110} style={{ justifySelf: 'end', width: '100%' }}>
+            <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="1/1" radius={22} sizes="(max-width:900px) 100vw, 42vw" />
+          </Reveal>
         </div>
       </div>
 
-      {/* MÉTODO */}
-      <div id="metodo" style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: '0 clamp(14px,3vw,36px) clamp(70px,10vw,150px)' }}>
-        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(28px,3.4vw,48px)' }}>
+      {/* ── CÓMO FUNCIONA ────────────────────────────────────── */}
+      <div id="metodo" style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: '0 clamp(16px,4vw,56px) clamp(76px,10vw,150px)' }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(30px,3.6vw,50px)' }}>
           <Reveal>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>{t.m_lab}</span>
-                <span style={{ fontSize: 'clamp(26px,3.4vw,46px)', fontWeight: 900, lineHeight: 1.03, letterSpacing: '-.04em', maxWidth: '16ch' }}>{t.m_h}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <Rotulo>{t.m_lab}</Rotulo>
+                <span className="display" style={{ fontSize: 'clamp(30px,3.8vw,52px)', maxWidth: '14ch' }}>{t.m_h}</span>
               </div>
               <div style={{ height: 2, background: 'rgba(244,243,239,.12)', borderRadius: 2, overflow: 'hidden', width: 'min(200px,40vw)' }}>
                 <div id="mprog" style={{ height: '100%', width: '0%', background: '#C89B4A', transition: 'width .3s linear' }} />
               </div>
             </div>
           </Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(250px,1fr))', gap: 10 }}>
-            {methodSteps.map(([title, desc], i) => (
-              <Reveal key={title} delay={i * 90}>
-                <div
-                  data-step
-                  data-card
-                  className="card-hover"
-                  style={{
-                    border: '1px solid rgba(244,243,239,.13)',
-                    borderRadius: 18,
-                    padding: 'clamp(20px,2.2vw,30px)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    gap: 26,
-                    minHeight: 230,
-                  }}
-                >
-                  <span data-cardnum style={{ fontSize: 34, fontWeight: 900, letterSpacing: '-.04em', lineHeight: 1, color: 'rgba(244,243,239,.14)', transition: 'color .5s ease' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(250px,1fr))', gap: 12 }}>
+            {pasos.map(([titulo, texto], i) => (
+              <Reveal key={titulo} delay={i * 90}>
+                <div data-step data-card className="card-hover" style={{ border: '1px solid rgba(244,243,239,.13)', borderRadius: 20, padding: 'clamp(22px,2.4vw,32px)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 30, minHeight: 220 }}>
+                  <span data-cardnum className="display" style={{ fontSize: 40, lineHeight: 1, color: 'rgba(244,243,239,.16)', transition: 'color .5s ease' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                    <span style={{ fontSize: 'clamp(19px,1.8vw,24px)', fontWeight: 700, letterSpacing: '-.025em', lineHeight: 1.1 }}>{title}</span>
-                    <span style={{ fontSize: 15, lineHeight: 1.55, color: 'rgba(244,243,239,.55)' }}>{desc}</span>
+                    <span className="display" style={{ fontSize: 'clamp(21px,2vw,27px)' }}>{titulo}</span>
+                    <span style={{ fontSize: 15, lineHeight: 1.55, color: 'rgba(244,243,239,.52)' }}>{texto}</span>
                   </div>
                 </div>
               </Reveal>
@@ -377,202 +250,77 @@ export default function Home() {
         </div>
       </div>
 
-      {/* MEMBRESÍA / LISTA DE ESPERA */}
-      <div id="lista-espera" style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: SECTION_PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
-        <div
-          style={{
-            position: 'absolute',
-            top: '-30%',
-            right: '-10%',
-            width: 'min(620px,70vw)',
-            height: 'min(620px,70vw)',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle,rgba(200,155,74,.16),transparent 62%)',
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          style={{
-            position: 'relative',
-            maxWidth: 1240,
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))',
-            gap: 'clamp(28px,4vw,72px)',
-            alignItems: 'center',
-          }}
-        >
-          {/* Columna izquierda: la promesa */}
+      {/* ── LA COMUNIDAD (lleva a su landing) ────────────────── */}
+      <div id="lista-espera" style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(28px,4vw,72px)', alignItems: 'center' }}>
+          <Reveal>
+            <Foto src={FOTOS.sala} alt="La comunidad" ratio="4/3" radius={22} sizes="(max-width:900px) 100vw, 45vw" />
+          </Reveal>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,26px)' }}>
             <Reveal>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>
-                <span>{t.wl_lab}</span>
-                <span style={{ flex: 1, height: 1, background: 'rgba(10,10,12,.12)' }} />
-              </div>
+              <Rotulo claro>{t.wl_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70}>
-              <div style={{ fontSize: 'clamp(30px,4.2vw,56px)', fontWeight: 900, lineHeight: 1.02, letterSpacing: '-.045em', maxWidth: '15ch', textWrap: 'pretty' }}>{t.wl_h}</div>
+            <Reveal delay={70} className="display" style={{ fontSize: 'clamp(32px,4.2vw,58px)', maxWidth: '14ch' }}>
+              {t.wl_h}
             </Reveal>
             <Reveal delay={130}>
-              <p style={{ margin: 0, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.65, color: '#5C5972', maxWidth: '46ch' }}>{t.wl_p}</p>
+              <p style={{ margin: 0, fontSize: 'clamp(16px,1.15vw,19px)', lineHeight: 1.6, color: '#5C5972', maxWidth: '36ch' }}>{t.wl_p}</p>
             </Reveal>
-
-            {/* Un paso al mes, sin final: la idea que vende la membresía */}
-            <Reveal delay={190}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 460 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 68 }}>
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        flex: 1,
-                        height: `${26 + i * 6}%`,
-                        borderRadius: '5px 5px 2px 2px',
-                        background: i < 3 ? 'linear-gradient(to top,#C89B4A,#E0B15C)' : 'rgba(10,10,12,.09)',
-                      }}
-                    />
-                  ))}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, letterSpacing: '.04em', textTransform: 'uppercase', color: '#8A8A92' }}>
-                  <span>{t.wl_month1}</span>
-                  <span>{t.wl_nofin}</span>
-                </div>
-                <span style={{ fontSize: 14, lineHeight: 1.6, color: '#5C5972' }}>{t.wl_rail}</span>
+            <Reveal delay={180}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+                <span className="display" style={{ fontSize: 'clamp(44px,5vw,68px)', color: '#8F6B18' }}>{eur(MEMBRESIA.precioReserva)}</span>
+                <span style={{ fontSize: 17, color: '#8A8A92', textDecoration: 'line-through' }}>{eur(MEMBRESIA.precio)}</span>
+                <span style={{ fontSize: 13, color: '#8A8A92' }}>al mes</span>
               </div>
+            </Reveal>
+            <Reveal delay={230}>
+              <PillCTA href="/membresia" variant="dark" label={t.wl_cta} curLabel={t.csee} />
             </Reveal>
           </div>
-
-          {/* Columna derecha: la tarjeta */}
-          <Reveal
-            delay={150}
-            style={{
-              background: 'linear-gradient(150deg,#15151B,#0A0A0C 65%)',
-              color: '#F4F3EF',
-              border: '1px solid rgba(200,155,74,.32)',
-              borderRadius: 24,
-              padding: 'clamp(24px,2.6vw,36px)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 20,
-              boxShadow: '0 34px 80px rgba(10,10,12,.3)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(244,243,239,.5)' }}>{t.wl_badge}</span>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A', border: '1px solid rgba(200,155,74,.45)', borderRadius: 100, padding: '5px 11px' }}>
-                {t.e_c2}
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14 }}>
-              <span style={{ fontSize: 'clamp(58px,7vw,88px)', fontWeight: 900, letterSpacing: '-.06em', lineHeight: 0.85, color: '#C89B4A' }}>10</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, paddingBottom: 6 }}>
-                <span style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.25 }}>{t.wl_seats}</span>
-                <span style={{ fontSize: 13, lineHeight: 1.45, color: 'rgba(244,243,239,.5)' }}>{t.wl_seats_sub}</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 5 }}>
-              {Array.from({ length: 10 }, (_, i) => (
-                <span key={i} style={{ flex: 1, height: 6, borderRadius: 100, border: '1px solid rgba(200,155,74,.45)', background: 'rgba(200,155,74,.12)' }} />
-              ))}
-            </div>
-
-            <div style={{ height: 1, background: 'rgba(244,243,239,.12)' }} />
-
-            {!wlDone ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <input
-                  type="email"
-                  value={wlEmail}
-                  placeholder={t.wl_ph_mail}
-                  onChange={(e) => {
-                    setWlEmail(e.target.value);
-                    setWlErr('');
-                  }}
-                  onKeyDown={(e) => e.key === 'Enter' && sendWaitlist()}
-                  className="field-input"
-                  style={{ background: 'rgba(244,243,239,.06)', border: '1px solid rgba(244,243,239,.18)', color: '#F4F3EF' }}
-                />
-                <div onClick={sendWaitlist} data-mag data-cur-label={t.csee} className="pill pill-gold" style={{ justifyContent: 'center', padding: '15px 20px', opacity: wlSending ? 0.6 : 1 }}>
-                  <span>{wlSending ? t.wl_sending : t.wl_cta}</span>
-                  <span>→</span>
-                </div>
-                {wlErr && <span style={{ fontSize: 13, color: '#E08585' }}>{wlErr}</span>}
-                <span style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(244,243,239,.42)' }}>{t.wl_priv}</span>
-                <Link href="/membresia" data-mag style={{ fontSize: 13, fontWeight: 600, color: '#C89B4A' }}>
-                  {t.wl_more}
-                </Link>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 7, border: '1px solid rgba(124,196,138,.4)', background: 'rgba(124,196,138,.08)', borderRadius: 16, padding: 20 }}>
-                <span style={{ fontSize: 16, fontWeight: 700, color: '#7CC48A' }}>{t.wl_done_h}</span>
-                <span style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(244,243,239,.62)' }}>{t.wl_done_p}</span>
-              </div>
-            )}
-          </Reveal>
         </div>
       </div>
 
-      {/* ESCUELA TEASER */}
-      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: 'clamp(70px,10vw,140px) clamp(14px,3vw,36px)' }}>
-        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
+      {/* ── CURSOS ───────────────────────────────────────────── */}
+      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: PAD }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,40px)' }}>
           <Reveal>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>
-              <span>{t.e_lab}</span>
-              <span style={{ flex: 1, height: 1, background: 'rgba(244,243,239,.12)' }} />
-            </div>
+            <Rotulo>{t.e_lab}</Rotulo>
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(24px,3vw,56px)', alignItems: 'end' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <Reveal delay={60}>
-                <div style={{ fontSize: 'clamp(30px,4.6vw,64px)', fontWeight: 900, lineHeight: 1, letterSpacing: '-.045em', maxWidth: '14ch' }}>{t.e_h}</div>
-              </Reveal>
-              <Reveal delay={130}>
-                <p style={{ margin: 0, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.6, color: 'rgba(244,243,239,.58)', maxWidth: '38ch' }}>{t.e_sub}</p>
-              </Reveal>
-            </div>
-            <Reveal delay={180} style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'flex-start' }}>
+            <Reveal delay={60} className="display" style={{ fontSize: 'clamp(34px,4.6vw,64px)', maxWidth: '13ch' }}>
+              {t.e_h}
+            </Reveal>
+            <Reveal delay={140} style={{ display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'flex-start' }}>
+              <p style={{ margin: 0, fontSize: 'clamp(15px,1.1vw,18px)', lineHeight: 1.6, color: 'rgba(244,243,239,.55)', maxWidth: '32ch' }}>{t.e_sub}</p>
               <PillCTA href="/cursos" variant="cream" label={t.e_cta} curLabel={t.csee} />
             </Reveal>
           </div>
         </div>
       </div>
 
-      {/* FAQ */}
-      <div id="dudas" style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: SECTION_PAD }}>
-        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(24px,4vw,72px)', alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, position: 'sticky', top: 100 }}>
+      {/* ── DUDAS ────────────────────────────────────────────── */}
+      <div id="dudas" style={{ position: 'relative', zIndex: 3, background: '#F5F4F0', color: '#0A0A0C', padding: PAD }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(24px,4vw,72px)', alignItems: 'start' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, position: 'sticky', top: 100 }}>
             <Reveal>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>{t.f_lab}</div>
+              <Rotulo claro>{t.f_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70}>
-              <div style={{ fontSize: 'clamp(26px,3.4vw,46px)', fontWeight: 900, lineHeight: 1.03, letterSpacing: '-.042em', maxWidth: '16ch' }}>{t.f_h}</div>
+            <Reveal delay={70} className="display" style={{ fontSize: 'clamp(30px,3.8vw,52px)', maxWidth: '13ch' }}>
+              {t.f_h}
             </Reveal>
           </div>
-          <Reveal style={{ display: 'flex', flexDirection: 'column' }}>
+          <Reveal>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {faqs.map(([q, a], i) => {
                 const on = faq === i;
                 return (
-                  <div
-                    key={q}
-                    onClick={() => setFaq(on ? -1 : i)}
-                    data-mag
-                    className="line-hover"
-                    style={{
-                      borderTop: '1px solid rgba(10,10,12,.12)',
-                      borderBottom: i === faqs.length - 1 ? '1px solid rgba(10,10,12,.12)' : undefined,
-                      padding: '22px 0',
-                      cursor: 'pointer',
-                    }}
-                  >
+                  <div key={q} onClick={() => setFaq(on ? -1 : i)} data-mag className="line-hover" style={{ borderTop: '1px solid rgba(10,10,12,.12)', borderBottom: i === faqs.length - 1 ? '1px solid rgba(10,10,12,.12)' : undefined, padding: '24px 0', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 18 }}>
-                      <span style={{ fontSize: 'clamp(17px,1.7vw,22px)', fontWeight: 600, letterSpacing: '-.02em' }}>{q}</span>
-                      <span style={{ fontSize: 17, color: '#C89B4A', flexShrink: 0 }}>{on ? '−' : '+'}</span>
+                      <span className="display" style={{ fontSize: 'clamp(20px,2vw,27px)' }}>{q}</span>
+                      <span style={{ fontSize: 18, color: '#C89B4A', flexShrink: 0 }}>{on ? '−' : '+'}</span>
                     </div>
                     <div style={{ overflow: 'hidden', transition: 'max-height .55s cubic-bezier(.16,1,.3,1),opacity .4s ease', maxHeight: on ? 240 : 0, opacity: on ? 1 : 0 }}>
-                      <p style={{ margin: '12px 0 0', fontSize: 16, lineHeight: 1.6, color: '#6B6B72', maxWidth: '52ch' }}>{a}</p>
+                      <p style={{ margin: '12px 0 0', fontSize: 16, lineHeight: 1.65, color: '#6B6B72', maxWidth: '48ch' }}>{a}</p>
                     </div>
                   </div>
                 );
@@ -582,63 +330,59 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CITA */}
-      <div id="cita" style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: 'clamp(76px,11vw,160px) clamp(14px,3vw,36px)' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 22 }}>
-          <Reveal>
-            <div style={{ fontSize: 'clamp(32px,5.4vw,76px)', fontWeight: 900, lineHeight: 1, letterSpacing: '-.045em', maxWidth: '15ch' }}>{t.c_h}</div>
+      {/* ── CIERRE ───────────────────────────────────────────── */}
+      <div id="cita" style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: 'clamp(90px,12vw,170px) clamp(16px,4vw,56px)' }}>
+        <div style={{ maxWidth: 880, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 26 }}>
+          <Reveal className="display" style={{ fontSize: 'clamp(38px,6vw,86px)', maxWidth: '13ch' }}>
+            {t.c_h}
           </Reveal>
           <Reveal delay={80}>
-            <p style={{ margin: 0, fontSize: 'clamp(15px,1.2vw,19px)', lineHeight: 1.55, color: 'rgba(244,243,239,.55)', maxWidth: '38ch' }}>{t.c_p}</p>
+            <p style={{ margin: 0, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.6, color: 'rgba(244,243,239,.5)', maxWidth: '34ch' }}>{t.c_p}</p>
           </Reveal>
-          <Reveal delay={160}>
+          <Reveal delay={150}>
             <PillCTA onClick={openChat} variant="gold" label={t.c_btn} curLabel={t.cbook} />
           </Reveal>
-          <Reveal delay={220}>
-            <div style={{ fontSize: 12, fontWeight: 500, color: 'rgba(244,243,239,.4)' }}>{t.c_micro}</div>
+          <Reveal delay={210}>
+            <span style={{ fontSize: 12, color: 'rgba(244,243,239,.36)' }}>{t.c_micro}</span>
           </Reveal>
         </div>
       </div>
 
-      {/* FOOTER */}
-      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', borderTop: '1px solid rgba(244,243,239,.1)', padding: 'clamp(40px,6vw,70px) clamp(14px,3vw,36px) 28px' }}>
-        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 36 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(190px,1fr))', gap: 30 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-.02em' }}>iris soares</span>
-              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'rgba(244,243,239,.45)', maxWidth: '30ch' }}>{t.ft_p}</p>
+      {/* ── PIE: el mapa de la web ───────────────────────────── */}
+      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', borderTop: '1px solid rgba(244,243,239,.1)', padding: 'clamp(44px,6vw,72px) clamp(16px,4vw,56px) 30px' }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 40 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(190px,1fr))', gap: 32 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <span className="display" style={{ fontSize: 22 }}>iris soares</span>
+              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'rgba(244,243,239,.42)', maxWidth: '28ch' }}>{t.ft_p}</p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: 'rgba(244,243,239,.32)' }}>{t.ft_start}</span>
-              <div onClick={openChat} data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)', cursor: 'pointer' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(244,243,239,.3)' }}>{t.ft_start}</span>
+              <div onClick={openChat} data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.75)', cursor: 'pointer' }}>
                 {t.ft_1}
               </div>
-              <Link href="/sinergia" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
+              <Link href="/sinergia" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.75)' }}>
                 {t.ft_2}
               </Link>
-              <Link href="/cursos" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
+              <Link href="/cursos" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.75)' }}>
                 {t.ft_3}
               </Link>
-              <Link href="/membresia" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
+              <Link href="/membresia" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.75)' }}>
                 {t.ft_4}
               </Link>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: 'rgba(244,243,239,.32)' }}>{t.ft_legal}</span>
-              <a href="#" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
-                {t.ft_l1}
-              </a>
-              <a href="#" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
-                {t.ft_l2}
-              </a>
-              <a href="#" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.78)' }}>
-                {t.ft_l3}
-              </a>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(244,243,239,.3)' }}>{t.ft_legal}</span>
+              {[t.ft_l1, t.ft_l2, t.ft_l3].map((l) => (
+                <a key={l} href="#" data-mag style={{ fontSize: 14, color: 'rgba(244,243,239,.75)' }}>
+                  {l}
+                </a>
+              ))}
             </div>
           </div>
-          <div style={{ borderTop: '1px solid rgba(244,243,239,.1)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <span style={{ fontSize: 11, lineHeight: 1.7, color: 'rgba(244,243,239,.3)', maxWidth: '58ch' }}>{t.ft_disc}</span>
-            <span style={{ fontSize: 11, color: 'rgba(244,243,239,.28)' }}>© 2026 · ES / PT / EN</span>
+          <div style={{ borderTop: '1px solid rgba(244,243,239,.1)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <span style={{ fontSize: 11, lineHeight: 1.7, color: 'rgba(244,243,239,.28)', maxWidth: '58ch' }}>{t.ft_disc}</span>
+            <span style={{ fontSize: 11, color: 'rgba(244,243,239,.26)' }}>© 2026 · ES / PT / EN</span>
           </div>
         </div>
       </div>

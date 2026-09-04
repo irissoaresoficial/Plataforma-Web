@@ -106,7 +106,7 @@ export default function Sinergia() {
             <Reveal>
               <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>Gratis · resultado al momento</div>
             </Reveal>
-            <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontWeight: 900, lineHeight: 0.99, letterSpacing: '-.045em', maxWidth: '16ch' }}>
+            <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontFamily: 'var(--serif)', lineHeight: 0.99, letterSpacing: '-.045em', maxWidth: '16ch' }}>
               Con tu madre, con tu socio, con tu pareja: <span style={{ color: '#C89B4A' }}>siempre acabas en el mismo sitio</span>.
             </Reveal>
             <Reveal delay={150}>
@@ -358,7 +358,7 @@ export default function Sinergia() {
             ))}
           </div>
           <Reveal>
-            <div style={{ fontSize: 'clamp(22px,3vw,40px)', fontWeight: 900, lineHeight: 1.06, letterSpacing: '-.04em', maxWidth: '24ch' }}>
+            <div style={{ fontSize: 'clamp(22px,3vw,40px)', fontFamily: 'var(--serif)', lineHeight: 1.06, letterSpacing: '-.04em', maxWidth: '24ch' }}>
               Esto es una foto. En consulta se ve la película entera: de dónde viene y en qué generación empezó.
             </div>
           </Reveal>

@@ -1,4 +1,6 @@
 :root {
+  --serif: 'Instrument Serif', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'Satoshi', -apple-system, 'Segoe UI', Helvetica, sans-serif;
   --ink: #0a0a0c;
   --paper: #f5f4f0;
   --cream: #f4f3ef;
@@ -18,7 +20,7 @@ body {
   margin: 0;
   background: var(--ink);
   color: var(--cream);
-  font-family: 'Satoshi', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+  font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -81,6 +83,17 @@ textarea::placeholder {
 
 #chat-body::-webkit-scrollbar {
   width: 0;
+}
+
+/* Titulares: serif editorial. El cuerpo y los datos siguen en sans. */
+.display {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+}
+.display em {
+  font-style: italic;
 }
 
 /* ---- shared interactive utilities ---- */

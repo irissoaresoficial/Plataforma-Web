@@ -16,6 +16,23 @@ export const PENDIENTE = 'PENDIENTE';
  */
 export const LOGO = '/images/logo-33.png';
 
+/**
+ * FOTOS DE IRIS
+ * Guarda los archivos en `public/images/` con estos nombres exactos.
+ * El que no exista sale como un hueco discreto, sin romper la página.
+ * Formato recomendado: vertical (3:4 o 4:5), 1200 px de ancho, JPG.
+ */
+export const FOTOS = {
+  /** La principal, en la portada. Vertical. */
+  retrato: '/images/iris.jpg',
+  /** Ella hablando o en directo. Vertical. */
+  hablando: '/images/iris-hablando.jpg',
+  /** Un plano cercano, para el bloque de quién es. Vertical. */
+  cerca: '/images/iris-cerca.jpg',
+  /** Cualquier otra: sala, público, detalle de trabajo. Horizontal. */
+  sala: '/images/iris-sala.jpg',
+};
+
 export const CONTACTO = {
   /** Correo al que se escribe la gente si algo falla. */
   email: 'hola@irissoares.com',

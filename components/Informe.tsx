@@ -60,7 +60,7 @@ export default function Informe({ e }: { e: Estudio }) {
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: GOLD, marginBottom: 14 }}>
           {conQuien ? `Contigo y ${conQuien}` : 'Tu estudio'}
         </div>
-        <h1 style={{ margin: 0, fontSize: 40, fontWeight: 700, letterSpacing: '-.045em', lineHeight: 1.05, maxWidth: '18ch' }}>
+        <h1 style={{ margin: 0, fontFamily: "'Instrument Serif',Georgia,serif", fontSize: 42, fontWeight: 400, letterSpacing: '-.02em', lineHeight: 1.06, maxWidth: '18ch' }}>
           Lo que se activa entre {e.a.nombrePila} y {e.b.nombrePila}.
         </h1>
       </section>
