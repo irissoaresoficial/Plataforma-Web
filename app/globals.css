@@ -1,7 +1,7 @@
 :root {
   /* Una sola familia. Las dos variables apuntan a lo mismo a propósito: así
      el código sigue distinguiendo titular de cuerpo, pero la letra es una. */
-  --serif: 'Hanken Grotesk', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --serif: 'Montserrat', -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --sans: var(--serif);
 
   /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
@@ -156,15 +156,17 @@ html {
 /*
  * UN SOLO DIBUJO DE LETRA EN TODA LA WEB.
  *
- * Hanken Grotesk, en tres pesos: 300 light, 400 regular y 700 bold. Es lo más
- * cercano a Objektiv que se puede servir sin licencia —Objektiv es de Dinamo y
- * es de pago— y de las alternativas es la única con un light de verdad.
+ * Montserrat, en tres pesos: 300 light, 400 regular y 700 bold.
  *
  * Solo tiene un eje variable, el peso, así que no hay manera de que dos partes
  * de la web acaben con dos dibujos distintos: lo único que cambia de un sitio a
  * otro es el peso, el tamaño y la cursiva. Esto no es una manía: cuando la
  * familia anterior tenía ejes de óptica y de suavidad, moverlos por bloques
  * dibujaba letras distintas y la web parecía hecha con siete tipografías.
+ *
+ * Es ancha. Más que la anterior, letra por letra, así que los titulares piden
+ * un punto menos de cuerpo y algo más de apriete para caber en las mismas
+ * líneas; los tamaños de abajo ya están ajustados a eso.
  */
 body,
 button,

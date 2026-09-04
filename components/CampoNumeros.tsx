@@ -55,15 +55,27 @@ export default function CampoNumeros({
     let nums: Num[] = [];
     /** sellos[capa][cifra] = el número ya dibujado y desenfocado, listo para copiar. */
     let sellos: HTMLCanvasElement[][] = [];
+    /** Con qué escala se dibujaron los sellos que hay ahora mismo. */
+    let escalaSellos = 0;
     let visible = true;
 
-    const tamDe = (capa: number) => 11 + capa * 4.6; // de 11 a 39 px
-    const borronDe = (capa: number) => (CAPAS - 1 - capa) * 1.15;
-    const alfaDe = (capa: number) => (0.1 + capa * 0.075) * intensidad;
+    /*
+     * Los números son fondo, no contenido: nunca deben competir con el titular.
+     * En el móvil se colaban por encima del texto porque los tamaños estaban en
+     * píxeles fijos —una cifra de 39 px ocupa el diez por ciento de una pantalla
+     * de 390— así que aquí se encogen y se apagan con el ancho de la ventana.
+     */
+    const anchoVentana = () => (typeof window === 'undefined' ? 1200 : window.innerWidth);
+    const escalaCifras = () => Math.max(0.55, Math.min(1, anchoVentana() / 1100));
+
+    const tamDe = (capa: number) => (11 + capa * 4.6) * escalaCifras(); // de 11 a 39 px en pantalla ancha
+    const borronDe = (capa: number) => (CAPAS - 1 - capa) * 1.15 * escalaCifras();
+    const alfaDe = (capa: number) => (0.1 + capa * 0.075) * intensidad * (escalaCifras() < 0.75 ? 0.72 : 1);
 
     /** Dibuja cada cifra en su propio lienzo, con su desenfoque ya aplicado. */
     const prepararSellos = () => {
       sellos = [];
+      escalaSellos = escalaCifras();
       for (let capa = 0; capa < CAPAS; capa++) {
         const tam = tamDe(capa);
         const borron = borronDe(capa);
@@ -72,14 +84,14 @@ export default function CampoNumeros({
         for (const cifra of CIFRAS) {
           const s = document.createElement('canvas');
           const sctx = s.getContext('2d')!;
-          sctx.font = `400 ${tam}px 'Hanken Grotesk', -apple-system, 'Helvetica Neue', Arial, sans-serif`;
+          sctx.font = `400 ${tam}px 'Montserrat', -apple-system, 'Helvetica Neue', Arial, sans-serif`;
           const ancho = Math.ceil(sctx.measureText(cifra).width) + margen * 2;
           const alto = Math.ceil(tam * 1.4) + margen * 2;
           s.width = ancho * dpr;
           s.height = alto * dpr;
           sctx.scale(dpr, dpr);
           if (borron > 0.2) sctx.filter = `blur(${borron}px)`;
-          sctx.font = `400 ${tam}px 'Hanken Grotesk', -apple-system, 'Helvetica Neue', Arial, sans-serif`;
+          sctx.font = `400 ${tam}px 'Montserrat', -apple-system, 'Helvetica Neue', Arial, sans-serif`;
           sctx.textAlign = 'center';
           sctx.textBaseline = 'middle';
           sctx.fillStyle = '#c8a35c';
@@ -120,6 +132,12 @@ export default function CampoNumeros({
       ctx.setTransform(escala, 0, 0, escala, 0, 0);
       const n = Math.max(22, Math.min(72, Math.round((w * h) / densidad)));
       nums = Array.from({ length: n }, () => nuevo(true));
+
+      /* Si al cambiar el tamaño de la ventana las cifras tienen que ser otras
+         —girar el teléfono, arrastrar el borde—, se vuelven a dibujar. Solo
+         entonces: rehacer ochenta y cuatro sellos en cada píxel de resize
+         costaría más que todo lo demás junto. */
+      if (Math.abs(escalaCifras() - escalaSellos) > 0.02) prepararSellos();
     };
 
     prepararSellos();
