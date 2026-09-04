@@ -82,16 +82,16 @@ export default function Home() {
         <ParticleField />
         <div id="glow" style={{ position: 'absolute', width: 760, height: 760, left: 0, top: 0, margin: '-380px 0 0 -380px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,155,74,.13),transparent 60%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
 
-        <div className="hero-foto">
-          <Foto src={FOTOS.retrato} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 100vw, 52vw" objectPosition="center 16%" />
-          {/* Funde la foto con el negro por la izquierda y por abajo, para que el
-              titular se apoye en ella en vez de chocar con un recorte duro. */}
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(90deg,#0A0A0C 0%,rgba(10,10,12,.82) 22%,rgba(10,10,12,.08) 62%,transparent 100%)' }} />
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(0deg,#0A0A0C 0%,transparent 34%)' }} />
+        {/* El desvanecido lo hacen las máscaras de .hero-foto y .hero-foto-inner,
+            no capas de degradado encima: así no queda ningún borde recto. */}
+        <div className="hero-foto" aria-hidden>
+          <div className="hero-foto-inner">
+            <Foto src={FOTOS.retrato} alt="" llenar radius={0} priority sizes="(max-width:900px) 100vw, 50vw" objectPosition="center 16%" />
+          </div>
         </div>
 
         <div style={{ position: 'relative', zIndex: 3, maxWidth: ANCHO, margin: '0 auto', width: '100%' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.6vw,32px)', maxWidth: 'min(620px,52%)' }}>
+          <div className="hero-texto" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.6vw,32px)' }}>
             <Reveal>
               <Rotulo>{t.kick}</Rotulo>
             </Reveal>

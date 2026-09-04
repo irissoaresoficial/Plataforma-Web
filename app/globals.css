@@ -374,19 +374,57 @@ textarea::placeholder {
   }
 }
 
-/* La foto del hero: a sangre por el borde derecho y a toda altura. En móvil
-   pasa a ser un fondo a pantalla completa, muy atenuado bajo el texto. */
+/* La foto del hero. Va a sangre por el borde derecho y a toda altura, pero
+   como atmósfera, no como protagonista: apagada, algo desenfocada y desvanecida
+   por los bordes con una máscara de verdad. Con capas de degradado encima
+   quedaba un corte vertical duro; la máscara recorta la propia imagen. */
 .hero-foto {
   position: absolute;
   top: 0;
   bottom: 0;
   right: 0;
-  width: min(42vw, 640px);
+  width: min(44vw, 660px);
   z-index: 1;
+  opacity: 0.5;
+  /* El desvanecido horizontal: se apaga hacia el texto. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.3) 30%, #000 78%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.3) 30%, #000 78%);
 }
+/* El vertical va en una capa aparte para no depender de mask-composite, que no
+   se comporta igual en todos los navegadores. */
+.hero-foto-inner {
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 66%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 66%, transparent 100%);
+  filter: saturate(0.62) contrast(1.04) blur(1.5px);
+}
+
+/* En pantalla estrecha no hay dos columnas: la foto pasa a ser un fondo muy
+   tenue detrás del texto, o el titular deja de leerse. */
 @media (max-width: 900px) {
   .hero-foto {
     width: 100%;
-    opacity: 0.42;
+    opacity: 0.16;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  /* Se desvanece por arriba y por abajo: lo que sobrevive es la franja del
+     centro, que es donde está ella. Arriba solo hay fondo de plató. */
+  .hero-foto-inner {
+    filter: saturate(0.45) blur(3px);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 34%, #000 62%, transparent 94%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 34%, #000 62%, transparent 94%);
+  }
+}
+
+/* La columna del titular se estrecha solo cuando hay foto al lado. En móvil la
+   foto pasa a ser fondo, así que el texto usa todo el ancho disponible. */
+.hero-texto {
+  max-width: 100%;
+}
+@media (min-width: 901px) {
+  .hero-texto {
+    max-width: min(620px, 52%);
   }
 }
