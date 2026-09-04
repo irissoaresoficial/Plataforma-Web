@@ -232,53 +232,59 @@ export const VINCULOS: Record<Vinculo, { nombre: string; lineas: string[] }> = {
 
 export type Repeticion = { titulo: string; detalle: string };
 
-/** Lo que de verdad importa: qué se repite de una persona a la otra. */
+/**
+ * Lo que de verdad importa: qué se repite de una persona a la otra.
+ *
+ * Cada bloque se escribe para alguien que no sabe nada de numerología y que ha
+ * llegado aquí desde un vídeo. Por eso cada uno dice tres cosas en este orden:
+ * de dónde sale el número, qué ha salido, y qué significa en la vida real. Sin
+ * la primera parte, "misma expresión 7" no le dice nada a nadie.
+ */
 export function repeticiones(a: Perfil, b: Perfil, etiqueta: string): Repeticion[] {
   const quien = etiqueta || 'esa persona';
   const out: Repeticion[] = [];
 
   if (a.camino.valor && a.camino.valor === b.camino.valor) {
     out.push({
-      titulo: `Mismo camino: ${a.camino.valor}`,
-      detalle: `Tú y ${quien} venís a recorrer lo mismo: ${SENTIDO[a.camino.valor]?.frase}. Lo que no resolvió, te llega a ti.`,
+      titulo: 'Los dos venís a lo mismo',
+      detalle: `Sumando tu fecha de nacimiento sale un ${a.camino.valor}, y sumando la de ${quien} sale el mismo número. Ese número es la asignatura que la vida os pone delante: ${SENTIDO[a.camino.valor]?.frase} Lo que ${quien} no llegó a resolver de eso, te llega a ti para que lo termines.`,
     });
   }
   if (a.expresion.valor && a.expresion.valor === b.expresion.valor) {
     out.push({
-      titulo: `Misma expresión: ${a.expresion.valor}`,
-      detalle: 'Os movéis por el mundo de la misma manera, aunque penséis que no os parecéis en nada.',
+      titulo: 'Os movéis por el mundo igual',
+      detalle: `Cada letra de un nombre vale un número, y las de vuestros nombres completos suman lo mismo: ${a.expresion.valor}. Por eso, ante un problema, tiráis por el mismo camino y os enfadáis por lo mismo, aunque juréis que no os parecéis en nada.`,
     });
   }
   if (a.herencia.valor && a.herencia.valor === b.herencia.valor) {
     out.push({
-      titulo: `Misma herencia: ${a.herencia.valor}`,
-      detalle: 'El apellido pesa igual en los dos. Es la parte que viene de atrás y no elegisteis.',
+      titulo: 'Cargáis lo mismo del apellido',
+      detalle: `El apellido también suma, y en los dos da ${a.herencia.valor}. Esa es la parte que no elegisteis: viene de generaciones de atrás y llega puesta, como el color de los ojos.`,
     });
   }
   if (a.diaNacimiento && a.diaNacimiento === b.diaNacimiento) {
     out.push({
-      titulo: `Nacisteis el mismo día del mes: ${a.diaNacimiento}`,
-      detalle: 'Las fechas que se repiten en una familia rara vez son casualidad: suelen marcar una lealtad.',
+      titulo: `Nacisteis los dos un día ${a.diaNacimiento}`,
+      detalle: 'Que en una misma familia se repita el día del mes casi nunca es casualidad. Suele marcar una lealtad: alguien nace en la fecha de otro y, sin saberlo, hereda parte de su historia.',
     });
   } else if (a.mesNacimiento && a.mesNacimiento === b.mesNacimiento) {
     out.push({
       titulo: 'Nacisteis el mismo mes',
-      detalle: 'El mismo mes en dos generaciones suele señalar un momento del año cargado en la familia.',
+      detalle: 'Cuando dos generaciones nacen en el mismo mes, ese mes suele estar cargado en la familia: es la época del año en que pasó algo que no se habló. Fíjate en qué te pasa a ti por esas fechas.',
     });
   }
   if (a.camino.deuda && a.camino.deuda === b.camino.deuda) {
     out.push({
-      titulo: `La misma deuda: ${a.camino.deuda}`,
-      detalle: SENTIDO_DEUDA[a.camino.deuda] || '',
+      titulo: 'Arrastráis la misma cuenta pendiente',
+      detalle: `A los dos os sale el ${a.camino.deuda} al sumar la fecha. Es lo que en numerología se llama una deuda: algo que quedó a medias antes y que se hereda hasta que alguien lo mira de frente. ${SENTIDO_DEUDA[a.camino.deuda] || ''}`,
     });
   }
   const comunes = a.lecciones.filter((n) => b.lecciones.includes(n));
   if (comunes.length) {
+    const lista = comunes.map((n) => `${SENTIDO[n]?.clave.toLowerCase()} (${n})`).join(', ');
     out.push({
-      titulo: `Falta lo mismo en los dos: ${comunes.join(', ')}`,
-      detalle: `A ninguno de los dos le sale solo ${comunes
-        .map((n) => `${SENTIDO[n]?.clave.toLowerCase()} (${n})`)
-        .join(' ni ')}. Es lo que la vida os va a pedir una y otra vez hasta que se aprenda.`,
+      titulo: 'A los dos os falta lo mismo',
+      detalle: `Hay números que no aparecen en ninguno de vuestros dos nombres: ${lista}. Eso señala lo que no traéis aprendido de casa, lo que a ninguno de los dos le sale solo. Es justo lo que la vida os va a poner delante una y otra vez, hasta que uno de los dos lo aprenda.`,
     });
   }
 

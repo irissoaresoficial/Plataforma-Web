@@ -17,13 +17,13 @@ import { useEffect, useRef } from 'react';
 
 const CIFRAS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '11', '22', '33'];
 
-/** Cuántas capas de profundidad hay. Cada una tiene su tamaño y su desenfoque. */
-const CAPAS = 4;
+/** Capas de profundidad. Cada una con su tamaño, su desenfoque y su ritmo. */
+const CAPAS = 7;
 
-type Num = { x: number; y: number; vx: number; vy: number; capa: number; cifra: number };
+type Num = { x: number; y: number; vx: number; vy: number; capa: number; cifra: number; fase: number; vaiven: number; giro: number };
 
 export default function CampoNumeros({
-  densidad = 42000,
+  densidad = 22000,
   /** Sobre papel claro conviene poco; sobre granate aguanta más. */
   intensidad = 1,
 }: {
@@ -47,9 +47,9 @@ export default function CampoNumeros({
     let sellos: HTMLCanvasElement[][] = [];
     let visible = true;
 
-    const tamDe = (capa: number) => 15 + capa * 7; // 15, 22, 29, 36 px
-    const borronDe = (capa: number) => (CAPAS - 1 - capa) * 1.6; // 4.8, 3.2, 1.6, 0
-    const alfaDe = (capa: number) => (0.16 + capa * 0.11) * intensidad;
+    const tamDe = (capa: number) => 11 + capa * 4.6; // de 11 a 39 px
+    const borronDe = (capa: number) => (CAPAS - 1 - capa) * 1.15;
+    const alfaDe = (capa: number) => (0.1 + capa * 0.075) * intensidad;
 
     /** Dibuja cada cifra en su propio lienzo, con su desenfoque ya aplicado. */
     const prepararSellos = () => {
@@ -85,10 +85,13 @@ export default function CampoNumeros({
       return {
         x: Math.random() * w,
         y: yAlAzar ? Math.random() * h : h + 50,
-        vx: (Math.random() - 0.5) * 0.09,
-        vy: -(0.05 + capa * 0.045),
+        vx: (Math.random() - 0.5) * 0.07,
+        vy: -(0.04 + capa * 0.028),
         capa,
         cifra: Math.floor(Math.random() * CIFRAS.length),
+        fase: Math.random() * Math.PI * 2,
+        vaiven: 0.25 + Math.random() * 0.7,
+        giro: (Math.random() - 0.5) * 0.22,
       };
     };
 
@@ -99,7 +102,7 @@ export default function CampoNumeros({
       c.width = Math.round(w * dpr);
       c.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const n = Math.max(12, Math.min(38, Math.round((w * h) / densidad)));
+      const n = Math.max(22, Math.min(72, Math.round((w * h) / densidad)));
       nums = Array.from({ length: n }, () => nuevo(true));
     };
 
@@ -129,7 +132,15 @@ export default function CampoNumeros({
         const aw = s.width / dpr;
         const ah = s.height / dpr;
         ctx.globalAlpha = alfaDe(n.capa);
-        ctx.drawImage(s, n.x - aw / 2, n.y - ah / 2, aw, ah);
+        if (n.giro) {
+          ctx.save();
+          ctx.translate(n.x, n.y);
+          ctx.rotate(n.giro);
+          ctx.drawImage(s, -aw / 2, -ah / 2, aw, ah);
+          ctx.restore();
+        } else {
+          ctx.drawImage(s, n.x - aw / 2, n.y - ah / 2, aw, ah);
+        }
       }
       ctx.globalAlpha = 1;
     };
@@ -154,9 +165,11 @@ export default function CampoNumeros({
       if (t - ultimo < 33) return;
       ultimo = t;
 
+      const t2 = t / 1000;
       for (let i = 0; i < nums.length; i++) {
         const n = nums[i];
-        n.x += n.vx;
+        // Un vaivén lento y distinto en cada uno: suben en ese, no en línea recta.
+        n.x += n.vx + Math.sin(t2 * 0.32 + n.fase) * 0.06 * n.vaiven;
         n.y += n.vy;
 
         const dx = n.x - raton.x;
