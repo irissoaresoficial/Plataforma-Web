@@ -32,6 +32,7 @@
   background: var(--bg);
   color: var(--tx);
 }
+:root,
 .claro {
   --bg: var(--papel);
   --tx: var(--tinta);
@@ -1199,4 +1200,53 @@ body[data-nav-claro='si'] .sello-color {
     align-items: flex-start;
     gap: 22px;
   }
+}
+
+/* ---- la cuenta atrás ---- */
+.cuenta {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.cuenta.compacta {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.cuenta-rotulo {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--acento);
+  margin-bottom: 8px;
+}
+.cuenta-cifras {
+  display: flex;
+  gap: 10px;
+}
+.cuenta-cifras > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 46px;
+  padding: 8px 6px;
+  border: 1px solid var(--linea);
+  border-radius: 10px;
+  background: var(--superficie);
+}
+.cuenta-cifras strong {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+  /* Las cifras no bailan al cambiar de segundo. */
+  font-variant-numeric: tabular-nums;
+}
+.cuenta-cifras span {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  margin-top: 4px;
 }

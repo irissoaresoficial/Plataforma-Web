@@ -76,7 +76,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
             </div>
             {/* Todo el detalle del curso vive en la ventana, no en la página:
                 aquí se ve de un vistazo y quien quiera más, entra. */}
-            <CuentaAtras fechaISO={curso.fechaISO} />
+            <CuentaAtras fechaISO={curso.fechaISO} abiertoDesdeISO={curso.inscripcionDesdeISO} />
             <button onClick={() => setDetalle(true)} data-mag data-cur-label="Ver" className="pill pill-cream" style={{ alignSelf: 'center' }}>
               <span>Ver detalles</span>
               <span className="pill-arrow">→</span>

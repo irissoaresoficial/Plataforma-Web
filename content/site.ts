@@ -93,6 +93,8 @@ export type Curso = {
    * atrás; vacío = no se dibuja. Nunca se inventa una fecha.
    */
   fechaISO: string;
+  /** Desde cuándo se puede reservar. Es lo que llena el anillo de la cuenta. */
+  inscripcionDesdeISO?: string;
   /** "18:00 → 21:00 (hora española)" */
   horario: string;
   /** "2 tardes · 6 h en directo" */
@@ -127,8 +129,9 @@ export const CURSOS: Curso[] = [
     id: 'septiembre',
     titulo: PENDIENTE,
     claim: PENDIENTE,
-    fechas: '26 y 27',
-    fechaISO: '', // pon aquí 2026-MM-26 y aparece la cuenta atrás
+    fechas: '26 y 27 de septiembre',
+    fechaISO: '2026-09-26',
+    inscripcionDesdeISO: '2026-09-01',
     horario: PENDIENTE,
     duracion: '2 tardes en directo',
     precio: null,
