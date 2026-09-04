@@ -5,7 +5,7 @@ import Cursor from '@/components/Cursor';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
-import SubNav from '@/components/SubNav';
+import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 import Pendiente from '@/components/Pendiente';
@@ -19,7 +19,7 @@ export default function Membresia() {
     <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
       <Cursor />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <SubNav links={[{ href: '#reservar', label: 'Reservar mi plaza' }]} cta="Reservar" ctaHref="#reservar" />
+      <Nav cta="Reservar" ctaHref="#reservar" extra={[{ href: '#reservar', label: 'Reservar mi plaza' }]} />
 
       {/* HERO */}
       <div id="top" className="claro" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(88px,12vh,130px) clamp(14px,3vw,36px) clamp(30px,5vh,56px)', overflow: 'hidden' }}>

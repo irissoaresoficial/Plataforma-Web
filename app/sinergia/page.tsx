@@ -6,7 +6,7 @@ import Cursor from '@/components/Cursor';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
-import SubNav from '@/components/SubNav';
+import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import { estudio, emailValido, limpiar, SENTIDO, type Estudio } from '@/lib/numerologia';
 import { sendLead } from '@/lib/sendLead';
@@ -88,7 +88,7 @@ export default function Sinergia() {
   return (
     <div id="page" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
       <Cursor hitSelector="[data-mag],a,input,[data-card]" />
-      <SubNav links={[]} cta="Probarlo gratis" ctaHref="#calc" />
+      <Nav cta="Probarlo gratis" ctaHref="#calc" />
 
       <div className="claro" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
         <CampoNumeros intensidad={0.7} />

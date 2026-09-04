@@ -7,7 +7,7 @@ import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
-import HomeNav from '@/components/HomeNav';
+import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
@@ -70,7 +70,7 @@ export default function Home() {
     <div id="app" className="claro" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
       <Cursor />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <HomeNav onBook={openChat} />
+      <Nav cta={t.book} onCta={openChat} conIdiomas extra={[{ href: '#metodo', label: t.n1 }, { href: '#dudas', label: 'Dudas' }]} />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
       {/* El retrato va dentro de un arco: un nicho, no un rectángulo. Es el

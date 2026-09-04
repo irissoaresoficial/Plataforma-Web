@@ -921,3 +921,277 @@ body[data-nav-claro='si'] .sello-color {
   line-height: 1.55;
   color: var(--tx-2);
 }
+
+/* ---- la barra y su menú ---- */
+
+/* Fondo esmerilado siempre: transparente, el titular de la página se leía por
+   debajo de la marca. El respaldo sólido es para navegadores sin backdrop-filter. */
+.barra {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px clamp(14px, 3vw, 32px);
+  background: rgba(255, 255, 255, 0.82);
+  border-bottom: 1px solid var(--linea);
+  color: var(--tinta);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .barra {
+    background: rgba(255, 255, 255, 0.62);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    backdrop-filter: blur(18px) saturate(1.5);
+  }
+}
+.barra-marca {
+  display: flex;
+  align-items: center;
+  color: var(--tinta);
+  min-width: 0;
+}
+.barra-dcha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.barra-cta {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 100px;
+  background: var(--vino);
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.barra-cta:hover {
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(69, 26, 37, 0.26);
+}
+
+/* Tres líneas que se cruzan al abrir. */
+.hamburguesa {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--linea-2);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+  transition: border-color 0.35s ease, background 0.35s ease;
+}
+.hamburguesa:hover {
+  border-color: var(--acento-2);
+}
+.hamburguesa span {
+  display: block;
+  width: 17px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--tinta);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, width 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hamburguesa span:nth-child(2) {
+  width: 12px;
+}
+.hamburguesa:hover span:nth-child(2) {
+  width: 17px;
+}
+.hamburguesa.abierta span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.hamburguesa.abierta span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0.2);
+}
+.hamburguesa.abierta span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* El menú baja desde la barra y ocupa lo que necesita. */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 149;
+  background: rgba(34, 29, 31, 0.28);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.menu.abierto {
+  opacity: 1;
+  visibility: visible;
+}
+.menu-caja {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: calc(64px + clamp(20px, 4vw, 40px)) clamp(18px, 5vw, 56px) clamp(28px, 4vw, 44px);
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom: 1px solid var(--linea);
+  box-shadow: 0 18px 44px rgba(34, 29, 31, 0.1);
+  transform: translateY(-14px);
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+@supports (backdrop-filter: blur(1px)) {
+  .menu-caja {
+    background: rgba(255, 255, 255, 0.93);
+    -webkit-backdrop-filter: blur(30px) saturate(1.6);
+    backdrop-filter: blur(30px) saturate(1.6);
+  }
+}
+.menu.abierto .menu-caja {
+  transform: none;
+  opacity: 1;
+}
+
+.menu-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+.menu-lista li {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-top: 1px solid var(--linea);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.menu.abierto .menu-lista li {
+  opacity: 1;
+  transform: none;
+}
+.menu-lista li:last-child {
+  border-bottom: 1px solid var(--linea);
+}
+.menu-num {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--acento-2);
+  flex-shrink: 0;
+}
+.menu-lista a {
+  flex: 1;
+  display: block;
+  padding: clamp(13px, 1.6vw, 19px) 0;
+  font-size: clamp(26px, 4vw, 46px);
+  line-height: 1.1;
+  letter-spacing: -0.018em;
+  color: var(--tinta);
+  transition: color 0.3s ease, padding-left 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.menu-lista a:hover {
+  color: var(--oro-tinta);
+  padding-left: 12px;
+}
+
+.menu-pie {
+  max-width: 1180px;
+  margin: clamp(22px, 3vw, 34px) auto 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.menu-idiomas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.menu-idiomas > span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+.menu-idiomas div {
+  display: flex;
+  gap: 6px;
+}
+.menu-idiomas button {
+  border: 1px solid var(--linea-2);
+  background: transparent;
+  border-radius: 100px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--tx-2);
+  cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+.menu-idiomas button:hover {
+  border-color: var(--acento-2);
+}
+.menu-idiomas button.activo {
+  background: var(--vino);
+  border-color: var(--vino);
+  color: #fff;
+}
+.menu-legal {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.menu-legal a {
+  color: var(--tx-3);
+}
+.menu-legal a:hover {
+  color: var(--oro-tinta);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-caja,
+  .menu-lista li,
+  .hamburguesa span {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* En el móvil el menú ocupa la pantalla entera y va opaco. El cristal está muy
+   bien en una barra fina, pero detrás de una lista de enlaces deja que el
+   contenido de la página se cuele entre ellos y cuesta leerlos. */
+@media (max-width: 759px) {
+  .menu-caja {
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--papel);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+  .menu-lista a {
+    font-size: clamp(28px, 8vw, 38px);
+  }
+  .menu-pie {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+}
