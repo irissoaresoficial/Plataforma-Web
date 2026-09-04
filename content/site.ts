@@ -25,7 +25,12 @@ export const LOGO_COLOR = '/images/logo-33.png';
  * Formato recomendado: vertical (3:4 o 4:5), 1200 px de ancho, JPG.
  */
 export const FOTOS = {
-  /** La principal, en la portada. Vertical. */
+  /**
+   * La del arco de la portada. Ya viene recortada en 3:4 sobre ella; si la
+   * cambias, procura que la cara quede centrada y sin fondo que distraiga.
+   */
+  portada: '/images/iris-portada.jpg',
+  /** La principal, entera. Vertical. */
   retrato: '/images/iris.jpg',
   /** Ella hablando o en directo. Vertical. */
   hablando: '/images/iris-hablando.jpg',

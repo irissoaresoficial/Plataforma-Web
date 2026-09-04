@@ -33,8 +33,9 @@
   --bg: var(--papel);
   --tx: var(--tinta);
   --tx-2: #6f6058;
-  --tx-3: #8e8177;
-  --tx-4: #b5a99c;
+  --tx-3: #756a61; /* 4.58:1 sobre arena — el más claro que aún se lee */
+  --tx-4: #756a61; /* texto pequeño: cumple 4.5:1 */
+  --deco: #c3b6a7; /* solo adorno: los números gigantes de las fichas */
   --acento: var(--oro-tinta);
   --acento-2: var(--oro);
   --linea: #eae0d2;
@@ -49,8 +50,9 @@
   --bg: var(--arena);
   --tx: var(--tinta);
   --tx-2: #6f6058;
-  --tx-3: #877a6f;
-  --tx-4: #ab9e90;
+  --tx-3: #756a61;
+  --tx-4: #756a61;
+  --deco: #bdb0a0;
   --acento: var(--oro-tinta);
   --acento-2: var(--oro);
   --linea: #e5d8c4;
@@ -66,7 +68,8 @@
   --tx: #fbf6ee;
   --tx-2: rgba(251, 246, 238, 0.74);
   --tx-3: rgba(251, 246, 238, 0.54);
-  --tx-4: rgba(251, 246, 238, 0.34);
+  --tx-4: rgba(251, 246, 238, 0.62);
+  --deco: rgba(251, 246, 238, 0.22);
   --acento: var(--oro-luz);
   --acento-2: var(--oro);
   --linea: rgba(251, 246, 238, 0.16);
@@ -74,7 +77,7 @@
   --superficie: rgba(251, 246, 238, 0.07);
   --sombra: rgba(0, 0, 0, 0.3);
   /* Sobre granate el botón se invierte: dorado lleno con el granate dentro. */
-  --boton: var(--oro);
+  --boton: var(--oro-luz);
   --boton-tx: var(--vino);
   --boton-flecha: var(--vino);
 }
@@ -427,49 +430,90 @@ textarea::placeholder {
   }
 }
 
-/* La foto del hero. Va a sangre por el borde derecho y a toda altura, pero
-   como atmósfera, no como protagonista: apagada, algo desenfocada y desvanecida
-   por los bordes con una máscara de verdad. Con capas de degradado encima
-   quedaba un corte vertical duro; la máscara recorta la propia imagen. */
-.hero-foto {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: min(44vw, 660px);
-  z-index: 1;
-  opacity: 0.72;
-  /* El desvanecido horizontal: se apaga hacia el texto. */
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.3) 30%, #000 78%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.3) 30%, #000 78%);
+/* ---- la portada ---- */
+
+.hero-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(44px, 6vw, 76px);
+  align-items: center;
 }
-/* El vertical va en una capa aparte para no depender de mask-composite, que no
-   se comporta igual en todos los navegadores. */
-.hero-foto-inner {
-  width: 100%;
-  height: 100%;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 66%, transparent 100%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 66%, transparent 100%);
-  /* Solo desaturada. Nada de mix-blend-mode ni de blur: con un canvas animado
-     al lado, obligan al navegador a recomponer la capa entera en cada frame. */
-  filter: saturate(0.82) contrast(1.02);
+@media (min-width: 901px) {
+  .hero-rejilla {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.85fr);
+  }
 }
 
-/* En pantalla estrecha no hay dos columnas: la foto pasa a ser un fondo muy
-   tenue detrás del texto, o el titular deja de leerse. */
-@media (max-width: 900px) {
-  .hero-foto {
-    width: 100%;
-    opacity: 0.16;
-    -webkit-mask-image: none;
-    mask-image: none;
+.hero-arco-caja {
+  position: relative;
+  justify-self: center;
+  width: min(400px, 78vw);
+}
+@media (min-width: 901px) {
+  .hero-arco-caja {
+    justify-self: end;
+    width: min(440px, 38vw);
   }
-  /* Se desvanece por arriba y por abajo: lo que sobrevive es la franja del
-     centro, que es donde está ella. Arriba solo hay fondo de plató. */
-  .hero-foto-inner {
-    filter: saturate(0.45) blur(3px);
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 34%, #000 62%, transparent 94%);
-    mask-image: linear-gradient(180deg, transparent 0%, #000 34%, #000 62%, transparent 94%);
+}
+
+/* El nicho: medio punto arriba, esquinas apenas redondeadas abajo. */
+.hero-arco {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 50% 50% 14px 14px / 42% 42% 14px 14px;
+  overflow: hidden;
+  box-shadow: 0 34px 70px rgba(74, 18, 32, 0.16);
+}
+.hero-arco img {
+  filter: saturate(0.94) contrast(1.02);
+  transform: scale(1.12);
+  transform-origin: center 34%;
+}
+
+/* El filete repite el arco un poco por fuera, sin tocar la foto. */
+.hero-arco-filete {
+  position: absolute;
+  inset: -14px -14px -14px -14px;
+  border: 1px solid var(--acento-2);
+  opacity: 0.5;
+  border-radius: 50% 50% 20px 20px / 42% 42% 20px 20px;
+  pointer-events: none;
+}
+
+/* El sello de la escuela, apoyado en el borde del arco y girando muy despacio. */
+@keyframes sello-gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.hero-sello {
+  position: absolute;
+  left: -30px;
+  bottom: 42px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border: 1px solid var(--linea);
+  box-shadow: 0 12px 30px rgba(74, 18, 32, 0.1);
+}
+.hero-sello img {
+  animation: sello-gira 64s linear infinite;
+}
+@media (max-width: 900px) {
+  .hero-sello {
+    left: -18px;
+    bottom: 22px;
+    width: 76px;
+    height: 76px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-sello img {
+    animation: none;
   }
 }
 

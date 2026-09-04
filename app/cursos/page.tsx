@@ -19,11 +19,11 @@ function T({ v, style }: { v: string; style?: React.CSSProperties }) {
 
 function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
   const claro = index % 2 === 0;
-  const bg = claro ? '#F5F4F0' : '#0A0A0C';
-  const fg = claro ? '#0A0A0C' : '#F4F3EF';
-  const suave = claro ? 'var(--tx-2)' : 'var(--linea-2)';
-  const linea = claro ? 'var(--linea)' : 'var(--linea)';
-  const acento = claro ? '#8F6B18' : 'var(--acento)';
+  const bg = 'var(--bg)';
+  const fg = 'var(--tx)';
+  const suave = 'var(--tx-2)';
+  const linea = 'var(--linea)';
+  const acento = 'var(--acento)';
 
   return (
     <div id={curso.id} style={{ position: 'relative', zIndex: 3, background: bg, color: fg, padding: 'clamp(50px,7vw,104px) clamp(14px,3vw,36px)', scrollMarginTop: 74 }}>
@@ -93,7 +93,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
                   width: '100%',
                   aspectRatio: '16/9',
                   borderRadius: 20,
-                  border: `1px dashed ${claro ? 'var(--linea-2)' : 'var(--linea-2)'}`,
+                  border: '1px dashed var(--linea-2)',
                   background: claro
                     ? 'repeating-linear-gradient(135deg,var(--linea) 0 1px,transparent 1px 12px)'
                     : 'repeating-linear-gradient(135deg,var(--linea) 0 1px,transparent 1px 12px)',
@@ -120,8 +120,8 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
           <Reveal delay={100} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div
               style={{
-                background: claro ? '#FFFFFF' : 'transparent',
-                border: `1px solid ${claro ? 'var(--linea)' : 'var(--linea)'}`,
+                background: 'var(--superficie)',
+                border: '1px solid var(--linea)',
                 borderRadius: 20,
                 padding: 'clamp(18px,2vw,26px)',
                 display: 'flex',
@@ -132,7 +132,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: acento }}>Lo que se ve</span>
               {curso.bloques.map((b, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
-                  <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-.022em', color: claro ? 'var(--linea-2)' : 'var(--linea-2)', width: 26, flexShrink: 0 }}>
+                  <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-.022em', color: 'var(--acento-2)', width: 26, flexShrink: 0 }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>

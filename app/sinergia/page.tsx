@@ -347,7 +347,7 @@ export default function Sinergia() {
             ].map(([n, title, desc], i) => (
               <Reveal key={n} delay={i * 90}>
                 <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid var(--linea)', borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
-                  <span data-cardnum style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-.022em', color: 'var(--tx-4)', transition: 'color .5s ease' }}>{n}</span>
+                  <span data-cardnum style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-.022em', color: 'var(--deco)', transition: 'color .5s ease' }}>{n}</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                     <span style={{ fontSize: 19, fontWeight: 700, letterSpacing: '-.02em' }}>{title}</span>
                     <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>{desc}</span>
@@ -365,7 +365,7 @@ export default function Sinergia() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
               <Link href="/#lista-espera" data-mag data-cur-label="Ver" className="pill pill-dark">
                 <span>Ver la comunidad</span>
-                <span className="pill-arrow" style={{ background: 'var(--acento)', color: 'var(--tx)' }}>→</span>
+                <span className="pill-arrow" style={{ background: 'var(--acento)', color: '#FBF6EE' }}>→</span>
               </Link>
               <Link href="/#cita" data-mag className="btn-outline btn-outline-dark">
                 O reservar una sesión

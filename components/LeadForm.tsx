@@ -69,7 +69,7 @@ export default function LeadForm({
         }}
       >
         <span style={{ fontSize: 16, fontWeight: 700, color: dark ? '#7CC48A' : '#2F5D50' }}>{successTitle}</span>
-        <span style={{ fontSize: 14, lineHeight: 1.55, color: dark ? 'var(--linea-2)' : 'var(--tx-2)' }}>{successText}</span>
+        <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>{successText}</span>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function LeadForm({
         <span>→</span>
       </div>
       {err && <span style={{ fontSize: 13, color: dark ? '#E08585' : '#A33B3B' }}>{err}</span>}
-      <span style={{ fontSize: 12, lineHeight: 1.6, color: dark ? 'var(--linea-2)' : 'var(--tx-3)' }}>{privacidad}</span>
+      <span style={{ fontSize: 12, lineHeight: 1.6, color: 'var(--tx-3)' }}>{privacidad}</span>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
-import Counter from '@/components/Counter';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import HomeNav from '@/components/HomeNav';
@@ -20,7 +19,7 @@ const ANCHO = 1320;
 /** Rótulo de sección: línea fina + palabra pequeña. */
 function Rotulo({ children, claro = false }: { children: React.ReactNode; claro?: boolean }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: claro ? '#8F6B18' : 'var(--acento)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--acento)' }}>
       <span style={{ width: 22, height: 1, background: 'currentColor', opacity: 0.5 }} />
       <span>{children}</span>
     </div>
@@ -74,57 +73,53 @@ export default function Home() {
       <HomeNav onBook={openChat} />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
-      {/* La foto sale a sangre por el borde derecho y ocupa todo el alto. Antes
-          era una tarjeta centrada y dejaba un agujero negro en medio del hero. */}
-      <div id="top" className="claro" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(96px,13vh,150px) clamp(16px,4vw,56px) clamp(40px,6vh,70px)', overflow: 'hidden' }}>
+      {/* El retrato va dentro de un arco: un nicho, no un rectángulo. Es el
+          gesto que le da carácter a la portada, y le pega a una escuela.
+          El sello de la casa gira despacio apoyado en el borde del arco. */}
+      <div id="top" className="claro" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', padding: 'clamp(112px,14vh,168px) clamp(16px,4vw,56px) clamp(48px,7vh,86px)', overflow: 'hidden' }}>
         <CampoNumeros intensidad={0.7} />
-        <div id="glow" style={{ position: 'absolute', width: 820, height: 820, left: 0, top: 0, margin: '-410px 0 0 -410px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,163,92,.14),transparent 64%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
-
-        {/* El desvanecido lo hacen las máscaras de .hero-foto y .hero-foto-inner,
-            no capas de degradado encima: así no queda ningún borde recto. */}
-        <div className="hero-foto" aria-hidden>
-          <div className="hero-foto-inner">
-            <Foto src={FOTOS.retrato} alt="" llenar radius={0} priority sizes="(max-width:900px) 100vw, 50vw" objectPosition="center 16%" />
-          </div>
-        </div>
+        <div id="glow" style={{ position: 'absolute', width: 900, height: 900, left: 0, top: 0, margin: '-450px 0 0 -450px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,163,92,.16),transparent 66%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
 
         <div style={{ position: 'relative', zIndex: 3, maxWidth: ANCHO, margin: '0 auto', width: '100%' }}>
-          <div className="hero-texto" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(22px,2.6vw,32px)' }}>
-            <Reveal>
-              <Rotulo>{t.kick}</Rotulo>
-            </Reveal>
-            {/* Dos voces en el mismo titular: la afirmación en seco, y el giro
-                en cursiva. El contraste es lo que lo hace legible de un vistazo. */}
-            <Reveal as="h1" delay={70} style={{ margin: 0, maxWidth: '19ch', lineHeight: 1.06 }}>
-              {/* Las mayúsculas piden aire, no tracking negativo: apretadas se
-                  leen como un bloque en vez de como una frase. */}
-              <span style={{ display: 'block', fontFamily: 'var(--sans)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.004em', wordSpacing: '.06em', fontSize: 'min(clamp(24px,2.5vw,36px),5.2vh)' }}>
-                {t.h1a}
-              </span>
-              <span className="display" style={{ display: 'block', fontStyle: 'italic', color: 'var(--acento)', letterSpacing: '-.01em', lineHeight: 1.0, fontSize: 'min(clamp(34px,4.1vw,62px),9vh)', marginTop: '.12em' }}>
-                {t.h1b}
-              </span>
-            </Reveal>
-            <Reveal delay={150} desde="izq">
-              <p style={{ margin: 0, fontSize: 'clamp(16px,1.15vw,19px)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '30ch' }}>{t.hsub}</p>
-            </Reveal>
-            <Reveal delay={220}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-                <PillCTA onClick={openChat} variant="cream" label={t.hcta} curLabel={t.cbook} />
-                <Link href="/sinergia" data-mag className="btn-outline">
-                  {t.hcta2}
-                </Link>
-              </div>
-            </Reveal>
-            {/* Un solo dato, el que dice algo: cuánta gente ha pasado por aquí.
-                "3 idiomas" y "desde 2010" no le resuelven nada a quien llega. */}
-            <Reveal delay={300}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, fontSize: 13, color: 'var(--tx-3)' }}>
-                <span className="display" style={{ fontSize: 'clamp(22px,2.1vw,28px)', lineHeight: 1, color: 'var(--acento)' }}>
-                  <Counter to={2200} group />
+          <div className="hero-rejilla">
+            <div className="hero-texto" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(24px,2.8vw,36px)' }}>
+              <Reveal>
+                <Rotulo>{t.kick}</Rotulo>
+              </Reveal>
+              {/* Dos voces en el mismo titular: la afirmación en seco, y el giro
+                  en cursiva. El contraste es lo que lo hace legible de un vistazo. */}
+              <Reveal as="h1" delay={70} style={{ margin: 0, lineHeight: 1.04 }}>
+                {/* Las mayúsculas piden aire, no tracking negativo: apretadas se
+                    leen como un bloque en vez de como una frase. */}
+                <span style={{ display: 'block', fontFamily: 'var(--sans)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.004em', wordSpacing: '.05em', fontSize: 'min(clamp(27px,2.9vw,42px),5.6vh)' }}>
+                  {t.h1a}
                 </span>
-                <span>{t.s1}</span>
+                <span className="display" style={{ display: 'block', fontStyle: 'italic', color: 'var(--acento)', letterSpacing: '-.012em', lineHeight: 0.98, fontSize: 'min(clamp(44px,5.4vw,86px),12vh)', marginTop: '.1em' }}>
+                  {t.h1b}
+                </span>
+              </Reveal>
+              <Reveal delay={150} desde="izq">
+                <p style={{ margin: 0, fontSize: 'clamp(16px,1.2vw,20px)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '32ch' }}>{t.hsub}</p>
+              </Reveal>
+              <Reveal delay={220}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+                  <PillCTA onClick={openChat} variant="cream" label={t.hcta} curLabel={t.cbook} />
+                  <Link href="/sinergia" data-mag className="btn-outline">
+                    {t.hcta2}
+                  </Link>
+                </div>
+              </Reveal>
+            </div>
+
+            <Reveal delay={120} desde="crece" className="hero-arco-caja">
+              <div className="hero-arco">
+                <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 78vw, 40vw" objectPosition="center 42%" />
               </div>
+              {/* El filete dorado repite el arco un poco por fuera. */}
+              <span className="hero-arco-filete" aria-hidden />
+              <span className="hero-sello" aria-hidden>
+                <Marca tam={74} texto={false} />
+              </span>
             </Reveal>
           </div>
         </div>
@@ -252,7 +247,7 @@ export default function Home() {
             {pasos.map(([titulo, texto], i) => (
               <Reveal key={titulo} delay={i * 90}>
                 <div data-step data-card className="card-hover" style={{ border: '1px solid var(--linea)', borderRadius: 20, padding: 'clamp(22px,2.4vw,32px)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 30, minHeight: 220 }}>
-                  <span data-cardnum className="display" style={{ fontSize: 40, lineHeight: 1, color: 'var(--tx-4)', transition: 'color .5s ease' }}>
+                  <span data-cardnum className="display" style={{ fontSize: 40, lineHeight: 1, color: 'var(--deco)', transition: 'color .5s ease' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>

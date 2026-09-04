@@ -157,7 +157,7 @@ export default function Membresia() {
                     minHeight: 150,
                   }}
                 >
-                  <span data-cardnum style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', color: 'var(--tx-4)', transition: 'color .5s ease' }}>
+                  <span data-cardnum style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-.022em', color: 'var(--deco)', transition: 'color .5s ease' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   {item === PENDIENTE ? <Pendiente /> : <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.3 }}>{item}</span>}

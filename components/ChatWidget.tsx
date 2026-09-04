@@ -260,7 +260,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
           <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
         </div>
-        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--acento)', color: 'var(--tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
+        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--acento)', color: '#FBF6EE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
           →
         </span>
       </div>
@@ -425,7 +425,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           />
           <div
             onClick={() => submit(draft)}
-            style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--acento)', color: 'var(--tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+            style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--acento)', color: '#FBF6EE', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
           >
             →
           </div>

@@ -61,7 +61,7 @@ export default function Foto({
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: '#A33B3B', border: '1px solid #A33B3B', borderRadius: 100, padding: '4px 11px' }}>
             Foto pendiente
           </span>
-          <code style={{ fontSize: 11, color: 'var(--tx-4)' }}>{src.replace('/images/', '')}</code>
+          <code style={{ fontSize: 11, color: 'var(--tx-3)' }}>{src.replace('/images/', '')}</code>
         </div>
       ) : (
         <Image
