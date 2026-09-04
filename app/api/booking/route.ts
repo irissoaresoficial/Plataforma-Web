@@ -62,7 +62,10 @@ export async function POST(request: Request) {
 
     if (!res.ok || !data?.ok) {
       console.error('[booking] Apps Script respondió mal:', res.status, text.slice(0, 300));
-      return NextResponse.json({ ok: false, reason: 'upstream' }, { status: 502 });
+      // El motivo del script se pasa tal cual: sin él, "taken" y "contraseña
+      // equivocada" acaban en el mismo mensaje y no hay forma de arreglar nada.
+      const reason = typeof data?.reason === 'string' ? data.reason : 'upstream';
+      return NextResponse.json({ ok: false, reason }, { status: reason === 'taken' ? 409 : 502 });
     }
 
     return NextResponse.json({ ok: true });

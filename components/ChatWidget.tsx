@@ -101,6 +101,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
         return;
       }
 
+      // A quien reserva no le sirve saber qué variable falta, pero a quien lleva
+      // la web sí: queda en la consola del navegador y en /api/diagnostico.
+      console.warn('[reserva] no se ha podido guardar. Motivo:', out?.reason ?? res.status, '— abre /api/diagnostico');
       setMsgs((m) => [...m, { from: 'bot', text: out?.reason === 'taken' ? t.ch_taken : t.ch_err }]);
       if (out?.reason === 'taken') {
         // El hueco se ocupó mientras escribía: se vuelve al calendario en lugar de dejarlo colgado.
