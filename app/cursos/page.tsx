@@ -145,7 +145,7 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: acento }}>Lo que se ve</span>
               {curso.bloques.map((b, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
-                  <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-.022em', color: 'var(--acento-2)', width: 26, flexShrink: 0 }}>
+                  <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-.022em', color: 'var(--acento-2)', width: 26, flexShrink: 0 }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>

@@ -13,13 +13,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Una sola familia en toda la web: Fraunces. Es variable y trae un eje
-            óptico, así que la misma letra sirve para un titular de 80px y para
-            un párrafo de 16 —se redibuja para cada tamaño— y otro eje, SOFT,
-            que redondea los remates y es lo que la hace cálida y no severa. */}
+        {/* Una sola familia en toda la web: Libre Bodoni. Tiene el contraste
+            alto y los remates finos de una didone —el aire de revista— pero
+            está dibujada para leerse en párrafo, que es donde las bodoni de
+            display se caen. Su único eje variable es el peso: no hay forma de
+            que dos sitios de la web acaben con dos dibujos distintos. */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&display=swap"
         />
       </head>
       <body>

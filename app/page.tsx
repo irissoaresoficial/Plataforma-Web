@@ -19,7 +19,7 @@ const ANCHO = 1320;
 /** Rótulo de sección: línea fina + palabra pequeña. */
 function Rotulo({ children, claro = false }: { children: React.ReactNode; claro?: boolean }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--acento)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, fontWeight: 600, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--acento)' }}>
       <span style={{ width: 22, height: 1, background: 'currentColor', opacity: 0.5 }} />
       <span>{children}</span>
     </div>
@@ -91,7 +91,7 @@ export default function Home() {
               <Reveal as="h1" delay={70} style={{ margin: 0, lineHeight: 1.04 }}>
                 {/* Las mayúsculas piden aire, no tracking negativo: apretadas se
                     leen como un bloque en vez de como una frase. */}
-                <span style={{ display: 'block', fontFamily: 'var(--sans)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.004em', wordSpacing: '.05em', fontSize: 'min(clamp(27px,2.9vw,42px),5.6vh)' }}>
+                <span style={{ display: 'block', fontFamily: 'var(--sans)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.004em', wordSpacing: '.05em', fontSize: 'min(clamp(27px,2.9vw,42px),5.6vh)' }}>
                   {t.h1a}
                 </span>
                 <span className="display" style={{ display: 'block', fontStyle: 'italic', color: 'var(--acento)', letterSpacing: '-.012em', lineHeight: 0.98, fontSize: 'min(clamp(44px,5.4vw,86px),12vh)', marginTop: '.1em' }}>

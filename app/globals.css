@@ -1,7 +1,7 @@
 :root {
   /* Una sola familia. Las dos variables apuntan a lo mismo a propósito: así
      el código sigue distinguiendo titular de cuerpo, pero la letra es una. */
-  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --serif: 'Libre Bodoni', 'Playfair Display', Georgia, 'Times New Roman', serif;
   --sans: var(--serif);
 
   /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
@@ -96,12 +96,9 @@ html {
 /*
  * UN SOLO DIBUJO DE LETRA EN TODA LA WEB.
  *
- * Fraunces es variable, y es tentador mover su eje óptico según el tamaño: es
- * lo que manda el manual. Pero cada valor de opsz y de SOFT dibuja una letra
- * distinta, y con siete combinaciones repartidas por el sitio el resultado se
- * lee como siete tipografías, no como una. Así que los ejes se fijan aquí, una
- * vez, y no se tocan en ningún otro sitio: lo único que varía es el peso, el
- * tamaño y la cursiva. Eso es "una tipografía con sus variantes".
+ * Libre Bodoni solo tiene un eje variable, el peso, así que no hay manera de
+ * que dos partes de la web acaben con dos dibujos distintos. Lo único que
+ * cambia de un sitio a otro es el peso, el tamaño y la cursiva.
  */
 body,
 button,
@@ -111,7 +108,15 @@ select,
 .display,
 .display-sm {
   font-family: var(--serif);
-  font-variation-settings: 'opsz' 48, 'SOFT' 100;
+}
+
+/*
+ * El aire de la referencia no lo pone solo la letra: lo pone la mayúscula muy
+ * espaciada. Se usa en la marca y en los rótulos de sección.
+ */
+.espaciado {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
 }
 
 body {
@@ -119,7 +124,7 @@ body {
   background: var(--papel);
   color: var(--tinta);
   font-weight: 400;
-  letter-spacing: 0.004em;
+  letter-spacing: 0.002em;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -631,8 +636,8 @@ body[data-nav-claro='si'] .sello-color {
 }
 .texto-legal p,
 .texto-legal li {
-  font-size: 16px;
-  line-height: 1.68;
+  font-size: 17px;
+  line-height: 1.75;
   color: var(--tx-2);
   max-width: 62ch;
 }
