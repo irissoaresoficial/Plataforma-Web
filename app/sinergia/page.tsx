@@ -381,6 +381,10 @@ export default function Sinergia() {
             <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: 'var(--tx)' }}>
                 <Marca tam={52} apilado />
             </Link>
+            <span style={{ display: 'flex', gap: 14, fontSize: 12, marginBottom: 4 }}>
+              <Link href="/legal" style={{ color: 'var(--tx-2)' }}>Aviso legal</Link>
+              <Link href="/privacidad" style={{ color: 'var(--tx-2)' }}>Tus datos</Link>
+            </span>
             <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
               Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
             </span>

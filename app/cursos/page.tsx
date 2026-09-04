@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import Cursor from '@/components/Cursor';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
@@ -9,6 +10,8 @@ import SubNav from '@/components/SubNav';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 import Pendiente from '@/components/Pendiente';
+import CursoDetalle from '@/components/CursoDetalle';
+import CuentaAtras from '@/components/CuentaAtras';
 import { CURSOS, MEMBRESIA, PENDIENTE, eur, falta, type Curso } from '@/content/site';
 
 /** Texto real, o etiqueta roja si todavía está sin rellenar. */
@@ -18,6 +21,7 @@ function T({ v, style }: { v: string; style?: React.CSSProperties }) {
 }
 
 function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
+  const [detalle, setDetalle] = useState(false);
   const claro = index % 2 === 0;
   const bg = 'var(--bg)';
   const fg = 'var(--tx)';
@@ -70,8 +74,17 @@ function CursoBloque({ curso, index }: { curso: Curso; index: number }) {
               </span>
               <span style={{ fontSize: 11, fontWeight: 600, color: suave }}>con grabación</span>
             </div>
+            {/* Todo el detalle del curso vive en la ventana, no en la página:
+                aquí se ve de un vistazo y quien quiera más, entra. */}
+            <CuentaAtras fechaISO={curso.fechaISO} />
+            <button onClick={() => setDetalle(true)} data-mag data-cur-label="Ver" className="pill pill-cream" style={{ alignSelf: 'center' }}>
+              <span>Ver detalles</span>
+              <span className="pill-arrow">→</span>
+            </button>
           </div>
         </Reveal>
+
+        <CursoDetalle curso={curso} abierto={detalle} onCerrar={() => setDetalle(false)} />
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(14px,2.2vw,28px)', alignItems: 'start' }}>
           {/* Vídeo + descripción */}
@@ -261,7 +274,11 @@ export default function Cursos() {
                 <Link href="/membresia" style={{ fontSize: 13, color: 'var(--tx-2)' }}>La membresía</Link>
                 <Link href="/#cita" style={{ fontSize: 13, color: 'var(--tx-2)' }}>Sesión con Iris</Link>
               </div>
-              <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
+              <span style={{ display: 'flex', gap: 14, fontSize: 12, marginBottom: 4 }}>
+              <Link href="/legal" style={{ color: 'var(--tx-2)' }}>Aviso legal</Link>
+              <Link href="/privacidad" style={{ color: 'var(--tx-2)' }}>Tus datos</Link>
+            </span>
+            <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
                 Los cursos no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
               </span>
             </div>

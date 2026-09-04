@@ -1,16 +1,19 @@
 :root {
-  --serif: 'Fraunces', 'Newsreader', Georgia, 'Times New Roman', serif;
-  --sans: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+  /* Una sola familia. Las dos variables apuntan a lo mismo a propósito: así
+     el código sigue distinguiendo titular de cuerpo, pero la letra es una. */
+  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans: var(--serif);
 
-  /* La marca: granate profundo y dorado, sobre papel claro. */
-  --vino: #4a1220;
-  --vino-claro: #63202f;
-  --oro: #b8924f;
-  --oro-tinta: #8a6518; /* el dorado que sí se lee como texto sobre claro */
-  --oro-luz: #e8cf9a;
-  --papel: #fdfbf7;
-  --arena: #f6eee3;
-  --tinta: #2b1a1e;
+  /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
+     es blanco de verdad, no crema, y el segundo tono apenas se separa de él. */
+  --vino: #451a25;
+  --vino-claro: #5d2734;
+  --oro: #a9884f;
+  --oro-tinta: #7d5f1e; /* el dorado que sí se lee como texto sobre blanco */
+  --oro-luz: #e2cda2;
+  --papel: #ffffff;
+  --arena: #f7f5f1;
+  --tinta: #221d1f;
 }
 
 /*
@@ -32,16 +35,16 @@
 .claro {
   --bg: var(--papel);
   --tx: var(--tinta);
-  --tx-2: #6f6058;
-  --tx-3: #756a61; /* 4.58:1 sobre arena — el más claro que aún se lee */
-  --tx-4: #756a61; /* texto pequeño: cumple 4.5:1 */
-  --deco: #c3b6a7; /* solo adorno: los números gigantes de las fichas */
+  --tx-2: #665c58;
+  --tx-3: #6f6560; /* el más claro que aún cumple 4.5:1 sobre el gris claro */
+  --tx-4: #6f6560;
+  --deco: #cfc7c0; /* solo adorno: los números gigantes de las fichas */
   --acento: var(--oro-tinta);
   --acento-2: var(--oro);
-  --linea: #eae0d2;
-  --linea-2: #dbccb4;
+  --linea: #e9e5df;
+  --linea-2: #d8d2ca;
   --superficie: var(--arena);
-  --sombra: rgba(74, 18, 32, 0.09);
+  --sombra: rgba(34, 29, 31, 0.08);
   --boton: var(--vino);
   --boton-tx: #fbf6ee;
   --boton-flecha: var(--oro);
@@ -49,16 +52,16 @@
 .arena {
   --bg: var(--arena);
   --tx: var(--tinta);
-  --tx-2: #6f6058;
-  --tx-3: #756a61;
-  --tx-4: #756a61;
-  --deco: #bdb0a0;
+  --tx-2: #665c58;
+  --tx-3: #6f6560;
+  --tx-4: #6f6560;
+  --deco: #c8c0b8;
   --acento: var(--oro-tinta);
   --acento-2: var(--oro);
-  --linea: #e5d8c4;
-  --linea-2: #d4c2a6;
-  --superficie: #fdfbf7;
-  --sombra: rgba(74, 18, 32, 0.1);
+  --linea: #e4dfd7;
+  --linea-2: #d2ccc3;
+  --superficie: #ffffff;
+  --sombra: rgba(34, 29, 31, 0.09);
   --boton: var(--vino);
   --boton-tx: #fbf6ee;
   --boton-flecha: var(--oro);
@@ -94,9 +97,28 @@ body {
   margin: 0;
   background: var(--papel);
   color: var(--tinta);
-  font-family: var(--sans);
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 14, 'SOFT' 60;
+  font-weight: 400;
+  letter-spacing: 0.004em;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+/* Los elementos de interfaz —botones, campos, rótulos— piden un dibujo más
+   compacto y algo más de cuerpo para no parecer texto corrido. */
+button,
+input,
+textarea,
+select,
+.pill,
+.btn-outline,
+.btn-outline-dark,
+.nav-cta,
+.chip,
+.field-input {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 20, 'SOFT' 40;
 }
 
 a {
@@ -588,4 +610,300 @@ body[data-nav-claro='si'] .sello-blanco {
 }
 body[data-nav-claro='si'] .sello-color {
   opacity: 0;
+}
+
+/* ---- páginas de texto legal ---- */
+/* Una columna de lectura: jerarquía clara, líneas cortas y nada más. */
+.texto-legal h2 {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 48, 'SOFT' 90;
+  font-weight: 400;
+  font-size: clamp(23px, 2.4vw, 30px);
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  margin: clamp(38px, 5vw, 58px) 0 12px;
+}
+.texto-legal h3 {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 22, 'SOFT' 60;
+  font-weight: 600;
+  font-size: 17px;
+  margin: 28px 0 8px;
+}
+.texto-legal p,
+.texto-legal li {
+  font-size: 16px;
+  line-height: 1.68;
+  color: var(--tx-2);
+  max-width: 62ch;
+}
+.texto-legal p {
+  margin: 0 0 14px;
+}
+.texto-legal ul {
+  margin: 0 0 14px;
+  padding-left: 20px;
+}
+.texto-legal li {
+  margin-bottom: 8px;
+}
+.texto-legal strong {
+  color: var(--tx);
+  font-weight: 600;
+}
+.texto-legal a {
+  color: var(--acento);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- la ficha del curso, en ventana ---- */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  background: rgba(34, 29, 31, 0.42);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+.modal-fondo.abierto {
+  opacity: 1;
+  visibility: visible;
+}
+@media (min-width: 760px) {
+  .modal-fondo {
+    align-items: center;
+    padding: 32px;
+  }
+}
+
+.modal-caja {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  max-height: 92vh;
+  background: var(--bg);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -20px 60px rgba(34, 29, 31, 0.22);
+  outline: none;
+  transform: translateY(28px);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-fondo.abierto .modal-caja {
+  transform: none;
+}
+@media (min-width: 760px) {
+  .modal-caja {
+    border-radius: 22px;
+    max-height: 88vh;
+    box-shadow: 0 30px 80px rgba(34, 29, 31, 0.26);
+  }
+}
+
+.modal-cerrar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--linea);
+  background: var(--bg);
+  color: var(--tx-2);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.modal-cerrar:hover {
+  border-color: var(--acento-2);
+  color: var(--tx);
+}
+
+.modal-cuerpo {
+  overflow-y: auto;
+  padding: clamp(24px, 4vw, 38px);
+  padding-bottom: 8px;
+}
+
+.modal-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  margin-bottom: 22px;
+}
+.modal-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.modal-video-hueco {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 16px;
+}
+.modal-video-hueco span {
+  font-size: 13px;
+  color: var(--tx-3);
+}
+
+.modal-datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1px;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.modal-datos > div {
+  background: var(--bg);
+  padding: 13px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.modal-datos span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+.modal-datos strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.modal-pestanas {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--linea);
+  margin-bottom: 18px;
+  overflow-x: auto;
+}
+.modal-pestanas button {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tx-3);
+  cursor: pointer;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.modal-pestanas button em {
+  font-style: normal;
+  font-size: 11px;
+  opacity: 0.65;
+}
+.modal-pestanas button.activa {
+  color: var(--tx);
+  border-bottom-color: var(--acento-2);
+}
+
+.modal-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 18px;
+}
+.modal-fila {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 12px;
+}
+.modal-num {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 30, 'SOFT' 90;
+  font-size: 17px;
+  color: var(--acento-2);
+}
+.modal-check {
+  color: var(--acento-2);
+  font-size: 15px;
+}
+.modal-fila strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.modal-fila p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--tx-2);
+}
+
+.modal-pie {
+  flex-shrink: 0;
+  border-top: 1px solid var(--linea);
+  background: var(--superficie);
+  padding: clamp(16px, 3vw, 22px) clamp(24px, 4vw, 38px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-radius: 0 0 22px 22px;
+}
+.modal-pie > div:first-child {
+  display: flex;
+  flex-direction: column;
+}
+.modal-pie strong {
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 40, 'SOFT' 90;
+  font-size: 26px;
+  line-height: 1.1;
+}
+.modal-pie span {
+  font-size: 12px;
+  color: var(--tx-3);
+}
+.modal-pie > *:only-child {
+  width: 100%;
+}
+
+.modal-reserva {
+  margin-top: 8px;
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+}
+.modal-reserva strong {
+  display: block;
+  font-family: var(--serif);
+  font-variation-settings: 'opsz' 30, 'SOFT' 90;
+  font-size: 19px;
+  margin-bottom: 4px;
+}
+.modal-reserva p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--tx-2);
 }

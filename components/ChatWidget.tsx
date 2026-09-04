@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import Image from 'next/image';
 import { useLang } from '@/lib/i18n';
 import { DEFAULT_HOURS } from '@/lib/booking';
-import { LOGO } from '@/content/site';
+import { LOGO_COLOR } from '@/content/site';
 
 type Msg = { from: 'bot' | 'user'; text: string };
 type Escribiendo = { texto: string; n: number };
@@ -209,14 +209,16 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     lineHeight: 1.5,
     padding: '11px 14px',
     borderRadius: me ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-    background: me ? 'var(--acento)' : 'var(--linea)',
-    color: me ? '#0A0A0C' : '#F4F3EF',
+    background: me ? 'var(--vino)' : 'var(--arena)',
+    color: me ? '#FFFFFF' : 'var(--tx)',
+    border: me ? 'none' : '1px solid var(--linea)',
   });
 
   return (
     <>
       <div
         id="chat-launcher"
+        className="vino"
         onClick={openChat}
         data-mag
         data-cur-label={t.cbook}
@@ -228,13 +230,13 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: 'linear-gradient(140deg,#5c1a2b,#4a1220 62%)',
+          background: 'var(--vino)',
           color: 'var(--tx)',
-          border: '1px solid rgba(200,155,74,.34)',
+          border: '1px solid var(--linea-2)',
           borderRadius: 100,
           padding: '8px 10px 8px 8px',
           cursor: 'pointer',
-          boxShadow: '0 18px 46px rgba(0,0,0,.46),inset 0 1px 0 var(--linea)',
+          boxShadow: '0 14px 34px rgba(34,29,31,.28)',
           transition: 'opacity .35s ease,transform .45s cubic-bezier(.16,1,.3,1),border-color .4s ease',
           opacity: open ? 0 : 1,
           pointerEvents: open ? 'none' : 'auto',
@@ -254,13 +256,13 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           <div style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden', background: 'var(--superficie)', border: '1px solid rgba(200,155,74,.5)' }}>
             <Image src="/images/iris.jpg" alt="Iris" width={38} height={38} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 18%', display: 'block' }} />
           </div>
-          <span style={{ position: 'absolute', right: -1, bottom: -1, width: 11, height: 11, borderRadius: '50%', background: '#7CC48A', border: '2px solid #0A0A0C' }} />
+          <span style={{ position: 'absolute', right: -1, bottom: -1, width: 11, height: 11, borderRadius: '50%', background: '#7CC48A', border: '2px solid var(--bg)' }} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
           <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
           <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
         </div>
-        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--acento)', color: '#FBF6EE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
+        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
           →
         </span>
       </div>
@@ -290,7 +292,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '15px 17px', borderBottom: '1px solid var(--linea)', flexShrink: 0 }}>
           {/* El sello de la escuela: quien escribe no es Iris, es su casa. */}
           <div style={{ width: 40, height: 40, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Image src={LOGO} alt="" width={40} height={40} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+            <Image src={LOGO_COLOR} alt="" width={40} height={40} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: 14, fontWeight: 700 }}>{t.ch_title}</span>
@@ -380,7 +382,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
                     fontWeight: 600,
                     borderRadius: 9,
                     cursor: d.free ? 'pointer' : undefined,
-                    color: d.free ? (d.sel ? '#0A0A0C' : '#F4F3EF') : 'var(--linea-2)',
+                    color: d.free ? (d.sel ? '#FFFFFF' : 'var(--tx)') : 'var(--tx-4)',
                     background: d.free ? (d.sel ? 'var(--acento)' : 'var(--linea)') : 'transparent',
                     border: d.free ? `1px solid ${d.sel ? 'var(--acento)' : 'var(--linea)'}` : '1px solid transparent',
                   }}
@@ -425,7 +427,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           />
           <div
             onClick={() => submit(draft)}
-            style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--acento)', color: '#FBF6EE', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+            style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
           >
             →
           </div>

@@ -40,6 +40,19 @@ export const FOTOS = {
   sala: '/images/iris-sala.jpg',
 };
 
+/**
+ * Datos fiscales del aviso legal y de la política de datos. Son obligatorios
+ * por ley: mientras estén en PENDIENTE, la web los enseña marcados.
+ */
+export const TITULAR = {
+  /** Nombre y apellidos, o la razón social si factura una sociedad. */
+  nombre: PENDIENTE,
+  /** NIF o CIF. */
+  nif: PENDIENTE,
+  /** Domicilio fiscal completo. */
+  direccion: PENDIENTE,
+};
+
 export const CONTACTO = {
   /** Correo al que se escribe la gente si algo falla. */
   email: 'irissoaresoficial@gmail.com',
@@ -73,45 +86,63 @@ export type Curso = {
   titulo: string;
   /** Una frase corta: qué se lleva la persona. */
   claim: string;
-  /** Texto libre: "27, 28 y 29 de septiembre" */
+  /** Texto libre: "26 y 27 de septiembre" */
   fechas: string;
+  /**
+   * El primer día del curso en formato AAAA-MM-DD. Solo se usa para la cuenta
+   * atrás; vacío = no se dibuja. Nunca se inventa una fecha.
+   */
+  fechaISO: string;
   /** "18:00 → 21:00 (hora española)" */
   horario: string;
-  /** "3 tardes · 9 h en directo" */
+  /** "2 tardes · 6 h en directo" */
   duracion: string;
   /** En euros. null = todavía sin precio. */
   precio: number | null;
   /** Plazas totales. null = no se muestra contador. */
   plazas: number | null;
   /**
-   * Enlace del vídeo de presentación, tal cual lo da YouTube o Vimeo al
-   * pulsar Compartir → Insertar (el que empieza por https://www.youtube.com/embed/...).
+   * Enlace del vídeo donde Iris presenta el curso, tal cual lo da YouTube o
+   * Vimeo al pulsar Compartir → Insertar (el que lleva /embed/ dentro).
    * Vacío = sale el hueco marcado como pendiente.
    */
   videoUrl: string;
+  /**
+   * Enlace de pago de Stripe: el que sale en Stripe → Enlaces de pago → Crear.
+   * Vacío = el botón capta el dato y avisa de que aún no se cobra.
+   */
+  stripeUrl: string;
   /** Descripción larga, uno o dos párrafos. */
   descripcion: string;
   /** Lo que se ve en el curso, punto por punto. */
   bloques: { t: string; d: string }[];
+  /** Para quién es y para quién no. Ayuda a que no se apunte quien no debe. */
+  paraQuien: string[];
+  /** Lo que la persona se lleva puesto al terminar. */
+  teLlevas: string[];
 };
 
 export const CURSOS: Curso[] = [
   {
-    id: 'proximo',
+    id: 'septiembre',
     titulo: PENDIENTE,
     claim: PENDIENTE,
-    fechas: PENDIENTE,
+    fechas: '26 y 27',
+    fechaISO: '', // pon aquí 2026-MM-26 y aparece la cuenta atrás
     horario: PENDIENTE,
-    duracion: PENDIENTE,
+    duracion: '2 tardes en directo',
     precio: null,
     plazas: null,
     videoUrl: '',
+    stripeUrl: '',
     descripcion: PENDIENTE,
     bloques: [
       { t: PENDIENTE, d: PENDIENTE },
       { t: PENDIENTE, d: PENDIENTE },
       { t: PENDIENTE, d: PENDIENTE },
     ],
+    paraQuien: [PENDIENTE, PENDIENTE, PENDIENTE],
+    teLlevas: [PENDIENTE, PENDIENTE, PENDIENTE],
   },
 ];
 

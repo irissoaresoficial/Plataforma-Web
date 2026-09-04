@@ -237,6 +237,10 @@ export default function Membresia() {
               <Link href="/cursos" style={{ fontSize: 13, color: 'var(--tx-2)' }}>Cursos</Link>
               <Link href="/#cita" style={{ fontSize: 13, color: 'var(--tx-2)' }}>Sesión con Iris</Link>
             </div>
+            <span style={{ display: 'flex', gap: 14, fontSize: 12, marginBottom: 4 }}>
+              <Link href="/legal" style={{ color: 'var(--tx-2)' }}>Aviso legal</Link>
+              <Link href="/privacidad" style={{ color: 'var(--tx-2)' }}>Tus datos</Link>
+            </span>
             <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
               Las sesiones y los cursos no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
             </span>

@@ -11,7 +11,7 @@ import HomeNav from '@/components/HomeNav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
-import { FOTOS, MEMBRESIA, eur } from '@/content/site';
+import { CONTACTO, FOTOS, MEMBRESIA, eur } from '@/content/site';
 
 const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
 const ANCHO = 1320;
@@ -392,11 +392,15 @@ export default function Home() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_legal}</span>
-              {[t.ft_l1, t.ft_l2, t.ft_l3].map((l) => (
-                <a key={l} href="#" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
-                  {l}
-                </a>
-              ))}
+              <Link href="/legal" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+                {t.ft_l1}
+              </Link>
+              <Link href="/privacidad" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+                {t.ft_l2}
+              </Link>
+              <a href={`mailto:${CONTACTO.email}`} data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+                {t.ft_l3}
+              </a>
             </div>
           </div>
           <div style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
