@@ -26,7 +26,7 @@ export default function Sinergia() {
   const isForm = step === 0 || step === 1;
   const isGate = step === 2;
   const isResult = step === 3;
-  const stepLabel = step === 3 ? 'Tu sinergia' : `Paso ${step + 1}/3`;
+  const stepLabel = step === 3 ? 'Tu resultado' : `Paso ${step + 1}/3`;
 
   const next = () => {
     if (step === 0) {
@@ -73,7 +73,7 @@ export default function Sinergia() {
     <div id="page" style={{ width: '100%', background: '#0A0A0C', color: '#F4F3EF', overflowX: 'hidden' }}>
       <Cursor hitSelector="[data-mag],a,input,[data-card]" />
       <DustField />
-      <SubNav links={[]} cta="Calcular gratis" ctaHref="#calc" />
+      <SubNav links={[]} cta="Probarlo gratis" ctaHref="#calc" />
 
       <div style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
         <ParticleField />
@@ -91,16 +91,16 @@ export default function Sinergia() {
               <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>Gratis · resultado al momento</div>
             </Reveal>
             <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontWeight: 900, lineHeight: 0.99, letterSpacing: '-.045em', maxWidth: '16ch' }}>
-              ¿Qué número os <span style={{ color: '#C89B4A' }}>une</span> de verdad?
+              ¿Por qué con esa persona <span style={{ color: '#C89B4A' }}>siempre acabáis igual</span>?
             </Reveal>
             <Reveal delay={150}>
               <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.5, color: 'rgba(244,243,239,.6)', maxWidth: '40ch' }}>
-                Dos nombres y dos fechas. Te digo qué vibración compartís, qué tipo de vínculo es y qué pregunta te toca mirar. En PDF, para guardarlo.
+                Dos nombres y dos fechas. Te digo qué se enciende cuando estáis juntos, por qué chocáis siempre en lo mismo y qué te toca mirar a ti. Te lo puedes guardar en PDF.
               </p>
             </Reveal>
             <Reveal delay={220}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                {['Tu camino de vida y el de la otra persona', 'La vibración común y el tipo de vínculo', 'Tres líneas concretas para trabajarlo'].map((f) => (
+                {['Tu número y el de la otra persona', 'Lo que se activa entre los dos', 'Tres frases concretas para trabajarlo'].map((f) => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15 }}>
                     <span style={{ color: '#C89B4A' }}>✓</span>
                     <span>{f}</span>
@@ -110,7 +110,7 @@ export default function Sinergia() {
             </Reveal>
             <Reveal delay={290}>
               <a href="#calc" data-mag data-cur-label="Empezar" className="pill pill-cream" style={{ alignSelf: 'flex-start' }}>
-                <span>Calcular mi sinergia</span>
+                <span>Ver qué pasa entre vosotros</span>
                 <span className="pill-arrow">↓</span>
               </a>
             </Reveal>
@@ -183,7 +183,7 @@ export default function Sinergia() {
                       <div style={{ height: 9, borderRadius: 100, background: 'rgba(244,243,239,.3)', width: '68%' }} />
                     </div>
                     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>
-                      Desbloquea tu resultado
+                      Para verlo, tu correo
                     </div>
                   </div>
                   <input
@@ -199,11 +199,11 @@ export default function Sinergia() {
                     style={{ background: '#F5F4F0', border: '1px solid rgba(10,10,12,.1)', color: '#0A0A0C' }}
                   />
                   <div onClick={next} data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
-                    <span>Ver mi sinergia</span>
+                    <span>Ver mi resultado</span>
                     <span>→</span>
                   </div>
                   {err && <div style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>}
-                  <span style={{ fontSize: 11, lineHeight: 1.6, color: '#8A8A92' }}>Te mando el PDF y nada más. Sin listas raras.</span>
+                  <span style={{ fontSize: 11, lineHeight: 1.6, color: '#8A8A92' }}>Te mando el resultado y nada más. Sin listas raras.</span>
                 </div>
               )}
 
@@ -224,7 +224,7 @@ export default function Sinergia() {
                   <div style={{ background: '#0A0A0C', color: '#F4F3EF', borderRadius: 16, padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(244,243,239,.45)' }}>Vibración común</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(244,243,239,.45)' }}>Lo que se activa entre los dos</span>
                         <span style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-.05em', lineHeight: 1, color: '#C89B4A' }}>{res.vib}</span>
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 700, border: '1px solid rgba(200,155,74,.5)', color: '#C89B4A', borderRadius: 100, padding: '7px 13px' }}>{res.arch}</span>
@@ -248,7 +248,7 @@ export default function Sinergia() {
                     </Link>
                   </div>
                   <div onClick={reset} style={{ fontSize: 13, color: '#8A8A92', cursor: 'pointer', textAlign: 'center' }}>
-                    Calcular otra sinergia
+                    Probar con otra persona
                   </div>
                 </div>
               )}
@@ -267,9 +267,9 @@ export default function Sinergia() {
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(230px,1fr))', gap: 10 }}>
             {[
-              ['01', 'Tu camino', 'Se suman los dígitos de tu fecha de nacimiento hasta reducirlos.'],
+              ['01', 'Tu número', 'Se suman los dígitos de tu fecha de nacimiento hasta dejar uno solo.'],
               ['02', 'El de la otra persona', 'Lo mismo con su fecha. Dos números que ya explican mucho.'],
-              ['03', 'La vibración común', 'La suma de los dos dice qué se activa cuando estáis juntos.'],
+              ['03', 'Y el de los dos', 'Sumando los vuestros sale lo que se activa cuando estáis juntos.'],
             ].map(([n, title, desc], i) => (
               <Reveal key={n} delay={i * 90}>
                 <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid rgba(10,10,12,.1)', borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
@@ -311,7 +311,7 @@ export default function Sinergia() {
               Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
             </span>
           </div>
-          <span style={{ fontSize: 11, color: 'rgba(244,243,239,.28)' }}>© 2026 · Sinergia</span>
+          <span style={{ fontSize: 11, color: 'rgba(244,243,239,.28)' }}>© 2026</span>
         </div>
       </div>
 
@@ -320,12 +320,12 @@ export default function Sinergia() {
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, borderBottom: '2px solid #0A0A0C', paddingBottom: 12 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-.02em' }}>iris soares</span>
-              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8A8A92' }}>Informe de sinergia</span>
+              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8A8A92' }}>Vuestro resultado</span>
             </div>
             <span style={{ fontSize: 10, color: '#8A8A92' }}>{today}</span>
           </div>
           <div style={{ marginTop: 26, display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8F6B18' }}>Vibración común</span>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8F6B18' }}>Lo que se activa entre los dos</span>
             <span style={{ fontSize: 64, fontWeight: 900, letterSpacing: '-.05em', lineHeight: 1 }}>{res.vib}</span>
             <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-.02em' }}>{res.arch}</span>
           </div>

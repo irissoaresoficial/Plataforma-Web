@@ -170,9 +170,9 @@ export default function Home() {
             <Reveal delay={230}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
                 <PillCTA onClick={openChat} variant="cream" label={t.hcta} curLabel={t.cbook} />
-                <a href="#lista-espera" data-mag className="btn-outline">
+                <Link href="/sinergia" data-mag className="btn-outline">
                   {t.hcta2}
-                </a>
+                </Link>
               </div>
             </Reveal>
             <Reveal delay={310}>
@@ -243,6 +243,43 @@ export default function Home() {
           <Reveal>
             <div style={{ fontSize: 'clamp(26px,4.6vw,62px)', fontWeight: 900, lineHeight: 1.04, letterSpacing: '-.04em', maxWidth: '20ch' }}>{t.p_punch}</div>
           </Reveal>
+        </div>
+      </div>
+
+      {/* LA BISAGRA — por qué pasa */}
+      <div style={{ position: 'relative', zIndex: 3, background: '#0A0A0C', padding: SECTION_PAD }}>
+        <div style={{ maxWidth: 1360, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Reveal>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#C89B4A' }}>
+                <span>{t.b_lab}</span>
+                <span style={{ flex: 1, height: 1, background: 'rgba(244,243,239,.12)' }} />
+              </div>
+            </Reveal>
+            <Reveal delay={70}>
+              <div style={{ fontSize: 'clamp(30px,4.4vw,60px)', fontWeight: 900, lineHeight: 1.02, letterSpacing: '-.045em', maxWidth: '15ch', textWrap: 'pretty' }}>{t.b_h}</div>
+            </Reveal>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingTop: 'clamp(0px,1.6vw,26px)' }}>
+            <Reveal delay={120}>
+              <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.62, color: 'rgba(244,243,239,.62)', maxWidth: '48ch' }}>{t.b_p1}</p>
+            </Reveal>
+            <Reveal delay={190}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 'clamp(16px,1.25vw,20px)',
+                  lineHeight: 1.62,
+                  color: '#F4F3EF',
+                  maxWidth: '48ch',
+                  borderLeft: '2px solid #C89B4A',
+                  paddingLeft: 18,
+                }}
+              >
+                {t.b_p2}
+              </p>
+            </Reveal>
+          </div>
         </div>
       </div>
 

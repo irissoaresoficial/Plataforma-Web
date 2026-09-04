@@ -3,13 +3,15 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useLang } from '@/lib/i18n';
-
-const HOURS = ['10:00', '12:30', '16:00', '18:30'];
+import { DEFAULT_HOURS } from '@/lib/booking';
 
 type Msg = { from: 'bot' | 'user'; text: string };
-type Data = { nombre?: string; fecha?: string; motivo?: string; dia?: string; hora?: string; email?: string };
+type Data = { nombre?: string; fecha?: string; motivo?: string; dia?: string; diaISO?: string; hora?: string; email?: string };
+type Availability = Record<string, string[]>;
 
 export type ChatWidgetHandle = { open: () => void };
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref) {
   const { lang, t } = useLang();
@@ -21,6 +23,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   const [data, setData] = useState<Data>({});
   const [done, setDone] = useState(false);
   const [calOffset, setCalOffset] = useState(0);
+  const [avail, setAvail] = useState<Availability | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const botTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -30,7 +33,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     { key: 'fecha' as const, ask: t.ch_a2, ph: t.ch_p2, first: true },
     { key: 'motivo' as const, ask: t.ch_a3, ph: t.ch_p3 },
     { key: 'dia' as const, ask: t.ch_a4, calendar: true },
-    { key: 'hora' as const, ask: t.ch_a5, options: HOURS },
+    { key: 'hora' as const, ask: t.ch_a5, options: true },
     { key: 'email' as const, ask: t.ch_a6, ph: t.ch_p6 },
   ];
   const cur = flow[step];
@@ -61,30 +64,83 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   const openChat = () => {
     setOpen(true);
     if (!msgs.length) bot(flow[0].ask, 420);
+    // Huecos reales de la agenda de Iris. Si no contesta, se usa la plantilla por defecto.
+    if (!avail) {
+      fetch('/api/availability')
+        .then((r) => r.json())
+        .then((d) => {
+          if (!d?.ok || !Array.isArray(d.days)) return;
+          const map: Availability = {};
+          d.days.forEach((day: { iso: string; hours: string[] }) => (map[day.iso] = day.hours));
+          setAvail(map);
+        })
+        .catch(() => {});
+    }
     setTimeout(() => inputRef.current?.focus(), 480);
   };
 
   useImperativeHandle(ref, () => ({ open: openChat }));
 
-  const submit = (raw: string) => {
+  const sendBooking = async (booking: Data) => {
+    setTyping(true);
+    try {
+      const res = await fetch('/api/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...booking, lang }),
+      });
+      const out = await res.json().catch(() => null);
+      setTyping(false);
+
+      if (out?.ok) {
+        setMsgs((m) => [
+          ...m,
+          { from: 'bot', text: t.ch_sum.replace('{d}', booking.dia || '').replace('{h}', booking.hora || '') },
+        ]);
+        setTimeout(() => bot(t.ch_conf.replace('{e}', booking.email || ''), 600), 900);
+        return;
+      }
+
+      setMsgs((m) => [...m, { from: 'bot', text: out?.reason === 'taken' ? t.ch_taken : t.ch_err }]);
+      if (out?.reason === 'taken') {
+        // El hueco se ocupó mientras escribía: se vuelve al calendario en lugar de dejarlo colgado.
+        setData((d) => ({ ...d, dia: undefined, diaISO: undefined, hora: undefined }));
+        setStep(3);
+        setDone(false);
+      }
+    } catch {
+      setTyping(false);
+      setMsgs((m) => [...m, { from: 'bot', text: t.ch_err }]);
+    }
+  };
+
+  const submit = (raw: string, meta?: Partial<Data>) => {
     const val = (raw || '').trim();
     if (!val || typing || done) return;
+
+    if (cur.key === 'email' && !EMAIL_RE.test(val)) {
+      setMsgs((m) => [...m, { from: 'user', text: val }]);
+      setDraft('');
+      bot(t.wl_err, 500);
+      return;
+    }
+
     const next = flow[step + 1] || null;
-    const newData = { ...data, [cur.key]: val };
+    const newData = { ...data, ...meta, [cur.key]: val };
     setMsgs((m) => [...m, { from: 'user', text: val }]);
     setDraft('');
     setData(newData);
     setStep(step + 1);
-    if (!next) setDone(true);
+
     if (next) {
       bot(next.ask.replace('{n}', next.first ? val.split(' ')[0] : val), 740);
     } else {
-      bot(t.ch_sum.replace('{d}', newData.dia || '').replace('{h}', newData.hora || ''), 740);
-      setTimeout(() => bot(t.ch_conf.replace('{e}', newData.email || ''), 500), 1500);
+      setDone(true);
+      setTimeout(() => sendBooking(newData), 700);
     }
   };
 
-  // Calendar
+  // Calendario
   const loc = lang === 'en' ? 'en-GB' : lang === 'pt' ? 'pt-PT' : 'es-ES';
   const base = new Date();
   base.setDate(1);
@@ -95,18 +151,23 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   today.setHours(0, 0, 0, 0);
   const firstDow = (base.getDay() + 6) % 7;
   const daysInMonth = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
-  const cells: { label: string; value: string; free: boolean; sel: boolean }[] = [];
-  for (let i = 0; i < firstDow; i++) cells.push({ label: '', value: '', free: false, sel: false });
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  const cells: { label: string; value: string; iso: string; free: boolean; sel: boolean }[] = [];
+  for (let i = 0; i < firstDow; i++) cells.push({ label: '', value: '', iso: '', free: false, sel: false });
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(base.getFullYear(), base.getMonth(), d);
+    const iso = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
     const dow = date.getDay();
-    const free = date > today && dow !== 0 && dow !== 6 && d % 7 !== 3;
+    // Con agenda conectada mandan los huecos reales; sin ella, laborables a partir de mañana.
+    const free = avail ? !!avail[iso]?.length : date > today && dow !== 0 && dow !== 6;
     const label = date.toLocaleDateString(loc, { weekday: 'short', day: 'numeric', month: 'short' });
-    cells.push({ label: String(d), value: free ? label : '', free, sel: data.dia === label });
+    cells.push({ label: String(d), value: free ? label : '', iso, free, sel: data.diaISO === iso });
   }
 
   const calOn = !typing && cur?.calendar;
-  const opts = !typing && cur?.options ? cur.options : [];
+  const hourOptions = data.diaISO && avail?.[data.diaISO] ? avail[data.diaISO] : DEFAULT_HOURS;
+  const opts = !typing && cur?.options ? hourOptions : [];
   const typable = !done && cur && !cur.options && !cur.calendar;
 
   const bubbleWrap = (me: boolean): React.CSSProperties => ({ display: 'flex', justifyContent: me ? 'flex-end' : 'flex-start' });
@@ -255,7 +316,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
               {cells.map((d, i) => (
                 <div
                   key={i}
-                  onClick={() => d.value && submit(d.value)}
+                  onClick={() => d.value && submit(d.value, { diaISO: d.iso })}
                   style={{
                     height: 30,
                     display: 'flex',

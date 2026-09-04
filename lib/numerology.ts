@@ -74,7 +74,7 @@ export const ARCH: Record<string, { n: string; l: string[] }> = {
     ],
   },
   tension: {
-    n: 'Tensión fértil',
+    n: 'Roce que enseña',
     l: [
       'Vuestros números empujan en direcciones distintas: el roce es información.',
       'Lo que te saca de quicio señala justo lo que te toca aprender.',
@@ -82,7 +82,7 @@ export const ARCH: Record<string, { n: string; l: string[] }> = {
     ],
   },
   maestra: {
-    n: 'Relación maestra',
+    n: 'Relación que enseña',
     l: [
       'La vibración común coincide con el camino de uno de los dos: hay una enseñanza clara.',
       'Uno enseña sin querer, el otro aprende sin saberlo.',
