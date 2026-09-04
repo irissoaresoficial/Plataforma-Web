@@ -12,7 +12,7 @@ import useSiteScroll from '@/components/useSiteScroll';
 import HomeNav from '@/components/HomeNav';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
-import { isValidEmail } from '@/lib/numerology';
+import { emailValido } from '@/lib/numerologia';
 import { sendLead } from '@/lib/sendLead';
 
 const SECTION_PAD = 'clamp(70px,10vw,150px) clamp(14px,3vw,36px)';
@@ -72,7 +72,7 @@ export default function Home() {
   const [wlDone, setWlDone] = useState(false);
   const [wlSending, setWlSending] = useState(false);
   const sendWaitlist = async () => {
-    if (!isValidEmail(wlEmail)) return setWlErr(t.wl_err);
+    if (!emailValido(wlEmail)) return setWlErr(t.wl_err);
     setWlErr('');
     setWlSending(true);
     const ok = await sendLead({ email: wlEmail, origen: 'membresia', lang });

@@ -9,6 +9,13 @@
 
 export const PENDIENTE = 'PENDIENTE';
 
+/**
+ * Logo de la Escuela de Sabiduría 33. Guarda el archivo en `public/images/`
+ * con este mismo nombre y aparece solo en el informe descargable.
+ * Si el archivo no está, el informe sale igual, solo que sin el símbolo.
+ */
+export const LOGO = '/images/logo-33.png';
+
 export const CONTACTO = {
   /** Correo al que se escribe la gente si algo falla. */
   email: 'hola@irissoares.com',

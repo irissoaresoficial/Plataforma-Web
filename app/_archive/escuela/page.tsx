@@ -9,7 +9,7 @@ import ParticleField from '@/components/ParticleField';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import SubNav from '@/components/SubNav';
-import { isValidEmail } from '@/lib/numerology';
+import { emailValido as isValidEmail } from '@/lib/numerologia';
 import { sendLead } from '@/lib/sendLead';
 
 const MODULES = [
