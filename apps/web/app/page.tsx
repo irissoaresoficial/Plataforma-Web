@@ -11,7 +11,7 @@ import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
-import { CONTACTO, FOTOS, MEMBRESIA, eur } from '@/content/site';
+import { CONTACTO, CURSOS, FOTOS, MEMBRESIA, eur, falta } from '@/content/site';
 
 const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
 const ANCHO = 1320;
@@ -19,7 +19,7 @@ const ANCHO = 1320;
 /** Rótulo de sección: línea fina + palabra pequeña. */
 function Rotulo({ children, claro = false }: { children: React.ReactNode; claro?: boolean }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, fontWeight: 600, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--acento)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
       <span style={{ width: 22, height: 1, background: 'currentColor', opacity: 0.5 }} />
       <span>{children}</span>
     </div>
@@ -52,6 +52,11 @@ export default function Home() {
   const openChat = () => chatRef.current?.open();
   const [faq, setFaq] = useState(-1);
 
+  /* El curso que sale en la ficha de la portada: el primero que tenga fecha de
+     verdad. Sin ninguno, la ficha no se dibuja: es preferible un hueco a una
+     fecha inventada. */
+  const proximo = CURSOS.find((c) => !falta(c.fechas)) ?? null;
+
   const faqs: [string, string][] = [
     [t.f_q1, t.f_a1],
     [t.f_q2, t.f_a2],
@@ -73,10 +78,11 @@ export default function Home() {
       <Nav cta={t.book} onCta={openChat} conIdiomas extra={[{ href: '#metodo', label: t.n1 }, { href: '#dudas', label: 'Dudas' }]} />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
-      {/* El retrato va dentro de un arco: un nicho, no un rectángulo. Es el
-          gesto que le da carácter a la portada, y le pega a una escuela.
-          El sello de la casa gira despacio apoyado en el borde del arco. */}
-      <div id="top" className="claro" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', padding: 'clamp(112px,14vh,168px) clamp(16px,4vw,56px) clamp(48px,7vh,86px)', overflow: 'hidden' }}>
+      {/* Manda el retrato, con dos fichas apoyadas en su borde. El bloque ya no
+          pide una pantalla entera de alto: pedirla empujaba los botones por
+          debajo del borde, así que lo primero que veía quien entraba era un
+          titular enorme y ninguna forma de hacer nada con él. */}
+      <div id="top" className="claro" style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: 'clamp(104px,12vh,142px) clamp(16px,4vw,56px) clamp(56px,7vw,96px)', overflow: 'hidden' }}>
         <CampoNumeros intensidad={0.7} />
         <div id="glow" style={{ position: 'absolute', width: 900, height: 900, left: 0, top: 0, margin: '-450px 0 0 -450px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,163,92,.16),transparent 66%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
 
@@ -86,20 +92,15 @@ export default function Home() {
               <Reveal>
                 <Rotulo>{t.kick}</Rotulo>
               </Reveal>
-              {/* Dos voces en el mismo titular: la afirmación en seco, y el giro
-                  en cursiva. El contraste es lo que lo hace legible de un vistazo. */}
-              <Reveal as="h1" delay={70} style={{ margin: 0, lineHeight: 1.04 }}>
-                {/* Las mayúsculas piden aire, no tracking negativo: apretadas se
-                    leen como un bloque en vez de como una frase. */}
-                <span style={{ display: 'block', fontFamily: 'var(--sans)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.004em', wordSpacing: '.05em', fontSize: 'min(clamp(27px,2.9vw,42px),5.6vh)' }}>
-                  {t.h1a}
-                </span>
-                <span className="display" style={{ display: 'block', fontStyle: 'italic', color: 'var(--acento)', letterSpacing: '-.012em', lineHeight: 0.98, fontSize: 'min(clamp(44px,5.4vw,86px),12vh)', marginTop: '.1em' }}>
-                  {t.h1b}
-                </span>
+              {/* Una sola voz y un solo tamaño. El giro lo marca el color, no un
+                  cuerpo cuatro veces mayor ni una cursiva: en dos tamaños tan
+                  distintos la frase se partía en dos y ocupaba siete renglones. */}
+              <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'var(--t-portada)', fontWeight: 700, lineHeight: 1.07, letterSpacing: '-.032em', textWrap: 'balance' }}>
+                {t.h1a}{' '}
+                <span style={{ color: 'var(--acento)' }}>{t.h1b}</span>
               </Reveal>
               <Reveal delay={150} desde="izq">
-                <p style={{ margin: 0, fontSize: 'clamp(16px,1.2vw,20px)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '32ch' }}>{t.hsub}</p>
+                <p style={{ margin: 0, fontSize: 'var(--t-entrada)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '38ch' }}>{t.hsub}</p>
               </Reveal>
               <Reveal delay={220}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
@@ -111,23 +112,40 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <Reveal delay={120} desde="crece" className="hero-arco-caja">
+            <Reveal delay={120} desde="crece" className="hero-marco-caja">
               {/* La flotación va en su propia capa: el Reveal ya usa transform
                   en la caja de fuera, y dos animaciones sobre la misma
                   propiedad se pisan. */}
               <div className="hero-flota">
-                <div className="hero-arco">
-                  <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 78vw, 40vw" objectPosition="center 42%" />
+                <div className="hero-marco">
+                  <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 80vw, 44vw" objectPosition="center 38%" />
                 </div>
-                {/* El filete dorado repite el arco un poco por fuera. */}
-                <span className="hero-arco-filete" aria-hidden />
-                <span className="hero-sello" aria-hidden>
-                  <Marca tam={74} texto={false} />
-                </span>
+
+                {/* Las dos fichas. Lo que dicen está en otro sitio de la web:
+                    arriba, el sello y la disciplina; abajo, el próximo curso con
+                    su fecha de verdad, o nada si todavía no hay ninguno. */}
+                <div className="hero-ficha hero-ficha-alta">
+                  <span className="hero-ficha-marca" aria-hidden>
+                    <Marca tam={34} texto={false} />
+                  </span>
+                  <span className="hero-ficha-txt">
+                    <b>Escuela de Sabiduría 33</b>
+                    <span>Numerología transgeneracional</span>
+                  </span>
+                </div>
+
+                {proximo && (
+                  <Link href={`/cursos#${proximo.id}`} className="hero-ficha hero-ficha-baja" data-mag data-cur-label="Ver">
+                    <span className="hero-ficha-txt">
+                      <b>Próximo curso</b>
+                      <span>{proximo.fechas}</span>
+                    </span>
+                    {/* El dorado de texto, no el decorativo: sobre blanco el segundo
+                          se queda en 3,3:1 y no llega al mínimo para un glifo. */}
+                      <span aria-hidden style={{ marginLeft: 'auto', color: 'var(--acento)', fontSize: 15 }}>→</span>
+                  </Link>
+                )}
               </div>
-              {/* La sombra va suelta en el suelo y se encoge cuando ella sube:
-                  sin eso, subir y bajar no se lee como flotar. */}
-              <span className="hero-sombra" aria-hidden />
             </Reveal>
           </div>
         </div>
@@ -160,13 +178,13 @@ export default function Home() {
               <Reveal key={i} line delay={i * 70}>
                 <div className="line-hover" style={{ display: 'flex', alignItems: 'baseline', gap: 'clamp(14px,2.4vw,32px)', padding: 'clamp(16px,2vw,26px) 0', borderBottom: '1px solid var(--linea)' }}>
                   <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--acento)', flexShrink: 0, width: 18 }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span className="display" style={{ fontSize: 'clamp(24px,3.4vw,48px)', color: i === 3 ? 'var(--tx-2)' : undefined }}>{linea}</span>
+                  <span className="display" style={{ fontSize: 'var(--t-seccion)', color: i === 3 ? 'var(--tx-2)' : undefined }}>{linea}</span>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal>
-            <div className="display" style={{ fontSize: 'clamp(30px,5vw,68px)', maxWidth: '18ch' }}>
+            <div className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '18ch' }}>
               <em>{t.p_punch}</em>
             </div>
           </Reveal>
@@ -185,14 +203,14 @@ export default function Home() {
             <Reveal>
               <Rotulo>{t.b_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70} className="display" style={{ fontSize: 'clamp(32px,4.4vw,62px)', maxWidth: '14ch' }}>
+            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '14ch' }}>
               {t.b_h}
             </Reveal>
             <Reveal delay={140}>
-              <p style={{ margin: 0, fontSize: 'clamp(16px,1.2vw,19px)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '40ch' }}>{t.b_p1}</p>
+              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '40ch' }}>{t.b_p1}</p>
             </Reveal>
             <Reveal delay={200}>
-              <p style={{ margin: 0, fontSize: 'clamp(16px,1.2vw,19px)', lineHeight: 1.65, color: 'var(--tx)', maxWidth: '40ch', borderLeft: '2px solid #C89B4A', paddingLeft: 20 }}>{t.b_p2}</p>
+              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.65, color: 'var(--tx)', maxWidth: '40ch', borderLeft: '2px solid #C89B4A', paddingLeft: 20 }}>{t.b_p2}</p>
             </Reveal>
           </div>
         </div>
@@ -212,11 +230,11 @@ export default function Home() {
             <Reveal>
               <Rotulo>{t.w_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70} className="display" style={{ fontSize: 'clamp(32px,4.2vw,58px)', maxWidth: '14ch' }}>
+            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '14ch' }}>
               {t.w_h}
             </Reveal>
             <Reveal delay={140}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 'clamp(15px,1.1vw,18px)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '42ch' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 'var(--t-cuerpo)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '42ch' }}>
                 <p style={{ margin: 0 }}>{t.w_p1}</p>
                 <p style={{ margin: 0 }}>{t.w_p2}</p>
               </div>
@@ -244,7 +262,7 @@ export default function Home() {
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <Rotulo>{t.m_lab}</Rotulo>
-                <span className="display" style={{ fontSize: 'clamp(30px,3.8vw,52px)', maxWidth: '14ch' }}>{t.m_h}</span>
+                <span className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '14ch' }}>{t.m_h}</span>
               </div>
               <div style={{ height: 2, background: 'var(--linea)', borderRadius: 2, overflow: 'hidden', width: 'min(200px,40vw)' }}>
                 <div id="mprog" style={{ height: '100%', width: '0%', background: 'var(--acento)', transition: 'width .3s linear' }} />
@@ -259,7 +277,7 @@ export default function Home() {
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                    <span className="display" style={{ fontSize: 'clamp(21px,2vw,27px)' }}>{titulo}</span>
+                    <span className="display" style={{ fontSize: 'var(--t-bloque)' }}>{titulo}</span>
                     <span style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--tx-2)' }}>{texto}</span>
                   </div>
                 </div>
@@ -279,15 +297,15 @@ export default function Home() {
             <Reveal>
               <Rotulo claro>{t.wl_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70} className="display" style={{ fontSize: 'clamp(32px,4.2vw,58px)', maxWidth: '14ch' }}>
+            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '14ch' }}>
               {t.wl_h}
             </Reveal>
             <Reveal delay={130}>
-              <p style={{ margin: 0, fontSize: 'clamp(16px,1.15vw,19px)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '36ch' }}>{t.wl_p}</p>
+              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '36ch' }}>{t.wl_p}</p>
             </Reveal>
             <Reveal delay={180}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-                <span className="display" style={{ fontSize: 'clamp(44px,5vw,68px)', color: '#8F6B18' }}>{eur(MEMBRESIA.precioReserva)}</span>
+                <span className="display" style={{ fontSize: 'var(--t-seccion)', color: '#8F6B18' }}>{eur(MEMBRESIA.precioReserva)}</span>
                 <span style={{ fontSize: 17, color: 'var(--tx-3)', textDecoration: 'line-through' }}>{eur(MEMBRESIA.precio)}</span>
                 <span style={{ fontSize: 13, color: 'var(--tx-3)' }}>al mes</span>
               </div>
@@ -306,11 +324,11 @@ export default function Home() {
             <Rotulo>{t.e_lab}</Rotulo>
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(24px,3vw,56px)', alignItems: 'end' }}>
-            <Reveal delay={60} className="display" style={{ fontSize: 'clamp(34px,4.6vw,64px)', maxWidth: '13ch' }}>
+            <Reveal delay={60} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
               {t.e_h}
             </Reveal>
             <Reveal delay={140} style={{ display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'flex-start' }}>
-              <p style={{ margin: 0, fontSize: 'clamp(15px,1.1vw,18px)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '32ch' }}>{t.e_sub}</p>
+              <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '32ch' }}>{t.e_sub}</p>
               <PillCTA href="/cursos" variant="cream" label={t.e_cta} curLabel={t.csee} />
             </Reveal>
           </div>
@@ -324,7 +342,7 @@ export default function Home() {
             <Reveal>
               <Rotulo claro>{t.f_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70} className="display" style={{ fontSize: 'clamp(30px,3.8vw,52px)', maxWidth: '13ch' }}>
+            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
               {t.f_h}
             </Reveal>
           </div>
@@ -335,7 +353,7 @@ export default function Home() {
                 return (
                   <div key={q} onClick={() => setFaq(on ? -1 : i)} data-mag className="line-hover" style={{ borderTop: '1px solid var(--linea)', borderBottom: i === faqs.length - 1 ? '1px solid var(--linea)' : undefined, padding: '24px 0', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 18 }}>
-                      <span className="display" style={{ fontSize: 'clamp(20px,2vw,27px)' }}>{q}</span>
+                      <span className="display" style={{ fontSize: 'var(--t-bloque)' }}>{q}</span>
                       <span style={{ fontSize: 18, color: 'var(--acento)', flexShrink: 0 }}>{on ? '−' : '+'}</span>
                     </div>
                     <div style={{ overflow: 'hidden', transition: 'max-height .55s cubic-bezier(.16,1,.3,1),opacity .4s ease', maxHeight: on ? 240 : 0, opacity: on ? 1 : 0 }}>
@@ -352,11 +370,11 @@ export default function Home() {
       {/* ── CIERRE ───────────────────────────────────────────── */}
       <div id="cita" className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: 'clamp(90px,12vw,170px) clamp(16px,4vw,56px)' }}>
         <div style={{ maxWidth: 880, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 26 }}>
-          <Reveal className="display" style={{ fontSize: 'clamp(38px,6vw,86px)', maxWidth: '13ch' }}>
+          <Reveal className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
             {t.c_h}
           </Reveal>
           <Reveal delay={80}>
-            <p style={{ margin: 0, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '34ch' }}>{t.c_p}</p>
+            <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '34ch' }}>{t.c_p}</p>
           </Reveal>
           <Reveal delay={150}>
             <PillCTA onClick={openChat} variant="gold" label={t.c_btn} curLabel={t.cbook} />
@@ -376,7 +394,7 @@ export default function Home() {
               <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tx-3)', maxWidth: '28ch' }}>{t.ft_p}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_start}</span>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_start}</span>
               <div onClick={openChat} data-mag style={{ fontSize: 14, color: 'var(--tx-2)', cursor: 'pointer' }}>
                 {t.ft_1}
               </div>
@@ -391,7 +409,7 @@ export default function Home() {
               </Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_legal}</span>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_legal}</span>
               <Link href="/legal" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
                 {t.ft_l1}
               </Link>

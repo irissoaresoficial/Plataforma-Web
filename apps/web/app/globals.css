@@ -179,12 +179,64 @@ select,
 }
 
 /*
- * El aire de la referencia no lo pone solo la letra: lo pone la mayúscula muy
- * espaciada. Se usa en la marca y en los rótulos de sección.
+ * LA ESCALA
+ *
+ * Una sola tipografía no basta para que la web parezca de una pieza: hacen
+ * falta pocos tamaños y siempre los mismos. Antes había ocho tamaños de rótulo
+ * en versal —9, 9,5, 10, 11 y 12 px— con ocho espaciados distintos —de 0,04 a
+ * 0,2em—. Cada uno se escribió el día que hizo falta y ninguno estaba mal por
+ * sí solo; lo que se lee como descuido es justo esa diferencia mínima entre
+ * cosas que hacen lo mismo. El ojo la nota aunque no sepa decir qué pasa.
+ *
+ * Aquí están los pocos valores que existen. Un bloque coge uno; no inventa el
+ * suyo.
  */
+:root {
+  /* Rótulos en versal: uno, y sólo uno. */
+  --rotulo-tam: 11px;
+  --rotulo-peso: 700;
+  --rotulo-esp: 0.16em;
+
+  /* Titulares, de mayor a menor, con la misma razón entre escalones. */
+  --t-portada: clamp(32px, 4.1vw, 58px);
+  --t-seccion: clamp(28px, 3.5vw, 46px);
+  --t-bloque: clamp(21px, 2.4vw, 30px);
+  --t-ficha: clamp(18px, 1.9vw, 22px);
+
+  /* Texto corrido. */
+  --t-entrada: clamp(16px, 1.15vw, 19px);
+  --t-cuerpo: 15px;
+  --t-nota: 13px;
+}
+
+/*
+ * El rótulo en versal. Lo usa todo lo que sea una etiqueta: el rótulo de una
+ * sección, el nombre de un dato, el «próximo curso» de una ficha.
+ *
+ * La versal muy espaciada es lo que le da el aire a la página, pero sólo
+ * mientras sea siempre la misma. En cuanto hay dos parecidas, deja de ser un
+ * recurso y pasa a ser ruido.
+ */
+.rotulo,
 .espaciado {
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: var(--rotulo-esp);
+}
+.rotulo {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  line-height: 1.2;
+  color: var(--acento);
+}
+/* La misma etiqueta cuando va dentro de una celda, al lado de su valor: mismo
+   tamaño y mismo espaciado; sólo baja el tono para no competir con el dato. */
+.rotulo-dato {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--tx-3);
 }
 
 body {
@@ -535,27 +587,44 @@ textarea::placeholder {
 
 /* ---- la portada ---- */
 
+/*
+ * LA PORTADA
+ *
+ * Dos columnas: el titular a la izquierda y el retrato a la derecha, grande y
+ * en un rectángulo redondeado —no en un arco—, con dos fichas de cristal
+ * apoyadas en su borde.
+ *
+ * Lo que había antes no funcionaba y se veía: el titular iba en dos voces con
+ * dos tamaños muy distintos y ocupaba siete renglones, la foto en forma de
+ * nicho quedaba anticuada, y entre las dos columnas se abría un hueco enorme.
+ * Encima el bloque pedía una pantalla entera de alto, así que los botones
+ * caían por debajo del borde y no se veían al entrar.
+ *
+ * Ahora el titular es una sola voz de un solo tamaño y el contraste lo hace el
+ * color; la foto manda, que es lo que se mira primero; y todo cabe de una vez.
+ */
 .hero-rejilla {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(44px, 6vw, 76px);
+  gap: clamp(40px, 5vw, 64px);
   align-items: center;
 }
 @media (min-width: 901px) {
   .hero-rejilla {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.85fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+    gap: clamp(40px, 4.4vw, 68px);
   }
 }
 
-.hero-arco-caja {
+.hero-marco-caja {
   position: relative;
   justify-self: center;
-  width: min(400px, 78vw);
+  width: min(390px, 80vw);
 }
 @media (min-width: 901px) {
-  .hero-arco-caja {
-    justify-self: center;
-    width: min(440px, 38vw);
+  .hero-marco-caja {
+    justify-self: end;
+    width: min(500px, 44vw);
   }
 }
 
@@ -570,114 +639,123 @@ textarea::placeholder {
     transform: translateY(-14px);
   }
 }
-@keyframes flota-sombra {
-  0%,
-  100% {
-    transform: translateX(-50%) scale(1);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translateX(-50%) scale(0.84);
-    opacity: 0.2;
-  }
-}
 .hero-flota {
   position: relative;
   animation: flota 9s ease-in-out infinite;
   will-change: transform;
 }
-.hero-sombra {
-  position: absolute;
-  left: 50%;
-  bottom: -34px;
-  width: 58%;
-  height: 22px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(74, 18, 32, 0.62), transparent 70%);
-  animation: flota-sombra 9s ease-in-out infinite;
-  pointer-events: none;
-  /* Solo se mueve y se aclara: las dos cosas las hace la tarjeta gráfica sola
-     si la sombra vive en su propia capa. Sin esto, cada latido le pide al
-     navegador que vuelva a pintar el degradado. */
-  will-change: transform, opacity;
-}
 @media (prefers-reduced-motion: reduce) {
-  .hero-flota,
-  .hero-sombra {
+  .hero-flota {
     animation: none;
   }
 }
 
-/* El nicho: medio punto arriba, esquinas apenas redondeadas abajo. */
-.hero-arco {
+/* El retrato: rectángulo alto de esquinas redondas, sin más adorno que la
+   sombra. La forma no tiene que llamar la atención; la cara sí. */
+.hero-marco {
   position: relative;
-  aspect-ratio: 3 / 4;
-  border-radius: 50% 50% 14px 14px / 42% 42% 14px 14px;
+  aspect-ratio: 4 / 5;
+  border-radius: 30px;
   overflow: hidden;
-  box-shadow: 0 18px 40px rgba(74, 18, 32, 0.1);
+  background: var(--superficie);
+  box-shadow: 0 2px 4px rgba(34, 29, 31, 0.05), 0 30px 70px -28px rgba(69, 26, 37, 0.34);
 }
-.hero-arco img {
-  filter: saturate(0.94) contrast(1.02);
-  transform: scale(1.12);
-  transform-origin: center 34%;
-}
-
-/* El filete repite el arco un poco por fuera, sin tocar la foto. */
-.hero-arco-filete {
-  position: absolute;
-  inset: -14px -14px -14px -14px;
-  border: 1px solid var(--acento-2);
-  opacity: 0.5;
-  border-radius: 50% 50% 20px 20px / 42% 42% 20px 20px;
-  pointer-events: none;
+.hero-marco img {
+  filter: saturate(0.96);
 }
 
-/* El sello de la escuela, apoyado en el borde del arco y girando muy despacio. */
-@keyframes sello-gira {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.hero-sello {
+/*
+ * Las fichas apoyadas en el borde de la foto.
+ *
+ * Sólo llevan cosas que son verdad y que están en otro sitio de la web. Aquí
+ * no se inventa un porcentaje ni un número de alumnas para que quede moderno:
+ * un dato de adorno se nota, y una vez que se nota ya no te crees el resto.
+ */
+.hero-ficha {
   position: absolute;
-  left: -30px;
-  bottom: 42px;
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
+  z-index: 4;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--bg);
+  gap: 11px;
+  padding: 11px 15px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--linea);
-  box-shadow: 0 12px 30px rgba(74, 18, 32, 0.1);
+  box-shadow: 0 10px 30px -10px rgba(34, 29, 31, 0.22);
+  color: var(--tx);
+  max-width: 74%;
 }
-.hero-sello img {
-  animation: sello-gira 64s linear infinite;
-}
-@media (max-width: 900px) {
-  .hero-sello {
-    left: -18px;
-    bottom: 22px;
-    width: 76px;
-    height: 76px;
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .hero-ficha {
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    backdrop-filter: blur(16px) saturate(1.5);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hero-sello img {
-    animation: none;
+.hero-ficha-alta {
+  left: clamp(-14px, -1.6vw, -26px);
+  top: 12%;
+}
+.hero-ficha-baja {
+  right: clamp(-14px, -1.6vw, -26px);
+  bottom: 11%;
+  /* Lleva flecha al final, así que necesita algo más de sitio que la de
+     arriba, que sólo lleva texto. */
+  max-width: 82%;
+  padding-right: 13px;
+}
+.hero-ficha-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.hero-ficha-txt b {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--acento);
+}
+.hero-ficha-txt span {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+}
+.hero-ficha-marca {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+/* Por debajo de 380 px las fichas se salían de la pantalla por los lados. */
+@media (max-width: 400px) {
+  .hero-ficha {
+    max-width: 86%;
+    padding: 9px 12px;
+  }
+  .hero-ficha-alta {
+    left: -8px;
+  }
+  .hero-ficha-baja {
+    right: -8px;
   }
 }
 
 /* La columna del titular se estrecha solo cuando hay foto al lado. En móvil la
    foto pasa a ser fondo, así que el texto usa todo el ancho disponible. */
+/*
+ * La columna del titular usa su columna entera. Antes se quedaba en el 52 % de
+ * ella —una regla de cuando la foto iba en arco y ocupaba otra cosa— y el
+ * resultado era un titular estrangulado en seis renglones con un hueco enorme
+ * al lado. El ancho de lectura ya lo pone el párrafo con sus caracteres; el
+ * titular quiere todo el sitio que tiene.
+ */
 .hero-texto {
   max-width: 100%;
-}
-@media (min-width: 901px) {
-  .hero-texto {
-    max-width: min(620px, 52%);
-  }
+  min-width: 0;
 }
 
 /* El sello de la barra fija: se pintan las dos versiones y se enseña la que
@@ -702,7 +780,7 @@ body[data-nav-claro='si'] .sello-color {
 .texto-legal h2 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(23px, 2.4vw, 30px);
+  font-size: var(--t-bloque);
   line-height: 1.18;
   letter-spacing: -0.012em;
   margin: clamp(38px, 5vw, 58px) 0 12px;
@@ -878,9 +956,9 @@ body[data-nav-claro='si'] .sello-color {
   gap: 3px;
 }
 .modal-datos span {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
   text-transform: uppercase;
   color: var(--tx-3);
 }
@@ -1179,7 +1257,7 @@ body[data-nav-claro='si'] .sello-color {
   flex: 1;
   display: block;
   padding: clamp(13px, 1.6vw, 19px) 0;
-  font-size: clamp(26px, 4vw, 46px);
+  font-size: var(--t-seccion);
   line-height: 1.1;
   letter-spacing: -0.018em;
   color: var(--tinta);
@@ -1205,9 +1283,9 @@ body[data-nav-claro='si'] .sello-color {
   gap: 8px;
 }
 .menu-idiomas > span {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
   text-transform: uppercase;
   color: var(--tx-3);
 }
@@ -1299,9 +1377,9 @@ body[data-nav-claro='si'] .sello-color {
 }
 .cuenta-rotulo {
   display: block;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
   text-transform: uppercase;
   color: var(--acento);
   margin-bottom: 8px;
@@ -1328,8 +1406,9 @@ body[data-nav-claro='si'] .sello-color {
   font-variant-numeric: tabular-nums;
 }
 .cuenta-cifras span {
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: var(--rotulo-esp);
   text-transform: uppercase;
   color: var(--tx-3);
   margin-top: 4px;
@@ -1369,9 +1448,9 @@ body[data-nav-claro='si'] .sello-color {
   margin-bottom: 18px;
 }
 .curso-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
   text-transform: uppercase;
   color: var(--acento);
 }
@@ -1384,7 +1463,7 @@ body[data-nav-claro='si'] .sello-color {
   padding: 4px 12px;
 }
 .curso-titulo {
-  font-size: clamp(28px, 4.2vw, 46px);
+  font-size: var(--t-seccion);
   font-weight: 700;
   line-height: 1.06;
   letter-spacing: -0.028em;
@@ -1392,7 +1471,7 @@ body[data-nav-claro='si'] .sello-color {
   margin: 0 0 10px;
 }
 .curso-claim {
-  font-size: clamp(16px, 1.35vw, 19px);
+  font-size: var(--t-entrada);
   font-weight: 300;
   line-height: 1.55;
   color: var(--tx-2);
@@ -1435,9 +1514,9 @@ body[data-nav-claro='si'] .sello-color {
   padding-top: 0;
 }
 .curso-datos dt {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
   text-transform: uppercase;
   color: var(--tx-3);
   white-space: nowrap;

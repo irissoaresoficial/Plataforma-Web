@@ -77,7 +77,7 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
               <Hueco lineas={2} alto={30} etiqueta="Falta el título" />
             </div>
           ) : (
-            <h2 className="display" style={{ margin: '10px 0 6px', fontSize: 'clamp(26px,3.4vw,40px)' }}>{curso.titulo}</h2>
+            <h2 className="display" style={{ margin: '10px 0 6px', fontSize: 'var(--t-bloque)' }}>{curso.titulo}</h2>
           )}
           {falta(curso.claim) ? (
             <div style={{ margin: '0 0 22px' }}>

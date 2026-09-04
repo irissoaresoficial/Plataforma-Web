@@ -300,7 +300,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
             <span style={{ fontSize: 14, fontWeight: 700 }}>{t.ch_title}</span>
             <span style={{ fontSize: 11, color: 'var(--tx-3)' }}>{done ? t.ch_done : t.ch_sub}</span>
           </div>
-          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.4)', borderRadius: 100, padding: '4px 8px', flexShrink: 0 }}>
+          <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.4)', borderRadius: 100, padding: '4px 8px', flexShrink: 0 }}>
             IA
           </span>
           <div

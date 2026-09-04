@@ -35,7 +35,7 @@ export default function Membresia() {
         <div style={{ position: 'relative', zIndex: 3, maxWidth: 1240, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 'clamp(28px,4vw,68px)', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,28px)' }}>
             <Reveal>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--acento)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--acento)' }} />
                 Aún no ha abierto · lista de espera
               </div>
@@ -44,7 +44,7 @@ export default function Membresia() {
               Entenderlo lleva una sesión. <span style={{ color: 'var(--acento)' }}>Cambiarlo lleva meses.</span>
             </Reveal>
             <Reveal delay={150}>
-              <p style={{ margin: 0, fontSize: 'clamp(16px,1.25vw,20px)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '42ch' }}>
+              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '42ch' }}>
                 Un patrón que lleva tres generaciones funcionando no se desmonta en una tarde. Por eso abro un grupo pequeño: cada mes miramos una parte de tu historia familiar y sueltas algo que llevabas cargando sin saberlo.
               </p>
             </Reveal>
@@ -65,7 +65,7 @@ export default function Membresia() {
                     />
                   ))}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--tx-3)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>
                   <span>mes 1</span>
                   <span>sin fecha de final</span>
                 </div>
@@ -93,14 +93,14 @@ export default function Membresia() {
           >
             <div id="reservar" />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--tx-2)' }}>Precio de reserva</span>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.45)', borderRadius: 100, padding: '5px 11px' }}>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-2)' }}>Precio de reserva</span>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.45)', borderRadius: 100, padding: '5px 11px' }}>
                 Ahorras {eur(ahorro)} al mes
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'clamp(52px,6.5vw,80px)', fontFamily: 'var(--serif)', letterSpacing: '-.032em', lineHeight: 0.85, color: 'var(--acento)' }}>
+              <span style={{ fontSize: 'var(--t-seccion)', fontFamily: 'var(--serif)', letterSpacing: '-.032em', lineHeight: 0.85, color: 'var(--acento)' }}>
                 {eur(MEMBRESIA.precioReserva)}
               </span>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingBottom: 8 }}>
@@ -134,7 +134,7 @@ export default function Membresia() {
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
           <Reveal>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8F6B18' }}>Qué incluye cada mes</span>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>Qué incluye cada mes</span>
               <Pendiente>Por definir</Pendiente>
               <span style={{ flex: 1, height: 1, background: 'var(--linea)', minWidth: 40 }} />
             </div>
@@ -166,7 +166,7 @@ export default function Membresia() {
             ))}
           </div>
           <Reveal>
-            <p style={{ margin: 0, fontSize: 'clamp(15px,1.15vw,18px)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '52ch' }}>
+            <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '52ch' }}>
               El contenido exacto se cierra antes de abrir. Quien esté en la lista lo recibe el primero, y decide entonces si entra o no.
             </p>
           </Reveal>
@@ -177,7 +177,7 @@ export default function Membresia() {
       <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: 'clamp(60px,8vw,120px) clamp(14px,3vw,36px)' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 'clamp(24px,3.4vw,56px)' }}>
           <Reveal style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--acento)' }}>Para quién sí</span>
+            <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>Para quién sí</span>
             {[
               'Si llevas años viendo el mismo final y ya te cansaste de explicártelo con fuerza de voluntad.',
               'Si has hecho una sesión y quieres seguir tirando del hilo, no quedarte con la foto.',
@@ -190,7 +190,7 @@ export default function Membresia() {
             ))}
           </Reveal>
           <Reveal delay={100} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--tx-3)' }}>Para quién no</span>
+            <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>Para quién no</span>
             {[
               'Si lo que buscas es que te digan qué va a pasar. Aquí se trabaja con lo que ya está pasando.',
               'Si quieres resolverlo en una tarde. Esto va de meses, no de una sesión.',
@@ -209,7 +209,7 @@ export default function Membresia() {
       <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: '0 clamp(14px,3vw,36px) clamp(60px,8vw,110px)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 20 }}>
           <Reveal>
-            <div style={{ fontSize: 'clamp(26px,3.6vw,48px)', fontFamily: 'var(--serif)', lineHeight: 1.04, letterSpacing: '-.022em', maxWidth: '18ch', textWrap: 'pretty' }}>
+            <div style={{ fontSize: 'var(--t-seccion)', fontFamily: 'var(--serif)', lineHeight: 1.04, letterSpacing: '-.022em', maxWidth: '18ch', textWrap: 'pretty' }}>
               Cuando abra, los de la lista entran primero.
             </div>
           </Reveal>
