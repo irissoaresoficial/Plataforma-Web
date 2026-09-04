@@ -451,8 +451,53 @@ textarea::placeholder {
 }
 @media (min-width: 901px) {
   .hero-arco-caja {
-    justify-self: end;
+    justify-self: center;
     width: min(440px, 38vw);
+  }
+}
+
+/* Flota muy poco y muy despacio: 14px arriba y abajo en nueve segundos. Más
+   que eso deja de ser un detalle y se convierte en un elemento que se mueve. */
+@keyframes flota {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+@keyframes flota-sombra {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.84);
+    opacity: 0.2;
+  }
+}
+.hero-flota {
+  position: relative;
+  animation: flota 9s ease-in-out infinite;
+  will-change: transform;
+}
+.hero-sombra {
+  position: absolute;
+  left: 50%;
+  bottom: -34px;
+  width: 58%;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(74, 18, 32, 0.62), transparent 70%);
+  animation: flota-sombra 9s ease-in-out infinite;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-flota,
+  .hero-sombra {
+    animation: none;
   }
 }
 
@@ -462,7 +507,7 @@ textarea::placeholder {
   aspect-ratio: 3 / 4;
   border-radius: 50% 50% 14px 14px / 42% 42% 14px 14px;
   overflow: hidden;
-  box-shadow: 0 34px 70px rgba(74, 18, 32, 0.16);
+  box-shadow: 0 18px 40px rgba(74, 18, 32, 0.1);
 }
 .hero-arco img {
   filter: saturate(0.94) contrast(1.02);

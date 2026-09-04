@@ -112,14 +112,22 @@ export default function Home() {
             </div>
 
             <Reveal delay={120} desde="crece" className="hero-arco-caja">
-              <div className="hero-arco">
-                <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 78vw, 40vw" objectPosition="center 42%" />
+              {/* La flotación va en su propia capa: el Reveal ya usa transform
+                  en la caja de fuera, y dos animaciones sobre la misma
+                  propiedad se pisan. */}
+              <div className="hero-flota">
+                <div className="hero-arco">
+                  <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 78vw, 40vw" objectPosition="center 42%" />
+                </div>
+                {/* El filete dorado repite el arco un poco por fuera. */}
+                <span className="hero-arco-filete" aria-hidden />
+                <span className="hero-sello" aria-hidden>
+                  <Marca tam={74} texto={false} />
+                </span>
               </div>
-              {/* El filete dorado repite el arco un poco por fuera. */}
-              <span className="hero-arco-filete" aria-hidden />
-              <span className="hero-sello" aria-hidden>
-                <Marca tam={74} texto={false} />
-              </span>
+              {/* La sombra va suelta en el suelo y se encoge cuando ella sube:
+                  sin eso, subir y bajar no se lee como flotar. */}
+              <span className="hero-sombra" aria-hidden />
             </Reveal>
           </div>
         </div>
