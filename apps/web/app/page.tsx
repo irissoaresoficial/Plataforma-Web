@@ -5,6 +5,8 @@ import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
+import { Palabras, Marquesina } from '@/components/movimiento';
+import TuNumero from '@/components/TuNumero';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
@@ -95,10 +97,15 @@ export default function Home() {
               {/* Una sola voz y un solo tamaño. El giro lo marca el color, no un
                   cuerpo cuatro veces mayor ni una cursiva: en dos tamaños tan
                   distintos la frase se partía en dos y ocupaba siete renglones. */}
-              <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'var(--t-portada)', fontWeight: 700, lineHeight: 1.07, letterSpacing: '-.032em', textWrap: 'balance' }}>
-                {t.h1a}{' '}
-                <span style={{ color: 'var(--acento)' }}>{t.h1b}</span>
-              </Reveal>
+              {/* Palabra a palabra. Un titular que aparece de golpe se lee como
+                  una imagen; apareciendo por palabras se lee como alguien que
+                  está diciendo la frase, que es lo que es. */}
+              <h1 style={{ margin: 0, fontSize: 'var(--t-portada)', fontWeight: 700, lineHeight: 1.07, letterSpacing: '-.032em', textWrap: 'balance' }}>
+                <Palabras retraso={0.1}>{t.h1a}</Palabras>{' '}
+                <Palabras retraso={0.1 + t.h1a.split(' ').length * 0.055} style={{ color: 'var(--acento)' }}>
+                  {t.h1b}
+                </Palabras>
+              </h1>
               <Reveal delay={150} desde="izq">
                 <p style={{ margin: 0, fontSize: 'var(--t-entrada)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '38ch' }}>{t.hsub}</p>
               </Reveal>
@@ -148,6 +155,43 @@ export default function Home() {
               </div>
             </Reveal>
           </div>
+        </div>
+      </div>
+
+      {/* ── LA MARQUESINA ────────────────────────────────────
+          Los números con los que se trabaja, pasando sin parar. No es
+          decoración de relleno: son las doce cifras del oficio, y del 11, 22
+          y 33 sale el nombre de la escuela. */}
+      <div className="claro banda-filete" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: '22px 0' }}>
+        <Marquesina segundos={44}>
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '11', '22', '33'].map((n) => (
+            <span
+              key={n}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'clamp(28px,4vw,58px)',
+                paddingRight: 'clamp(28px,4vw,58px)',
+                fontSize: 'clamp(26px,3vw,42px)',
+                fontWeight: 700,
+                letterSpacing: '-.03em',
+                color: ['11', '22', '33'].includes(n) ? 'var(--acento-2)' : 'var(--deco)',
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              {n}
+              <span aria-hidden style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--linea-2)' }} />
+            </span>
+          ))}
+        </Marquesina>
+      </div>
+
+      {/* ── TU NÚMERO ────────────────────────────────────────
+          Aquí la web da antes de pedir: la cuenta es de verdad, es la misma
+          que hace Iris, y se ve sin registrarse ni dejar el correo. */}
+      <div className="claro banda">
+        <div className="banda-dentro">
+          <TuNumero />
         </div>
       </div>
 
