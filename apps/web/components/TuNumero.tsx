@@ -206,27 +206,32 @@ export default function TuNumero() {
               className="tn-espera"
             >
               {/*
-                  EL EJEMPLO ENSEÑA LA CUENTA, NO SÓLO EL FINAL.
+                  EL HUECO INVITA A ESCRIBIR. NO ENSEÑA UNA CUENTA YA HECHA.
 
-                  Antes ponía «14 · 3 · 1981 ↓ 9» y ya. Visto así parece que el
-                  número sale de la nada, o peor: de una app. Y la primera
-                  pregunta de cualquiera —«¿de dónde sacas eso?»— se quedaba sin
-                  responder justo en el sitio donde se decide si esto es serio.
+                  Aquí había un ejemplo con los cuatro pliegues de la fecha
+                  14·3·1981 y un párrafo explicando cómo se reduce. Estaba mal
+                  por dos motivos, y el segundo es el gordo.
 
-                  Los pasos los da el motor de la casa, no están escritos a mano
-                  aquí: si algún día cambia la cuenta, cambia también el ejemplo.
+                  Uno: nadie ha pedido una lección. Explicar el método antes de
+                  que la persona haya visto SU número es contestar una pregunta
+                  que todavía no se ha hecho.
+
+                  Dos, y éste es el que rompía la pantalla: los tres campos de
+                  arriba llevan de marcador de posición 14, 3 y 1981 — y este
+                  ejemplo enseñaba justo «14·3·1981 → 9» debajo. Los dos grises,
+                  uno encima del otro. Cualquiera que llega ve una fecha puesta y
+                  un resultado calculado, y da por hecho que eso ya está hecho:
+                  no se entiende que los campos están vacíos y que hay que
+                  escribir la suya. Se veía raro porque estaba mal.
+
+                  Ahora el hueco no dice nada de cuentas: señala hacia arriba, a
+                  las casillas.
               */}
-              <div className="tn-pasos" aria-hidden>
-                {pasosCaminoDeVida(14, 3, 1981).map((p, i, todos) => (
-                  <span key={i} className={i === todos.length - 1 ? 'tn-paso tn-paso-fin' : 'tn-paso'}>
-                    {p}
-                  </span>
-                ))}
-              </div>
-              <p className="tn-espera-pie">
-                Así se pliega una fecha: se reducen <strong>el día, el mes y el año por separado</strong> y luego se
-                suman. Pon la tuya y sale la de verdad.
+              <span className="tn-flecha-arriba" aria-hidden>↑</span>
+              <p className="tn-invita">
+                Escribe arriba tu fecha de nacimiento y tu número aparece aquí.
               </p>
+              <span className="tn-invita-nota">Sin registrarte. Sin dejar el correo.</span>
             </motion.div>
           )}
         </AnimatePresence>

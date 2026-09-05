@@ -1131,6 +1131,16 @@ body[data-nav-claro='si'] .sello-color {
   padding: clamp(20px, 4vw, 38px);
   padding-bottom: 8px;
 }
+/* La cabecera entera se para antes del botón de cerrar. El hueco estaba puesto
+   sólo en la línea del rótulo, así que el título y la frase que vende el curso
+   seguían pasando por debajo de la ×: en el móvil, la primera frase se leía con
+   la esquina derecha comida. */
+.modal-cuerpo > span:first-child,
+.modal-cuerpo > h2,
+.modal-cuerpo > h2 + p,
+.modal-cuerpo > div:first-child {
+  padding-right: 44px;
+}
 /* En el móvil la ficha ocupa casi toda la pantalla, pero deja ver que hay
    página detrás y respeta la barra del navegador. */
 @media (max-width: 759px) {
@@ -1843,6 +1853,26 @@ body[data-nav-claro='si'] .sello-color {
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
+/* Las disciplinas de Iris, en cinta. El desvanecido de los lados lo pone ya
+   `.marquesina`; aquí sólo va la separación y la forma de cada píldora. */
+.cinta-chips {
+  width: 100%;
+}
+.cinta-chips .marquesina-copia {
+  gap: 8px;
+  padding-right: 8px;
+}
+.chip-cinta {
+  flex: none;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--tx-2);
+  border: 1px solid var(--linea-2);
+  border-radius: var(--radio-pildora);
+  padding: 8px 16px;
+  white-space: nowrap;
+}
+
 .marquesina-tira {
   display: flex;
   width: max-content;
@@ -2106,6 +2136,53 @@ body[data-nav-claro='si'] .sello-color {
 .tn-regalo-nota {
   font-size: var(--t-nota);
   color: var(--tx-3);
+}
+
+/* El hueco de espera. Ya no enseña una cuenta de ejemplo —competía con los
+   marcadores de posición de las casillas y hacía creer que estaba todo hecho—:
+   señala hacia arriba y dice qué hay que hacer. */
+.tn-flecha-arriba {
+  font-size: 26px;
+  line-height: 1;
+  color: var(--acento);
+  animation: tn-sube 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tn-flecha-arriba {
+    animation: none;
+  }
+}
+@keyframes tn-sube {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(-6px); opacity: 1; }
+}
+.tn-invita {
+  margin: 12px 0 0;
+  font-size: var(--t-entrada);
+  font-weight: var(--peso-fino);
+  line-height: 1.45;
+  letter-spacing: -0.018em;
+  color: var(--tx-2);
+  max-width: 22ch;
+}
+.tn-invita-nota {
+  margin-top: 8px;
+  font-size: var(--t-nota);
+  color: var(--tx-3);
+}
+
+/* Los tres puntos mientras hace la cuenta. Mismo gesto que el chat: en toda la
+   web, tres puntos quieren decir «está trabajando». */
+.reduccion-pensando {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 56px;
+}
+.reduccion-pensando .punto {
+  width: 9px;
+  height: 9px;
+  background: var(--acento);
 }
 
 /* La cuenta del ejemplo, paso a paso y en vertical. Cada renglón es un pliegue;
@@ -2971,9 +3048,30 @@ body[data-nav-claro='si'] .sello-color {
   flex-direction: column;
   gap: 14px;
   padding: clamp(20px, 2.2vw, 26px);
-  border: 1px solid var(--linea);
+  /*
+   * CRISTAL, NO RECORTE.
+   *
+   * Era un relleno sólido con un filo gris: cada tarjeta se leía como un papel
+   * pegado encima del fondo, y seis papeles en fila parten la sección en seis
+   * trozos. En cristal, la tarjeta se apoya sobre el fondo en vez de taparlo
+   * —el color de debajo se sigue viendo a través— y la cinta se lee como una
+   * sola pieza que pasa.
+   *
+   * El borde también cambia: un filo claro y una luz interior arriba, y sombra
+   * corta abajo. Es lo que hace que una superficie parezca tener grosor en vez
+   * de ser un rectángulo dibujado.
+   */
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: var(--radio);
-  background: var(--superficie);
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.75) inset, 0 10px 30px -18px rgba(34, 29, 31, 0.32);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .testi-tarjeta {
+    background: rgba(255, 255, 255, 0.32);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+  }
 }
 .testi-cab {
   display: flex;

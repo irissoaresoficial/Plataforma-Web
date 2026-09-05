@@ -88,8 +88,16 @@ function CursoBloque({ curso }: { curso: Curso }) {
   );
 }
 
+/* La fecha en letra, sacada del dato. Escrita a mano se queda vieja en cuanto
+   la fecha se mueva, y entonces la web anuncia un día y la cuenta atrás otro. */
+const enLetra = (iso: string) =>
+  new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' }).format(
+    new Date(iso.includes('T') ? iso : `${iso}T00:00:00`),
+  );
+
 export default function Cursos() {
   useSiteScroll();
+  const abre = enLetra(MEMBRESIA.abreISO);
 
   return (
     <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
@@ -170,12 +178,18 @@ export default function Cursos() {
                 <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em', lineHeight: 1.1, maxWidth: '26ch', textWrap: 'balance' }}>
                   Un curso es una tarde. La comunidad es cada mes.
                 </span>
+                {/* El filtro: ¿esto lo querría alguien que acaba de llegar?
+                    «Ver la membresía» no dice qué gana por mirarla, y el dato
+                    que sí convence —que hoy entra por la mitad y ese precio se
+                    le queda— estaba escondido en un párrafo gris. Ahora el
+                    botón lleva el precio y el párrafo dice hasta cuándo. */}
                 <span style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '40ch' }}>
-                  Todavía no ha abierto. Quien reserva ahora entra por {eur(MEMBRESIA.precioReserva)} en vez de {eur(MEMBRESIA.precio)}.
+                  Abre el {abre}. Quien entra en la lista ahora paga {eur(MEMBRESIA.precioReserva)} en vez de{' '}
+                  {eur(MEMBRESIA.precio)} — y lo mantiene mientras siga dentro.
                 </span>
               </div>
               <Link href="/membresia" data-mag data-cur-label="Ver" className="pill pill-cream">
-                <span>Ver la membresía</span>
+                <span>Guardar mi precio de {eur(MEMBRESIA.precioReserva)}</span>
                 <span className="pill-arrow">→</span>
               </Link>
             </div>

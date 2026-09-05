@@ -57,12 +57,20 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
         </button>
 
         <div className="modal-cuerpo">
-          {/* Se para antes del botón de cerrar: en el móvil el rótulo le pasaba
-              por debajo y la última palabra quedaba tachada por la ×. */}
+          {/*
+              TODA LA CABECERA SE PARA ANTES DE LA ×, NO SÓLO EL RÓTULO.
+
+              El hueco estaba puesto sólo en esta línea de arriba, así que el
+              título y la frase de debajo seguían pasando por debajo del botón
+              de cerrar: en el móvil, la primera frase del curso —la que tiene
+              que convencer— se leía con la esquina derecha comida.
+
+              Va en la caja de fuera para que valga para todo lo que haya
+              dentro, ahora y lo que se añada mañana.
+          */}
           <span
             style={{
               display: 'block',
-              paddingRight: 46,
               fontSize: 11,
               fontWeight: 600,
               letterSpacing: '.14em',

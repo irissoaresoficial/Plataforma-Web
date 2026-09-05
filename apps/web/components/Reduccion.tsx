@@ -57,14 +57,43 @@ export default function Reduccion({
   const pasos = pasosDe(dia, mes, anio);
   const [i, setI] = useState(0);
 
+  /*
+   * PRIMERO PIENSA, DESPUÉS CONTESTA.
+   *
+   * Antes la cuenta empezaba de golpe: pulsabas y ya estaba el primer paso ahí,
+   * sin más. Un resultado instantáneo se lee como una tabla consultada; un
+   * segundo de trabajo delante se lee como alguien haciendo la cuenta, que es
+   * lo que la pieza tiene que transmitir — es literalmente lo que hace Iris con
+   * quien se sienta enfrente.
+   *
+   * Es un segundo escaso, no una ruleta de las que dan vueltas cinco segundos
+   * para fingir esfuerzo. Y con el movimiento reducido no hay espera ninguna.
+   */
+  const [pensando, setPensando] = useState(true);
+
+  useEffect(() => {
+    // Con el movimiento reducido no hay espera: el resultado y ya.
+    if (quieto) {
+      setPensando(false);
+      return;
+    }
+    /* Y si el bloque todavía no ha entrado en pantalla, se sigue pensando: el
+       reloj arranca cuando la persona lo está mirando. La primera versión
+       apagaba aquí el «pensando» —«si no está dentro, fuera»— y como al montar
+       nunca está dentro, se apagaba en el primer instante y no se veía jamás. */
+    if (!dentro) return;
+    const t = setTimeout(() => setPensando(false), 900);
+    return () => clearTimeout(t);
+  }, [dentro, quieto]);
+
   useEffect(() => {
     // Con el movimiento reducido no se recorre nada: se enseña el resultado,
     // que es lo que la pieza quiere decir.
-    if (!dentro || quieto) return;
+    if (!dentro || quieto || pensando) return;
     if (i >= pasos.length - 1) return;
     const t = setTimeout(() => setI((n) => n + 1), ritmo);
     return () => clearTimeout(t);
-  }, [dentro, quieto, i, pasos.length, ritmo]);
+  }, [dentro, quieto, pensando, i, pasos.length, ritmo]);
 
   const final = quieto || i >= pasos.length - 1;
 
@@ -85,22 +114,39 @@ export default function Reduccion({
   return (
     <div ref={caja} className={`reduccion ${className ?? ''}`}>
       <span className="rotulo" style={{ color: 'var(--acento)' }}>
-        {esMaestro ? 'Un número maestro' : 'Una fecha, un número'}
+        {pensando ? 'Haciendo la cuenta' : esMaestro ? 'Un número maestro' : 'Una fecha, un número'}
       </span>
 
       <div className="reduccion-linea" aria-live="off">
-        {/* La `key` cambia con el paso, así que React tira el anterior y monta
-            el siguiente: es lo que hace que uno salga y el otro entre en vez
-            de que el texto cambie de golpe. */}
-        <motion.span
-          key={texto}
-          className={final ? 'reduccion-cifra final' : 'reduccion-cifra'}
-          initial={quieto ? false : { opacity: 0, y: 14, filter: 'blur(5px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 0.44, ease: CURVA }}
-        >
-          {texto}
-        </motion.span>
+        {pensando ? (
+          /* Los tres puntos de «está pensando». Es el mismo gesto que usa el
+             agente del chat antes de contestar, y a propósito: en toda la web,
+             tres puntos quieren decir lo mismo. */
+          <motion.span
+            key="pensando"
+            className="reduccion-pensando"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25 }}
+          >
+            <span className="punto" />
+            <span className="punto" />
+            <span className="punto" />
+          </motion.span>
+        ) : (
+          /* La `key` cambia con el paso, así que React tira el anterior y monta
+             el siguiente: es lo que hace que uno salga y el otro entre en vez
+             de que el texto cambie de golpe. */
+          <motion.span
+            key={texto}
+            className={final ? 'reduccion-cifra final' : 'reduccion-cifra'}
+            initial={quieto ? false : { opacity: 0, y: 14, filter: 'blur(5px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.44, ease: CURVA }}
+          >
+            {texto}
+          </motion.span>
+        )}
       </div>
 
       {/* Los puntos de abajo dicen cuántos pliegues quedan. Sin ellos la pieza

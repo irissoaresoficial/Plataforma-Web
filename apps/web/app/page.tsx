@@ -310,13 +310,21 @@ export default function Home() {
                 <p style={{ margin: 0 }}>{t.w_p2}</p>
               </div>
             </Reveal>
+            {/* Las seis disciplinas, en cinta continua. Apiladas ocupaban tres
+                renglones y se leían como una lista de la compra; pasando, se
+                leen de un vistazo y ocupan una línea. Se desvanecen por los dos
+                lados en vez de cortarse contra el borde: una palabra partida a
+                la mitad se lee como un fallo, y desvanecida se lee como que la
+                cinta sigue. */}
             <Reveal delay={200}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {chips.map((c) => (
-                  <span key={c} className="chip" style={{ fontSize: 12, fontWeight: 500, color: 'var(--tx-2)', border: '1px solid var(--linea)', borderRadius: 100, padding: '7px 14px' }}>
-                    {c}
-                  </span>
-                ))}
+              <div className="cinta-chips">
+                <Marquesina segundos={34}>
+                  {chips.map((c) => (
+                    <span key={c} className="chip chip-cinta">
+                      {c}
+                    </span>
+                  ))}
+                </Marquesina>
               </div>
             </Reveal>
           </div>
