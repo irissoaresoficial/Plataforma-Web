@@ -1,0 +1,2072 @@
+:root {
+  /* Una sola familia. Las dos variables apuntan a lo mismo a propósito: así
+     el código sigue distinguiendo titular de cuerpo, pero la letra es una. */
+  --serif: 'Montserrat', -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --sans: var(--serif);
+
+  /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
+     es blanco de verdad, no crema, y el segundo tono apenas se separa de él. */
+  --vino: #451a25;
+  --vino-claro: #5d2734;
+  --oro: #a9884f;
+  --oro-tinta: #7d5f1e; /* el dorado que sí se lee como texto sobre blanco */
+  --oro-luz: #e2cda2;
+  --papel: #ffffff;
+  /* La web es blanca, pero blanca no quiere decir plana. Este arena está lo
+     bastante lejos del papel como para que una banda se lea como una banda sin
+     mirar dos veces, y lo bastante cerca como para que la página siga siendo
+     clara. Cuando era #f7f5f1 la diferencia existía en el código y no en la
+     pantalla: dos bloques distintos parecían el mismo bloque. */
+  --arena: #f1ede4;
+  /* El tercer registro, para el bloque que tiene que pesar más que los demás. */
+  --arena-honda: #e7e1d4;
+  --tinta: #221d1f;
+}
+
+/*
+ * El sitio se compone de bloques claros y bloques de granate. Cada bloque
+ * declara cuál es con una clase, y dentro de él los colores se piden siempre
+ * por su papel —fondo, texto, línea, acento— nunca por su valor. Así un bloque
+ * se cambia de tema con una palabra y nada se queda ilegible por el camino.
+ *
+ * La clase pinta también el fondo y el texto. Si solo definiera las variables,
+ * un bloque que se olvidara de aplicarlas heredaría el color del tema de fuera
+ * —texto oscuro sobre granate— y eso ya ha pasado dos veces.
+ */
+.claro,
+.arena,
+.vino {
+  background: var(--bg);
+  color: var(--tx);
+}
+:root,
+.claro {
+  --bg: var(--papel);
+  --tx: var(--tinta);
+  --tx-2: #665c58;
+  --tx-3: #6f6560; /* el más claro que aún cumple 4.5:1 sobre el gris claro */
+  --tx-4: #6f6560;
+  --deco: #cfc7c0; /* solo adorno: los números gigantes de las fichas */
+  --acento: var(--oro-tinta);
+  --acento-2: var(--oro);
+  --linea: #e9e5df;
+  --linea-2: #d8d2ca;
+  --superficie: var(--arena);
+  --sombra: rgba(34, 29, 31, 0.08);
+  --boton: var(--vino);
+  --boton-tx: #fbf6ee;
+  --boton-flecha: var(--oro);
+}
+.arena {
+  --bg: var(--arena);
+  --tx: var(--tinta);
+  --tx-2: #625852;
+  --tx-3: #6b615b;
+  --tx-4: #6b615b;
+  --deco: #cfc6b6;
+  --acento: var(--oro-tinta);
+  --acento-2: var(--oro);
+  --linea: #ddd6c8;
+  --linea-2: #cbc2b1;
+  /* Sobre arena, la tarjeta es papel: es lo que la levanta del fondo. */
+  --superficie: #ffffff;
+  --sombra: rgba(34, 29, 31, 0.09);
+  --boton: var(--vino);
+  --boton-tx: #fbf6ee;
+  --boton-flecha: var(--oro);
+}
+.vino {
+  --bg: var(--vino);
+  --tx: #fbf6ee;
+  --tx-2: rgba(251, 246, 238, 0.74);
+  --tx-3: rgba(251, 246, 238, 0.54);
+  --tx-4: rgba(251, 246, 238, 0.62);
+  --deco: rgba(251, 246, 238, 0.22);
+  --acento: var(--oro-luz);
+  --acento-2: var(--oro);
+  --linea: rgba(251, 246, 238, 0.16);
+  --linea-2: rgba(251, 246, 238, 0.3);
+  --superficie: rgba(251, 246, 238, 0.07);
+  --sombra: rgba(0, 0, 0, 0.3);
+  /* Sobre granate el botón se invierte: dorado lleno con el granate dentro. */
+  --boton: var(--oro-luz);
+  --boton-tx: var(--vino);
+  --boton-flecha: var(--vino);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/*
+ * EL SCROLL
+ *
+ * `scroll-behavior: smooth` solo para quien no ha pedido lo contrario, y
+ * `scroll-padding-top` para que al saltar a un ancla el título no quede
+ * escondido debajo de la barra fija de arriba.
+ *
+ * `text-size-adjust` evita que Safari en el móvil agrande la letra por su
+ * cuenta al girar el teléfono, que es lo que hace que un bloque se recoloque
+ * solo mientras estás bajando.
+ */
+html {
+  scroll-padding-top: 84px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/*
+ * BANDAS
+ *
+ * Cada tramo de la página es una banda, y todas respiran igual. Tener el ritmo
+ * en un sitio evita que un bloque acabe con el doble de aire que el de al lado
+ * porque se escribió otro día.
+ */
+.banda {
+  position: relative;
+  z-index: 3;
+  padding: clamp(56px, 8vw, 116px) clamp(16px, 3vw, 36px);
+}
+.banda-corta {
+  padding-top: clamp(38px, 5vw, 68px);
+  padding-bottom: clamp(38px, 5vw, 68px);
+}
+.banda-dentro {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.banda-estrecha {
+  max-width: 900px;
+  margin: 0 auto;
+}
+/*
+ * El filete de separación. La diferencia de tono ya hace casi todo el trabajo;
+ * esto solo remata el borde para que dos bandas claras seguidas no se toquen
+ * con un canto sucio.
+ */
+.banda-filete {
+  border-top: 1px solid var(--linea);
+}
+
+/*
+ * UN SOLO DIBUJO DE LETRA EN TODA LA WEB.
+ *
+ * Montserrat, en tres pesos: 300 light, 400 regular y 700 bold.
+ *
+ * Solo tiene un eje variable, el peso, así que no hay manera de que dos partes
+ * de la web acaben con dos dibujos distintos: lo único que cambia de un sitio a
+ * otro es el peso, el tamaño y la cursiva. Esto no es una manía: cuando la
+ * familia anterior tenía ejes de óptica y de suavidad, moverlos por bloques
+ * dibujaba letras distintas y la web parecía hecha con siete tipografías.
+ *
+ * Es ancha. Más que la anterior, letra por letra, así que los titulares piden
+ * un punto menos de cuerpo y algo más de apriete para caber en las mismas
+ * líneas; los tamaños de abajo ya están ajustados a eso.
+ */
+body,
+button,
+input,
+textarea,
+select,
+.display,
+.display-sm {
+  font-family: var(--serif);
+}
+
+/*
+ * LA ESCALA
+ *
+ * Una sola tipografía no basta para que la web parezca de una pieza: hacen
+ * falta pocos tamaños y siempre los mismos. Antes había ocho tamaños de rótulo
+ * en versal —9, 9,5, 10, 11 y 12 px— con ocho espaciados distintos —de 0,04 a
+ * 0,2em—. Cada uno se escribió el día que hizo falta y ninguno estaba mal por
+ * sí solo; lo que se lee como descuido es justo esa diferencia mínima entre
+ * cosas que hacen lo mismo. El ojo la nota aunque no sepa decir qué pasa.
+ *
+ * Aquí están los pocos valores que existen. Un bloque coge uno; no inventa el
+ * suyo.
+ */
+:root {
+  /* Rótulos en versal: uno, y sólo uno. */
+  --rotulo-tam: 11px;
+  --rotulo-peso: 700;
+  --rotulo-esp: 0.16em;
+
+  /* Titulares, de mayor a menor, con la misma razón entre escalones. */
+  --t-portada: clamp(32px, 4.1vw, 58px);
+  --t-seccion: clamp(28px, 3.5vw, 46px);
+  --t-bloque: clamp(21px, 2.4vw, 30px);
+  --t-ficha: clamp(18px, 1.9vw, 22px);
+
+  /* Texto corrido. */
+  --t-entrada: clamp(16px, 1.15vw, 19px);
+  --t-cuerpo: 15px;
+  --t-nota: 13px;
+}
+
+/*
+ * El rótulo en versal. Lo usa todo lo que sea una etiqueta: el rótulo de una
+ * sección, el nombre de un dato, el «próximo curso» de una ficha.
+ *
+ * La versal muy espaciada es lo que le da el aire a la página, pero sólo
+ * mientras sea siempre la misma. En cuanto hay dos parecidas, deja de ser un
+ * recurso y pasa a ser ruido.
+ */
+.rotulo,
+.espaciado {
+  text-transform: uppercase;
+  letter-spacing: var(--rotulo-esp);
+}
+.rotulo {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  line-height: 1.2;
+  color: var(--acento);
+}
+/* La misma etiqueta cuando va dentro de una celda, al lado de su valor: mismo
+   tamaño y mismo espaciado; sólo baja el tono para no competir con el dato. */
+.rotulo-dato {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--tx-3);
+}
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-weight: 400;
+  letter-spacing: -0.006em;
+  -webkit-font-smoothing: antialiased;
+  /*
+   * `clip` y no `hidden`, y esto no es un detalle.
+   *
+   * `overflow-x: hidden` obliga al eje vertical a ser `auto`, y con eso el
+   * elemento pasa a ser una zona de desplazamiento. Cualquier cosa pegada
+   * (`position: sticky`) dentro de él deja de pegarse a la ventana y se pega a
+   * esa zona, que no se desplaza nunca: en pantalla el bloque anclado se iba
+   * hacia arriba y dejaba media página vacía.
+   *
+   * `clip` corta lo que se sale exactamente igual, pero no crea zona de
+   * desplazamiento. La línea de `hidden` se deja delante como red para el
+   * navegador que no conozca `clip`: se queda sin anclaje, pero no con la
+   * página desbordada de lado.
+   */
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+a {
+  color: var(--oro-tinta);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--vino);
+}
+
+input,
+textarea,
+button {
+  font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--tx-4, #b5a99c);
+}
+
+::selection {
+  background: rgba(184, 146, 79, 0.28);
+}
+
+@media (pointer: fine) {
+  body[data-cur='on'],
+  body[data-cur='on'] * {
+    cursor: none !important;
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  70% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+#chat-body::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Titulares: la misma familia en bold, apretada de espaciado. En tamaño grande
+   una grotesca necesita menos aire entre letras que en un párrafo; si no se
+   aprieta, un titular de setenta píxeles parece deletreado. */
+.display {
+  font-family: var(--serif);
+  font-weight: 700;
+  letter-spacing: -0.026em;
+  line-height: 1.04;
+}
+.display em,
+.display i {
+  font-style: italic;
+}
+
+/* La misma letra en tamaño de lectura: peso normal y casi sin apretar. */
+.display-sm {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/* ---- piezas compartidas ---- */
+/* Todas piden los colores por su papel, así funcionan igual sobre papel claro,
+   sobre arena y sobre granate sin escribir tres versiones de cada una. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px 6px 6px 22px;
+  transition: gap 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.45s ease;
+  cursor: pointer;
+  border: none;
+}
+.pill:hover {
+  gap: 18px;
+  transform: translateY(-3px);
+}
+.pill-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* El botón principal se invierte solo: granate sobre papel, dorado sobre
+   granate. Así nunca desaparece por quedar del color de su propio fondo. */
+.pill-cream,
+.pill-dark,
+.pill-gold {
+  background: var(--boton, #4a1220);
+  color: var(--boton-tx, #fbf6ee);
+  box-shadow: 0 12px 30px var(--sombra, rgba(74, 18, 32, 0.22));
+}
+.pill-cream:hover,
+.pill-dark:hover,
+.pill-gold:hover {
+  color: var(--boton-tx, #fbf6ee);
+  box-shadow: 0 18px 40px var(--sombra, rgba(74, 18, 32, 0.28));
+}
+.pill-cream .pill-arrow,
+.pill-dark .pill-arrow,
+.pill-gold .pill-arrow {
+  background: var(--boton-tx, #fbf6ee);
+  color: var(--boton, #4a1220);
+}
+
+.btn-outline,
+.btn-outline-dark {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--linea-2, #dbccb4);
+  padding: 13px 20px;
+  border-radius: 100px;
+  transition: border-color 0.4s ease, color 0.4s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--tx, #2b1a1e);
+}
+.btn-outline:hover,
+.btn-outline-dark:hover {
+  border-color: var(--acento-2, #b8924f);
+  color: var(--acento, #8a6518);
+  transform: translateY(-3px);
+}
+
+.nav-cta {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 18px;
+  border-radius: 100px;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
+  cursor: pointer;
+}
+.nav-cta:hover {
+  transform: translateY(-2px);
+}
+
+/*
+ * Una tarjeta se rellena, no se dibuja solo con una raya. Sobre papel blanco un
+ * borde de un píxel casi no existe: tres tarjetas seguidas parecían tres huecos
+ * en la misma hoja. Con el relleno del tema —arena sobre blanco, blanco sobre
+ * arena, un velo claro sobre granate— se leen como tres objetos.
+ */
+.card-hover,
+.card-hover-light {
+  background: var(--superficie);
+  transition: border-color 0.5s ease, background 0.5s ease, box-shadow 0.6s ease,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover:hover,
+.card-hover-light:hover {
+  border-color: var(--acento-2, #b8924f);
+  box-shadow: 0 22px 50px var(--sombra, rgba(74, 18, 32, 0.1));
+  transform: translateY(-6px);
+}
+
+.line-hover {
+  transition: padding-left 0.55s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s ease;
+}
+.line-hover:hover {
+  padding-left: 16px;
+  border-color: var(--acento-2, #b8924f);
+}
+
+.chip {
+  transition: border-color 0.4s ease, color 0.4s ease, background 0.4s ease;
+}
+.chip:hover {
+  border-color: var(--acento-2, #b8924f);
+  color: var(--acento, #8a6518);
+}
+
+.nav-link {
+  display: none;
+}
+@media (min-width: 860px) {
+  .nav-link {
+    display: block;
+  }
+}
+
+.field-input {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  padding: 15px 16px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.field-input:focus {
+  border-color: var(--acento-2, #b8924f);
+  box-shadow: 0 0 0 3px rgba(184, 146, 79, 0.16);
+}
+
+/* ---- el chat escribe ---- */
+
+/* Cada palabra entra por su cuenta: es lo que da la sensación de que alguien
+   está escribiendo al otro lado, en vez de pegar el mensaje de golpe. */
+@keyframes palabra-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.22em);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.palabra {
+  display: inline-block;
+  animation: palabra-in 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+  white-space: pre;
+}
+
+@keyframes burbuja-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.burbuja-in {
+  animation: burbuja-in 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Los tres puntos de "está escribiendo". */
+@keyframes punto {
+  0%,
+  70%,
+  100% {
+    opacity: 0.22;
+    transform: translateY(0);
+  }
+  35% {
+    opacity: 0.95;
+    transform: translateY(-3px);
+  }
+}
+.punto {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cream);
+  animation: punto 1.25s ease-in-out infinite;
+}
+.punto:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.punto:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+/* El cursor que va delante del texto mientras el bot escribe. */
+@keyframes cursor-chat {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+.cursor-chat {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 2px;
+  vertical-align: -0.13em;
+  background: var(--gold);
+  animation: cursor-chat 0.9s steps(1) infinite;
+}
+
+/* Quien pide menos movimiento lo recibe entero, sin animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  .palabra,
+  .burbuja-in {
+    animation: none;
+  }
+  .punto,
+  .cursor-chat {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    opacity: 0.6;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  #page > *:not(#sheet) {
+    display: none !important;
+  }
+  #sheet {
+    display: block !important;
+  }
+}
+
+/* ---- la portada ---- */
+
+/*
+ * LA PORTADA
+ *
+ * Dos columnas: el titular a la izquierda y el retrato a la derecha, grande y
+ * en un rectángulo redondeado —no en un arco—, con dos fichas de cristal
+ * apoyadas en su borde.
+ *
+ * Lo que había antes no funcionaba y se veía: el titular iba en dos voces con
+ * dos tamaños muy distintos y ocupaba siete renglones, la foto en forma de
+ * nicho quedaba anticuada, y entre las dos columnas se abría un hueco enorme.
+ * Encima el bloque pedía una pantalla entera de alto, así que los botones
+ * caían por debajo del borde y no se veían al entrar.
+ *
+ * Ahora el titular es una sola voz de un solo tamaño y el contraste lo hace el
+ * color; la foto manda, que es lo que se mira primero; y todo cabe de una vez.
+ */
+.hero-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(40px, 5vw, 64px);
+  align-items: center;
+}
+@media (min-width: 901px) {
+  .hero-rejilla {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+    gap: clamp(40px, 4.4vw, 68px);
+  }
+}
+
+.hero-marco-caja {
+  position: relative;
+  justify-self: center;
+  width: min(390px, 80vw);
+}
+@media (min-width: 901px) {
+  .hero-marco-caja {
+    justify-self: end;
+    width: min(500px, 44vw);
+  }
+}
+
+/* Flota muy poco y muy despacio: 14px arriba y abajo en nueve segundos. Más
+   que eso deja de ser un detalle y se convierte en un elemento que se mueve. */
+@keyframes flota {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+.hero-flota {
+  position: relative;
+  animation: flota 9s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-flota {
+    animation: none;
+  }
+}
+
+/* El retrato: rectángulo alto de esquinas redondas, sin más adorno que la
+   sombra. La forma no tiene que llamar la atención; la cara sí. */
+.hero-marco {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: 30px;
+  overflow: hidden;
+  background: var(--superficie);
+  box-shadow: 0 2px 4px rgba(34, 29, 31, 0.05), 0 30px 70px -28px rgba(69, 26, 37, 0.34);
+}
+.hero-marco img {
+  filter: saturate(0.96);
+}
+
+/*
+ * Las fichas apoyadas en el borde de la foto.
+ *
+ * Sólo llevan cosas que son verdad y que están en otro sitio de la web. Aquí
+ * no se inventa un porcentaje ni un número de alumnas para que quede moderno:
+ * un dato de adorno se nota, y una vez que se nota ya no te crees el resto.
+ */
+.hero-ficha {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 15px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--linea);
+  box-shadow: 0 10px 30px -10px rgba(34, 29, 31, 0.22);
+  color: var(--tx);
+  max-width: 74%;
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .hero-ficha {
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    backdrop-filter: blur(16px) saturate(1.5);
+  }
+}
+.hero-ficha-alta {
+  left: clamp(-14px, -1.6vw, -26px);
+  top: 12%;
+}
+.hero-ficha-baja {
+  right: clamp(-14px, -1.6vw, -26px);
+  bottom: 11%;
+  /* Lleva flecha al final, así que necesita algo más de sitio que la de
+     arriba, que sólo lleva texto. */
+  max-width: 82%;
+  padding-right: 13px;
+}
+.hero-ficha-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.hero-ficha-txt b {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--acento);
+}
+.hero-ficha-txt span {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+}
+.hero-ficha-marca {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+/* Por debajo de 380 px las fichas se salían de la pantalla por los lados. */
+@media (max-width: 400px) {
+  .hero-ficha {
+    max-width: 86%;
+    padding: 9px 12px;
+  }
+  .hero-ficha-alta {
+    left: -8px;
+  }
+  .hero-ficha-baja {
+    right: -8px;
+  }
+}
+
+/* La columna del titular se estrecha solo cuando hay foto al lado. En móvil la
+   foto pasa a ser fondo, así que el texto usa todo el ancho disponible. */
+/*
+ * La columna del titular usa su columna entera. Antes se quedaba en el 52 % de
+ * ella —una regla de cuando la foto iba en arco y ocupaba otra cosa— y el
+ * resultado era un titular estrangulado en seis renglones con un hueco enorme
+ * al lado. El ancho de lectura ya lo pone el párrafo con sus caracteres; el
+ * titular quiere todo el sitio que tiene.
+ */
+.hero-texto {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* El sello de la barra fija: se pintan las dos versiones y se enseña la que
+   corresponda al fondo que la barra tenga debajo (lo marca useSiteScroll). */
+.sello-blanco {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.sello-color {
+  opacity: 0.92;
+  transition: opacity 0.4s ease;
+}
+body[data-nav-claro='si'] .sello-blanco {
+  opacity: 0.92;
+}
+body[data-nav-claro='si'] .sello-color {
+  opacity: 0;
+}
+
+/* ---- páginas de texto legal ---- */
+/* Una columna de lectura: jerarquía clara, líneas cortas y nada más. */
+.texto-legal h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: var(--t-bloque);
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  margin: clamp(38px, 5vw, 58px) 0 12px;
+}
+.texto-legal h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 17px;
+  margin: 28px 0 8px;
+}
+.texto-legal p,
+.texto-legal li {
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--tx-2);
+  max-width: 62ch;
+}
+.texto-legal p {
+  margin: 0 0 14px;
+}
+.texto-legal ul {
+  margin: 0 0 14px;
+  padding-left: 20px;
+}
+.texto-legal li {
+  margin-bottom: 8px;
+}
+.texto-legal strong {
+  color: var(--tx);
+  font-weight: 600;
+}
+.texto-legal a {
+  color: var(--acento);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- la ficha del curso, en ventana ---- */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  background: rgba(34, 29, 31, 0.42);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+.modal-fondo.abierto {
+  opacity: 1;
+  visibility: visible;
+}
+@media (min-width: 760px) {
+  .modal-fondo {
+    align-items: center;
+    padding: 32px;
+  }
+}
+
+.modal-caja {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 92vh;
+  background: var(--bg);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -20px 60px rgba(34, 29, 31, 0.22);
+  outline: none;
+  transform: translateY(28px);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-fondo.abierto .modal-caja {
+  transform: none;
+}
+@media (min-width: 760px) {
+  .modal-caja {
+    border-radius: 22px;
+    max-height: 88vh;
+    box-shadow: 0 30px 80px rgba(34, 29, 31, 0.26);
+  }
+}
+
+.modal-cerrar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--linea);
+  background: var(--bg);
+  color: var(--tx-2);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.modal-cerrar:hover {
+  border-color: var(--acento-2);
+  color: var(--tx);
+}
+
+.modal-cuerpo {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: clamp(20px, 4vw, 38px);
+  padding-bottom: 8px;
+}
+/* En el móvil la ficha ocupa casi toda la pantalla, pero deja ver que hay
+   página detrás y respeta la barra del navegador. */
+@media (max-width: 759px) {
+  .modal-caja {
+    max-height: 88vh;
+    max-height: 88dvh;
+  }
+}
+
+.modal-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  margin-bottom: 22px;
+}
+.modal-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.modal-video-hueco {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 16px;
+}
+.modal-video-hueco span {
+  font-size: 13px;
+  color: var(--tx-3);
+}
+
+.modal-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.modal-datos > div {
+  background: var(--bg);
+  padding: 13px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.modal-datos span {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+.modal-datos strong {
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 620px) {
+  .modal-datos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.modal-pestanas {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--linea);
+  margin-bottom: 18px;
+  overflow-x: auto;
+}
+.modal-pestanas button {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tx-3);
+  cursor: pointer;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.modal-pestanas button em {
+  font-style: normal;
+  font-size: 11px;
+  opacity: 0.65;
+}
+.modal-pestanas button.activa {
+  color: var(--tx);
+  border-bottom-color: var(--acento-2);
+}
+
+.modal-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 18px;
+}
+.modal-fila {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 12px;
+}
+.modal-num {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--acento-2);
+}
+.modal-check {
+  color: var(--acento-2);
+  font-size: 15px;
+}
+.modal-fila strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.modal-fila p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--tx-2);
+}
+
+.modal-pie {
+  flex-shrink: 0;
+  border-top: 1px solid var(--linea);
+  background: var(--superficie);
+  padding: clamp(16px, 3vw, 22px) clamp(24px, 4vw, 38px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-radius: 0 0 22px 22px;
+}
+.modal-pie > div:first-child {
+  display: flex;
+  flex-direction: column;
+}
+.modal-pie strong {
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1.1;
+}
+.modal-pie span {
+  font-size: 12px;
+  color: var(--tx-3);
+}
+.modal-pie > *:only-child {
+  width: 100%;
+}
+
+.modal-reserva {
+  margin-top: 8px;
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+}
+.modal-reserva strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 19px;
+  margin-bottom: 4px;
+}
+.modal-reserva p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--tx-2);
+}
+
+/* ---- la barra y su menú ---- */
+
+/* Fondo esmerilado siempre: transparente, el titular de la página se leía por
+   debajo de la marca. El respaldo sólido es para navegadores sin backdrop-filter. */
+.barra {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px clamp(14px, 3vw, 32px);
+  background: rgba(255, 255, 255, 0.82);
+  border-bottom: 1px solid var(--linea);
+  color: var(--tinta);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .barra {
+    background: rgba(255, 255, 255, 0.62);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    backdrop-filter: blur(18px) saturate(1.5);
+  }
+}
+.barra-marca {
+  display: flex;
+  align-items: center;
+  color: var(--tinta);
+  min-width: 0;
+}
+.barra-dcha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.barra-cta {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 100px;
+  background: var(--vino);
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.barra-cta:hover {
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(69, 26, 37, 0.26);
+}
+
+/* Tres líneas que se cruzan al abrir. */
+.hamburguesa {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--linea-2);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+  transition: border-color 0.35s ease, background 0.35s ease;
+}
+.hamburguesa:hover {
+  border-color: var(--acento-2);
+}
+.hamburguesa span {
+  display: block;
+  width: 17px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--tinta);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, width 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hamburguesa span:nth-child(2) {
+  width: 12px;
+}
+.hamburguesa:hover span:nth-child(2) {
+  width: 17px;
+}
+.hamburguesa.abierta span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.hamburguesa.abierta span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0.2);
+}
+.hamburguesa.abierta span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* El menú baja desde la barra y ocupa lo que necesita. */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 149;
+  background: rgba(34, 29, 31, 0.28);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.menu.abierto {
+  opacity: 1;
+  visibility: visible;
+}
+.menu-caja {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: calc(64px + clamp(20px, 4vw, 40px)) clamp(18px, 5vw, 56px) clamp(28px, 4vw, 44px);
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom: 1px solid var(--linea);
+  box-shadow: 0 18px 44px rgba(34, 29, 31, 0.1);
+  transform: translateY(-14px);
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+@supports (backdrop-filter: blur(1px)) {
+  .menu-caja {
+    background: rgba(255, 255, 255, 0.93);
+    -webkit-backdrop-filter: blur(30px) saturate(1.6);
+    backdrop-filter: blur(30px) saturate(1.6);
+  }
+}
+.menu.abierto .menu-caja {
+  transform: none;
+  opacity: 1;
+}
+
+.menu-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+.menu-lista li {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-top: 1px solid var(--linea);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.menu.abierto .menu-lista li {
+  opacity: 1;
+  transform: none;
+}
+.menu-lista li:last-child {
+  border-bottom: 1px solid var(--linea);
+}
+.menu-num {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--acento-2);
+  flex-shrink: 0;
+}
+.menu-lista a {
+  flex: 1;
+  display: block;
+  padding: clamp(13px, 1.6vw, 19px) 0;
+  font-size: var(--t-seccion);
+  line-height: 1.1;
+  letter-spacing: -0.018em;
+  color: var(--tinta);
+  transition: color 0.3s ease, padding-left 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.menu-lista a:hover {
+  color: var(--oro-tinta);
+  padding-left: 12px;
+}
+
+.menu-pie {
+  max-width: 1180px;
+  margin: clamp(22px, 3vw, 34px) auto 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.menu-idiomas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.menu-idiomas > span {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+.menu-idiomas div {
+  display: flex;
+  gap: 6px;
+}
+.menu-idiomas button {
+  border: 1px solid var(--linea-2);
+  background: transparent;
+  border-radius: 100px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--tx-2);
+  cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+.menu-idiomas button:hover {
+  border-color: var(--acento-2);
+}
+.menu-idiomas button.activo {
+  background: var(--vino);
+  border-color: var(--vino);
+  color: #fff;
+}
+.menu-legal {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.menu-legal a {
+  color: var(--tx-3);
+}
+.menu-legal a:hover {
+  color: var(--oro-tinta);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-caja,
+  .menu-lista li,
+  .hamburguesa span {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* En el móvil el menú ocupa la pantalla entera y va opaco. El cristal está muy
+   bien en una barra fina, pero detrás de una lista de enlaces deja que el
+   contenido de la página se cuele entre ellos y cuesta leerlos. */
+@media (max-width: 759px) {
+  .menu-caja {
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--papel);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+  .menu-lista a {
+    font-size: clamp(28px, 8vw, 38px);
+  }
+  .menu-pie {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+}
+
+/* ---- la cuenta atrás ---- */
+.cuenta {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.cuenta.compacta {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+/* Dentro de un panel estrecho las cuatro cifras reparten el ancho a partes
+   iguales, en vez de quedarse encogidas contra el borde izquierdo. */
+.cuenta.compacta .cuenta-cifras > div {
+  flex: 1;
+  min-width: 0;
+}
+.cuenta-rotulo {
+  display: block;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--acento);
+  margin-bottom: 8px;
+}
+.cuenta-cifras {
+  display: flex;
+  gap: 10px;
+}
+.cuenta-cifras > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 46px;
+  padding: 8px 6px;
+  border: 1px solid var(--linea);
+  border-radius: 10px;
+  background: var(--superficie);
+}
+.cuenta-cifras strong {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+  /* Las cifras no bailan al cambiar de segundo. */
+  font-variant-numeric: tabular-nums;
+}
+.cuenta-cifras span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--tx-3);
+  margin-top: 4px;
+}
+
+/* ---- la tarjeta de un curso ----
+ *
+ * En pantalla ancha la tarjeta se parte en dos: a la izquierda lo que te dice
+ * de qué va —rótulo, fecha, título, frase— y a la derecha lo práctico, en su
+ * propio panel: los datos, cuánto falta y el botón.
+ *
+ * Antes era una sola columna a todo lo ancho. Con un curso dentro, eso dejaba
+ * un titular corto flotando en un rectángulo de mil píxeles y tres celdas de
+ * datos perdidas debajo: mucho hueco y ninguna jerarquía. Partirla en dos hace
+ * que cada mitad tenga el ancho que le corresponde a lo que lleva dentro.
+ */
+.curso-card {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: 24px;
+  padding: clamp(24px, 3.2vw, 40px);
+  box-shadow: 0 1px 2px var(--sombra), 0 14px 40px -22px var(--sombra);
+  display: grid;
+  gap: clamp(24px, 3vw, 40px);
+}
+@media (min-width: 900px) {
+  .curso-card {
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    align-items: start;
+  }
+}
+.curso-cab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.curso-eyebrow {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--acento);
+}
+.curso-fecha {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx-2);
+  border: 1px solid var(--linea-2);
+  border-radius: 100px;
+  padding: 4px 12px;
+}
+.curso-titulo {
+  font-size: var(--t-seccion);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+  margin: 0 0 10px;
+}
+.curso-claim {
+  font-size: var(--t-entrada);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--tx-2);
+  max-width: 42ch;
+  margin: 0;
+}
+/* La columna de la izquierda: rótulo, título y frase, sin más. */
+.curso-texto {
+  display: flex;
+  flex-direction: column;
+}
+
+/* El panel de la derecha: lo que hace falta para decidir e inscribirse. */
+.curso-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: clamp(18px, 2vw, 24px);
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  background: var(--bg);
+}
+
+/* Los datos, uno debajo de otro y separados por un filete. En una columna
+   estrecha esto se lee mucho mejor que tres celdas apretadas al lado. */
+.curso-datos {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+.curso-datos > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--linea);
+}
+.curso-datos > div:first-child {
+  padding-top: 0;
+}
+.curso-datos dt {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--tx-3);
+  white-space: nowrap;
+}
+.curso-datos dd {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  text-align: right;
+}
+
+.curso-pie {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.curso-pie .pill {
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* El bloque de cierre que lleva a la membresía. Texto y botón se ponen en dos
+   columnas solo cuando hay sitio; por debajo el botón baja y ocupa el ancho,
+   que en el móvil es más fácil de dar que un botón pequeño alineado a la
+   derecha. */
+.puente-caja {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+.puente-caja .pill {
+  width: 100%;
+  justify-content: space-between;
+}
+@media (min-width: 780px) {
+  .puente-caja {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .puente-caja .pill {
+    width: auto;
+    flex: none;
+  }
+}
+
+/* ==================================================================
+   EL MOTOR DE MOVIMIENTO
+   Lo que las piezas de components/movimiento.tsx necesitan en CSS.
+   ================================================================== */
+
+/*
+ * LA MARQUESINA
+ *
+ * El contenido va pintado dos veces y la tira se desplaza exactamente la
+ * mitad: cuando termina, la segunda copia está justo donde estaba la primera,
+ * así que volver a empezar no se ve. Sin la copia hay un salto en cada vuelta.
+ *
+ * En CSS y no en JavaScript: una animación que no para nunca no puede estar
+ * despertando al hilo principal sesenta veces por segundo para siempre.
+ */
+.marquesina {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* Se apaga por los lados en vez de cortarse en seco contra el borde. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquesina-tira {
+  display: flex;
+  width: max-content;
+  animation-name: marquesina;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+.marquesina-copia {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+@keyframes marquesina {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.marquesina:hover .marquesina-tira {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquesina-tira {
+    animation: none;
+  }
+}
+
+/*
+ * LA REDUCCIÓN
+ *
+ * La fecha plegándose hasta su cifra. Las cifras van tabulares para que al
+ * cambiar de paso el bloque no dé un salto de ancho.
+ */
+.reduccion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.reduccion-linea {
+  /* Alto fijo: el paso más alto manda, y así los demás no encogen la caja. */
+  min-height: 1.15em;
+  display: flex;
+  align-items: baseline;
+  font-size: clamp(38px, 5.4vw, 76px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.reduccion-cifra {
+  display: inline-block;
+  color: var(--tx-2);
+  transition: color 0.5s ease;
+  will-change: transform, opacity;
+}
+.reduccion-cifra.final {
+  color: var(--acento);
+}
+.reduccion-puntos {
+  display: flex;
+  gap: 6px;
+}
+.reduccion-puntos span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--linea-2);
+  transition: background 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reduccion-puntos span.lleno {
+  background: var(--acento-2);
+  transform: scale(1.3);
+}
+.reduccion-pie {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--tx-2);
+  max-width: 34ch;
+}
+
+/*
+ * EL IMÁN
+ *
+ * Un botón que se inclina hacia el puntero. El movimiento lo pone el ratón en
+ * `--iman-x` e `--iman-y`; aquí sólo se dice cómo se traduce eso en un
+ * desplazamiento, y con qué freno vuelve a su sitio al salir.
+ */
+.iman {
+  transform: translate3d(var(--iman-x, 0), var(--iman-y, 0), 0);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.iman:active {
+  transition-duration: 0.12s;
+}
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .iman {
+    transform: none;
+  }
+}
+
+/* ==================================================================
+   TU NÚMERO
+   La pieza donde el visitante ve plegarse su propia fecha.
+   ================================================================== */
+.tn {
+  display: grid;
+  gap: clamp(34px, 5vw, 72px);
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .tn {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr);
+  }
+}
+.tn-lado {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+.tn-titulo {
+  margin: 0;
+  font-size: var(--t-seccion);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.032em;
+  text-wrap: balance;
+  max-width: 16ch;
+}
+.tn-texto {
+  margin: 0;
+  font-size: var(--t-entrada);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--tx-2);
+  max-width: 42ch;
+}
+
+.tn-fila {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+.tn-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+/* El año necesita el doble de sitio que el día o el mes. */
+.tn-campo:last-child {
+  flex: 1.6;
+}
+.tn-campo:not(:last-child) {
+  flex: 1;
+}
+.tn-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1px solid var(--linea-2);
+  border-radius: 13px;
+  background: var(--superficie);
+  color: var(--tx);
+  font-size: 19px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.tn-input::placeholder {
+  color: var(--tx-4);
+  font-weight: 300;
+}
+.tn-input:focus {
+  border-color: var(--acento-2);
+  background: var(--bg);
+  box-shadow: 0 0 0 3px rgba(184, 146, 79, 0.16);
+}
+
+.tn-acciones {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+/* Deshabilitado se dice apagando, no escondiendo: el botón sigue ahí y se ve
+   que hará algo en cuanto la fecha esté entera. */
+/* Apagado, no invisible. A 0,42 el texto del botón bajaba de 3,6:1 y parecía
+   estropeado en vez de a la espera; a 0,6 sigue leyéndose que todavía no hace
+   nada, pero se lee. */
+.tn-acciones .pill:disabled {
+  opacity: 0.68;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+.tn-acciones .pill:disabled:hover {
+  gap: 12px;
+  transform: none;
+}
+.tn-error {
+  font-size: var(--t-nota);
+  color: #a33b3b;
+}
+.tn-nota {
+  margin: 6px 0 0;
+  font-size: var(--t-nota);
+  line-height: 1.55;
+  color: var(--tx-3);
+  max-width: 42ch;
+}
+
+/* El lado del resultado: una tarjeta que sostiene el hueco mientras no hay
+   nada, para que el bloque no dé un salto cuando aparece la cuenta. */
+.tn-resultado {
+  justify-content: center;
+  min-height: 300px;
+  padding: clamp(24px, 3vw, 38px);
+  border: 1px solid var(--linea);
+  border-radius: 24px;
+  background: var(--superficie);
+  box-shadow: 0 1px 2px var(--sombra), 0 18px 50px -30px var(--sombra);
+}
+.tn-siguiente {
+  margin-top: 24px;
+  align-self: flex-start;
+}
+.tn-espera {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.tn-ejemplo {
+  font-size: clamp(26px, 3.2vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-4);
+}
+.tn-ejemplo-fin {
+  /* El dorado de texto, no el decorativo: el segundo sobre arena se queda en
+     2,8:1 y ni siquiera llega al mínimo de texto grande. */
+  color: var(--acento);
+}
+.tn-flecha {
+  font-size: 17px;
+  color: var(--tx-4);
+  line-height: 1;
+}
+.tn-espera-pie {
+  margin: 12px 0 0;
+  font-size: var(--t-nota);
+  line-height: 1.55;
+  color: var(--tx-3);
+  max-width: 32ch;
+}
+
+/* ==================================================================
+   EL BLOQUE ANCLADO
+   La sección que se queda quieta mientras por dentro va cambiando.
+   ================================================================== */
+
+/*
+ * La caja de fuera es alta: una pantalla por frase más una de margen. Ese alto
+ * es el recorrido que hay que hacer con la rueda para pasar de una a otra.
+ * `--anclado-n` lo pone el componente con cuántas frases hay.
+ */
+.anclado-fuera {
+  position: relative;
+  z-index: 3;
+}
+.anclado-dentro {
+  padding: 0 clamp(16px, 3vw, 36px);
+}
+.anclado-caja {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(26px, 3.4vw, 44px);
+  padding: clamp(56px, 8vw, 110px) 0;
+  /* El mismo margen que las frases: el carril vive dentro de él, así que si el
+     rótulo no lo respeta queda un escalón entre el rótulo y el texto. */
+  padding-left: clamp(0px, 3vw, 44px);
+}
+.anclado-frase {
+  padding-left: 0;
+}
+.anclado-frases {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.4vw, 30px);
+}
+.anclado-frase {
+  position: relative;
+  margin: 0;
+  padding-left: clamp(0px, 3vw, 44px);
+  font-size: var(--t-seccion);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  max-width: 22ch;
+}
+.anclado-num {
+  display: block;
+  margin-bottom: 10px;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  color: var(--acento);
+  font-variant-numeric: tabular-nums;
+}
+.anclado-de {
+  color: var(--tx-3);
+}
+/* El carril de la izquierda: un tramo por frase, que se va llenando. */
+.anclado-carril {
+  display: none;
+}
+.anclado-marca {
+  display: block;
+  flex: 1;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--linea-2);
+  overflow: hidden;
+}
+.anclado-marca > span {
+  display: block;
+  width: 100%;
+  background: var(--acento-2);
+  transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.anclado-cierre {
+  /* Va fuera de la caja alta, así que trae su propio aire por arriba: si no,
+     la frase de remate se pega al canto de lo que estaba anclado. */
+  padding: clamp(56px, 7vw, 96px) clamp(16px, 3vw, 36px) clamp(70px, 9vw, 130px);
+}
+.anclado-frase {
+  transition: opacity 0.32s ease;
+}
+.anclado-cierre p {
+  margin: 0;
+  font-size: var(--t-seccion);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  max-width: 20ch;
+  color: var(--acento);
+}
+
+/*
+ * A partir de 900 px se ancla de verdad: la caja se hace alta y lo de dentro
+ * se queda pegado al alto de la ventana.
+ *
+ * Por debajo NO se ancla. Un bloque pegado en un teléfono se pelea con la
+ * barra del navegador, que aparece y desaparece al bajar, y eso es un salto en
+ * cada gesto. Apiladas se leen igual de bien y el desplazamiento no sufre.
+ */
+@media (min-width: 900px) {
+  .anclado-fuera {
+    min-height: calc(var(--anclado-n) * 78vh);
+  }
+  .anclado-dentro {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+  .anclado-caja {
+    position: relative;
+    width: 100%;
+    padding: 0;
+  }
+  /* Ancladas, las frases se apilan en el mismo sitio: sólo se ve la de turno.
+     Apiladas de verdad ocuparían cuatro pantallas y no cabrían. */
+  .anclado-frases {
+    display: grid;
+  }
+  .anclado-frase {
+    grid-area: 1 / 1;
+    font-size: clamp(34px, 4.6vw, 62px);
+    max-width: 20ch;
+  }
+  .anclado-carril {
+    position: absolute;
+    left: -6px;
+    top: 4px;
+    bottom: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 2px;
+  }
+  .anclado-cierre {
+    padding-top: clamp(40px, 5vw, 70px);
+  }
+}
+
+/*
+ * Por debajo de 900 px no hay anclaje: las frases se apilan y se leen todas.
+ *
+ * Hace falta decirlo aquí y con `!important` porque quien apaga las frases es
+ * el motor de movimiento, escribiendo la opacidad en el propio elemento. Sin
+ * esta regla, en el móvil se veía UNA frase y tres huecos del alto de una
+ * frase cada uno: la sección parecía rota.
+ */
+@media (max-width: 899px) {
+  .anclado-frase {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anclado-fuera {
+    min-height: 0;
+  }
+  .anclado-dentro {
+    position: static;
+    height: auto;
+  }
+  .anclado-frases {
+    display: flex;
+  }
+  .anclado-frase {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ==================================================================
+   LA FRANJA DE FOTOS
+   ================================================================== */
+/*
+ * Tres alturas distintas a propósito. Una rejilla perfecta se lee como
+ * catálogo; desalineada se lee como algo compuesto por alguien.
+ */
+.franja {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(12px, 1.6vw, 22px);
+  align-items: start;
+}
+.franja > *:first-child {
+  padding-top: clamp(0px, 5vw, 72px);
+}
+.franja > *:last-child {
+  padding-top: clamp(0px, 9vw, 128px);
+}
+/* El revelado corta con `clip-path`, así que necesita su propio redondeo: el
+   de la foto de dentro se pierde debajo del recorte. */
+.franja-foto {
+  border-radius: 18px;
+  overflow: hidden;
+}

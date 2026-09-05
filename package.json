@@ -1,23 +1,20 @@
 {
-  "name": "iris-soares-web",
+  "name": "iris",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "npm run dev -w web",
+    "dev:plataforma": "npm run dev -w plataforma",
+    "build": "npm run build -w web && npm run build -w plataforma",
+    "build:web": "npm run build -w web",
+    "build:plataforma": "npm run build -w plataforma",
+    "tipos": "npm run tipos -w web && npm run tipos -w plataforma"
   },
-  "dependencies": {
-    "framer-motion": "^11.11.17",
-    "next": "^15.5.25",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.0",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "typescript": "^5.6.3"
+  "engines": {
+    "node": ">=20"
   }
 }

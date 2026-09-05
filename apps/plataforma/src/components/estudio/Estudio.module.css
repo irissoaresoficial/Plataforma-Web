@@ -1,0 +1,251 @@
+.wrap {
+  padding: 0 0 40px;
+}
+.desk {
+  background: #f5f5f4;
+  padding: 40px 20px 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.page {
+  width: 8.5in;
+  max-width: 100%;
+  background: #fbf8f1;
+  box-shadow: 0 2px 10px rgba(20, 20, 19, 0.12);
+  border-radius: 7px;
+  box-sizing: border-box;
+  color: #282430;
+}
+.portada {
+  aspect-ratio: 8.5 / 11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+}
+.interior {
+  padding: 48px 56px 34px;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.42);
+  padding-bottom: 9px;
+  margin-bottom: 22px;
+}
+.cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  flex: 1;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(201, 168, 76, 0.3);
+  padding-top: 8px;
+  margin-top: 16px;
+  font-family: "Karla", sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #9b93a8;
+  text-transform: uppercase;
+}
+
+.toolbar {
+  position: sticky;
+  /* Altura de la cabecera en escritorio, donde va en una sola fila. */
+  top: 71px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 12px clamp(14px, 3vw, 28px);
+  background: rgba(8, 9, 15, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.14);
+}
+
+/* Maquetas de dos columnas del documento.
+ * El ancho de la primera columna lo fija cada diagrama con la variable
+ * --doc-col1; se declara como variable, y no como grid-template-columns
+ * en línea, precisamente para que las media queries de abajo puedan
+ * reordenarlas (un estilo en línea ganaría siempre a la hoja de estilos). */
+.split {
+  display: grid;
+  grid-template-columns: var(--doc-col1, 210px) 1fr;
+  gap: 22px;
+  align-items: center;
+}
+.duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* ---- Lectura en pantallas estrechas ----
+ * Solo afecta a la VISTA EN PANTALLA. El bloque @media print de más abajo
+ * mantiene intacta la maqueta de folio, así que el PDF sale idéntico
+ * tanto si se exporta desde el móvil como desde el ordenador. */
+@media screen and (max-width: 820px) {
+  .split,
+  .duo {
+    grid-template-columns: 1fr;
+  }
+  .split {
+    gap: 16px;
+  }
+  /* Los diagramas ocuparían todo el ancho y quedarían desproporcionados
+   * al apilarse; se limitan y se centran. */
+  .split > *:first-child {
+    width: 100%;
+    max-width: 280px;
+    margin-inline: auto;
+  }
+  .interior {
+    padding: 30px 26px 24px;
+  }
+  /* En móvil la cabecera ocupa dos filas, así que el desplazamiento fijo
+   * de 71px dejaría la barra por debajo de ella. Y en una pantalla corta
+   * el espacio vertical vale más que tener los botones siempre a la vista. */
+  .toolbar {
+    position: static;
+  }
+  .hint {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .desk {
+    padding: 16px 10px 60px;
+    gap: 12px;
+  }
+  .interior {
+    padding: 22px 18px 18px;
+  }
+  .page {
+    border-radius: 5px;
+  }
+  /* A proporción de folio la portada deja huecos enormes en un móvil. */
+  .portada {
+    aspect-ratio: auto;
+    padding: 48px 20px;
+  }
+  .header {
+    margin-bottom: 16px;
+  }
+}
+
+@media print {
+  /* Un relleno sobrante al final del documento basta para colar una hoja
+   * de más, en blanco. */
+  .wrap {
+    padding: 0 !important;
+  }
+  /* En pantalla cada capítulo es una tarjeta y el pie la cierra bien. En
+   * papel, en cambio, si el capítulo se pasa aunque sea una línea de la
+   * hoja, el pie cae solo a la siguiente y deja una página casi vacía.
+   * Los capítulos ya van separados por salto de página, así que en
+   * impresión el pie no aporta nada. */
+  .footer {
+    display: none;
+  }
+  /* Sin esto los navegadores descartan los fondos al imprimir: el papel
+   * saldría blanco en vez de crema y las casillas sombreadas de la imagen
+   * del alma y de las cuentas abiertas perderían el color, que es
+   * justamente lo que distingue un bloqueo de una casilla libre. */
+  .page,
+  .page * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .desk {
+    background: none;
+    padding: 0;
+    display: block;
+  }
+
+  /* ---------------------------------------------------------------------
+     Los márgenes del papel los pone la hoja, no el capítulo.
+     Iban como relleno de .page, y el relleno de un elemento se aplica una
+     vez arriba y una vez abajo: en cuanto un capítulo se repartía entre dos
+     folios, el texto de en medio salía pegado al borde — sin margen ninguno
+     arriba de la hoja siguiente. Puestos en @page, cada folio tiene su aire,
+     se corte por donde se corte, y da igual desde qué equipo se exporte.
+     --------------------------------------------------------------------- */
+  @page {
+    /* NO se fija el tamaño a propósito. Estaba puesto `size: letter`, y en
+       España se imprime en A4: la caja de la hoja salía más ancha que el
+       papel y el texto se cortaba por la derecha —margen derecho de 0 mm,
+       medido— además de estirar el documento de 33 a 38 páginas. Sin `size`,
+       la hoja es la que haya elegido la impresora y el contenido, que va a
+       ancho automático, se adapta a A4, a carta o a lo que sea. */
+    margin: 15mm 16mm;
+  }
+  .page {
+    width: auto;
+    box-shadow: none;
+    border-radius: 0;
+    /* El color del papel se pinta en la hoja (globals.css), no aquí: si va
+     * en el capítulo, el crema termina donde termina el elemento y el resto
+     * del folio sale blanco — la hoja partida por una raya de otro color. */
+    background: transparent;
+    padding: 0;
+  }
+  .interior {
+    padding: 0;
+  }
+  .page + .page {
+    break-before: page;
+  }
+  /* Un capítulo que continúa la sección anterior fluye detrás en la misma
+   * hoja en lugar de estrenar una: así no quedan páginas con cuatro líneas.
+   * Mantiene su título como separador, pero deja la franja de cabecera para
+   * el capítulo que sí abre sección — repetirla a media hoja parecería un
+   * encabezado de página fuera de sitio. */
+  .continua {
+    break-before: auto !important;
+  }
+  .continua .header {
+    display: none;
+  }
+  .continua .cuerpo {
+    margin-top: 22px;
+  }
+  /* Un título no debe quedarse solo al pie de una hoja. */
+  .cuerpo h2 {
+    break-after: avoid;
+  }
+  /* Los párrafos se parten si hace falta — impedirlo dejaba medio folio en
+   * blanco cada vez que uno no cabía entero — pero nunca por una o dos
+   * líneas sueltas a un lado del corte. */
+  .cuerpo p,
+  .cuerpo > * {
+    orphans: 3;
+    widows: 3;
+  }
+  /* Lo único que no se parte nunca es lo que no se entiende a medias: un
+   * diagrama y una cita. Marcado en el componente, no por tipo de etiqueta,
+   * para no volver a dejar huecos por avisar de más. */
+  .page [data-nocorte] {
+    break-inside: avoid;
+  }
+  .portada,
+  /* La hoja del cliente es de una cara: ocupa el folio entero para que el pie
+     quede abajo y no a media página. */
+  .hoja {
+    aspect-ratio: auto;
+    /* La hoja menos sus márgenes, sea del tamaño que sea. */
+    min-height: calc(100vh - 32mm);
+  }
+}
