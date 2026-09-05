@@ -246,7 +246,22 @@ body {
   font-weight: 400;
   letter-spacing: -0.006em;
   -webkit-font-smoothing: antialiased;
+  /*
+   * `clip` y no `hidden`, y esto no es un detalle.
+   *
+   * `overflow-x: hidden` obliga al eje vertical a ser `auto`, y con eso el
+   * elemento pasa a ser una zona de desplazamiento. Cualquier cosa pegada
+   * (`position: sticky`) dentro de él deja de pegarse a la ventana y se pega a
+   * esa zona, que no se desplaza nunca: en pantalla el bloque anclado se iba
+   * hacia arriba y dejaba media página vacía.
+   *
+   * `clip` corta lo que se sale exactamente igual, pero no crea zona de
+   * desplazamiento. La línea de `hidden` se deja delante como red para el
+   * navegador que no conozca `clip`: se queda sin anclaje, pero no con la
+   * página desbordada de lado.
+   */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {
@@ -1783,8 +1798,11 @@ body[data-nav-claro='si'] .sello-color {
 }
 /* Deshabilitado se dice apagando, no escondiendo: el botón sigue ahí y se ve
    que hará algo en cuanto la fecha esté entera. */
+/* Apagado, no invisible. A 0,42 el texto del botón bajaba de 3,6:1 y parecía
+   estropeado en vez de a la espera; a 0,6 sigue leyéndose que todavía no hace
+   nada, pero se lee. */
 .tn-acciones .pill:disabled {
-  opacity: 0.42;
+  opacity: 0.68;
   cursor: default;
   transform: none;
   box-shadow: none;
@@ -1834,7 +1852,9 @@ body[data-nav-claro='si'] .sello-color {
   color: var(--tx-4);
 }
 .tn-ejemplo-fin {
-  color: var(--acento-2);
+  /* El dorado de texto, no el decorativo: el segundo sobre arena se queda en
+     2,8:1 y ni siquiera llega al mínimo de texto grande. */
+  color: var(--acento);
 }
 .tn-flecha {
   font-size: 17px;
@@ -1847,4 +1867,180 @@ body[data-nav-claro='si'] .sello-color {
   line-height: 1.55;
   color: var(--tx-3);
   max-width: 32ch;
+}
+
+/* ==================================================================
+   EL BLOQUE ANCLADO
+   La sección que se queda quieta mientras por dentro va cambiando.
+   ================================================================== */
+
+/*
+ * La caja de fuera es alta: una pantalla por frase más una de margen. Ese alto
+ * es el recorrido que hay que hacer con la rueda para pasar de una a otra.
+ * `--anclado-n` lo pone el componente con cuántas frases hay.
+ */
+.anclado-fuera {
+  position: relative;
+  z-index: 3;
+}
+.anclado-dentro {
+  padding: 0 clamp(16px, 3vw, 36px);
+}
+.anclado-caja {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(26px, 3.4vw, 44px);
+  padding: clamp(56px, 8vw, 110px) 0;
+  /* El mismo margen que las frases: el carril vive dentro de él, así que si el
+     rótulo no lo respeta queda un escalón entre el rótulo y el texto. */
+  padding-left: clamp(0px, 3vw, 44px);
+}
+.anclado-frase {
+  padding-left: 0;
+}
+.anclado-frases {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.4vw, 30px);
+}
+.anclado-frase {
+  position: relative;
+  margin: 0;
+  padding-left: clamp(0px, 3vw, 44px);
+  font-size: var(--t-seccion);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  max-width: 22ch;
+}
+.anclado-num {
+  display: block;
+  margin-bottom: 10px;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  color: var(--acento);
+  font-variant-numeric: tabular-nums;
+}
+.anclado-de {
+  color: var(--tx-3);
+}
+/* El carril de la izquierda: un tramo por frase, que se va llenando. */
+.anclado-carril {
+  display: none;
+}
+.anclado-marca {
+  display: block;
+  flex: 1;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--linea-2);
+  overflow: hidden;
+}
+.anclado-marca > span {
+  display: block;
+  width: 100%;
+  background: var(--acento-2);
+  transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.anclado-cierre {
+  /* Va fuera de la caja alta, así que trae su propio aire por arriba: si no,
+     la frase de remate se pega al canto de lo que estaba anclado. */
+  padding: clamp(56px, 7vw, 96px) clamp(16px, 3vw, 36px) clamp(70px, 9vw, 130px);
+}
+.anclado-frase {
+  transition: opacity 0.32s ease;
+}
+.anclado-cierre p {
+  margin: 0;
+  font-size: var(--t-seccion);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  max-width: 20ch;
+  color: var(--acento);
+}
+
+/*
+ * A partir de 900 px se ancla de verdad: la caja se hace alta y lo de dentro
+ * se queda pegado al alto de la ventana.
+ *
+ * Por debajo NO se ancla. Un bloque pegado en un teléfono se pelea con la
+ * barra del navegador, que aparece y desaparece al bajar, y eso es un salto en
+ * cada gesto. Apiladas se leen igual de bien y el desplazamiento no sufre.
+ */
+@media (min-width: 900px) {
+  .anclado-fuera {
+    min-height: calc(var(--anclado-n) * 78vh);
+  }
+  .anclado-dentro {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+  .anclado-caja {
+    position: relative;
+    width: 100%;
+    padding: 0;
+  }
+  /* Ancladas, las frases se apilan en el mismo sitio: sólo se ve la de turno.
+     Apiladas de verdad ocuparían cuatro pantallas y no cabrían. */
+  .anclado-frases {
+    display: grid;
+  }
+  .anclado-frase {
+    grid-area: 1 / 1;
+    font-size: clamp(34px, 4.6vw, 62px);
+    max-width: 20ch;
+  }
+  .anclado-carril {
+    position: absolute;
+    left: -6px;
+    top: 4px;
+    bottom: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 2px;
+  }
+  .anclado-cierre {
+    padding-top: clamp(40px, 5vw, 70px);
+  }
+}
+
+/*
+ * Por debajo de 900 px no hay anclaje: las frases se apilan y se leen todas.
+ *
+ * Hace falta decirlo aquí y con `!important` porque quien apaga las frases es
+ * el motor de movimiento, escribiendo la opacidad en el propio elemento. Sin
+ * esta regla, en el móvil se veía UNA frase y tres huecos del alto de una
+ * frase cada uno: la sección parecía rota.
+ */
+@media (max-width: 899px) {
+  .anclado-frase {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anclado-fuera {
+    min-height: 0;
+  }
+  .anclado-dentro {
+    position: static;
+    height: auto;
+  }
+  .anclado-frases {
+    display: flex;
+  }
+  .anclado-frase {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

@@ -7,6 +7,7 @@ import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import { Palabras, Marquesina } from '@/components/movimiento';
 import TuNumero from '@/components/TuNumero';
+import Anclado from '@/components/Anclado';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
@@ -74,7 +75,7 @@ export default function Home() {
   ];
 
   return (
-    <div id="app" className="claro" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
+    <div id="app" className="claro" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <Nav cta={t.book} onCta={openChat} conIdiomas extra={[{ href: '#metodo', label: t.n1 }, { href: '#dudas', label: 'Dudas' }]} />
@@ -211,29 +212,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── EL DOLOR ─────────────────────────────────────────── */}
-      <div className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(34px,4vw,56px)' }}>
-          <Reveal>
-            <Rotulo claro>{t.p_lab}</Rotulo>
-          </Reveal>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {dolor.map((linea, i) => (
-              <Reveal key={i} line delay={i * 70}>
-                <div className="line-hover" style={{ display: 'flex', alignItems: 'baseline', gap: 'clamp(14px,2.4vw,32px)', padding: 'clamp(16px,2vw,26px) 0', borderBottom: '1px solid var(--linea)' }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--acento)', flexShrink: 0, width: 18 }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span className="display" style={{ fontSize: 'var(--t-seccion)', color: i === 3 ? 'var(--tx-2)' : undefined }}>{linea}</span>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <Reveal>
-            <div className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '18ch' }}>
-              <em>{t.p_punch}</em>
-            </div>
-          </Reveal>
-        </div>
-      </div>
+      {/* ── EL DOLOR ─────────────────────────────────────────
+          Anclado: la sección se queda quieta y cada frase se lee sola. Es el
+          mejor texto que tiene la web y como lista pasaba desapercibido. */}
+      <Anclado rotulo={t.p_lab} lineas={dolor} cierre={t.p_punch} />
 
       {/* ── POR QUÉ PASA ─────────────────────────────────────── */}
       <div className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: PAD }}>

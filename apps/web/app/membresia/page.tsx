@@ -16,7 +16,7 @@ export default function Membresia() {
   const ahorro = MEMBRESIA.precio - MEMBRESIA.precioReserva;
 
   return (
-    <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
+    <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <Nav cta="Reservar" ctaHref="#reservar" extra={[{ href: '#reservar', label: 'Reservar mi plaza' }]} />

@@ -86,7 +86,7 @@ export default function Sinergia() {
   });
 
   return (
-    <div id="page" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'hidden' }}>
+    <div id="page" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor hitSelector="[data-mag],a,input,[data-card]" />
       <Nav cta="Probarlo gratis" ctaHref="#calc" />
 
