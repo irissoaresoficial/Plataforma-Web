@@ -8,6 +8,7 @@ import Reveal from '@/components/Reveal';
 import { Palabras, Marquesina, Paralaje, Revelado, ColumnaFija, Entra, Escalonado, Hijo } from '@/components/movimiento';
 import TuNumero from '@/components/TuNumero';
 import Anclado from '@/components/Anclado';
+import Testimonios from '@/components/Testimonios';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
@@ -334,6 +335,16 @@ export default function Home() {
               ))}
             </Escalonado>
           </ColumnaFija>
+        </div>
+      </div>
+
+      {/* ── LO QUE LE ESCRIBEN ────────────────────────────────
+          La prueba va aquí, justo antes de las tres cosas que se piden
+          —comunidad, cursos, sesión—: primero se enseña que hay gente detrás y
+          después se pide algo. Al revés no funciona. */}
+      <div className="arena banda">
+        <div className="banda-dentro">
+          <Testimonios />
         </div>
       </div>
 

@@ -19,30 +19,19 @@
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { CURVA } from './movimiento';
+import { pasosCaminoDeVida } from '@/lib/numerologia';
 
 /** Los que no se reducen. */
 const MAESTROS = new Set([11, 22, 33]);
 
 /**
- * Los pasos desde una fecha hasta su cifra.
- * Devuelve, por ejemplo: ['14 · 3 · 1981', '1+4+3+1+9+8+1', '27', '2+7', '9'].
+ * Los pasos, pedidos al motor de la casa.
+ *
+ * Esta función tuvo aquí su propia cuenta y sumaba todos los dígitos de golpe.
+ * No es así como se calcula el camino de vida, y daba otro número que el resto
+ * de la web en el 13,8 % de las fechas. Ahora no calcula nada: pregunta.
  */
-export function pasosDe(dia: number, mes: number, anio: number): string[] {
-  const cifras = `${dia}${mes}${anio}`.split('');
-  const pasos = [`${dia} · ${mes} · ${anio}`, cifras.join('+')];
-
-  let n = cifras.reduce((s, c) => s + Number(c), 0);
-  pasos.push(String(n));
-
-  // Se sigue plegando mientras tenga más de una cifra y no sea maestro.
-  while (n > 9 && !MAESTROS.has(n)) {
-    const partes = String(n).split('');
-    pasos.push(partes.join('+'));
-    n = partes.reduce((s, c) => s + Number(c), 0);
-    pasos.push(String(n));
-  }
-  return pasos;
-}
+export const pasosDe = (dia: number, mes: number, anio: number) => pasosCaminoDeVida(dia, mes, anio);
 
 export default function Reduccion({
   dia,

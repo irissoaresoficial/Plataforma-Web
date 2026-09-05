@@ -61,6 +61,40 @@ export const CONTACTO = {
 };
 
 /* ------------------------------------------------------------------ */
+/*  COMENTARIOS DE INSTAGRAM                                           */
+/* ------------------------------------------------------------------ */
+
+export type Testimonio = {
+  /** Nombre de pila. La inicial se usa como avatar. */
+  nombre: string;
+  /** El usuario, con la arroba: "@carmen.lr". Opcional. */
+  usuario?: string;
+  /** El comentario, tal cual lo escribió. Sin arreglar la ortografía: se nota. */
+  texto: string;
+  /** Cuándo, como se quiera enseñar: "hace 2 semanas". Opcional. */
+  cuando?: string;
+};
+
+/**
+ * COMENTARIOS DE VERDAD. NO SE INVENTAN NUNCA.
+ *
+ * Se pega aquí lo que la gente escribe en el Instagram de Iris, literal. Con
+ * tres ya funciona el carrusel.
+ *
+ * Por qué está vacío en vez de relleno con frases de ejemplo: publicar reseñas
+ * falsas es infracción grave de la ley de consumidores en España desde la
+ * directiva Ómnibus, y con el icono de Instagram al lado se está afirmando que
+ * una persona concreta escribió eso. Aparte de la multa, toda esta web se
+ * sostiene sobre la misma regla —lo que no está confirmado sale marcado en
+ * rojo— y un testimonio inventado la rompe entera.
+ *
+ * Ejemplo de cómo se rellena (esto es la FORMA, no un comentario real):
+ *
+ *   { nombre: 'Nombre', usuario: '@usuario', texto: 'Lo que escribió, literal.', cuando: 'hace 2 semanas' },
+ */
+export const TESTIMONIOS: Testimonio[] = [];
+
+/* ------------------------------------------------------------------ */
 /*  LA SESIÓN CON IRIS                                                 */
 /* ------------------------------------------------------------------ */
 

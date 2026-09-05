@@ -89,6 +89,56 @@ export function caminoDeVida(fechaISO: string): Numero & { dia: number; mes: num
   return { valor: reducir(bruto), bruto, deuda, dia, mes, anio };
 }
 
+/**
+ * Los pasos del camino de vida, escritos para enseñarlos.
+ *
+ * Devuelve exactamente lo mismo que `caminoDeVida`, pero contando el camino:
+ * qué se reduce primero, qué se suma después y dónde se para.
+ *
+ * POR QUÉ ESTÁ AQUÍ Y NO EN EL COMPONENTE QUE LO PINTA. Estuvo en el
+ * componente, con su propia cuenta, y sumaba todos los dígitos de golpe. Eso
+ * NO es el camino de vida —el aviso está diez líneas más arriba, en la
+ * cabecera de este archivo— y daba otro resultado en el 13,8 % de las fechas.
+ * Alguien nacido el 19 de enero de 1975 veía un 33 en la portada y un 6 en la
+ * sinergia, dos pantallas después, y encima el 33 es el número que da nombre a
+ * la escuela.
+ *
+ * Una web que echa la misma cuenta dos veces y le sale distinto no tiene un
+ * fallo de programación: tiene un fallo de credibilidad, que es lo único que
+ * vende aquí. Así que la cuenta vive una sola vez, y es ésta.
+ */
+export function pasosCaminoDeVida(dia: number, mes: number, anio: number): string[] {
+  if (!dia || !mes || !anio) return [];
+
+  const rd = reducir(dia);
+  const rm = reducir(mes);
+  const ra = reducir(sumaDigitos(anio));
+  const pasos = [`${dia} · ${mes} · ${anio}`];
+
+  // Sólo se enseña el paso de reducir si algo cambia de verdad. Con el 5 de
+  // mayo, «5 · 5 · ...» dos veces seguidas parece que la animación se ha
+  // colgado.
+  if (rd !== dia || rm !== mes || ra !== anio) pasos.push(`${rd} · ${rm} · ${ra}`);
+
+  const bruto = rd + rm + ra;
+  pasos.push(`${rd}+${rm}+${ra}`);
+  pasos.push(String(bruto));
+
+  // Y ahora se pliega el total, enseñando cada vuelta, hasta la cifra o hasta
+  // un maestro. `reducir` es quien manda: aquí sólo se narra lo que hace.
+  let n = bruto;
+  while (reducir(n) !== n) {
+    const partes = String(n).split('');
+    pasos.push(partes.join('+'));
+    n = partes.reduce((s, c) => s + Number(c), 0);
+    pasos.push(String(n));
+  }
+
+  // Si el total ya era la respuesta, el «bruto» y el resultado son el mismo
+  // número dos veces seguidas: sobra uno.
+  return pasos.filter((p, i) => i === 0 || p !== pasos[i - 1]);
+}
+
 /** Expresión: cómo se mueve por el mundo. Sale del nombre completo. */
 export const expresion = (nombre: string) => construir(valorTexto(nombre));
 
