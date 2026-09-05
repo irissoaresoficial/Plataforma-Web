@@ -5,7 +5,7 @@ import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
-import { Palabras, Marquesina } from '@/components/movimiento';
+import { Palabras, Marquesina, Paralaje, Revelado } from '@/components/movimiento';
 import TuNumero from '@/components/TuNumero';
 import Anclado from '@/components/Anclado';
 import Foto from '@/components/Foto';
@@ -196,19 +196,28 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── FRANJA DE IMÁGENES: sin una palabra ─────────────── */}
-      <div className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: 'clamp(70px,9vw,120px) clamp(16px,4vw,56px)' }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 'clamp(10px,1.4vw,18px)', alignItems: 'start' }}>
-          {/* Tamaños y alturas distintos: una rejilla perfecta se lee como catálogo. */}
-          <Reveal desde="crece" style={{ paddingTop: 'clamp(0px,5vw,72px)' }}>
-            <Foto src={FOTOS.hablando} alt="Iris en directo" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
-          </Reveal>
-          <Reveal delay={90} desde="crece">
-            <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
-          </Reveal>
-          <Reveal delay={180} desde="crece" style={{ paddingTop: 'clamp(0px,9vw,128px)' }}>
-            <Foto src={FOTOS.sala} alt="Sala" ratio="1/1" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
-          </Reveal>
+      {/* ── FRANJA DE IMÁGENES: sin una palabra ───────────────
+          Cada foto se destapa de abajo arriba mientras por dentro se encoge:
+          dos velocidades en la misma pieza, que es lo que se lee como
+          profundidad y no como una cortina. Y las tres se mueven a ritmos
+          distintos al pasar, así la fila deja de ser una fila. */}
+      <div className="claro banda">
+        <div className="banda-dentro franja">
+          <Paralaje cantidad={54}>
+            <Revelado className="franja-foto">
+              <Foto src={FOTOS.hablando} alt="Iris en directo" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+            </Revelado>
+          </Paralaje>
+          <Paralaje cantidad={-22}>
+            <Revelado className="franja-foto" retraso={0.12}>
+              <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+            </Revelado>
+          </Paralaje>
+          <Paralaje cantidad={78}>
+            <Revelado className="franja-foto" retraso={0.24}>
+              <Foto src={FOTOS.sala} alt="Sala" ratio="1/1" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+            </Revelado>
+          </Paralaje>
         </div>
       </div>
 

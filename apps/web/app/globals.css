@@ -2044,3 +2044,29 @@ body[data-nav-claro='si'] .sello-color {
     transform: none !important;
   }
 }
+
+/* ==================================================================
+   LA FRANJA DE FOTOS
+   ================================================================== */
+/*
+ * Tres alturas distintas a propósito. Una rejilla perfecta se lee como
+ * catálogo; desalineada se lee como algo compuesto por alguien.
+ */
+.franja {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(12px, 1.6vw, 22px);
+  align-items: start;
+}
+.franja > *:first-child {
+  padding-top: clamp(0px, 5vw, 72px);
+}
+.franja > *:last-child {
+  padding-top: clamp(0px, 9vw, 128px);
+}
+/* El revelado corta con `clip-path`, así que necesita su propio redondeo: el
+   de la foto de dentro se pierde debajo del recorte. */
+.franja-foto {
+  border-radius: 18px;
+  overflow: hidden;
+}
