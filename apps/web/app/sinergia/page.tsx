@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import Cursor from '@/components/Cursor';
+import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
@@ -88,6 +89,7 @@ export default function Sinergia() {
   return (
     <div id="page" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor hitSelector="[data-mag],a,input,[data-card]" />
+      <Cortina />
       <Nav cta="Probarlo gratis" ctaHref="#calc" />
 
       <div className="claro" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
@@ -132,7 +134,7 @@ export default function Sinergia() {
           </div>
 
           <Reveal delay={120}>
-            <div id="calc" style={{ background: '#FFFFFF', color: 'var(--tx)', borderRadius: 22, padding: 'clamp(20px,2.4vw,32px)', display: 'flex', flexDirection: 'column', gap: 18, boxShadow: '0 34px 80px rgba(0,0,0,.5)', scrollMarginTop: 90 }}>
+            <div id="calc" style={{ background: '#FFFFFF', color: 'var(--tx)', borderRadius: 'var(--radio)', padding: 'clamp(20px,2.4vw,32px)', display: 'flex', flexDirection: 'column', gap: 18, boxShadow: '0 34px 80px rgba(0,0,0,.5)', scrollMarginTop: 90 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
                 <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>{stepLabel}</span>
                 {/* Los puntos son la misma información que el «Paso 2/3» de al
@@ -234,16 +236,16 @@ export default function Sinergia() {
               {isGate && (
                 <form className="sin-form" noValidate onSubmit={(e) => { e.preventDefault(); next(); }}>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 'var(--radio)', padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res?.a.nombrePila}</span>
                       <span style={{ fontSize: 30, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', lineHeight: 1 }}>{res?.a.camino.valor}</span>
                     </div>
-                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 'var(--radio)', padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res?.b.nombrePila}</span>
                       <span style={{ fontSize: 30, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', lineHeight: 1 }}>{res?.b.camino.valor}</span>
                     </div>
                   </div>
-                  <div style={{ position: 'relative', background: 'var(--bg)', color: 'var(--tx)', borderRadius: 16, padding: 22, overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', background: 'var(--bg)', color: 'var(--tx)', borderRadius: 'var(--radio)', padding: 22, overflow: 'hidden' }}>
                     <div style={{ filter: 'blur(7px)', opacity: 0.4, display: 'flex', flexDirection: 'column', gap: 8 }}>
                       <span style={{ fontSize: 44, fontWeight: 'var(--peso-fino)', letterSpacing: '-.028em', lineHeight: 1 }}>{res?.comun}</span>
                       <div style={{ height: 9, borderRadius: 100, background: 'var(--linea-2)' }} />
@@ -288,18 +290,18 @@ export default function Sinergia() {
                     </span>
                   )}
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 'var(--radio)', padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res.a.nombrePila}</span>
                       <span style={{ fontSize: 30, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', lineHeight: 1 }}>{res.a.camino.valor}</span>
                       <span style={{ fontSize: 13, color: 'var(--tx-2)' }}>{SENTIDO[res.a.camino.valor]?.clave}</span>
                     </div>
-                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 'var(--radio)', padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res.b.nombrePila}</span>
                       <span style={{ fontSize: 30, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', lineHeight: 1 }}>{res.b.camino.valor}</span>
                       <span style={{ fontSize: 13, color: 'var(--tx-2)' }}>{SENTIDO[res.b.camino.valor]?.clave}</span>
                     </div>
                   </div>
-                  <div style={{ background: 'var(--bg)', color: 'var(--tx)', borderRadius: 16, padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ background: 'var(--bg)', color: 'var(--tx)', borderRadius: 'var(--radio)', padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>Lo que se activa entre los dos</span>
@@ -317,7 +319,7 @@ export default function Sinergia() {
                     </div>
                   </div>
                   {res.repeticiones.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg)', borderRadius: 16, padding: 20 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg)', borderRadius: 'var(--radio)', padding: 20 }}>
                       <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>
                         Lo que se repite entre los dos
                       </span>
@@ -384,7 +386,7 @@ export default function Sinergia() {
               ['03', 'Y el de los dos', 'Sumando los vuestros sale lo que se activa cuando estáis juntos.'],
             ].map(([n, title, desc], i) => (
               <Reveal key={n} delay={i * 90}>
-                <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid var(--linea)', borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
+                <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid var(--linea)', borderRadius: 'var(--radio)', padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
                   {/* El 01·02·03 son los tres pasos de la cuenta, en orden: es
                       información, no adorno, así que se lee. Con el gris de
                       adorno se quedaba en 1,7:1. */}

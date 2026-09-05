@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import Cursor from '@/components/Cursor';
+import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
@@ -93,6 +94,7 @@ export default function Cursos() {
   return (
     <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor hitSelector="[data-mag],a,input,label,[data-card]" />
+      <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <Nav cta="La membresía" ctaHref="/membresia" extra={CURSOS.map((c) => ({ href: `#${c.id}`, label: falta(c.titulo) ? 'Próximo curso' : c.titulo }))} />
 
@@ -158,7 +160,7 @@ export default function Cursos() {
               display: 'grid',
               gap: 'clamp(20px,2.6vw,44px)',
               alignItems: 'center',
-              borderRadius: 24,
+              borderRadius: 'var(--radio)',
               padding: 'clamp(26px,3.4vw,44px)',
             }}
           >

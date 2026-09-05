@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
+import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import { Palabras, Marquesina, Paralaje, Revelado, Entra } from '@/components/movimiento';
@@ -97,6 +98,7 @@ export default function Home() {
   return (
     <div id="app" className="claro" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor />
+      <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <Nav cta={t.book} onCta={openChat} conIdiomas extra={[{ href: '#prueba', label: t.n1 }, { href: '#dudas', label: 'Dudas' }]} />
 
@@ -239,17 +241,17 @@ export default function Home() {
         <div className="banda-dentro franja">
           <Paralaje cantidad={54}>
             <Revelado className="franja-foto">
-              <Foto src={FOTOS.hablando} alt="Iris en directo" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+              <Foto src={FOTOS.hablando} alt="Iris en directo" ratio="3/4" radius="var(--radio)" sizes="(max-width:900px) 100vw, 30vw" />
             </Revelado>
           </Paralaje>
           <Paralaje cantidad={-22}>
             <Revelado className="franja-foto" retraso={0.12}>
-              <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="3/4" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+              <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="3/4" radius="var(--radio)" sizes="(max-width:900px) 100vw, 30vw" />
             </Revelado>
           </Paralaje>
           <Paralaje cantidad={78}>
             <Revelado className="franja-foto" retraso={0.24}>
-              <Foto src={FOTOS.sala} alt="Sala" ratio="1/1" radius={18} sizes="(max-width:900px) 100vw, 30vw" />
+              <Foto src={FOTOS.sala} alt="Sala" ratio="1/1" radius="var(--radio)" sizes="(max-width:900px) 100vw, 30vw" />
             </Revelado>
           </Paralaje>
         </div>
@@ -265,7 +267,7 @@ export default function Home() {
         <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(32px,5vw,84px)', alignItems: 'center' }}>
           <Reveal>
             <div data-par="-.04">
-              <Foto src={FOTOS.hablando} alt="Iris Soares" ratio="4/5" radius={22} sizes="(max-width:900px) 100vw, 42vw" />
+              <Foto src={FOTOS.hablando} alt="Iris Soares" ratio="4/5" radius="var(--radio)" sizes="(max-width:900px) 100vw, 42vw" />
             </div>
           </Reveal>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(20px,2.4vw,28px)' }}>
@@ -319,7 +321,7 @@ export default function Home() {
             </Reveal>
           </div>
           <Reveal delay={110} style={{ justifySelf: 'end', width: '100%' }}>
-            <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="1/1" radius={22} sizes="(max-width:900px) 100vw, 42vw" />
+            <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="1/1" radius="var(--radio)" sizes="(max-width:900px) 100vw, 42vw" />
           </Reveal>
         </div>
       </div>

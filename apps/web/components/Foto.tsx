@@ -11,7 +11,10 @@ export default function Foto({
   src,
   alt,
   ratio = '3/4',
-  radius = 20,
+  /* El radio del sistema. Se puede pasar un valor propio —el retrato de la
+     portada pide 0 porque la ficha se apoya en su canto— pero lo normal es no
+     tocarlo: los bordes los decide la hoja de estilos, no cada llamada. */
+  radius = 'var(--radio)',
   objectPosition = 'center 20%',
   priority = false,
   sizes = '(max-width: 900px) 100vw, 45vw',
@@ -21,7 +24,7 @@ export default function Foto({
   src: string;
   alt: string;
   ratio?: string;
-  radius?: number;
+  radius?: number | string;
   objectPosition?: string;
   priority?: boolean;
   sizes?: string;

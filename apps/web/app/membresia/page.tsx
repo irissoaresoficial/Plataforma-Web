@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Cursor from '@/components/Cursor';
+import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
@@ -19,6 +20,7 @@ export default function Membresia() {
   return (
     <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor />
+      <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <Nav cta="Reservar" ctaHref="#reservar" extra={[{ href: '#reservar', label: 'Reservar mi plaza' }]} />
 
@@ -94,7 +96,7 @@ export default function Membresia() {
             style={{
               background: 'linear-gradient(155deg,rgba(251,246,238,.13),rgba(251,246,238,.05) 62%)', backdropFilter: 'blur(6px)',
               border: '1px solid rgba(200,155,74,.34)',
-              borderRadius: 24,
+              borderRadius: 'var(--radio)',
               padding: 'clamp(24px,2.6vw,36px)',
               display: 'flex',
               flexDirection: 'column',
@@ -234,7 +236,7 @@ export default function Membresia() {
                   style={{
                     background: '#FFFFFF',
                     border: `1px ${item === PENDIENTE ? 'dashed' : 'solid'} var(--linea)`,
-                    borderRadius: 18,
+                    borderRadius: 'var(--radio)',
                     padding: 24,
                     display: 'flex',
                     flexDirection: 'column',

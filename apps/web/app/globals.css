@@ -22,6 +22,31 @@
    */
   --display-ejes: 'SOFT' 62, 'WONK' 0;
 
+  /*
+   * LOS BORDES
+   *
+   * Había diez radios distintos —30, 24, 22, 20, 18, 15, 14, 12, 10, 5— cada
+   * uno escrito el día que hizo falta. Es el mismo desorden que tenían los
+   * rótulos, y se lee igual: no como una elección, como un descuido.
+   *
+   * Y el valor era el problema, no sólo la cantidad. Con esquinas de 22 y 30 px
+   * todo se lee como una aplicación de móvil: amable y de plantilla. Lo que se
+   * pidió —y lo que hace que una web se lea editorial y cara— son bloques de
+   * canto recto, como una página impresa.
+   *
+   * Quedan tres, y sólo tres:
+   *   --radio        los bloques grandes: fotos, paneles, tarjetas.
+   *   --radio-chico  lo de dentro: campos, celdas, etiquetas.
+   *   --radio-pildora  los botones y los puntos, que siguen redondos del todo.
+   *
+   * Los botones se quedan como estaban a propósito. Con todo recto, la única
+   * curva de la página es la de las cosas que se pulsan: se distinguen sin
+   * necesidad de ningún color más.
+   */
+  --radio: 4px;
+  --radio-chico: 3px;
+  --radio-pildora: 100px;
+
   /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
      es blanco de verdad, no crema, y el segundo tono apenas se separa de él. */
   --vino: #451a25;
@@ -114,6 +139,49 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* ==================================================================
+   LA CORTINA DE ENTRADA
+   ==================================================================
+   Dos franjas granate que se separan y dejan ver la portada. Cubren media
+   pantalla cada una y se van por su lado; el sello se apaga justo antes para
+   que no se lo vea partirse por la mitad.
+   ================================================================== */
+.cortina {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+.cortina-franja {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.5%; /* medio punto de más: a la mitad exacta se ve la costura */
+  background: var(--vino);
+  will-change: transform;
+}
+.cortina-arriba {
+  top: 0;
+}
+.cortina-abajo {
+  bottom: 0;
+}
+.cortina-sello {
+  position: relative;
+  z-index: 1;
+  color: #fbf6ee;
+  will-change: transform, opacity;
+  /* El sello va centrado de verdad: en `apilado` el nombre cuelga debajo del
+     símbolo y con la alineación por defecto quedaba todo pegado a la izquierda
+     del bloque, descentrado respecto a la pantalla. */
+  text-align: center;
+}
+.cortina-sello > span {
+  align-items: center;
 }
 
 /*
@@ -632,7 +700,7 @@ textarea::placeholder {
 .field-input {
   width: 100%;
   box-sizing: border-box;
-  border-radius: 12px;
+  border-radius: var(--radio-chico);
   padding: 15px 16px;
   font-size: 15px;
   outline: none;
@@ -827,7 +895,7 @@ textarea::placeholder {
 .hero-marco {
   position: relative;
   aspect-ratio: 4 / 5;
-  border-radius: 30px;
+  border-radius: var(--radio);
   overflow: hidden;
   background: var(--superficie);
   box-shadow: 0 2px 4px rgba(34, 29, 31, 0.05), 0 30px 70px -28px rgba(69, 26, 37, 0.34);
@@ -850,7 +918,7 @@ textarea::placeholder {
   align-items: center;
   gap: 11px;
   padding: 11px 15px;
-  border-radius: 15px;
+  border-radius: var(--radio);
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--linea);
   box-shadow: 0 10px 30px -10px rgba(34, 29, 31, 0.22);
@@ -1019,7 +1087,7 @@ body[data-nav-claro='si'] .sello-color {
   overflow: hidden;
   max-height: 92vh;
   background: var(--bg);
-  border-radius: 22px 22px 0 0;
+  border-radius: var(--radio) 22px 0 0;
   box-shadow: 0 -20px 60px rgba(34, 29, 31, 0.22);
   outline: none;
   transform: translateY(28px);
@@ -1030,7 +1098,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 @media (min-width: 760px) {
   .modal-caja {
-    border-radius: 22px;
+    border-radius: var(--radio);
     max-height: 88vh;
     box-shadow: 0 30px 80px rgba(34, 29, 31, 0.26);
   }
@@ -1075,7 +1143,7 @@ body[data-nav-claro='si'] .sello-color {
 .modal-video {
   position: relative;
   aspect-ratio: 16 / 9;
-  border-radius: 14px;
+  border-radius: var(--radio);
   overflow: hidden;
   background: var(--superficie);
   border: 1px solid var(--linea);
@@ -1107,7 +1175,7 @@ body[data-nav-claro='si'] .sello-color {
 /* Sin vídeo. Aquí el hueco no reserva un 16:9: se queda en una franja y deja
    pasar al temario, que es lo que la persona ha venido a leer. */
 .modal-video-sin {
-  border-radius: 14px;
+  border-radius: var(--radio);
   background: var(--superficie);
   border: 1px dashed var(--linea);
   margin-bottom: 22px;
@@ -1129,7 +1197,7 @@ body[data-nav-claro='si'] .sello-color {
   gap: 1px;
   background: var(--linea);
   border: 1px solid var(--linea);
-  border-radius: 12px;
+  border-radius: var(--radio-chico);
   overflow: hidden;
   margin-bottom: 24px;
 }
@@ -1252,7 +1320,7 @@ body[data-nav-claro='si'] .sello-color {
 .modal-reserva {
   margin-top: 8px;
   padding: 20px;
-  border-radius: 14px;
+  border-radius: var(--radio);
   background: var(--superficie);
   border: 1px solid var(--linea);
 }
@@ -1349,7 +1417,7 @@ body[data-nav-claro='si'] .sello-color {
   display: block;
   width: 17px;
   height: 1.5px;
-  border-radius: 2px;
+  border-radius: var(--radio-chico);
   background: var(--tinta);
   transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, width 0.42s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1580,7 +1648,7 @@ body[data-nav-claro='si'] .sello-color {
   min-width: 46px;
   padding: 8px 6px;
   border: 1px solid var(--linea);
-  border-radius: 10px;
+  border-radius: var(--radio-chico);
   background: var(--superficie);
 }
 .cuenta-cifras strong {
@@ -1615,7 +1683,7 @@ body[data-nav-claro='si'] .sello-color {
 .curso-card {
   background: var(--superficie);
   border: 1px solid var(--linea);
-  border-radius: 24px;
+  border-radius: var(--radio);
   padding: clamp(24px, 3.2vw, 40px);
   box-shadow: 0 1px 2px var(--sombra), 0 14px 40px -22px var(--sombra);
   display: grid;
@@ -1678,7 +1746,7 @@ body[data-nav-claro='si'] .sello-color {
   gap: 18px;
   padding: clamp(18px, 2vw, 24px);
   border: 1px solid var(--linea);
-  border-radius: 18px;
+  border-radius: var(--radio);
   background: var(--bg);
 }
 
@@ -1951,7 +2019,7 @@ body[data-nav-claro='si'] .sello-color {
   box-sizing: border-box;
   padding: 13px 14px;
   border: 1px solid var(--linea-2);
-  border-radius: 13px;
+  border-radius: var(--radio);
   background: var(--superficie);
   color: var(--tx);
   font-size: 19px;
@@ -2011,7 +2079,7 @@ body[data-nav-claro='si'] .sello-color {
   min-height: 300px;
   padding: clamp(24px, 3vw, 38px);
   border: 1px solid var(--linea);
-  border-radius: 24px;
+  border-radius: var(--radio);
   background: var(--superficie);
   box-shadow: 0 1px 2px var(--sombra), 0 18px 50px -30px var(--sombra);
 }
@@ -2158,7 +2226,7 @@ body[data-nav-claro='si'] .sello-color {
   display: block;
   flex: 1;
   width: 2px;
-  border-radius: 2px;
+  border-radius: var(--radio-chico);
   background: var(--linea-2);
   overflow: hidden;
 }
@@ -2294,7 +2362,7 @@ body[data-nav-claro='si'] .sello-color {
 /* El revelado corta con `clip-path`, así que necesita su propio redondeo: el
    de la foto de dentro se pierde debajo del recorte. */
 .franja-foto {
-  border-radius: 18px;
+  border-radius: var(--radio);
   overflow: hidden;
 }
 
@@ -2353,7 +2421,7 @@ body[data-nav-claro='si'] .sello-color {
   gap: clamp(18px, 2.2vw, 30px);
   min-height: clamp(140px, 15vw, 190px);
   border: 1px solid var(--linea);
-  border-radius: 22px;
+  border-radius: var(--radio);
   padding: clamp(26px, 3vw, 38px);
 }
 .paso-num {
@@ -2438,7 +2506,7 @@ body[data-nav-claro='si'] .sello-color {
     width: min(300px, 66vw);
   }
   .hero-marco {
-    border-radius: 24px;
+    border-radius: var(--radio);
   }
   /* Y en el móvil deja de flotar del todo: se pone debajo, en su sitio. Un
      cristal encima de un retrato de 257 px de ancho tapa media persona, y el
@@ -2485,7 +2553,7 @@ body[data-nav-claro='si'] .sello-color {
   flex-direction: column;
   gap: 18px;
   padding: clamp(26px, 3.4vw, 42px);
-  border-radius: 24px;
+  border-radius: var(--radio);
   /* Un panel apenas más claro que el fondo y con un filo dorado. Una caja con
      su propio color de relleno se leería como un anuncio pegado encima; así se
      lee como parte de la sección. */
@@ -2510,7 +2578,7 @@ body[data-nav-claro='si'] .sello-color {
   align-items: center;
   gap: 5px;
   padding: clamp(12px, 1.6vw, 18px) 4px;
-  border-radius: 14px;
+  border-radius: var(--radio);
   background: var(--bg);
   border: 1px solid var(--linea);
 }
@@ -2631,7 +2699,7 @@ body[data-nav-claro='si'] .sello-color {
   box-sizing: border-box;
   background: var(--superficie);
   border: 1px solid var(--linea);
-  border-radius: 18px;
+  border-radius: var(--radio);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -2735,7 +2803,7 @@ body[data-nav-claro='si'] .sello-color {
   gap: 1px;
   background: var(--linea);
   border: 1px solid var(--linea);
-  border-radius: 14px;
+  border-radius: var(--radio);
   overflow: hidden;
 }
 .pv-cuentas > div {
@@ -2786,7 +2854,7 @@ body[data-nav-claro='si'] .sello-color {
   line-height: 1.65;
   color: var(--tx-3);
   padding: 12px 15px;
-  border-radius: 12px;
+  border-radius: var(--radio-chico);
   border: 1px dashed var(--linea-2, var(--linea));
   max-width: 78ch;
 }
@@ -2808,6 +2876,40 @@ body[data-nav-claro='si'] .sello-color {
   margin: 12px 0 0;
   max-width: 14ch;
 }
+
+/* El mando del carrusel: contador de revista a la izquierda —«03 / 06»— y las
+   flechas a la derecha, en una sola línea. El contador no es adorno: dice
+   cuántos hay sin tener que llegar al último. */
+.testi-mando {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.testi-cuenta {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-family: var(--serif);
+  font-variation-settings: var(--display-ejes);
+  font-variant-numeric: lining-nums tabular-nums;
+  line-height: 1;
+}
+.testi-cuenta b {
+  font-size: 26px;
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.02em;
+  color: var(--tx);
+}
+.testi-cuenta i {
+  font-style: normal;
+  font-size: 15px;
+  color: var(--tx-4);
+}
+.testi-cuenta > span {
+  font-size: 15px;
+  color: var(--tx-3);
+}
+
 .testi-flechas {
   display: flex;
   gap: 8px;
@@ -2870,7 +2972,7 @@ body[data-nav-claro='si'] .sello-color {
   gap: 14px;
   padding: clamp(20px, 2.2vw, 26px);
   border: 1px solid var(--linea);
-  border-radius: 20px;
+  border-radius: var(--radio);
   background: var(--superficie);
 }
 .testi-cab {
@@ -2934,7 +3036,7 @@ body[data-nav-claro='si'] .sello-color {
   gap: 14px;
   padding: clamp(24px, 3vw, 36px);
   border: 1px dashed var(--linea-2);
-  border-radius: 20px;
+  border-radius: var(--radio);
   background: var(--superficie);
 }
 .testi-hueco p {
@@ -2957,7 +3059,7 @@ body[data-nav-claro='si'] .sello-color {
   font-size: 0.92em;
   background: var(--bg);
   border: 1px solid var(--linea);
-  border-radius: 5px;
+  border-radius: var(--radio-chico);
   padding: 1px 5px;
 }
 
@@ -3036,7 +3138,7 @@ body[data-nav-claro='si'] .sello-color {
   height: 44px;
   display: grid;
   place-items: center;
-  border-radius: 10px;
+  border-radius: var(--radio-chico);
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -3066,7 +3168,7 @@ body[data-nav-claro='si'] .sello-color {
   border: 1px solid var(--linea-2);
   background: none;
   color: var(--tx);
-  border-radius: 12px;
+  border-radius: var(--radio-chico);
   padding: 11px 14px;
   font-family: inherit;
   font-size: 14px;

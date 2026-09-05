@@ -134,7 +134,7 @@ export default function Informe({ e }: { e: Estudio }) {
           </tbody>
         </table>
         {(e.a.camino.deuda || e.b.camino.deuda) && (
-          <div style={{ marginTop: 16, background: '#FBF7EE', borderRadius: 10, padding: '14px 16px', fontSize: 13, lineHeight: 1.6, color: '#5C4A1E' }}>
+          <div style={{ marginTop: 16, background: '#FBF7EE', borderRadius: 'var(--radio-chico)', padding: '14px 16px', fontSize: 13, lineHeight: 1.6, color: '#5C4A1E' }}>
             {e.a.camino.deuda ? `${e.a.nombrePila} arrastra el ${e.a.camino.deuda}. ` : ''}
             {e.b.camino.deuda ? `${e.b.nombrePila} arrastra el ${e.b.camino.deuda}. ` : ''}
             Es una cuenta pendiente que se hereda hasta que alguien la mira.

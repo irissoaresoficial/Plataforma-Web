@@ -107,6 +107,18 @@ export default function Testimonios() {
    */
   const bucle = [...lista, ...lista];
 
+  /* Cuál es la tarjeta de delante, para el contador. Se saca de la posición y
+     del ancho de una tarjeta, no de un observador por tarjeta: son doce, y doce
+     observadores para pintar dos cifras es pagar de más. */
+  const [visible, setVisible] = useState(0);
+  const mirarCual = () => {
+    const p = pista.current;
+    if (!p || !lista.length) return;
+    const t = p.querySelector('.testi-tarjeta') as HTMLElement | null;
+    const paso = (t?.offsetWidth ?? 320) + 16;
+    setVisible(Math.round(p.scrollLeft / paso) % lista.length);
+  };
+
   const recolocar = () => {
     const p = pista.current;
     if (!p) return;
@@ -114,6 +126,7 @@ export default function Testimonios() {
     if (mitad < 10) return;
     if (p.scrollLeft >= mitad) p.scrollLeft -= mitad;
     else if (p.scrollLeft <= 0) p.scrollLeft += mitad;
+    mirarCual();
   };
 
   const mover = (dir: 1 | -1) => {
@@ -201,11 +214,20 @@ export default function Testimonios() {
             <span className="rotulo">Lo que le escriben</span>
             <h2 className="titular-seccion testi-titulo">Esto no lo digo yo.</h2>
           </div>
-          {/* Ya no se apagan nunca: la cinta no tiene final. */}
+          {/* Contador y flechas, como en una revista: «01 / 06» y luego ‹ ›.
+              Las flechas ya no se apagan nunca —la cinta no tiene final— y el
+              contador dice cuántos hay sin tener que llegar al último. */}
           {hay && (
-            <div className="testi-flechas">
-              <button onClick={() => mover(-1)} aria-label="Anterior" className="testi-flecha">←</button>
-              <button onClick={() => mover(1)} aria-label="Siguiente" className="testi-flecha">→</button>
+            <div className="testi-mando">
+              <span className="testi-cuenta" aria-hidden>
+                <b>{String(Math.min(lista.length, visible + 1)).padStart(2, '0')}</b>
+                <i>/</i>
+                <span>{String(lista.length).padStart(2, '0')}</span>
+              </span>
+              <div className="testi-flechas">
+                <button onClick={() => mover(-1)} aria-label="Anterior" className="testi-flecha">←</button>
+                <button onClick={() => mover(1)} aria-label="Siguiente" className="testi-flecha">→</button>
+              </div>
             </div>
           )}
         </div>
