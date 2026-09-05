@@ -9,6 +9,7 @@ import { Palabras, Marquesina, Paralaje, Revelado, ColumnaFija, Entra, Escalonad
 import TuNumero from '@/components/TuNumero';
 import Anclado from '@/components/Anclado';
 import Testimonios from '@/components/Testimonios';
+import Lanzamiento from '@/components/Lanzamiento';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
@@ -371,29 +372,50 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── LA COMUNIDAD (lleva a su landing) ────────────────── */}
-      <div id="lista-espera" className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(28px,4vw,72px)', alignItems: 'center' }}>
-          <Reveal>
-            <Foto src={FOTOS.sala} alt="La comunidad" ratio="4/3" radius={22} sizes="(max-width:900px) 100vw, 45vw" />
-          </Reveal>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,26px)' }}>
+      {/* ── EL LANZAMIENTO DE LA COMUNIDAD ───────────────────────
+          Es un lanzamiento, así que este bloque lleva una fecha y una cuenta,
+          no una foto. Donde iba la foto de sala —que no existe: salía el hueco
+          rojo de FOTO PENDIENTE, y era lo primero que se veía en el bloque que
+          más tiene que vender— va ahora la cuenta atrás.
+
+          El orden de la columna de la derecha cambia con esa idea: primero el
+          precio de la lista, que es la razón concreta para apuntarse hoy y no
+          en noviembre, y después el botón. Antes el precio iba enterrado entre
+          el párrafo y el botón, en un cuerpo más pequeño que el titular. */}
+      <div id="lista-espera" className="vino lanz-bloque" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
+        <div className="lanz-rejilla" style={{ maxWidth: ANCHO, margin: '0 auto' }}>
+          <Lanzamiento abreISO={MEMBRESIA.abreISO} desdeISO={MEMBRESIA.listaDesdeISO} />
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(16px,2vw,24px)' }}>
             <Reveal>
               <Rotulo claro>{t.wl_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '14ch' }}>
+            {/* A 15ch el titular se partía en cuatro renglones y dejaba
+                «Cambiarlo» solo en uno. */}
+            <Reveal delay={70} className="titular-seccion" style={{ maxWidth: '19ch' }}>
               {t.wl_h}
             </Reveal>
             <Reveal delay={130}>
               <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '36ch' }}>{t.wl_p}</p>
             </Reveal>
+
+            {/* El precio, con su motivo escrito al lado. Un número tachado sin
+                explicación es un truco de tienda; con el motivo delante es una
+                condición, que es lo que de verdad es. */}
             <Reveal delay={180}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-                <span className="display" style={{ fontSize: 'var(--t-seccion)', color: '#8F6B18' }}>{eur(MEMBRESIA.precioReserva)}</span>
-                <span style={{ fontSize: 17, color: 'var(--tx-3)', textDecoration: 'line-through' }}>{eur(MEMBRESIA.precio)}</span>
-                <span style={{ fontSize: 13, color: 'var(--tx-3)' }}>al mes</span>
+              <div className="lanz-precio">
+                <span className="rotulo-dato">Precio de la lista</span>
+                <span className="lanz-precio-fila">
+                  <b>{eur(MEMBRESIA.precioReserva)}</b>
+                  <s>{eur(MEMBRESIA.precio)}</s>
+                  <i>al mes</i>
+                </span>
+                <span className="lanz-precio-nota">
+                  Lo mantienes mientras sigas dentro. Reservar ahora no cobra nada.
+                </span>
               </div>
             </Reveal>
+
             <Reveal delay={230}>
               <PillCTA href="/membresia" variant="dark" label={t.wl_cta} curLabel={t.csee} />
             </Reveal>

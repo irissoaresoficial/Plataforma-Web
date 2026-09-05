@@ -10,6 +10,7 @@ import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 import Pendiente from '@/components/Pendiente';
 import { MEMBRESIA, PENDIENTE, eur } from '@/content/site';
+import Lanzamiento from '@/components/Lanzamiento';
 
 export default function Membresia() {
   useSiteScroll();
@@ -48,6 +49,12 @@ export default function Membresia() {
                 Un patrón que lleva tres generaciones funcionando no se desmonta en una tarde. Por eso abro un grupo pequeño: cada mes miramos una parte de tu historia familiar y sueltas algo que llevabas cargando sin saberlo.
               </p>
             </Reveal>
+
+            {/* La misma cuenta que en la portada, aquí también: quien llega a
+                esta página viene a decidir, y «abre el 7 de noviembre» es la
+                mitad de la decisión. Sale de MEMBRESIA.abreISO, así que las dos
+                páginas no pueden decir fechas distintas. */}
+            <Lanzamiento abreISO={MEMBRESIA.abreISO} desdeISO={MEMBRESIA.listaDesdeISO} />
 
             {/* Un paso al mes */}
             <Reveal delay={210}>

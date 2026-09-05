@@ -34,8 +34,14 @@ export default function CuentaAtras({
     return () => clearInterval(id);
   }, [fechaISO]);
 
+  /* La fecha puede venir a secas —«2026-11-07»— o con su hora
+     —«2026-11-07T23:59:59»—. Lo segundo hace falta cuando lo que se cuenta
+     acaba al final del día: sin hora, la cuenta llegaba a cero al empezar esa
+     jornada y cerraba la puerta veinticuatro horas antes de lo prometido. */
+  const conHora = (s: string) => (s.includes('T') ? s : `${s}T00:00:00`);
+
   if (!fechaISO) return null;
-  const fin = new Date(`${fechaISO}T00:00:00`).getTime();
+  const fin = new Date(conHora(fechaISO)).getTime();
   if (Number.isNaN(fin)) return null;
   if (ahora !== null && fin - ahora <= 0) return null;
 
@@ -45,7 +51,7 @@ export default function CuentaAtras({
   const mins = resto === null ? null : Math.floor((resto % 3_600_000) / 60_000);
   const segs = resto === null ? null : Math.floor((resto % 60_000) / 1000);
 
-  const inicio = abiertoDesdeISO ? new Date(`${abiertoDesdeISO}T00:00:00`).getTime() : fin - 60 * 86_400_000;
+  const inicio = abiertoDesdeISO ? new Date(conHora(abiertoDesdeISO)).getTime() : fin - 60 * 86_400_000;
   const total = Math.max(1, fin - inicio);
   const restante = resto === null ? 1 : Math.max(0, Math.min(1, resto / total));
 

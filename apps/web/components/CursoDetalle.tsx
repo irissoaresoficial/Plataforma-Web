@@ -87,8 +87,12 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
             <p style={{ margin: '0 0 22px', fontSize: 17, lineHeight: 1.55, color: 'var(--tx-2)' }}>{curso.claim}</p>
           )}
 
-          {/* El vídeo donde ella lo cuenta con su voz: es lo que más vende. */}
-          <div className="modal-video">
+          {/* El vídeo donde ella lo cuenta con su voz: es lo que más vende.
+              Cuando no lo hay, el hueco NO guarda el sitio de un 16:9. Guardarlo
+              dejaba medio metro de vacío nada más abrir la ficha y empujaba el
+              temario —lo único que de verdad cuenta lo que se compra— por debajo
+              del borde. Sin vídeo: una franja de dos renglones y a seguir. */}
+          <div className={curso.videoUrl ? 'modal-video' : 'modal-video-sin'}>
             {curso.videoUrl ? (
               <iframe
                 src={curso.videoUrl}
