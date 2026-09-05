@@ -300,12 +300,21 @@ export default function Sinergia() {
                       ))}
                     </div>
                   )}
+                  {/* Este es el clic más caliente de toda la web: la persona
+                      acaba de ver algo suyo y todavía está mirando. Llevaba a la
+                      lista de espera de un producto que no ha abierto, no tiene
+                      contenido publicado y no tiene fecha. Ahora lleva a lo
+                      único que Iris puede vender hoy. */}
                   <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tx-2)' }}>
-                    Esto explica el roce, pero no de dónde viene. Eso está en tu línea familiar, y se mira entera.
+                    Esto es lo que hay entre dos personas. De dónde viene está más atrás: en tu línea familiar, y hay que
+                    mirarla entera. Eso es lo que hacemos en una sesión.
                   </p>
-                  <Link href="/#lista-espera" data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
-                    <span>Mirar la mía entera</span>
+                  <Link href="/#cita" data-mag data-cur-label="Reservar" className="pill pill-gold" style={{ justifyContent: 'center' }}>
+                    <span>Mirar mi línea con Iris</span>
                     <span>→</span>
+                  </Link>
+                  <Link href="/#lista-espera" style={{ fontSize: 13, color: 'var(--tx-3)', textAlign: 'center' }}>
+                    ¿Prefieres esperar al grupo? Entra en la lista de la comunidad →
                   </Link>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <div onClick={() => window.print()} data-mag data-cur-label="PDF" className="pill pill-dark" style={{ flex: 1, minWidth: 148, justifyContent: 'center' }}>
@@ -363,12 +372,12 @@ export default function Sinergia() {
           </Reveal>
           <Reveal delay={80}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-              <Link href="/#lista-espera" data-mag data-cur-label="Ver" className="pill pill-dark">
-                <span>Ver la comunidad</span>
+              <Link href="/#cita" data-mag data-cur-label="Reservar" className="pill pill-dark">
+                <span>Reservar una sesión</span>
                 <span className="pill-arrow" style={{ background: 'var(--acento)', color: '#FBF6EE' }}>→</span>
               </Link>
-              <Link href="/#cita" data-mag className="btn-outline btn-outline-dark">
-                O reservar una sesión
+              <Link href="/#lista-espera" data-mag className="btn-outline btn-outline-dark">
+                O ver la comunidad
               </Link>
             </div>
           </Reveal>
