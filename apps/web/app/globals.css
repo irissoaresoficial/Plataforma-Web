@@ -272,6 +272,19 @@ h2 {
   /* Fraunces trae versalitas y números antiguos; en un titular queremos los
      números de caja alta, alineados con las mayúsculas. */
   font-variant-numeric: lining-nums;
+  /*
+   * Y EL PESO. El navegador pone `bold` a todo <h1> y <h2> por su cuenta, y
+   * Fraunces en 700 es una letra completamente distinta: gruesa, apretada, de
+   * cartel. En las páginas que escriben su titular a mano —sinergia, membresía—
+   * salía así, mientras que en la portada, que usa la clase del sistema, salía
+   * fino. La misma web con dos voces.
+   *
+   * Aquí se pone el peso de la casa para cualquier titular, lo escriba quien lo
+   * escriba. Quien quiera otro lo pide, pero el que no diga nada sale bien.
+   */
+  font-weight: var(--peso-fino);
+  line-height: 1.12;
+  letter-spacing: var(--esp-seccion);
 }
 
 /*
@@ -676,6 +689,36 @@ textarea::placeholder {
   display: none;
 }
 
+/*
+ * El campo de fecha, domado.
+ *
+ * En el móvil, Safari y Chrome le ponen su propio contenido —«dd/mm/aaaa» y el
+ * calendario— y con él un ancho mínimo que no respeta el de la caja. Se salía
+ * de la tarjeta por la derecha. `appearance: none` le quita ese adorno y con
+ * `min-width: 0` deja de imponer su ancho; el selector nativo sigue
+ * funcionando igual al tocarlo.
+ */
+.campo-fecha {
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 50px;
+}
+.campo-fecha::-webkit-date-and-time-value {
+  text-align: left;
+  min-height: 20px;
+}
+.campo-fecha::-webkit-calendar-picker-indicator {
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+/* Cuando la fecha viene ya puesta desde la portada. */
+.sin-heredada {
+  font-size: var(--t-nota);
+  line-height: 1.5;
+  color: var(--acento);
+}
+
 /* El formulario de la sinergia: la misma caja de tres pasos, ahora como <form>
    para que el Intro envíe y el tabulador llegue al botón. */
 .sin-form {
@@ -699,7 +742,20 @@ textarea::placeholder {
 
 .field-input {
   width: 100%;
+  /* Sin esto, un `input type=date` no cabe en su caja.
+     El campo de fecha del móvil trae un ancho propio —el que necesita para
+     «dd/mm/aaaa» y el iconito del calendario— y ese ancho gana al 100 % si no
+     se le dice que el mínimo es cero. En la ficha del estudio se salía por la
+     derecha y rompía la tarjeta entera. */
+  min-width: 0;
+  max-width: 100%;
   box-sizing: border-box;
+  /* Los colores van aquí y no en cada pantalla: estaban escritos a mano campo
+     por campo, y bastaba con olvidar uno para tener un cuadro de otro color. */
+  background: var(--bg);
+  border: 1px solid var(--linea);
+  color: var(--tx);
+  font-family: inherit;
   border-radius: var(--radio-chico);
   padding: 15px 16px;
   font-size: 15px;

@@ -186,7 +186,24 @@ export default function TuNumero() {
                         Ese número solo es la mitad. Pon el de <strong>esa persona</strong> al lado y sale lo que se
                         activa entre los dos, lo que se repite y <strong>un informe para descargar</strong>.
                       </p>
-                      <Link href="/sinergia" className="pill pill-cream iman" data-mag data-cur-label="Ver">
+                      {/* LA FECHA VIAJA CON EL ENLACE.
+                          Sin esto pasaba lo peor que puede pasar en un embudo:
+                          la persona escribe su fecha, ve su número, pulsa para
+                          seguir… y la página siguiente se la vuelve a pedir
+                          desde cero. Hacer dos veces el mismo trabajo es la
+                          señal más clara de que a nadie le importa lo que
+                          acabas de hacer, y ahí se cae la gente.
+                          Va en la dirección y no en el almacenamiento del
+                          navegador a propósito: así el enlace se puede compartir
+                          y sigue funcionando, y no hay ningún dato guardado en
+                          ningún sitio — que es lo que promete la nota de aquí
+                          arriba. */}
+                      <Link
+                        href={`/sinergia?d=${hecho.d}&m=${hecho.m}&a=${hecho.a}`}
+                        className="pill pill-cream iman"
+                        data-mag
+                        data-cur-label="Ver"
+                      >
                         <span>Ver mi sinergia con esa persona</span>
                         <span className="pill-arrow">→</span>
                       </Link>

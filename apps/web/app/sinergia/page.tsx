@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
@@ -27,6 +27,35 @@ export default function Sinergia() {
   const [res, setRes] = useState<Estudio | null>(null);
   const [leadOk, setLeadOk] = useState<boolean | null>(null);
   const [rel, setRel] = useState('');
+  /* Si la fecha viene ya puesta desde la portada, se dice: sin avisar, quien
+     llega ve una casilla rellena y no sabe si es suya o un ejemplo. */
+  const [fechaHeredada, setFechaHeredada] = useState(false);
+
+  /*
+   * LA FECHA QUE VIENE DE LA PORTADA.
+   *
+   * Quien llega aquí desde «ver mi sinergia» acaba de escribir su fecha y de
+   * ver su número. Volvérsela a pedir es lo peor que puede hacer un embudo:
+   * hacer dos veces el mismo trabajo dice, sin decirlo, que lo que acabas de
+   * hacer no le importaba a nadie.
+   *
+   * Se lee del enlace y no del almacenamiento del navegador porque la portada
+   * promete que la fecha no se guarda en ningún sitio, y eso hay que cumplirlo.
+   * Se hace en un efecto —no al pintar— para que el servidor y el navegador
+   * pinten lo mismo la primera vez.
+   */
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const d = Number(q.get('d'));
+    const m = Number(q.get('m'));
+    const a = Number(q.get('a'));
+    if (!d || !m || !a) return;
+    if (d < 1 || d > 31 || m < 1 || m > 12 || a < 1900 || a > new Date().getFullYear()) return;
+    const f = new Date(a, m - 1, d);
+    if (f.getDate() !== d || f.getMonth() !== m - 1) return; // 31 de febrero y compañía
+    setADate(`${a}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`);
+    setFechaHeredada(true);
+  }, []);
 
   const isForm = step === 0 || step === 1;
   const isGate = step === 2;
@@ -203,7 +232,6 @@ export default function Sinergia() {
                         step === 0 ? setAName(e.target.value) : setBName(e.target.value);
                       }}
                       className="field-input"
-                      style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
                     />
                   </div>
                   <div className="lead-campo">
@@ -221,9 +249,15 @@ export default function Sinergia() {
                         setErr('');
                         step === 0 ? setADate(e.target.value) : setBDate(e.target.value);
                       }}
-                      className="field-input"
-                      style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
+                      className="field-input campo-fecha"
                     />
+                    {/* Cuando la fecha llega de la portada se dice. Una casilla
+                        que aparece rellena sin explicación se lee como un
+                        ejemplo, y la gente la borra y la vuelve a escribir —
+                        que es justo lo que se quería evitar. */}
+                    {step === 0 && fechaHeredada && (
+                      <span className="sin-heredada">Ya la tenía de la portada. Cámbiala si no es ésta.</span>
+                    )}
                   </div>
                   <button type="submit" data-mag className="pill pill-dark" style={{ justifyContent: 'center' }}>
                     <span>{step === 0 ? 'Siguiente' : 'Calcular'}</span>
@@ -268,7 +302,6 @@ export default function Sinergia() {
                         setErr('');
                       }}
                       className="field-input"
-                      style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
                     />
                   </div>
                   <button type="submit" data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
