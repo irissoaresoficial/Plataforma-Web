@@ -112,9 +112,20 @@ export default function Home() {
               {/* Palabra a palabra. Un titular que aparece de golpe se lee como
                   una imagen; apareciendo por palabras se lee como alguien que
                   está diciendo la frase, que es lo que es. */}
+              {/* Cada frase en su renglón. Fluían seguidas y el reparto de
+                  líneas dejaba la «Y» sola al final de la segunda: la frase se
+                  partía en el peor sitio posible y se leía a trompicones. Con
+                  una frase por bloque, cada una se equilibra sola (text-wrap:
+                  balance) y el corte cae donde lo pondría cualquiera. */}
               <h1 className="titular-portada" style={{ margin: 0 }}>
-                <Palabras retraso={0.1}>{t.h1a}</Palabras>{' '}
-                <Palabras retraso={0.1 + t.h1a.split(' ').length * 0.055} style={{ color: 'var(--acento)' }}>
+                <Palabras retraso={0.1} className="titular-frase">
+                  {t.h1a}
+                </Palabras>
+                <Palabras
+                  retraso={0.1 + t.h1a.split(' ').length * 0.055}
+                  className="titular-frase"
+                  style={{ color: 'var(--acento)' }}
+                >
                   {t.h1b}
                 </Palabras>
               </h1>
@@ -140,19 +151,18 @@ export default function Home() {
                   <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 80vw, 44vw" objectPosition="center 38%" />
                 </div>
 
-                {/* Las dos fichas. Lo que dicen está en otro sitio de la web:
-                    arriba, el sello y la disciplina; abajo, el próximo curso con
-                    su fecha de verdad, o nada si todavía no hay ninguno. */}
-                <div className="hero-ficha hero-ficha-alta">
-                  <span className="hero-ficha-marca" aria-hidden>
-                    <Marca tam={34} texto={false} />
-                  </span>
-                  <span className="hero-ficha-txt">
-                    <b>Escuela de Sabiduría 33</b>
-                    <span>Numerología transgeneracional</span>
-                  </span>
-                </div>
-
+                {/* UNA ficha, no dos.
+                    Había otra encima —«Escuela de Sabiduría 33 · Numerología
+                    transgeneracional»— y estaba mal por dos motivos. Dice lo
+                    mismo que el sello del encabezado, que se ve a la vez y no
+                    se va nunca. Y se apoyaba a media altura de la foto: en el
+                    móvil tapaba los ojos de Iris, que es exactamente lo que se
+                    mira primero en una web de una persona. Dos cristales
+                    flotando sobre un retrato son, además, la firma de las
+                    plantillas de las que queremos alejarnos.
+                    Ésta se queda porque no es adorno: lleva una fecha de verdad
+                    y se puede pinchar. Y se apoya abajo del todo, donde hay
+                    hombro y no cara. */}
                 {proximo && (
                   <Link href={`/cursos#${proximo.id}`} className="hero-ficha hero-ficha-baja" data-mag data-cur-label="Ver">
                     <span className="hero-ficha-txt">

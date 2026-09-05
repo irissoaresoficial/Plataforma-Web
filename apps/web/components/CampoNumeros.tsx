@@ -25,15 +25,30 @@ import { useEffect, useRef } from 'react';
  *    tiene detrás.
  */
 
-const CIFRAS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '11', '22', '33'];
+/*
+ * QUÉ CIFRAS Y CUÁNTAS
+ *
+ * Estaban las doce —del 1 al 9 más los tres maestros— en siete tamaños, cada
+ * una torcida su ángulo, y hasta setenta y dos a la vez. Sobre papel claro eso
+ * no es un fondo: es confeti, y compite con el titular.
+ *
+ * Ahora son seis, y son las que dicen algo aquí: los tres maestros —la escuela
+ * se llama 33— y otras tres para que no se lea como un patrón. Tres tamaños
+ * casi iguales, sin girar, muy pocas y muy apagadas. Se nota que hay algo
+ * detrás del titular; no se nota qué. Eso es una textura.
+ */
+const CIFRAS = ['11', '22', '33', '3', '7', '9'];
 
 /** Capas de profundidad. Cada una con su tamaño, su desenfoque y su ritmo. */
-const CAPAS = 7;
+const CAPAS = 3;
 
 type Num = { x: number; y: number; vx: number; vy: number; capa: number; cifra: number; fase: number; vaiven: number; giro: number };
 
 export default function CampoNumeros({
-  densidad = 22000,
+  /* Píxeles de pantalla por cifra. Cuanto más alto, menos cifras. Estaba en
+     22 000 —una pantalla de portátil daba sesenta y pico— y ahora en 105 000,
+     que en esa misma pantalla son doce. */
+  densidad = 105_000,
   /** Sobre papel claro conviene poco; sobre granate aguanta más. */
   intensidad = 1,
 }: {
@@ -68,9 +83,14 @@ export default function CampoNumeros({
     const anchoVentana = () => (typeof window === 'undefined' ? 1200 : window.innerWidth);
     const escalaCifras = () => Math.max(0.55, Math.min(1, anchoVentana() / 1100));
 
-    const tamDe = (capa: number) => (11 + capa * 4.6) * escalaCifras(); // de 11 a 39 px en pantalla ancha
-    const borronDe = (capa: number) => (CAPAS - 1 - capa) * 1.15 * escalaCifras();
-    const alfaDe = (capa: number) => (0.1 + capa * 0.075) * intensidad * (escalaCifras() < 0.75 ? 0.72 : 1);
+    /* De 11 a 39 px había cifras del tamaño de un titular pequeño compitiendo
+       con el titular de verdad. De 13 a 19 son todas del tamaño de una nota al
+       pie: se leen como fondo. */
+    const tamDe = (capa: number) => (13 + capa * 3) * escalaCifras();
+    const borronDe = (capa: number) => (CAPAS - 1 - capa) * 1.5 * escalaCifras();
+    /* Llegaba a 0,55 de opacidad, que sobre papel casi blanco es tinta visible.
+       El techo ahora es 0,10: se intuye, no se lee. */
+    const alfaDe = (capa: number) => (0.05 + capa * 0.025) * intensidad * (escalaCifras() < 0.75 ? 0.72 : 1);
 
     /** Dibuja cada cifra en su propio lienzo, con su desenfoque ya aplicado. */
     const prepararSellos = () => {
@@ -113,7 +133,9 @@ export default function CampoNumeros({
         cifra: Math.floor(Math.random() * CIFRAS.length),
         fase: Math.random() * Math.PI * 2,
         vaiven: 0.25 + Math.random() * 0.7,
-        giro: (Math.random() - 0.5) * 0.22,
+        // Sin girar. Una cifra torcida se lee como pegatina; derecha, como
+        // marca de agua. Era lo que más lo hacía parecer confeti.
+        giro: 0,
       };
     };
 
@@ -130,7 +152,7 @@ export default function CampoNumeros({
       c.width = Math.round(w * escala);
       c.height = Math.round(h * escala);
       ctx.setTransform(escala, 0, 0, escala, 0, 0);
-      const n = Math.max(22, Math.min(72, Math.round((w * h) / densidad)));
+      const n = Math.max(5, Math.min(16, Math.round((w * h) / densidad)));
       nums = Array.from({ length: n }, () => nuevo(true));
 
       /* Si al cambiar el tamaño de la ventana las cifras tienen que ser otras

@@ -258,6 +258,13 @@ select,
   letter-spacing: var(--esp-portada);
   text-wrap: balance;
 }
+/* Cada frase del titular ocupa sus propios renglones y se equilibra por su
+   cuenta. Corriendo seguidas, el reparto dejaba palabras de una letra colgando
+   al final de una línea. */
+.titular-frase {
+  display: block;
+  text-wrap: balance;
+}
 .titular-seccion {
   font-size: var(--t-seccion);
   font-weight: var(--peso-fino);
@@ -815,15 +822,12 @@ textarea::placeholder {
     backdrop-filter: blur(16px) saturate(1.5);
   }
 }
-.hero-ficha-alta {
-  left: clamp(-14px, -1.6vw, -26px);
-  top: 12%;
-}
+/* Antes se apoyaba al 11 % del borde de abajo, que en un retrato 4:5 cae sobre
+   el pecho y, en el móvil, sobre la barbilla. Ahora se apoya en el borde: pisa
+   el marco, no la cara. */
 .hero-ficha-baja {
   right: clamp(-14px, -1.6vw, -26px);
-  bottom: 11%;
-  /* Lleva flecha al final, así que necesita algo más de sitio que la de
-     arriba, que sólo lleva texto. */
+  bottom: -14px;
   max-width: 82%;
   padding-right: 13px;
 }
@@ -853,14 +857,11 @@ textarea::placeholder {
   display: grid;
   place-items: center;
 }
-/* Por debajo de 380 px las fichas se salían de la pantalla por los lados. */
+/* Por debajo de 400 px la ficha se salía de la pantalla por el lado. */
 @media (max-width: 400px) {
   .hero-ficha {
     max-width: 86%;
     padding: 9px 12px;
-  }
-  .hero-ficha-alta {
-    left: -8px;
   }
   .hero-ficha-baja {
     right: -8px;
@@ -2305,14 +2306,44 @@ body[data-nav-claro='si'] .sello-color {
     padding-bottom: clamp(36px, 6vh, 56px);
   }
 }
-/* En el móvil el retrato se lleva menos alto: apilado debajo del texto, a
-   cuatro quintos se comía la pantalla entera él solo. */
+/*
+ * En el móvil el retrato tenía que ocupar menos alto, y se resolvió poniéndolo
+ * apaisado —5:4— sobre una foto que es vertical, 3:4. Eso obliga al navegador a
+ * tirar el cuarenta por ciento de la altura para llenar el hueco, y lo que se
+ * tira es la frente y la barbilla: quedaba una cara cortada por arriba y por
+ * abajo, en primerísimo plano, que es justo lo que no puede pasar en la web de
+ * una persona que se vende ella.
+ *
+ * Se arregla estrechando, no aplastando. El retrato sigue siendo retrato —la
+ * misma proporción que en el escritorio— y baja de ancho, que es lo que de
+ * verdad le quita alto. Cuesta cincuenta píxeles más de alto que la versión
+ * apaisada y devuelve la cara entera.
+ */
 @media (max-width: 900px) {
-  .hero-marco {
-    aspect-ratio: 5 / 4;
+  .hero-marco-caja {
+    width: min(300px, 66vw);
   }
-  .hero-marco img {
-    object-position: center 32%;
+  .hero-marco {
+    border-radius: 24px;
+  }
+  /* Y en el móvil deja de flotar del todo: se pone debajo, en su sitio. Un
+     cristal encima de un retrato de 257 px de ancho tapa media persona, y el
+     botón del chat, que vive en esa esquina, le caía justo encima. */
+  .hero-flota {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .hero-ficha-baja {
+    position: static;
+    max-width: none;
+    right: auto;
+    bottom: auto;
+    background: var(--superficie);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
   }
 }
 
