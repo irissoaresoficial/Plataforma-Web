@@ -44,9 +44,14 @@ export default function Membresia() {
             <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,5.8vw,78px),15vh)', fontFamily: 'var(--serif)', lineHeight: 0.99, letterSpacing: '-.026em', maxWidth: '15ch', textWrap: 'pretty' }}>
               Entenderlo lleva una sesión. <span style={{ color: 'var(--acento)' }}>Cambiarlo lleva meses.</span>
             </Reveal>
+            {/* Las palabras que hacen el trabajo, marcadas. El párrafo era un
+                bloque gris de cuarenta palabras: se leía entero o no se leía
+                nada, y en una página de venta la gente barre, no lee. */}
             <Reveal delay={150}>
-              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.55, color: 'var(--tx-2)', maxWidth: '42ch' }}>
-                Un patrón que lleva tres generaciones funcionando no se desmonta en una tarde. Por eso abro un grupo pequeño: cada mes miramos una parte de tu historia familiar y sueltas algo que llevabas cargando sin saberlo.
+              <p className="mb-entrada">
+                Un patrón que lleva <strong>tres generaciones</strong> funcionando no se desmonta en una tarde. Por eso
+                abro un <strong>grupo pequeño</strong>: cada mes miramos una parte de tu historia familiar y sueltas
+                algo que llevabas cargando <strong>sin saberlo</strong>.
               </p>
             </Reveal>
 
@@ -98,27 +103,54 @@ export default function Membresia() {
               scrollMarginTop: 90,
             }}
           >
+            {/*
+                EL PRECIO ES EL ARGUMENTO, ASÍ QUE MANDA.
+
+                Estaba del tamaño de un titular de sección, con el tachado al
+                lado en dieciocho píxeles y una explicación de tres renglones
+                debajo. Esto es una página de venta: lo primero que tiene que
+                entrar por los ojos es cuánto cuesta y cuánto te ahorras.
+
+                Los tres números de abajo son aritmética, no marketing: 0 € hoy,
+                34 € menos al mes, 408 € menos al año. Salen de restar los dos
+                precios que están arriba, así que si mañana cambian, cambian
+                también ellos y no hay nada que actualizar a mano.
+            */}
             <div id="reservar" />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-2)' }}>Precio de reserva</span>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.45)', borderRadius: 100, padding: '5px 11px' }}>
-                Ahorras {eur(ahorro)} al mes
-              </span>
-            </div>
+            <div className="pv">
+              <span className="pv-cinta">Precio de lista de espera</span>
 
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--t-seccion)', fontFamily: 'var(--serif)', letterSpacing: '-.032em', lineHeight: 0.85, color: 'var(--acento)' }}>
-                {eur(MEMBRESIA.precioReserva)}
-              </span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingBottom: 8 }}>
-                <span style={{ fontSize: 18, fontWeight: 500, color: 'var(--tx-3)', textDecoration: 'line-through' }}>{eur(MEMBRESIA.precio)}</span>
-                <span style={{ fontSize: 13, color: 'var(--tx-2)' }}>al mes</span>
+              <div className="pv-cifra">
+                <b>{eur(MEMBRESIA.precioReserva)}</b>
+                <span className="pv-al">al mes</span>
               </div>
-            </div>
 
-            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tx-2)' }}>
-              Reservar ahora no te cobra nada. Guarda tu precio: cuando abra, entras por {eur(MEMBRESIA.precioReserva)} al mes en vez de {eur(MEMBRESIA.precio)}, y lo mantienes mientras sigas dentro.
-            </p>
+              <div className="pv-antes">
+                <s>{eur(MEMBRESIA.precio)}</s>
+                <span className="pv-badge">−{Math.round((ahorro / MEMBRESIA.precio) * 100)}%</span>
+              </div>
+
+              <div className="pv-cuentas">
+                <div>
+                  <b>0 €</b>
+                  <span>hoy</span>
+                </div>
+                <div>
+                  <b>{eur(ahorro)}</b>
+                  <span>menos al mes</span>
+                </div>
+                <div>
+                  <b>{eur(ahorro * 12)}</b>
+                  <span>menos al año</span>
+                </div>
+              </div>
+
+              <p className="pv-cierre">
+                Hoy <strong>no se te cobra nada</strong>. Cuando abra, entras por {eur(MEMBRESIA.precioReserva)} en vez
+                de {eur(MEMBRESIA.precio)} — y sigues pagando {eur(MEMBRESIA.precioReserva)} el mes doce, y el
+                veinticuatro. <strong>El precio se queda contigo</strong>, no con la fecha.
+              </p>
+            </div>
 
             <div style={{ height: 1, background: 'var(--linea)' }} />
 

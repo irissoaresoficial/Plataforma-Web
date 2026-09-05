@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Reduccion from './Reduccion';
 import { CURVA } from './movimiento';
+import { pasosCaminoDeVida } from '@/lib/numerologia';
 
 type Fecha = { dia: string; mes: string; anio: string };
 
@@ -81,11 +82,17 @@ export default function TuNumero() {
   return (
     <div className="tn">
       <div className="tn-lado">
-        <span className="rotulo">Pruébalo aquí mismo</span>
-        <h2 className="tn-titulo">Tu fecha ya es un número. Míralo.</h2>
+        <span className="rotulo">Empieza por aquí · gratis</span>
+        {/* El gancho ya no es «mira tu número». Nadie busca su cifra por
+            deporte: se busca por alguien. La cuenta es la excusa; la persona con
+            la que siempre acabas igual es el motivo, y es lo que abre el
+            embudo. */}
+        <h2 className="tn-titulo">
+          ¿Tienes buena sinergia con esa persona con la que <em>siempre acabas igual</em>?
+        </h2>
         <p className="tn-texto">
-          Es la primera cuenta que hago con cualquiera que se sienta delante. Se pliega la fecha hasta que
-          queda una sola cifra, y de ahí sale todo lo demás.
+          Se ve en dos números: el tuyo y el suyo. Empieza por el tuyo — es la <strong>misma cuenta</strong> que
+          hago yo con quien se sienta delante.
         </p>
 
         <div className="tn-fila">
@@ -135,10 +142,23 @@ export default function TuNumero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, ease: CURVA, delay: 0.35 }}
                   >
-                    <Link href="/sinergia" className="pill pill-cream iman tn-siguiente" data-mag data-cur-label="Ver">
-                      <span>Y qué dice de ti</span>
-                      <span className="pill-arrow">→</span>
-                    </Link>
+                    {/* AQUÍ EMPIEZA EL EMBUDO, y por eso el botón dice lo que
+                        se lleva en vez de «y qué dice de ti», que no promete
+                        nada. El número de esta caja es el aperitivo: se ve sin
+                        dejar un dato. El estudio de los dos —el suyo, el de esa
+                        persona, lo que se activa entre ambos y el informe— está
+                        en la otra página, y es lo que se cambia por el correo. */}
+                    <div className="tn-siguiente">
+                      <p className="tn-regalo">
+                        Ese número solo es la mitad. Pon el de <strong>esa persona</strong> al lado y sale lo que se
+                        activa entre los dos, lo que se repite y <strong>un informe para descargar</strong>.
+                      </p>
+                      <Link href="/sinergia" className="pill pill-cream iman" data-mag data-cur-label="Ver">
+                        <span>Ver mi sinergia con esa persona</span>
+                        <span className="pill-arrow">→</span>
+                      </Link>
+                      <span className="tn-regalo-nota">Gratis, sale al momento.</span>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -152,18 +172,28 @@ export default function TuNumero() {
               transition={{ duration: 0.35 }}
               className="tn-espera"
             >
-              {/* El ejemplo enseña la forma que va a tener la respuesta, para
-                  que el hueco no parezca un sitio roto mientras no hay nada. */}
-              <span className="tn-ejemplo" aria-hidden>
-                14 · 3 · 1981
-              </span>
-              <span className="tn-flecha" aria-hidden>
-                ↓
-              </span>
-              <span className="tn-ejemplo tn-ejemplo-fin" aria-hidden>
-                9
-              </span>
-              <p className="tn-espera-pie">Un ejemplo de cómo se pliega. Pon la tuya y sale la de verdad.</p>
+              {/*
+                  EL EJEMPLO ENSEÑA LA CUENTA, NO SÓLO EL FINAL.
+
+                  Antes ponía «14 · 3 · 1981 ↓ 9» y ya. Visto así parece que el
+                  número sale de la nada, o peor: de una app. Y la primera
+                  pregunta de cualquiera —«¿de dónde sacas eso?»— se quedaba sin
+                  responder justo en el sitio donde se decide si esto es serio.
+
+                  Los pasos los da el motor de la casa, no están escritos a mano
+                  aquí: si algún día cambia la cuenta, cambia también el ejemplo.
+              */}
+              <div className="tn-pasos" aria-hidden>
+                {pasosCaminoDeVida(14, 3, 1981).map((p, i, todos) => (
+                  <span key={i} className={i === todos.length - 1 ? 'tn-paso tn-paso-fin' : 'tn-paso'}>
+                    {p}
+                  </span>
+                ))}
+              </div>
+              <p className="tn-espera-pie">
+                Así se pliega una fecha: se reducen <strong>el día, el mes y el año por separado</strong> y luego se
+                suman. Pon la tuya y sale la de verdad.
+              </p>
             </motion.div>
           )}
         </AnimatePresence>

@@ -1868,7 +1868,14 @@ body[data-nav-claro='si'] .sello-color {
   line-height: 1.08;
   letter-spacing: var(--esp-seccion);
   text-wrap: balance;
-  max-width: 16ch;
+  max-width: 19ch;
+}
+/* La parte de la pregunta que pincha. En cursiva y en el tono del texto, no en
+   dorado: el dorado ya lo lleva el rótulo de arriba y dos acentos en la misma
+   caja se anulan. */
+.tn-titulo em {
+  font-style: italic;
+  color: var(--tx-2);
 }
 .tn-texto {
   margin: 0;
@@ -1966,9 +1973,52 @@ body[data-nav-claro='si'] .sello-color {
   background: var(--superficie);
   box-shadow: 0 1px 2px var(--sombra), 0 18px 50px -30px var(--sombra);
 }
+/* Lo que se ve al terminar la cuenta: qué se lleva, el botón, y que es gratis.
+   El botón solo no prometía nada, y aquí es donde arranca el embudo. */
 .tn-siguiente {
-  margin-top: 24px;
-  align-self: flex-start;
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.tn-regalo {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.6;
+  color: var(--tx-2);
+  max-width: 34ch;
+}
+.tn-regalo strong {
+  font-weight: var(--peso-medio);
+  color: var(--tx);
+}
+.tn-regalo-nota {
+  font-size: var(--t-nota);
+  color: var(--tx-3);
+}
+
+/* La cuenta del ejemplo, paso a paso y en vertical. Cada renglón es un pliegue;
+   el último, el resultado. */
+.tn-pasos {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.tn-paso {
+  font-size: clamp(19px, 2.1vw, 25px);
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.028em;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-4);
+}
+.tn-paso-fin {
+  /* El dorado de texto, no el decorativo: el segundo sobre arena se queda en
+     2,8:1 y ni siquiera llega al mínimo de texto grande. */
+  color: var(--acento);
+  font-size: clamp(28px, 3vw, 38px);
+  margin-top: 2px;
 }
 .tn-espera {
   display: flex;
@@ -2394,11 +2444,14 @@ body[data-nav-claro='si'] .sello-color {
   /* Un panel apenas más claro que el fondo y con un filo dorado. Una caja con
      su propio color de relleno se leería como un anuncio pegado encima; así se
      lee como parte de la sección. */
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(200, 163, 92, 0.28);
+  /* Por rol, no por valor. Este panel sale en la portada sobre granate y en la
+     landing sobre papel: con un blanco al 4,5 % y un filo dorado fijo, sobre
+     papel quedaba un rectángulo gris sucio. */
+  background: var(--superficie);
+  border: 1px solid var(--linea);
 }
 .lanz-rotulo {
-  color: var(--acento-2, #c8a35c);
+  color: var(--acento);
 }
 
 .lanz-cifras {
@@ -2413,14 +2466,15 @@ body[data-nav-claro='si'] .sello-color {
   gap: 5px;
   padding: clamp(12px, 1.6vw, 18px) 4px;
   border-radius: 14px;
-  background: rgba(0, 0, 0, 0.16);
+  background: var(--bg);
+  border: 1px solid var(--linea);
 }
 .lanz-casilla strong {
   font-size: clamp(28px, 4.2vw, 50px);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: var(--acento-2, #c8a35c);
+  color: var(--acento);
   /* Sin esto las cifras bailan de ancho cada segundo y el bloque entero
      tiembla: el 1 es más estrecho que el 8 en casi cualquier tipografía. */
   font-variant-numeric: tabular-nums;
@@ -2436,13 +2490,13 @@ body[data-nav-claro='si'] .sello-color {
 .lanz-barra {
   height: 3px;
   border-radius: 100px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--linea);
   overflow: hidden;
 }
 .lanz-barra span {
   display: block;
   height: 100%;
-  background: var(--acento-2, #c8a35c);
+  background: var(--acento);
   transform-origin: left center;
   transition: transform 1s linear;
 }
@@ -2474,7 +2528,7 @@ body[data-nav-claro='si'] .sello-color {
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: var(--acento-2, #c8a35c);
+  color: var(--acento);
 }
 .lanz-precio-fila s {
   font-size: 17px;
@@ -2490,6 +2544,120 @@ body[data-nav-claro='si'] .sello-color {
   line-height: 1.6;
   color: var(--tx-3);
   max-width: 34ch;
+}
+
+/* La entrada de la landing. En una página de venta la gente barre: las palabras
+   que sostienen el argumento van marcadas para que el barrido las pille. */
+.mb-entrada {
+  margin: 0;
+  font-size: var(--t-entrada);
+  line-height: 1.6;
+  color: var(--tx-2);
+  max-width: 42ch;
+}
+.mb-entrada strong {
+  font-weight: var(--peso-medio);
+  color: var(--tx);
+}
+
+/* ==================================================================
+   EL PRECIO DE LA MEMBRESÍA
+   ==================================================================
+   Es una página de venta y el precio es el argumento: aquí manda él. Es el
+   único sitio de toda la web donde una cifra puede ser más grande que un
+   titular, y es a propósito.
+   ================================================================== */
+.pv {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pv-cinta {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--acento);
+}
+.pv-cifra {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pv-cifra b {
+  font-size: clamp(58px, 8.5vw, 104px);
+  font-weight: var(--peso-fino);
+  line-height: 0.88;
+  /* El dorado de TEXTO, no el decorativo. El decorativo sobre papel se queda
+     en 2,2:1 y ni con 104 px llega al 3:1 que pide una cifra de este tamaño. */
+  color: var(--acento);
+  font-variant-numeric: tabular-nums;
+}
+.pv-al {
+  font-size: 17px;
+  color: var(--tx-2);
+}
+.pv-antes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pv-antes s {
+  font-size: 20px;
+  color: var(--tx-3);
+}
+.pv-badge {
+  font-size: 12px;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.02em;
+  /* Relleno sólido, no borde: es el único distintivo de la página que puede
+     gritar, y con borde fino se perdía al lado de una cifra de 104 px. */
+  background: var(--acento);
+  color: var(--bg);
+  border-radius: 100px;
+  padding: 5px 11px;
+}
+
+.pv-cuentas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.pv-cuentas > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 13px 12px;
+  background: var(--bg);
+}
+.pv-cuentas b {
+  font-size: clamp(19px, 2.1vw, 25px);
+  font-weight: var(--peso-fino);
+  line-height: 1;
+  letter-spacing: -0.028em;
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+.pv-cuentas span {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--tx-3);
+}
+
+.pv-cierre {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: var(--tx-2);
+}
+.pv-cierre strong {
+  font-weight: var(--peso-medio);
+  color: var(--tx);
 }
 
 /* ==================================================================
@@ -2763,6 +2931,38 @@ body[data-nav-claro='si'] .sello-color {
 .chat-dia:not(:disabled):hover {
   transform: scale(1.08);
 }
+/* Los patrones. Van en columna y alineados a la izquierda, no en píldoras
+   sueltas: son frases, y una frase partida en dos renglones dentro de una
+   píldora redonda se lee fatal. En una lista se leen de un barrido. */
+.chat-patrones {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 16px 10px;
+  flex-shrink: 0;
+  max-height: 210px;
+  overflow-y: auto;
+}
+.chat-patron {
+  text-align: left;
+  border: 1px solid var(--linea-2);
+  background: none;
+  color: var(--tx);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.chat-patron:hover {
+  background: var(--superficie);
+  border-color: var(--acento);
+}
+
 .chat-hora {
   border: 1px solid rgba(200, 155, 74, 0.5);
   color: var(--acento);

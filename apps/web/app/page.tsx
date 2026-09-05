@@ -72,10 +72,22 @@ export default function Home() {
      fecha inventada. */
   const proximo = CURSOS.find((c) => !falta(c.fechas)) ?? null;
 
+  /* Doce, no cuatro. Quien duda antes de reservar no duda de una cosa: duda de
+     si esto es adivinación, de si le van a pedir creer algo, de qué pasa si no
+     sabe las fechas de sus abuelos y de si puede mover la cita. Cada pregunta
+     que no está aquí es alguien que cierra la pestaña sin escribir. */
   const faqs: [string, string][] = [
     [t.f_q1, t.f_a1],
+    [t.f_q5, t.f_a5],
+    [t.f_q7, t.f_a7],
+    [t.f_q10, t.f_a10],
+    [t.f_q6, t.f_a6],
+    [t.f_q8, t.f_a8],
     [t.f_q2, t.f_a2],
     [t.f_q3, t.f_a3],
+    [t.f_q9, t.f_a9],
+    [t.f_q11, t.f_a11],
+    [t.f_q12, t.f_a12],
     [t.f_q4, t.f_a4],
   ];
   const chips = [t.w1, t.w2, t.w3, t.w4, t.w5, t.w6];

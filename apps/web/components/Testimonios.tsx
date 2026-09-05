@@ -80,7 +80,6 @@ function Tarjeta({ t }: { t: Testimonio }) {
 
 export default function Testimonios() {
   const pista = useRef<HTMLDivElement>(null);
-  const [enBorde, setEnBorde] = useState<{ ini: boolean; fin: boolean }>({ ini: true, fin: false });
 
   /* Empieza en false y sólo se enciende en el navegador si estamos en una
      dirección de prueba. Así, si el JavaScript no llegara a correr, lo que se
@@ -92,10 +91,29 @@ export default function Testimonios() {
   const deMuestra = !hayReales && enPruebas;
   const lista = hayReales ? TESTIMONIOS : deMuestra ? TESTIMONIOS_MUESTRA : [];
 
-  const mirarBordes = () => {
+  /*
+   * EL CARRUSEL NO SE ACABA.
+   *
+   * Antes tenía principio y final: se llegaba al último comentario, la flecha se
+   * apagaba y ahí se terminaba. Con seis tarjetas eso pasa a los dos toques, y
+   * un carrusel que se apaga se lee como que no hay más gente contenta.
+   *
+   * La lista se pinta DOS VECES seguidas. Cuando el desplazamiento pasa de la
+   * mitad —o sea, cuando entras en la segunda copia— se resta la mitad y vuelves
+   * al mismo sitio de la primera; y al revés por el otro lado. El salto es
+   * exacto, así que no se ve: lo que se ve es una cinta sin final.
+   *
+   * El salto va sin `behavior: smooth` a propósito: animarlo lo haría visible.
+   */
+  const bucle = [...lista, ...lista];
+
+  const recolocar = () => {
     const p = pista.current;
     if (!p) return;
-    setEnBorde({ ini: p.scrollLeft < 8, fin: p.scrollLeft + p.clientWidth >= p.scrollWidth - 8 });
+    const mitad = p.scrollWidth / 2;
+    if (mitad < 10) return;
+    if (p.scrollLeft >= mitad) p.scrollLeft -= mitad;
+    else if (p.scrollLeft <= 0) p.scrollLeft += mitad;
   };
 
   const mover = (dir: 1 | -1) => {
@@ -116,10 +134,11 @@ export default function Testimonios() {
             <span className="rotulo">Lo que le escriben</span>
             <h2 className="titular-seccion testi-titulo">Esto no lo digo yo.</h2>
           </div>
+          {/* Ya no se apagan nunca: la cinta no tiene final. */}
           {hay && (
             <div className="testi-flechas">
-              <button onClick={() => mover(-1)} disabled={enBorde.ini} aria-label="Anterior" className="testi-flecha">←</button>
-              <button onClick={() => mover(1)} disabled={enBorde.fin} aria-label="Siguiente" className="testi-flecha">→</button>
+              <button onClick={() => mover(-1)} aria-label="Anterior" className="testi-flecha">←</button>
+              <button onClick={() => mover(1)} aria-label="Siguiente" className="testi-flecha">→</button>
             </div>
           )}
         </div>
@@ -140,14 +159,18 @@ export default function Testimonios() {
         <motion.div
           ref={pista}
           className="testi-pista"
-          onScroll={mirarBordes}
+          onScroll={recolocar}
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '0px 0px -10% 0px' }}
           transition={{ duration: 0.7, ease: CURVA }}
         >
-          {lista.map((t, i) => (
-            <Tarjeta key={i} t={t} />
+          {bucle.map((t, i) => (
+            /* La segunda copia se esconde de los lectores de pantalla: la cinta
+               es un truco visual, y oír seis comentarios repetidos no lo es. */
+            <div key={i} aria-hidden={i >= lista.length ? true : undefined} style={{ display: 'contents' }}>
+              <Tarjeta t={t} />
+            </div>
           ))}
         </motion.div>
       ) : (

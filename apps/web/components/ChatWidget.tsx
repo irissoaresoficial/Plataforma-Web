@@ -5,6 +5,75 @@ import Image from 'next/image';
 import { useLang } from '@/lib/i18n';
 import { DEFAULT_HOURS } from '@/lib/booking';
 import { LOGO_COLOR } from '@/content/site';
+import { caminoDeVida, SENTIDO, SENTIDO_DEUDA } from '@/lib/numerologia';
+
+/*
+ * EL AGENTE HACE NUMEROLOGÍA, NO RELLENA UN FORMULARIO
+ *
+ * Antes pedía la fecha de nacimiento «porque Iris la necesita» y pasaba a la
+ * siguiente pregunta. Entra una fecha y no sale nada: eso es un formulario con
+ * globos de chat, y la persona lo nota a la segunda pregunta.
+ *
+ * Ahora, en cuanto la da, el agente hace delante de ella la misma cuenta que
+ * hace Iris —el camino de vida— y le dice su número y qué pide ese número. Sale
+ * del mismo motor que la portada y que el estudio de sinergia, así que no puede
+ * decir una cosa aquí y otra allí. Es lo que convierte la conversación en una
+ * consulta: se ha llevado algo antes de que se le pida nada.
+ */
+
+/** Los meses escritos con letra, en los tres idiomas de la web. */
+const MESES: Record<string, number> = {
+  enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6,
+  julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12,
+  janeiro: 1, fevereiro: 2, março: 3, marco: 3, maio: 5, junho: 6, julho: 7, setembro: 9, outubro: 10, novembro: 11, dezembro: 12,
+  january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+  july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+};
+
+function arma(dia: number, mes: number, anio: number): string | null {
+  if (anio < 100) anio += anio > 30 ? 1900 : 2000; // «96» es 1996; «05», 2005
+  if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || anio < 1900 || anio > new Date().getFullYear()) return null;
+  const f = new Date(anio, mes - 1, dia);
+  if (f.getDate() !== dia || f.getMonth() !== mes - 1) return null; // 31 de febrero y compañía
+  return `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+}
+
+/**
+ * La fecha, como la escriba: «29 marzo 1996», «29/3/96», «29-03-1996»,
+ * «1996-03-29». Se pide en un chat; nadie va a respetar un formato. Si no hay
+ * manera de leerla devuelve null, y entonces el agente sigue sin la cuenta en
+ * vez de soltar un número que no es.
+ */
+export function leerFecha(texto: string): string | null {
+  const s = (texto || '').toLowerCase().trim();
+
+  const conLetra = s.match(/(\d{1,2})\s*(?:de\s+)?([a-zà-ÿ]+)\s*(?:de\s+)?(\d{2,4})/);
+  if (conLetra) {
+    const mes = MESES[conLetra[2]];
+    if (mes) return arma(Number(conLetra[1]), mes, Number(conLetra[3]));
+  }
+
+  const n = s.match(/(\d{1,4})\D+(\d{1,2})\D+(\d{1,4})/);
+  if (!n) return null;
+  const [a, b, c] = [Number(n[1]), Number(n[2]), Number(n[3])];
+  // Con cuatro cifras delante viene al revés: 1996-03-29.
+  return a > 31 ? arma(c, b, a) : arma(a, b, c);
+}
+
+/** Lo que dice el agente al ver la fecha. Numerología de verdad, no relleno. */
+export function lecturaDe(fechaISO: string): string | null {
+  const c = caminoDeVida(fechaISO);
+  const s = SENTIDO[c.valor];
+  if (!s) return null;
+
+  const cabecera =
+    c.valor === 11 || c.valor === 22 || c.valor === 33
+      ? `Tu camino de vida es un ${c.valor}, y es de los que no se reducen: un maestro.`
+      : `Tu camino de vida es un ${c.valor}.`;
+
+  const deuda = c.deuda ? ` Y llega por el ${c.deuda}. ${SENTIDO_DEUDA[c.deuda]}` : '';
+  return `${cabecera} ${s.clave}: ${s.frase}.${deuda}`;
+}
 
 type Msg = { from: 'bot' | 'user'; text: string };
 type Escribiendo = { texto: string; n: number };
@@ -36,10 +105,36 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   // vacío, en vez de dejarlo sobreentendido.
   const botTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  /*
+   * LOS PATRONES.
+   *
+   * «¿Qué es eso que se te repite?» con un cuadro de texto vacío es la pregunta
+   * más difícil que se le puede hacer a alguien que acaba de entrar: si supiera
+   * decirlo en una línea no necesitaría la sesión. Y en un móvil, escribir es
+   * justo donde se cae la mitad de la gente.
+   *
+   * Están dichos como los dice quien lo vive, no como los nombra el manual —una
+   * persona no escribe «lealtad familiar invisible», escribe «me pasa lo mismo
+   * que a mi madre»—, y cada uno cae en un sitio del oficio: el 6 y la casa, el
+   * 8 y el dinero, el 9 y lo que se hereda, el 4 y lo que no se cierra. Iris los
+   * recibe ya clasificados, que es lo que le sirve para preparar la sesión.
+   *
+   * Y sigue estando el cuadro de texto, porque a quien tenga otra cosa que decir
+   * no se le puede cerrar la puerta.
+   */
+  const PATRONES = [
+    'Repito la misma relación',
+    'El dinero entra y se va',
+    'Me pasa lo mismo que a mi madre',
+    'Empiezo cosas y no las cierro',
+    'Cargo con algo que no es mío',
+    'Hay una fecha que vuelve en mi familia',
+  ];
+
   const flow = [
     { key: 'nombre' as const, ask: t.ch_a1, ph: t.ch_p1 },
     { key: 'fecha' as const, ask: t.ch_a2, ph: t.ch_p2, first: true },
-    { key: 'motivo' as const, ask: t.ch_a3, ph: t.ch_p3 },
+    { key: 'motivo' as const, ask: t.ch_a3, ph: t.ch_p3, sugerencias: PATRONES },
     { key: 'dia' as const, ask: t.ch_a4, calendar: true },
     { key: 'hora' as const, ask: t.ch_a5, options: true },
     { key: 'email' as const, ask: t.ch_a6, ph: t.ch_p6 },
@@ -104,13 +199,64 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
    * El bot piensa un momento (los tres puntos) y después escribe: las palabras
    * van apareciendo una a una en vez de soltar el mensaje entero de golpe.
    * `escrito` es lo que se está tecleando; al acabar pasa a la lista de mensajes.
+   *
+   * DOS MENSAJES SEGUIDOS SE PONEN EN COLA, no se calculan por reloj. Cuando el
+   * agente dice el camino de vida y después vuelve a preguntar, hacen falta dos
+   * turnos; encadenarlos con un setTimeout «a ojo» funciona con la frase corta y
+   * se pisa con la larga —una fecha con deuda kármica añade veinte palabras—, y
+   * lo que se ve entonces es media frase machacada por la siguiente. La cola no
+   * necesita adivinar cuánto tarda nada: el siguiente arranca cuando el anterior
+   * ha terminado de verdad.
    */
-  const bot = (text: string, delay = 700) => {
+  const [cola, setCola] = useState<{ texto: string; delay: number }[]>([]);
+  /** Lo que el agente va a decir en cuanto termine de «pensar». */
+  const pendiente = useRef<string | null>(null);
+
+  const arranca = (text: string, delay: number) => {
     setTyping(true);
+    pendiente.current = text;
+    clearTimeout(botTimer.current);
     botTimer.current = setTimeout(() => {
       setTyping(false);
+      pendiente.current = null;
       setEscrito({ texto: text, n: 0 });
     }, delay);
+  };
+
+  /**
+   * El agente termina de hablar de golpe.
+   *
+   * Hacía falta porque el envío estaba bloqueado mientras el agente escribía: si
+   * contestabas rápido —que es lo normal cuando la respuesta es tu nombre— le
+   * dabas a enviar y no pasaba nada. Tu mensaje no se perdía, se quedaba en el
+   * cuadro, pero desde fuera eso es un botón roto, y en un móvil es donde se
+   * abandona la reserva.
+   *
+   * Ahora contestar interrumpe: lo que el agente estuviera diciendo se completa
+   * al instante y tu mensaje entra detrás. Es lo que hace cualquier chat.
+   */
+  const adelantar = () => {
+    clearTimeout(botTimer.current);
+    if (escrito) {
+      setMsgs((m) => [...m, { from: 'bot', text: escrito.texto }]);
+      setEscrito(null);
+    } else if (pendiente.current) {
+      setMsgs((m) => [...m, { from: 'bot', text: pendiente.current as string }]);
+    }
+    pendiente.current = null;
+    setTyping(false);
+    /* Y lo que quedara en cola se descarta. Si ya has contestado, que el agente
+       te suelte después la pregunta que ibas a responder es peor que no
+       decirla. */
+    setCola([]);
+  };
+
+  /** Uno o varios mensajes seguidos, en orden. */
+  const bot = (texto: string | string[], delay = 700) => {
+    const partes = Array.isArray(texto) ? texto : [texto];
+    if (!partes.length) return;
+    arranca(partes[0], delay);
+    if (partes.length > 1) setCola(partes.slice(1).map((p) => ({ texto: p, delay: 420 })));
   };
 
   useEffect(() => {
@@ -132,6 +278,15 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     const paso = setTimeout(() => setEscrito({ ...escrito, n: escrito.n + 1 }), 46 + pausa);
     return () => clearTimeout(paso);
   }, [escrito]);
+
+  // En cuanto no hay nada escribiéndose, sale el siguiente de la cola.
+  useEffect(() => {
+    if (escrito || typing || !cola.length) return;
+    const [siguiente, ...resto] = cola;
+    setCola(resto);
+    arranca(siguiente.texto, siguiente.delay);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [escrito, typing, cola]);
 
   const openChat = () => {
     setOpen(true);
@@ -188,7 +343,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
 
   const submit = (raw: string, meta?: Partial<Data>) => {
     const val = (raw || '').trim();
-    if (!val || typing || escrito || done) return;
+    if (!val || done) return;
+    // Si el agente estaba hablando, se le corta: no se pierde ni una respuesta.
+    if (typing || escrito) adelantar();
 
     if (cur.key === 'email' && !EMAIL_RE.test(val)) {
       setMsgs((m) => [...m, { from: 'user', text: val }]);
@@ -204,12 +361,32 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     setData(newData);
     setStep(step + 1);
 
-    if (next) {
-      bot(next.ask.replace('{n}', next.first ? val.split(' ')[0] : val), 740);
-    } else {
+    if (!next) {
       setDone(true);
       setTimeout(() => sendBooking(newData), 700);
+      return;
     }
+
+    /*
+     * LA CUENTA, EN MEDIO DE LA CONVERSACIÓN.
+     *
+     * Con la fecha en la mano el agente para un segundo, hace el camino de vida
+     * y lo dice, y sólo después sigue preguntando. Dos mensajes seguidos, con la
+     * pausa del segundo calculada para que el primero haya terminado de
+     * escribirse: si se lanzan a la vez, el que llega segundo pisa al primero.
+     *
+     * Si la fecha no se ha podido leer no se inventa nada: se sigue como antes.
+     */
+    if (cur.key === 'fecha') {
+      const iso = leerFecha(val);
+      const lectura = iso && lecturaDe(iso);
+      if (lectura) {
+        bot([lectura, next.ask], 820);
+        return;
+      }
+    }
+
+    bot(next.ask.replace('{n}', next.first ? val.split(' ')[0] : val), 740);
   };
 
   // Calendario
@@ -450,6 +627,18 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
             {opts.map((o) => (
               <button type="button" key={o} onClick={() => submit(o)} className="chat-hora">
                 {o}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Los patrones. Se pulsa uno y ya está contestado; el cuadro de texto
+            sigue abajo para quien tenga otra cosa que decir. */}
+        {!ocupado && cur?.sugerencias && (
+          <div className="chat-patrones">
+            {cur.sugerencias.map((s) => (
+              <button type="button" key={s} onClick={() => submit(s)} className="chat-patron">
+                {s}
               </button>
             ))}
           </div>
