@@ -385,7 +385,10 @@ export default function Sinergia() {
             ].map(([n, title, desc], i) => (
               <Reveal key={n} delay={i * 90}>
                 <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid var(--linea)', borderRadius: 18, padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
-                  <span data-cardnum style={{ fontSize: 32, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', color: 'var(--deco)', transition: 'color .5s ease' }}>{n}</span>
+                  {/* El 01·02·03 son los tres pasos de la cuenta, en orden: es
+                      información, no adorno, así que se lee. Con el gris de
+                      adorno se quedaba en 1,7:1. */}
+                  <span data-cardnum style={{ fontSize: 30, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', color: 'var(--tx-3)', transition: 'color .5s ease' }}>{n}</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                     <span style={{ fontSize: 19, fontWeight: 'var(--peso-fino)', letterSpacing: '-.02em' }}>{title}</span>
                     <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>{desc}</span>

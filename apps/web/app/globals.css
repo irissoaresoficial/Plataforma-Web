@@ -2560,6 +2560,57 @@ body[data-nav-claro='si'] .sello-color {
   color: var(--tx);
 }
 
+/* Las capas del árbol: qué se hace cada mes. Es el bloque que contesta «y esto
+   qué es», y por eso va antes que nada de lo que todavía está por cerrar. */
+.mb-capas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+}
+.mb-capa {
+  height: 100%;
+  box-sizing: border-box;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  /* Pegado arriba, no repartido. Con space-between, cada tarjeta empujaba su
+     texto hacia abajo según lo largo que fuera, y los cuatro títulos acababan a
+     cuatro alturas distintas: cuatro tarjetas en fila tienen que leerse como un
+     solo objeto, y ahí se leían como cuatro recortes. */
+  justify-content: flex-start;
+  gap: 16px;
+  min-height: 200px;
+}
+.mb-capa-num {
+  font-size: 26px;
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.022em;
+  /* No es adorno: dice en qué mes va cada capa, y ese orden es medio argumento
+     de la página. Con el gris de adorno se quedaba en 1,4:1, o sea invisible
+     para cualquiera que no vea bien. Si informa, se lee. */
+  color: var(--tx-3);
+  transition: color 0.5s ease;
+}
+.mb-capa > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.mb-capa b {
+  font-size: var(--t-ficha);
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.mb-capa span:not(.mb-capa-num) {
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  color: var(--tx-2);
+}
+
 /* ==================================================================
    EL PRECIO DE LA MEMBRESÍA
    ==================================================================

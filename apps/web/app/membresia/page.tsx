@@ -168,12 +168,59 @@ export default function Membresia() {
         </div>
       </div>
 
-      {/* QUÉ INCLUYE */}
+      {/*
+          CÓMO ES UN MES DENTRO
+
+          Lo primero que preguntaba esta página al bajar era «qué incluye cada
+          mes», y contestaba con tres tarjetas de puntos suspensivos. Una página
+          de venta cuyo primer bloque es un hueco no vende: parece un producto a
+          medio hacer, que es exactamente lo que se dijo de ella.
+
+          Esto es lo que sí se puede contar, porque no es una promesa de
+          servicio sino el método: cómo se trabaja un árbol por capas, que es lo
+          que hace que esto dure meses y no una tarde. Es la misma materia del
+          curso y del motor de la web. Lo que sigue sin estar cerrado —cuántos
+          directos, qué materiales— está más abajo y marcado, donde ya no es lo
+          primero que se ve.
+      */}
       <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(60px,8vw,120px) clamp(14px,3vw,36px)' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
           <Reveal>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>Qué incluye cada mes</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>Cómo es un mes dentro</span>
+              <h2 className="titular-seccion" style={{ margin: 0, maxWidth: '20ch' }}>
+                Un árbol no se lee de una vez. Se lee por capas.
+              </h2>
+              <p className="mb-entrada">
+                Cada mes se abre <strong>una capa</strong>: tú, tus padres, tus abuelos, y lo que se repite entre
+                ellos. Se calcula, se mira qué vuelve —<strong>los mismos números, las mismas edades, los mismos
+                años</strong>— y se trabaja eso, sólo eso. Al mes siguiente, la capa de debajo.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="mb-capas">
+            {[
+              ['01', 'Tu capa', 'Tus números y el año en el que estás. Es el suelo: sin esto lo demás no se sostiene.'],
+              ['02', 'La capa de tus padres', 'Sus fechas al lado de la tuya. Aquí es donde suele aparecer la primera repetición, y donde más de uno entiende de golpe una discusión de veinte años.'],
+              ['03', 'La capa de tus abuelos', 'Dos generaciones más atrás. Lo que en tu vida parece carácter, aquí muchas veces resulta ser herencia.'],
+              ['04', 'Lo que se repite', 'Puesto en una tabla, con nombre y fecha. Deja de ser una sensación y pasa a ser algo que se puede señalar con el dedo.'],
+            ].map(([n, t, d], i) => (
+              <Reveal key={n} delay={i * 70}>
+                <div data-card className="card-hover-light mb-capa">
+                  <span data-cardnum className="mb-capa-num">{n}</span>
+                  <div>
+                    <b>{t}</b>
+                    <span>{d}</span>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>Y además, cada mes</span>
               <Pendiente>Por definir</Pendiente>
               <span style={{ flex: 1, height: 1, background: 'var(--linea)', minWidth: 40 }} />
             </div>
@@ -196,7 +243,7 @@ export default function Membresia() {
                     minHeight: 150,
                   }}
                 >
-                  <span data-cardnum style={{ fontSize: 30, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', color: 'var(--deco)', transition: 'color .5s ease' }}>
+                  <span data-cardnum style={{ fontSize: 26, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', color: 'var(--tx-3)', transition: 'color .5s ease' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   {item === PENDIENTE ? <Pendiente /> : <span style={{ fontSize: 17, fontWeight: 'var(--peso-fino)', letterSpacing: '-.02em', lineHeight: 1.3 }}>{item}</span>}
