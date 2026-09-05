@@ -135,7 +135,9 @@ export default function Sinergia() {
             <div id="calc" style={{ background: '#FFFFFF', color: 'var(--tx)', borderRadius: 22, padding: 'clamp(20px,2.4vw,32px)', display: 'flex', flexDirection: 'column', gap: 18, boxShadow: '0 34px 80px rgba(0,0,0,.5)', scrollMarginTop: 90 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
                 <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>{stepLabel}</span>
-                <div style={{ display: 'flex', gap: 5 }}>
+                {/* Los puntos son la misma información que el «Paso 2/3» de al
+                    lado, dibujada. Leerlos otra vez no aporta nada. */}
+                <div style={{ display: 'flex', gap: 5 }} aria-hidden>
                   {[0, 1, 2, 3].map((i) => (
                     <span key={i} style={dot(i)} />
                   ))}
@@ -143,24 +145,33 @@ export default function Sinergia() {
               </div>
 
               {isForm && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                /* Un <form> de verdad: el Intro envía desde cualquier campo sin
+                   que haya que programarlo campo por campo, y el botón de abajo
+                   es un <button>, así que el tabulador llega hasta él. Antes era
+                   un <div> y el viaje se acababa en el último campo. */
+                <form className="sin-form" noValidate onSubmit={(e) => { e.preventDefault(); next(); }}>
                   <div style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.03em', lineHeight: 1.15 }}>{step === 0 ? 'Tus datos' : 'La otra persona'}</div>
                   <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>
                     {step === 0 ? 'Tu nombre completo y tu fecha de nacimiento.' : 'Cualquiera: alguien de tu familia, de tu trabajo o de tu casa.'}
                   </p>
                   {step === 1 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    /* Los chips eran <span>: no recibían foco y no decían si
+                       estaban puestos. Ahora son botones y lo dicen con
+                       aria-pressed, que es lo que lee un lector de pantalla. */
+                    <div role="group" aria-label="Quién es esa persona" style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                       {RELACIONES.map((r) => {
                         const on = rel === r;
                         return (
-                          <span
+                          <button
                             key={r}
+                            type="button"
+                            aria-pressed={on}
                             onClick={() => setRel(on ? '' : r)}
                             data-mag
                             style={{
                               fontSize: 13,
-                              fontWeight: 600,
-                              padding: '8px 13px',
+                              fontWeight: 500,
+                              padding: '9px 14px',
                               borderRadius: 100,
                               cursor: 'pointer',
                               transition: 'background .3s ease,border-color .3s ease,color .3s ease',
@@ -170,44 +181,58 @@ export default function Sinergia() {
                             }}
                           >
                             {r}
-                          </span>
+                          </button>
                         );
                       })}
                     </div>
                   )}
-                  <input
-                    type="text"
-                    value={step === 0 ? aName : bName}
-                    placeholder={step === 0 ? 'Tu nombre completo' : 'Su nombre completo'}
-                    onChange={(e) => {
-                      setErr('');
-                      step === 0 ? setAName(e.target.value) : setBName(e.target.value);
-                    }}
-                    onKeyDown={(e) => e.key === 'Enter' && next()}
-                    className="field-input"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
-                  />
-                  <input
-                    type="date"
-                    value={step === 0 ? aDate : bDate}
-                    onChange={(e) => {
-                      setErr('');
-                      step === 0 ? setADate(e.target.value) : setBDate(e.target.value);
-                    }}
-                    onKeyDown={(e) => e.key === 'Enter' && next()}
-                    className="field-input"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
-                  />
-                  <div onClick={next} data-mag className="pill pill-dark" style={{ justifyContent: 'center' }}>
-                    <span>{step === 0 ? 'Siguiente' : 'Calcular'}</span>
-                    <span>→</span>
+                  <div className="lead-campo">
+                    <label className="rotulo-dato" htmlFor={`sin-nombre-${step}`}>
+                      {step === 0 ? 'Tu nombre completo' : 'Su nombre completo'}
+                    </label>
+                    <input
+                      id={`sin-nombre-${step}`}
+                      type="text"
+                      value={step === 0 ? aName : bName}
+                      placeholder={step === 0 ? 'Iris Soares' : 'Nombre y apellidos'}
+                      autoComplete={step === 0 ? 'name' : 'off'}
+                      onChange={(e) => {
+                        setErr('');
+                        step === 0 ? setAName(e.target.value) : setBName(e.target.value);
+                      }}
+                      className="field-input"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
+                    />
                   </div>
-                  {err && <div style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>}
-                </div>
+                  <div className="lead-campo">
+                    {/* Este campo no tenía etiqueta ninguna: un cuadro con
+                        dd/mm/aaaa dentro y nada que dijera de qué fecha se
+                        hablaba. */}
+                    <label className="rotulo-dato" htmlFor={`sin-fecha-${step}`}>
+                      {step === 0 ? 'Tu fecha de nacimiento' : 'Su fecha de nacimiento'}
+                    </label>
+                    <input
+                      id={`sin-fecha-${step}`}
+                      type="date"
+                      value={step === 0 ? aDate : bDate}
+                      onChange={(e) => {
+                        setErr('');
+                        step === 0 ? setADate(e.target.value) : setBDate(e.target.value);
+                      }}
+                      className="field-input"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
+                    />
+                  </div>
+                  <button type="submit" data-mag className="pill pill-dark" style={{ justifyContent: 'center' }}>
+                    <span>{step === 0 ? 'Siguiente' : 'Calcular'}</span>
+                    <span className="pill-arrow">→</span>
+                  </button>
+                  <div role="alert" className="sin-error" style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>
+                </form>
               )}
 
               {isGate && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <form className="sin-form" noValidate onSubmit={(e) => { e.preventDefault(); next(); }}>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <div style={{ flex: 1, minWidth: 118, background: 'var(--bg)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>{res?.a.nombrePila}</span>
@@ -228,27 +253,31 @@ export default function Sinergia() {
                       Para verlo, tu correo
                     </div>
                   </div>
-                  <input
-                    type="email"
-                    value={email}
-                    placeholder="tucorreo@ejemplo.com"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setErr('');
-                    }}
-                    onKeyDown={(e) => e.key === 'Enter' && next()}
-                    className="field-input"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
-                  />
-                  <div onClick={next} data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
-                    <span>Ver mi resultado</span>
-                    <span>→</span>
+                  <div className="lead-campo">
+                    <label className="rotulo-dato" htmlFor="sin-correo">Tu correo</label>
+                    <input
+                      id="sin-correo"
+                      type="email"
+                      value={email}
+                      placeholder="tucorreo@ejemplo.com"
+                      autoComplete="email"
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setErr('');
+                      }}
+                      className="field-input"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--linea)', color: 'var(--tx)' }}
+                    />
                   </div>
-                  {err && <div style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>}
+                  <button type="submit" data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
+                    <span>Ver mi resultado</span>
+                    <span className="pill-arrow">→</span>
+                  </button>
+                  <div role="alert" className="sin-error" style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>
                   <span style={{ fontSize: 11, lineHeight: 1.6, color: 'var(--tx-3)' }}>
                     Te mando el resultado y, durante unos días, lo que significa y de dónde viene. Te borras en un clic cuando quieras.
                   </span>
-                </div>
+                </form>
               )}
 
               {isResult && res && (
@@ -317,10 +346,10 @@ export default function Sinergia() {
                     ¿Prefieres esperar al grupo? Entra en la lista de la comunidad →
                   </Link>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    <div onClick={() => window.print()} data-mag data-cur-label="PDF" className="pill pill-dark" style={{ flex: 1, minWidth: 148, justifyContent: 'center' }}>
+                    <button type="button" onClick={() => window.print()} data-mag data-cur-label="PDF" className="pill pill-dark" style={{ flex: 1, minWidth: 148, justifyContent: 'center' }}>
                       <span>Descargar el informe</span>
-                      <span>↓</span>
-                    </div>
+                      <span className="pill-arrow">↓</span>
+                    </button>
                     <Link href="/#cita" data-mag className="btn-outline btn-outline-dark" style={{ flex: 1, minWidth: 148, justifyContent: 'center' }}>
                       Sesión con Iris
                     </Link>
@@ -330,9 +359,9 @@ export default function Sinergia() {
                       No he podido guardar tu correo, así que no te llegará nada por email. Descárgate el resultado en PDF con el botón de arriba.
                     </span>
                   )}
-                  <div onClick={reset} style={{ fontSize: 13, color: 'var(--tx-3)', cursor: 'pointer', textAlign: 'center' }}>
+                  <button type="button" onClick={reset} className="sin-otra">
                     Probar con otra persona
-                  </div>
+                  </button>
                 </div>
               )}
             </div>

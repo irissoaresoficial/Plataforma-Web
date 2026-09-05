@@ -540,6 +540,46 @@ textarea::placeholder {
   }
 }
 
+/* ---- el formulario de captación ---- */
+
+.lead-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.lead-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* Sin error, el hueco no debe existir; en cuanto entra el texto el elemento
+   reaparece y el lector de pantalla lo canta. */
+.lead-form [role='alert']:empty,
+.sin-error:empty {
+  display: none;
+}
+
+/* El formulario de la sinergia: la misma caja de tres pasos, ahora como <form>
+   para que el Intro envíe y el tabulador llegue al botón. */
+.sin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sin-otra {
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--tx-3);
+  cursor: pointer;
+  text-align: center;
+  padding: 10px 0;
+}
+.sin-otra:hover {
+  color: var(--tx-2);
+}
+
 .field-input {
   width: 100%;
   box-sizing: border-box;
