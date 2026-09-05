@@ -23,7 +23,7 @@ const ANCHO = 1320;
 /** Rótulo de sección: línea fina + palabra pequeña. */
 function Rotulo({ children, claro = false }: { children: React.ReactNode; claro?: boolean }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
       <span style={{ width: 22, height: 1, background: 'currentColor', opacity: 0.5 }} />
       <span>{children}</span>
     </div>
@@ -86,7 +86,7 @@ export default function Home() {
           pide una pantalla entera de alto: pedirla empujaba los botones por
           debajo del borde, así que lo primero que veía quien entraba era un
           titular enorme y ninguna forma de hacer nada con él. */}
-      <div id="top" className="claro" style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: 'clamp(104px,12vh,142px) clamp(16px,4vw,56px) clamp(56px,7vw,96px)', overflow: 'hidden' }}>
+      <div id="top" className="claro hero-lleno">
         <CampoNumeros intensidad={0.7} />
         <div id="glow" style={{ position: 'absolute', width: 900, height: 900, left: 0, top: 0, margin: '-450px 0 0 -450px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,163,92,.16),transparent 66%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
 
@@ -102,7 +102,7 @@ export default function Home() {
               {/* Palabra a palabra. Un titular que aparece de golpe se lee como
                   una imagen; apareciendo por palabras se lee como alguien que
                   está diciendo la frase, que es lo que es. */}
-              <h1 style={{ margin: 0, fontSize: 'var(--t-portada)', fontWeight: 700, lineHeight: 1.07, letterSpacing: '-.032em', textWrap: 'balance' }}>
+              <h1 className="titular-portada" style={{ margin: 0 }}>
                 <Palabras retraso={0.1}>{t.h1a}</Palabras>{' '}
                 <Palabras retraso={0.1 + t.h1a.split(' ').length * 0.055} style={{ color: 'var(--acento)' }}>
                   {t.h1b}
@@ -303,7 +303,7 @@ export default function Home() {
               <Entra desde="izq">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <Rotulo>{t.m_lab}</Rotulo>
-                  <span style={{ fontSize: 'var(--t-seccion)', fontWeight: 700, lineHeight: 1.07, letterSpacing: '-.03em', maxWidth: '12ch', textWrap: 'balance' }}>
+                  <span style={{ fontSize: 'var(--t-seccion)', fontWeight: 'var(--peso-fino)', lineHeight: 1.07, letterSpacing: '-.03em', maxWidth: '12ch', textWrap: 'balance' }}>
                     {t.m_h}
                   </span>
                   <div style={{ height: 2, background: 'var(--linea)', borderRadius: 2, overflow: 'hidden', width: 'min(200px,40vw)', marginTop: 6 }}>
@@ -319,7 +319,7 @@ export default function Home() {
                   <div data-step data-card className="card-hover paso-ficha">
                     <span data-cardnum className="paso-num">{String(i + 1).padStart(2, '0')}</span>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
-                      <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 700, letterSpacing: '-.024em', lineHeight: 1.12 }}>{titulo}</span>
+                      <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.024em', lineHeight: 1.12 }}>{titulo}</span>
                       <span style={{ fontSize: 'var(--t-cuerpo)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)' }}>{texto}</span>
                       {/* La duración sólo aparece cuando alguien la ha
                           confirmado. Mientras tanto sale marcada, no inventada. */}
@@ -444,7 +444,7 @@ export default function Home() {
               <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tx-3)', maxWidth: '28ch' }}>{t.ft_p}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_start}</span>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_start}</span>
               <div onClick={openChat} data-mag style={{ fontSize: 14, color: 'var(--tx-2)', cursor: 'pointer' }}>
                 {t.ft_1}
               </div>
@@ -459,7 +459,7 @@ export default function Home() {
               </Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_legal}</span>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_legal}</span>
               <Link href="/legal" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
                 {t.ft_l1}
               </Link>

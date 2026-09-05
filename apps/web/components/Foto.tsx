@@ -58,7 +58,7 @@ export default function Foto({
             background: 'repeating-linear-gradient(135deg,var(--linea) 0 1px,transparent 1px 14px)',
           }}
         >
-          <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#A33B3B', border: '1px solid #A33B3B', borderRadius: 100, padding: '4px 11px' }}>
+          <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#A33B3B', border: '1px solid #A33B3B', borderRadius: 100, padding: '4px 11px' }}>
             Foto pendiente
           </span>
           <code style={{ fontSize: 11, color: 'var(--tx-3)' }}>{src.replace('/images/', '')}</code>

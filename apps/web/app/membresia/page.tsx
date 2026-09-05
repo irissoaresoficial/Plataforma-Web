@@ -35,7 +35,7 @@ export default function Membresia() {
         <div style={{ position: 'relative', zIndex: 3, maxWidth: 1240, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 'clamp(28px,4vw,68px)', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,28px)' }}>
             <Reveal>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--acento)' }} />
                 Aún no ha abierto · lista de espera
               </div>
@@ -65,7 +65,7 @@ export default function Membresia() {
                     />
                   ))}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>
                   <span>mes 1</span>
                   <span>sin fecha de final</span>
                 </div>
@@ -93,8 +93,8 @@ export default function Membresia() {
           >
             <div id="reservar" />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-2)' }}>Precio de reserva</span>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.45)', borderRadius: 100, padding: '5px 11px' }}>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-2)' }}>Precio de reserva</span>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.45)', borderRadius: 100, padding: '5px 11px' }}>
                 Ahorras {eur(ahorro)} al mes
               </span>
             </div>
@@ -134,7 +134,7 @@ export default function Membresia() {
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
           <Reveal>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>Qué incluye cada mes</span>
+              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>Qué incluye cada mes</span>
               <Pendiente>Por definir</Pendiente>
               <span style={{ flex: 1, height: 1, background: 'var(--linea)', minWidth: 40 }} />
             </div>
@@ -157,10 +157,10 @@ export default function Membresia() {
                     minHeight: 150,
                   }}
                 >
-                  <span data-cardnum style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-.022em', color: 'var(--deco)', transition: 'color .5s ease' }}>
+                  <span data-cardnum style={{ fontSize: 30, fontWeight: 'var(--peso-fino)', letterSpacing: '-.022em', color: 'var(--deco)', transition: 'color .5s ease' }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  {item === PENDIENTE ? <Pendiente /> : <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.3 }}>{item}</span>}
+                  {item === PENDIENTE ? <Pendiente /> : <span style={{ fontSize: 17, fontWeight: 'var(--peso-fino)', letterSpacing: '-.02em', lineHeight: 1.3 }}>{item}</span>}
                 </div>
               </Reveal>
             ))}
@@ -177,7 +177,7 @@ export default function Membresia() {
       <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: 'clamp(60px,8vw,120px) clamp(14px,3vw,36px)' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 'clamp(24px,3.4vw,56px)' }}>
           <Reveal style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>Para quién sí</span>
+            <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>Para quién sí</span>
             {[
               'Si llevas años viendo el mismo final y ya te cansaste de explicártelo con fuerza de voluntad.',
               'Si has hecho una sesión y quieres seguir tirando del hilo, no quedarte con la foto.',
@@ -190,7 +190,7 @@ export default function Membresia() {
             ))}
           </Reveal>
           <Reveal delay={100} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>Para quién no</span>
+            <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-3)' }}>Para quién no</span>
             {[
               'Si lo que buscas es que te digan qué va a pasar. Aquí se trabaja con lo que ya está pasando.',
               'Si quieres resolverlo en una tarde. Esto va de meses, no de una sesión.',

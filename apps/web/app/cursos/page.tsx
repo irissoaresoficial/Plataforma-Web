@@ -111,7 +111,7 @@ export default function Cursos() {
           <Reveal>
             <div className="espaciado" style={{ fontSize: 11, fontWeight: 700, color: 'var(--acento)' }}>Cursos y talleres en directo</div>
           </Reveal>
-          <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'var(--t-portada)', fontWeight: 700, lineHeight: 1.0, letterSpacing: '-.03em', maxWidth: '15ch', textWrap: 'balance' }}>
+          <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'var(--t-portada)', fontWeight: 'var(--peso-fino)', lineHeight: 1.0, letterSpacing: '-.03em', maxWidth: '15ch', textWrap: 'balance' }}>
             Unas tardes que cambian la conversación en tu casa.
           </Reveal>
           <Reveal delay={140}>
@@ -133,7 +133,7 @@ export default function Cursos() {
       <div className="arena banda">
         <div className="banda-dentro" style={{ display: 'grid', gap: 'clamp(16px,2.2vw,26px)' }}>
           <Reveal style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 4 }}>
-            <h2 style={{ margin: 0, fontSize: 'var(--t-bloque)', fontWeight: 700, letterSpacing: '-.025em' }}>
+            <h2 style={{ margin: 0, fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em' }}>
               Lo que hay abierto ahora
             </h2>
             <span style={{ fontSize: 13, color: 'var(--tx-2)' }}>
@@ -165,7 +165,7 @@ export default function Cursos() {
             <div className="puente-caja">
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <span className="espaciado" style={{ fontSize: 10, fontWeight: 700, color: 'var(--acento)' }}>La membresía</span>
-                <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 700, letterSpacing: '-.025em', lineHeight: 1.1, maxWidth: '26ch', textWrap: 'balance' }}>
+                <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em', lineHeight: 1.1, maxWidth: '26ch', textWrap: 'balance' }}>
                   Un curso es una tarde. La comunidad es cada mes.
                 </span>
                 <span style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '40ch' }}>

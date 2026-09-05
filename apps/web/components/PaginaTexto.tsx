@@ -31,7 +31,7 @@ export default function PaginaTexto({
       </div>
 
       <div style={{ maxWidth: 820, margin: '0 auto', padding: 'clamp(48px,8vw,96px) clamp(16px,4vw,32px) clamp(64px,9vw,120px)' }}>
-        <p style={{ margin: '0 0 14px', fontSize: 'var(--rotulo-tam)', fontWeight: 700, letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
+        <p style={{ margin: '0 0 14px', fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
           Actualizado el {actualizado}
         </p>
         <h1 className="display" style={{ margin: '0 0 18px', fontSize: 'var(--t-portada)' }}>{titulo}</h1>
