@@ -24,7 +24,7 @@
  */
 
 import { motion, useReducedMotion, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CURVA, useProgreso } from './movimiento';
 
 export default function Anclado({
@@ -119,14 +119,63 @@ function Frase({
   const opacidad = useTransform(indice, (n) => (n === i ? 1 : 0));
   const y = useTransform(indice, (n) => (n === i ? 0 : n > i ? -16 : 16));
 
+  /*
+   * Y ADEMÁS, CADA FRASE SE ANIMA POR SU CUENTA AL SUBIR POR LA PANTALLA.
+   *
+   * En el móvil no hay anclaje —un bloque pegado se pelea con la barra del
+   * navegador, que aparece y desaparece al bajar— así que las cuatro frases se
+   * apilaban y se quedaban ahí, quietas, como una lista de la compra. El mejor
+   * texto de la web pasando sin que pase nada.
+   *
+   * Esto ata cada frase a SU PROPIA posición en la ventana: entra apagada y
+   * desde abajo, y se enciende del todo al llegar al tercio superior. En el
+   * escritorio no estorba, y es la gracia de resolverlo así: mientras el bloque
+   * está anclado las frases no se mueven de la pantalla, su progreso propio ya
+   * está al final y este factor vale 1. Manda el índice, igual que antes.
+   */
+  const propia = useRef<HTMLParagraphElement>(null);
+  const entrada = useProgreso(propia, ['start 0.92', 'start 0.34']);
+  const opacidadEntrada = useTransform(entrada, [0, 1], [0.12, 1]);
+  const yEntrada = useTransform(entrada, [0, 1], [26, 0]);
+
+  /*
+   * Cuál de las dos manda depende de si el bloque está anclado, y eso lo decide
+   * el ancho de la pantalla.
+   *
+   * Multiplicar las dos, que fue lo primero que probé, no vale: sin anclaje el
+   * índice se queda clavado en la primera frase, así que las otras tres valen
+   * cero y cero por lo que sea sigue siendo cero. Se veía una frase y tres
+   * huecos, que es exactamente el fallo que había antes.
+   *
+   * Empieza en `true` porque el servidor no sabe el ancho de nadie: pinta la
+   * versión anclada, y el navegador corrige en el primer instante, antes de que
+   * a este bloque le haya dado tiempo a entrar en pantalla.
+   */
+  const [anclado, setAnclado] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 900px)');
+    const mirar = () => setAnclado(mq.matches);
+    mirar();
+    mq.addEventListener('change', mirar);
+    return () => mq.removeEventListener('change', mirar);
+  }, []);
+
+  const opacidadFinal = useTransform([opacidad, opacidadEntrada], ([porIndice, porEntrada]: number[]) =>
+    anclado ? porIndice : porEntrada,
+  );
+  const yFinal = useTransform([y, yEntrada], ([porIndice, porEntrada]: number[]) =>
+    anclado ? porIndice : porEntrada,
+  );
+
   if (quieto) {
     return <p className="anclado-frase" style={{ opacity: i === 0 ? 1 : 0.5 }}>{texto}</p>;
   }
 
   return (
     <motion.p
+      ref={propia}
       className="anclado-frase"
-      style={{ opacity: opacidad, y, willChange: 'transform, opacity' }}
+      style={{ opacity: opacidadFinal, y: yFinal, willChange: 'transform, opacity' }}
       transition={{ duration: 0.5, ease: CURVA }}
     >
       <span className="anclado-num" aria-hidden>

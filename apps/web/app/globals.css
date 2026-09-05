@@ -1,8 +1,26 @@
 :root {
-  /* Una sola familia. Las dos variables apuntan a lo mismo a propósito: así
-     el código sigue distinguiendo titular de cuerpo, pero la letra es una. */
-  --serif: 'Montserrat', -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --sans: var(--serif);
+  /*
+   * Dos voces, no una. `--serif` es la de los titulares (Fraunces, con las
+   * esquinas redondeadas por su eje SOFT) y `--sans` la de leer (Instrument
+   * Sans). Los nombres se quedan como estaban porque están escritos en medio
+   * archivo; lo que cambia es que ahora apuntan a sitios distintos, que era
+   * justo lo que faltaba: con una sola familia, un titular no era más que texto
+   * grande.
+   *
+   * Las dos llegan por next/font, así que el nombre real lo pone una variable
+   * que escribe Next al compilar. Detrás va siempre una pila de reserva de
+   * verdad: si la letra tardara, lo que se ve mientras tanto tiene que
+   * parecerse, no ser otra cosa.
+   */
+  --serif: var(--f-display), 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --sans: var(--f-texto), -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+  /*
+   * La redondez de los titulares. Fraunces es variable: SOFT abre las esquinas
+   * (0 = seca de periódico, 100 = tierna) y WONK le mete los gestos raros, que
+   * aquí sobran. Se pone una vez, aquí, y no se vuelve a tocar.
+   */
+  --display-ejes: 'SOFT' 62, 'WONK' 0;
 
   /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
      es blanco de verdad, no crema, y el segundo tono apenas se separa de él. */
@@ -156,26 +174,36 @@ html {
 /*
  * UN SOLO DIBUJO DE LETRA EN TODA LA WEB.
  *
- * Montserrat, en tres pesos: 300 light, 400 regular y 700 bold.
+ * QUIÉN HABLA DÓNDE
  *
- * Solo tiene un eje variable, el peso, así que no hay manera de que dos partes
- * de la web acaben con dos dibujos distintos: lo único que cambia de un sitio a
- * otro es el peso, el tamaño y la cursiva. Esto no es una manía: cuando la
- * familia anterior tenía ejes de óptica y de suavidad, moverlos por bloques
- * dibujaba letras distintas y la web parecía hecha con siete tipografías.
+ * Todo lo que se lee va en la sans. Sólo los titulares y las cifras grandes van
+ * en la serif, y siempre con los mismos ejes: la redondez se decide una vez
+ * arriba y no se toca por bloques. Cuando cada sección movía sus propios ejes,
+ * la web parecía hecha con siete tipografías distintas.
  *
- * Es ancha. Más que la anterior, letra por letra, así que los titulares piden
- * un punto menos de cuerpo y algo más de apriete para caber en las mismas
- * líneas; los tamaños de abajo ya están ajustados a eso.
+ * Los controles heredan la sans a propósito: un botón con serif de titular se
+ * lee como un adorno, no como algo que se pulsa.
  */
 body,
 button,
 input,
 textarea,
-select,
+select {
+  font-family: var(--sans);
+}
+
 .display,
-.display-sm {
+.display-sm,
+.titular-portada,
+.titular-seccion,
+.titular-bloque,
+h1,
+h2 {
   font-family: var(--serif);
+  font-variation-settings: var(--display-ejes);
+  /* Fraunces trae versalitas y números antiguos; en un titular queremos los
+     números de caja alta, alineados con las mayúsculas. */
+  font-variant-numeric: lining-nums;
 }
 
 /*
@@ -213,9 +241,16 @@ select,
  */
 :root {
   /* Rótulos en versal: uno, y sólo uno. */
-  --rotulo-tam: 11px;
-  --rotulo-peso: 600;
-  --rotulo-esp: 0.1em;
+  /*
+   * El rótulo de sección. Estaba en 11 px con peso 600 y 0,1em de aire: eso es
+   * el rótulo de cualquier plantilla, y en pantalla se lee grueso y apretado a
+   * la vez. Un rótulo en versal quiere lo contrario — pequeño, ligero y muy
+   * abierto—: así se lee como una anotación al margen y no como un titular
+   * pequeño peleándose con el titular de verdad.
+   */
+  --rotulo-tam: 10px;
+  --rotulo-peso: 500;
+  --rotulo-esp: 0.17em;
 
   /* Los tres pesos, con nombre, para no volver a escribir un número suelto. */
   --peso-fino: 300;
@@ -319,6 +354,13 @@ body {
   letter-spacing: 0;
   line-height: var(--alto-texto);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Los detalles que no se ven de uno en uno y sí se notan todos juntos:
+     ligaduras y kerning encendidos, y la coma decimal de los precios sin partir
+     línea nunca. */
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  text-rendering: optimizeLegibility;
   /*
    * `clip` y no `hidden`, y esto no es un detalle.
    *
@@ -2198,15 +2240,18 @@ body[data-nav-claro='si'] .sello-color {
 /*
  * Por debajo de 900 px no hay anclaje: las frases se apilan y se leen todas.
  *
- * Hace falta decirlo aquí y con `!important` porque quien apaga las frases es
- * el motor de movimiento, escribiendo la opacidad en el propio elemento. Sin
- * esta regla, en el móvil se veía UNA frase y tres huecos del alto de una
- * frase cada uno: la sección parecía rota.
+ * Aquí había un `opacity: 1 !important`. Hacía falta cuando la única animación
+ * era la del anclaje: sin anclar, la opacidad se quedaba clavada en 0 y se veía
+ * una frase y tres huecos. Pero ahora cada frase se enciende sola al subir por
+ * la pantalla, y ese !important mataba justo eso — dejaba las cuatro quietas,
+ * que era lo que había que arreglar.
+ *
+ * Se queda el aire entre frases, que sin anclaje sí hace falta: apiladas y
+ * pegadas se leen como un párrafo, y son cuatro golpes.
  */
 @media (max-width: 899px) {
-  .anclado-frase {
-    opacity: 1 !important;
-    transform: none !important;
+  .anclado-frases {
+    gap: clamp(34px, 8vw, 54px);
   }
 }
 
@@ -2560,6 +2605,20 @@ body[data-nav-claro='si'] .sello-color {
   color: var(--tx);
 }
 
+/* El titular de las dudas. Pegado arriba sólo cuando hay dos columnas: con una
+   sola, quedarse pegado es quedarse encima de lo que viene detrás. */
+.faq-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+@media (min-width: 901px) {
+  .faq-titulo {
+    position: sticky;
+    top: 100px;
+  }
+}
+
 /* Las capas del árbol: qué se hace cada mes. Es el bloque que contesta «y esto
    qué es», y por eso va antes que nada de lo que todavía está por cerrar. */
 .mb-capas {
@@ -2782,13 +2841,21 @@ body[data-nav-claro='si'] .sello-color {
   display: flex;
   gap: 16px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  /* SIN scroll-snap. Lo tenía en `mandatory`, y eso pelea con la cinta que se
+     mueve sola: el navegador reajusta a la tarjeta más cercana en cuanto el
+     desplazamiento se para un instante, así que el movimiento salía a tirones y
+     el arrastre con el dedo se sentía imantado. Libre, la cinta corre suave y se
+     arrastra donde uno quiera. */
   scroll-padding-left: 2px;
   /* El desplazamiento de lado no debe arrastrar la página entera al llegar al
      final, que en el móvil se lee como que la web «se engancha». */
   overscroll-behavior-x: contain;
   padding-bottom: 6px;
   scrollbar-width: none;
+  cursor: grab;
+}
+.testi-pista:active {
+  cursor: grabbing;
 }
 .testi-pista::-webkit-scrollbar {
   display: none;
@@ -2797,7 +2864,7 @@ body[data-nav-claro='si'] .sello-color {
 .testi-tarjeta {
   flex: none;
   width: min(340px, 82vw);
-  scroll-snap-align: start;
+  /* Sin imán: la cinta corre sola y el arrastre tiene que ser libre. */
   display: flex;
   flex-direction: column;
   gap: 14px;

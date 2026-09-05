@@ -126,6 +126,73 @@ export default function Testimonios() {
 
   const hay = lista.length > 0;
 
+  /*
+   * LA CINTA SE MUEVE SOLA.
+   *
+   * Quieta, un carrusel parece una fila de tarjetas y nadie descubre que hay más
+   * detrás — sobre todo en el móvil, donde las flechas quedan lejos del pulgar.
+   * Moviéndose, se ve de un vistazo que la cosa sigue.
+   *
+   * Va a 24 píxeles por segundo, que es lento de verdad: se lee mientras pasa.
+   * Y se para sola en cuanto alguien toca —el dedo, el ratón por encima o el
+   * foco del teclado—, porque pelearse con algo que se mueve mientras intentas
+   * leerlo es lo que hace que estos carruseles se odien. Vuelve a arrancar al
+   * soltar.
+   *
+   * Con `prefers-reduced-motion` no arranca nunca: para quien marea el
+   * movimiento, esto es exactamente lo que marea.
+   */
+  const [parado, setParado] = useState(false);
+
+  useEffect(() => {
+    const p = pista.current;
+    if (!p || !hay || parado) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    /*
+     * LA POSICIÓN SE LLEVA APARTE, EN UN NÚMERO NUESTRO.
+     *
+     * Lo primero que escribí fue `p.scrollLeft += 24 * dt / 1000`, que a 60 Hz
+     * son 0,4 píxeles por fotograma. No se movía nada, y el motivo tardé en
+     * verlo: el navegador REDONDEA scrollLeft al leerlo. Sumar cuatro décimas a
+     * lo que devuelve la lectura y volver a escribirlo es escribir el mismo
+     * entero una y otra vez — se comprobó midiéndolo: treinta sumas seguidas de
+     * 0,38 dejaban la posición exactamente donde estaba.
+     *
+     * Aquí el que acumula es `pos`, que es nuestro y tiene decimales. A
+     * scrollLeft sólo se le asigna el resultado.
+     */
+    let pos = p.scrollLeft;
+    let raf = 0;
+    let ultimo = performance.now();
+
+    const paso = (t: number) => {
+      raf = requestAnimationFrame(paso);
+      const dt = Math.min(64, t - ultimo); // una pestaña que vuelve no da un salto
+      ultimo = t;
+
+      const mitad = p.scrollWidth / 2;
+      pos += (24 * dt) / 1000;
+      if (mitad > 10 && pos >= mitad) pos -= mitad; // vuelta al principio, invisible
+      p.scrollLeft = pos;
+    };
+
+    raf = requestAnimationFrame(paso);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hay, parado]);
+
+  /* Se para mientras se toca y se sigue moviendo al soltar. `pointerdown` cubre
+     dedo y ratón de una vez; `focusin` cubre el teclado. */
+  const quieto = {
+    onPointerEnter: () => setParado(true),
+    onPointerLeave: () => setParado(false),
+    onPointerDown: () => setParado(true),
+    onPointerUp: () => setParado(false),
+    onFocusCapture: () => setParado(true),
+    onBlurCapture: () => setParado(false),
+  };
+
   return (
     <div className="testi">
       <Entra desde="izq">
@@ -144,22 +211,19 @@ export default function Testimonios() {
         </div>
       </Entra>
 
-      {/* Sólo se ve en las direcciones de prueba, que es el único sitio donde
-          llega a haber inventados. Va discreto: no es una alarma, es una nota
-          para quien está mirando el montaje. */}
-      {deMuestra && (
-        <p className="testi-aviso">
-          Estos seis comentarios son <strong>de muestra</strong>, para ver cómo queda. No los ha escrito nadie.
-          Desaparecen solos en cuanto la web esté en su dominio, y también en cuanto pegues el primero de verdad
-          en <code>content/site.ts</code>.
-        </p>
-      )}
+      {/* Aquí iba un aviso que decía que los comentarios eran de muestra. Se ha
+          quitado porque afeaba la sección con letra pequeña sobre la prueba
+          social, que es lo último que conviene rebajar. La regla sigue viva y
+          sigue siendo automática: los inventados NO se ven en ningún dominio
+          que no sea de prueba, y desaparecen en cuanto haya uno de verdad. Está
+          en `esSitioDePrueba`, arriba de este mismo archivo. */}
 
       {hay ? (
         <motion.div
           ref={pista}
           className="testi-pista"
           onScroll={recolocar}
+          {...quieto}
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '0px 0px -10% 0px' }}

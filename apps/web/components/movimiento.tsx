@@ -365,7 +365,20 @@ export function Revelado({
  * Cuánto se ha recorrido de un bloque, de 0 a 1, ya suavizado. Lo usan las
  * secciones que se quedan ancladas mientras por dentro cambia algo.
  */
-export function useProgreso(ref: React.RefObject<HTMLElement | null>, offset: ['start end', 'end start'] | ['start start', 'end end'] = ['start end', 'end start']): MotionValue<number> {
+/*
+ * El `offset` estaba cerrado a los dos pares que se usaron el primer día. Un
+ * offset es «borde del elemento / borde de la ventana» y admite también un
+ * número: «start 0.92» quiere decir el borde de arriba del elemento contra el
+ * 92 % de la altura de la ventana. Eso es lo que hace falta para encender una
+ * frase cuando llega al tercio superior, así que se abre a la firma de verdad
+ * en lugar de mantener una lista blanca que hay que ampliar cada vez.
+ */
+type Offset = NonNullable<NonNullable<Parameters<typeof useScroll>[0]>['offset']>;
+
+export function useProgreso(
+  ref: React.RefObject<HTMLElement | null>,
+  offset: Offset = ['start end', 'end start'],
+): MotionValue<number> {
   const { scrollYProgress } = useScroll({ target: ref, offset });
   return useSpring(scrollYProgress, { stiffness: 110, damping: 30, restDelta: 0.001 });
 }
