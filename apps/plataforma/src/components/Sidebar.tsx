@@ -83,7 +83,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
       <span
         style={css(
           "flex:none;display:grid;place-items:center;" +
-            (grande ? "width:26px;height:26px;border-radius:9px;background:var(--gold-soft);" : "") +
+            (grande ? "width:26px;height:26px;border-radius:var(--r);background:var(--gold-soft);" : "") +
             "color:" +
             (activo || grande ? "var(--gold)" : "var(--text-4)") +
             ";"

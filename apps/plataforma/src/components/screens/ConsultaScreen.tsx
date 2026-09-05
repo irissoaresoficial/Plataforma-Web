@@ -39,7 +39,7 @@ export default function ConsultaScreen() {
         onChange={(e) => set(key, numeric ? e.target.value.replace(/\D/g, "").slice(0, key === "anio" ? 4 : 2) : e.target.value)}
         inputMode={numeric ? "numeric" : undefined}
         style={css(
-          "width:100%;min-width:0;background:color-mix(in srgb, var(--text) 6%, transparent);border:1px solid transparent;border-radius:var(--r-sm);padding:11px 14px;color:var(--text);font-family:var(--font-ui);font-size:var(--t-read);"
+          "width:100%;min-width:0;padding:11px 14px;color:var(--text);font-family:var(--font-ui);font-size:var(--t-read);"
         )}
       />
     </label>

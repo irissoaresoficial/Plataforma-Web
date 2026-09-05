@@ -33,8 +33,8 @@ export default function SeccionEmpresa() {
   return (
     <div data-cascada="" style={css("display:flex;flex-direction:column;gap:var(--gap);")}>
       <div>
-        <h2 style={css("font-size:clamp(23px,3.4vw,30px);font-weight:700;letter-spacing:-.026em;color:var(--text);margin:0;text-wrap:balance;")}>
-          Aquí tienes a {titulo(re.nombre.texto)}, Iris
+        <h2 style={css("font-size:clamp(23px,3.4vw,30px);font-weight:400;letter-spacing:-.026em;color:var(--text);margin:0;text-wrap:balance;")}>
+          Aquí tienes a {titulo(re.nombre.texto)}
         </h2>
         <p style={css(APOYO + "margin:var(--s2) 0 0;max-width:62ch;")}>
           De una empresa se lee el nombre y nada más: no hay fecha de nacimiento de la que sacar la estructura, los planos ni los
@@ -57,7 +57,7 @@ export default function SeccionEmpresa() {
             <button
               onClick={() => setView("estudio")}
               style={css(
-                "width:100%;margin-top:var(--s5);padding:12px 18px;border:none;border-radius:980px;cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#3A3244,#241F2E);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);"
+                "width:100%;margin-top:var(--s5);padding:12px 18px;border:none;border-radius:980px;cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#5D2734,#2B1119);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);"
               )}
             >
               Ver el estudio

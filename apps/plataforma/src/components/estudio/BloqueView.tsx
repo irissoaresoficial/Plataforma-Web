@@ -58,7 +58,7 @@ export default function BloqueView({
         <div style={css("display:flex;gap:16px;align-items:flex-start;border-left:2px solid #C9A84C;padding-left:14px;")}>
           <div style={css("min-width:78px;")}>
             <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.22em;text-transform:uppercase;color:#9B93A8;")}>{b.label}</div>
-            <div style={css("font-family:'Cinzel',serif;font-size:var(--t-hero);line-height:1.1;color:#241F2E;")}>{b.valor}</div>
+            <div style={css("font-family:'Cinzel',serif;font-size:var(--t-hero);line-height:1.1;color:#2B1119;")}>{b.valor}</div>
           </div>
           <p {...editable} onBlur={onBlur(b.editId)} style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-read);line-height:1.55;color:#37323F;margin:0;flex:1;text-wrap:pretty;")}>
             {txt(b.editId, b.textoDef)}
@@ -114,7 +114,7 @@ export default function BloqueView({
               )}
             >
               <span style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.18em;text-transform:uppercase;color:#9B93A8;min-width:96px;")}>{f.label}</span>
-              <span style={css("font-family:'Cinzel',serif;font-size:var(--t-title);line-height:1;color:#241F2E;")}>{f.valor}</span>
+              <span style={css("font-family:'Cinzel',serif;font-size:var(--t-title);line-height:1;color:#2B1119;")}>{f.valor}</span>
               <span style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-body);line-height:1.35;color:#6B6478;margin-left:auto;text-align:right;")}>{f.pie}</span>
             </div>
           ))}

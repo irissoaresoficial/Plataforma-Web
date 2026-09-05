@@ -2,7 +2,7 @@
 import { css } from "@/lib/css";
 import { BOTON_NORMAL } from "@/lib/ui";
 import { useApp } from "@/lib/app-context";
-import { COL } from "@/lib/tree";
+import { COL, COL_TX } from "@/lib/tree";
 import { frase, recorta, titulo } from "@/lib/format";
 import Cifra from "../Cifra";
 import ArbolVida from "../ArbolVida";
@@ -53,8 +53,8 @@ export default function SeccionResumen() {
   return (
     <div data-cascada="" style={css("display:flex;flex-direction:column;gap:var(--gap);")}>
       <div>
-        <h2 style={css("font-size:clamp(23px,3.4vw,30px);font-weight:700;letter-spacing:-.026em;color:var(--text);margin:0;text-wrap:balance;")}>
-          Aquí tienes a {nombreCorto}, Iris
+        <h2 style={css("font-size:clamp(23px,3.4vw,30px);font-weight:400;letter-spacing:-.026em;color:var(--text);margin:0;text-wrap:balance;")}>
+          Aquí tienes a {nombreCorto}
         </h2>
         <p style={css("font-size:var(--t-read);line-height:1.5;color:var(--text-3);margin:var(--s2) 0 0;max-width:62ch;text-wrap:pretty;")}>
           Todo el estudio de un vistazo. Pulsa cualquier bloque para abrirlo entero, y cualquier número para corregirlo si en esta carta lo lees distinto.
@@ -81,7 +81,7 @@ export default function SeccionResumen() {
             <div style={css("display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap;")}>
               <button
                 onClick={() => setView("estudio")}
-                style={css("flex:1;min-width:130px;padding:12px 18px;border:none;border-radius:980px;cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#3A3244,#241F2E);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);")}
+                style={css("flex:1;min-width:130px;padding:12px 18px;border:none;border-radius:980px;cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#5D2734,#2B1119);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);")}
               >
                 Ver el estudio
               </button>
@@ -114,7 +114,7 @@ export default function SeccionResumen() {
                         ";"
                     )}
                   >
-                    <div style={css("font-size:var(--t-mini);font-weight:590;color:" + COL[x.k] + ";")}>{x.etapa}</div>
+                    <div style={css("font-size:var(--t-mini);font-weight:590;color:" + COL_TX[x.k] + ";")}>{x.etapa}</div>
                     <div style={css("font-family:var(--font-display);font-size:var(--t-title);font-weight:500;letter-spacing:-.01em;color:var(--text);line-height:1.1;margin-top:3px;")}>{x.d.arcano}</div>
                     <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-top:2px;line-height:1.25;")}>{recorta(titulo(x.d.carta?.nombre), 18)}</div>
                   </button>

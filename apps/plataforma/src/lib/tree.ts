@@ -28,10 +28,27 @@ export const SENDEROS: [SefKey, SefKey][] = [
 /* Colores de los tres caminos. Se usan tal cual sobre el fondo oscuro del
  * panel y sobre el papel crema del estudio, así que cada uno tiene que
  * distinguirse en ambos. */
+/*
+ * El color de cada camino, en dos versiones.
+ *
+ * COL es el trazo: el que pinta las líneas del árbol y los filos de las
+ * tarjetas. Ahí el color identifica y no se lee, así que puede ser vivo.
+ *
+ * COL_TX es el mismo color para ESCRIBIR con él. Hacen falta los dos porque el
+ * vivo, puesto como texto de trece píxeles sobre el arena, se queda en 3,15:1 —
+ * por debajo de lo que cualquiera puede leer. Sale de variables CSS para que
+ * cambie con el tema: sobre papel baja de luz y sobre granate sube.
+ */
 export const COL: Record<"origen" | "transformacion" | "destino", string> = {
   origen: "#E2574C", // rojo
   transformacion: "#4C8FE0", // azul
   destino: "#9D6BD9", // lila
+};
+
+export const COL_TX: Record<"origen" | "transformacion" | "destino", string> = {
+  origen: "var(--via-origen-tx)",
+  transformacion: "var(--via-transformacion-tx)",
+  destino: "var(--via-destino-tx)",
 };
 
 /* Orden fijo de los caminos: fija el color de las líneas paralelas cuando

@@ -102,7 +102,7 @@ export default function EstudioScreen() {
           <div style={css("font-family:var(--font-ui);font-weight:600;font-size:var(--t-title);color:#6B6478;")}>
             {empresa ? "Estudio de Kábala empresarial" : "Estudio de Kábala personal"}
           </div>
-          <h1 style={css("font-family:var(--font-ui);font-weight:700;font-size:var(--t-hero);line-height:1.22;letter-spacing:-.022em;color:#241F2E;margin:30px 0 0;max-width:560px;")}>{titulo(nombreTexto)}</h1>
+          <h1 style={css("font-family:var(--font-ui);font-weight:700;font-size:var(--t-hero);line-height:1.22;letter-spacing:-.022em;color:#2B1119;margin:30px 0 0;max-width:560px;")}>{titulo(nombreTexto)}</h1>
           <div style={css("font-family:var(--font-ui);font-size:var(--t-title);font-style:italic;color:#7A7288;margin-top:var(--s4);")}>
             {r ? fechaLarga(r.fecha.dia, r.fecha.mes, r.fecha.anio) : "Leído del nombre"}
           </div>
@@ -128,7 +128,7 @@ export default function EstudioScreen() {
               {cap.kicker && (
                 <div>
                   <div style={css("font-family:var(--font-ui);font-size:9.5px;color:#B08A2E;margin-bottom:5px;")}>{cap.kicker}</div>
-                  <h2 style={css("font-family:var(--font-ui);font-weight:700;font-size:var(--t-head);line-height:1.2;letter-spacing:-.022em;color:#241F2E;margin:0;")}>{cap.titulo}</h2>
+                  <h2 style={css("font-family:var(--font-ui);font-weight:700;font-size:var(--t-head);line-height:1.2;letter-spacing:-.022em;color:#2B1119;margin:0;")}>{cap.titulo}</h2>
                 </div>
               )}
               {cap.bloques.map((b, bi) => (

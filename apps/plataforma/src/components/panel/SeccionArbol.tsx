@@ -2,7 +2,7 @@
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { arbolGeometria } from "@/lib/arbol";
-import { COL } from "@/lib/tree";
+import { COL, COL_TX } from "@/lib/tree";
 import { frase, recorta, titulo } from "@/lib/format";
 import Particulas from "../Particulas";
 import { tarjetaCon, PAD_SM, BOTON_PLANO } from "@/lib/ui";
@@ -63,7 +63,7 @@ export default function SeccionArbol() {
             )}
           >
             <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
-              <span style={css("font-size:var(--t-mini);font-weight:590;color:" + COL[c.k] + ";")}>{c.etapa}</span>
+              <span style={css("font-size:var(--t-mini);font-weight:590;color:" + COL_TX[c.k] + ";")}>{c.etapa}</span>
               <span style={css("font-family:var(--font-display);font-weight:500;font-size:var(--t-head);line-height:1.25;color:var(--text);letter-spacing:-.022em;")}>
                 {c.c.arcano} · {c.nombre}
               </span>

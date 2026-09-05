@@ -10,6 +10,7 @@ import DetalleModal from "./DetalleModal";
 import Sidebar from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
 import Tema from "./Tema";
+import Cuenta from "./Cuenta";
 
 const TABS: Array<{ k: View; label: string }> = [
   { k: "inicio", label: "Consulta" },
@@ -41,9 +42,13 @@ export default function Shell() {
        * la navegación y el botón de volver no pintan nada mientras no haya un
        * estudio abierto, y quitarlos deja la pantalla en lo único que hay que
        * hacer ahí. El cambio de tema sí se queda, suelto en una esquina. */}
+      {/* En la consulta no hay cabecera, así que el tema y la cuenta van
+          sueltos en la esquina. Salir tiene que poder hacerse desde cualquier
+          pantalla, y ésta es la primera que se ve. */}
       {view === "inicio" && (
-        <div data-chrome="1" style={css("position:fixed;top:16px;right:clamp(14px,3vw,28px);z-index:40;")}>
+        <div data-chrome="1" style={css("position:fixed;top:16px;right:clamp(14px,3vw,28px);z-index:40;display:flex;align-items:center;gap:10px;")}>
           <Tema />
+          <Cuenta />
         </div>
       )}
 
@@ -112,6 +117,7 @@ export default function Shell() {
           })}
         </nav>
         <Tema />
+        <Cuenta />
       </header>
       )}
 

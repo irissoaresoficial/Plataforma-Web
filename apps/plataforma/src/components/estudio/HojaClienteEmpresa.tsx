@@ -7,7 +7,7 @@ import { COL } from "@/lib/tree";
 import styles from "./Estudio.module.css";
 
 const ROTULO = "font-size:9px;font-weight:600;color:#9A7F32;letter-spacing:.02em;";
-const DATO = "font-family:var(--font-display);font-size:26px;font-weight:500;color:#241F2E;line-height:1;letter-spacing:-.012em;";
+const DATO = "font-family:var(--font-display);font-size:26px;font-weight:500;color:#2B1119;line-height:1;letter-spacing:-.012em;";
 const CUERPO = "font-size:10.5px;line-height:1.5;color:#3A3546;margin:3px 0 0;";
 
 /**
@@ -44,7 +44,7 @@ export default function HojaClienteEmpresa({ re, marca }: { re: ResultadoEmpresa
         <img src="/logo.jpeg" alt="" style={css("width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;")} />
         <div style={css("min-width:0;")}>
           <div style={css(ROTULO)}>{marca}</div>
-          <h1 style={css("font-family:var(--font-display);font-size:25px;font-weight:500;letter-spacing:-.014em;color:#241F2E;margin:2px 0 0;line-height:1.15;overflow-wrap:anywhere;")}>
+          <h1 style={css("font-family:var(--font-display);font-size:25px;font-weight:500;letter-spacing:-.014em;color:#2B1119;margin:2px 0 0;line-height:1.15;overflow-wrap:anywhere;")}>
             {titulo(re.nombre.texto)}
           </h1>
         </div>
@@ -53,7 +53,7 @@ export default function HojaClienteEmpresa({ re, marca }: { re: ResultadoEmpresa
 
       <div style={css("display:grid;grid-template-columns:repeat(" + cifras.length + ",1fr);gap:9px;")}>
         {cifras.map((x) => (
-          <div key={x.l} style={css("border:1px solid rgba(154,127,50,.22);border-radius:9px;padding:9px 11px;background:rgba(201,168,76,.05);")}>
+          <div key={x.l} style={css("border:1px solid rgba(154,127,50,.22);border-radius:var(--r);padding:9px 11px;background:rgba(201,168,76,.05);")}>
             <div style={css(ROTULO)}>{x.l}</div>
             <div style={css(DATO + "margin-top:3px;")}>{x.v}</div>
             <div style={css("font-size:9.5px;color:#7A7288;margin-top:2px;")}>{x.p}</div>
@@ -66,7 +66,7 @@ export default function HojaClienteEmpresa({ re, marca }: { re: ResultadoEmpresa
         <div style={css("display:flex;flex-wrap:wrap;gap:10px;")}>
           {re.nombre.palabras.map((w, wi) => (
             <div key={wi} style={css("font-size:10.5px;color:#3A3546;")}>
-              <span style={css("font-weight:600;color:#241F2E;")}>{w.palabra}</span> · {w.total}
+              <span style={css("font-weight:600;color:#2B1119;")}>{w.palabra}</span> · {w.total}
             </div>
           ))}
         </div>
@@ -77,7 +77,7 @@ export default function HojaClienteEmpresa({ re, marca }: { re: ResultadoEmpresa
         <div style={css("border-left:2.5px solid " + COL.origen + ";padding:2px 0 2px 10px;")}>
           <div style={css("display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;")}>
             <span style={css("font-size:9px;font-weight:600;color:" + COL.origen + ";")}>Arcano {re.origen.arcano}</span>
-            <span style={css("font-family:var(--font-display);font-size:14px;font-weight:500;color:#241F2E;")}>{titulo(carta?.nombre)}</span>
+            <span style={css("font-family:var(--font-display);font-size:14px;font-weight:500;color:#2B1119;")}>{titulo(carta?.nombre)}</span>
           </div>
           <p style={css(CUERPO)}>
             {recorta(paraCliente(frase(carta?.lema) + ". " + (carta?.texto || "").replace(/^[“"][^”"]*[”"]\.?\s*/, "")), 300)}
@@ -92,7 +92,7 @@ export default function HojaClienteEmpresa({ re, marca }: { re: ResultadoEmpresa
             <span
               key={d}
               style={css(
-                "display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:600;border:1px solid rgba(154,127,50,.35);color:#241F2E;background:" +
+                "display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:600;border:1px solid rgba(154,127,50,.35);color:#2B1119;background:" +
                   (i === 0 ? "rgba(201,168,76,.22)" : "transparent") +
                   ";"
               )}
@@ -111,7 +111,7 @@ export default function HojaClienteEmpresa({ re, marca }: { re: ResultadoEmpresa
         <div style={css("display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;")}>
           {importante.map((x) => (
             <div key={x.l}>
-              <div style={css("font-size:10px;font-weight:600;color:#241F2E;")}>{x.l}</div>
+              <div style={css("font-size:10px;font-weight:600;color:#2B1119;")}>{x.l}</div>
               <p style={css(CUERPO + "margin:1px 0 0;")}>{x.t}</p>
             </div>
           ))}

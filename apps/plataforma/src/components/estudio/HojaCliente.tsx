@@ -132,7 +132,7 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
         <img src="/logo.jpeg" alt="" style={css("width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none;")} />
         <div style={css("min-width:0;")}>
           <div style={css(ROTULO)}>{marca}</div>
-          <h1 style={css("font-family:var(--font-display);font-size:24px;font-weight:500;letter-spacing:-.014em;color:#241F2E;margin:2px 0 0;line-height:1.12;overflow-wrap:anywhere;")}>
+          <h1 style={css("font-family:var(--font-display);font-size:24px;font-weight:500;letter-spacing:-.014em;color:#2B1119;margin:2px 0 0;line-height:1.12;overflow-wrap:anywhere;")}>
             {titulo(r.nombre.texto)}
           </h1>
         </div>
@@ -148,11 +148,11 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
         <p style={css(CUERPO)}>{primerasFrases(r.tipoEstructura?.texto, 190)}</p>
         <div style={css("display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:7px;")}>
           <div style={css("border-left:2px solid #C9A84C;padding-left:9px;")}>
-            <div style={css(`font-size:${fs(10.5)};font-weight:700;color:#241F2E;`)}>Por dentro</div>
+            <div style={css(`font-size:${fs(10.5)};font-weight:700;color:#2B1119;`)}>Por dentro</div>
             <p style={css(APUNTE)}>Lo que has venido a ser, lo veas o no. {primerasFrases(r.esencia.lectura.positivo, 95)}</p>
           </div>
           <div style={css("border-left:2px solid #9B93A8;padding-left:9px;")}>
-            <div style={css(`font-size:${fs(10.5)};font-weight:700;color:#241F2E;`)}>Por fuera</div>
+            <div style={css(`font-size:${fs(10.5)};font-weight:700;color:#2B1119;`)}>Por fuera</div>
             <p style={css(APUNTE)}>Lo que la gente ve de ti. {primerasFrases(r.ego.lectura.positivo, 95)}</p>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
           {caminos.map((x) => (
             <div key={x.k} style={css("border-left:2.5px solid " + COL[x.k] + ";padding:0 0 0 10px;")}>
               <div style={css("display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;")}>
-                <span style={css(`font-size:${fs(11)};font-weight:700;color:#241F2E;`)}>{x.titulo}</span>
+                <span style={css(`font-size:${fs(11)};font-weight:700;color:#2B1119;`)}>{x.titulo}</span>
                 <span style={css(`font-size:${fs(9.5)};color:#8A8296;`)}>{x.que}</span>
                 <span style={css("margin-left:auto;font-size:9px;color:#8A8296;white-space:nowrap;")}>{x.cuando}</span>
               </div>
@@ -193,9 +193,9 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
           <div style={css("display:flex;flex-direction:column;gap:5px;")}>
             {aprendizajes.map((a, i) => (
               <div key={i} style={css("display:flex;gap:8px;align-items:baseline;")}>
-                <span style={css("flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#E5B63C;color:#241F2E;font-size:9px;font-weight:700;")}>{a.portal}</span>
+                <span style={css("flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#E5B63C;color:#2B1119;font-size:9px;font-weight:700;")}>{a.portal}</span>
                 <span style={css("min-width:0;")}>
-                  <span style={css(`font-size:${fs(11)};font-weight:700;color:#241F2E;`)}>{a.nombre}</span>
+                  <span style={css(`font-size:${fs(11)};font-weight:700;color:#2B1119;`)}>{a.nombre}</span>
                   {a.comoSeTrabaja ? <span style={css(`font-size:${fs(10)};color:#6B6478;`)}> — {a.comoSeTrabaja}</span> : null}
                 </span>
               </div>
@@ -214,7 +214,7 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
             <div style={css("display:flex;flex-direction:column;gap:4px;")}>
               {bloqueos.map((b, i) => (
                 <p key={i} style={css(APUNTE)}>
-                  <span style={css("font-weight:700;color:#241F2E;")}>{b.nombre}.</span> {b.que}
+                  <span style={css("font-weight:700;color:#2B1119;")}>{b.nombre}.</span> {b.que}
                 </p>
               ))}
             </div>
@@ -267,7 +267,7 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
               <span
                 key={d}
                 style={css(
-                  "display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:600;border:1px solid rgba(154,127,50,.35);color:#241F2E;background:" +
+                  "display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:600;border:1px solid rgba(154,127,50,.35);color:#2B1119;background:" +
                     (i === 0 ? "rgba(201,168,76,.24)" : "transparent") +
                     ";"
                 )}
@@ -327,7 +327,7 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
             { l: "El hilo de toda tu vida", v: c.proposito },
           ].map((x) => (
             <span key={x.l} style={css("font-size:9.5px;color:#7A7288;white-space:nowrap;")}>
-              {x.l} <span style={css("font-family:var(--font-display);font-size:12px;color:#241F2E;")}>{x.v}</span>
+              {x.l} <span style={css("font-family:var(--font-display);font-size:12px;color:#2B1119;")}>{x.v}</span>
             </span>
           ))}
         </div>

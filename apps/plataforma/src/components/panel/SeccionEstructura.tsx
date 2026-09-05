@@ -193,7 +193,7 @@ export default function SeccionEstructura() {
                           "flex:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;font-size:var(--t-body);font-weight:700;background:" +
                             (veces ? "#E5B63C" : "color-mix(in srgb, var(--text) 5%, transparent)") +
                             ";color:" +
-                            (veces ? "#241F2E" : "var(--text-3)") +
+                            (veces ? "#2B1119" : "var(--text-3)") +
                             ";border:" +
                             (escudo ? "2.5px solid var(--blue)" : "1px solid var(--border)") +
                             ";"

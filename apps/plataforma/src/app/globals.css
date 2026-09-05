@@ -4,33 +4,73 @@
    Sistema de color. Todo el tema vive aquí: los componentes sólo usan estas
    variables, así que cambiar la paleta no obliga a tocar pantalla por pantalla.
    --------------------------------------------------------------------------- */
-:root {
-  /* En un Mac o un iPhone esto resuelve a San Francisco; fuera, a Karla. */
-  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Karla", system-ui, sans-serif;
-  /* La compañera serif de San Francisco. En el equipo de Iris ui-serif es
-   * New York; fuera cae en Iowan o Palatino, que son de la misma familia de
-   * formas. No se descarga nada: la tiene el sistema. */
-  --font-display: ui-serif, "New York", "Iowan Old Style", "Palatino Linotype", Palatino, "Hoefler Text", Georgia, serif;
+/* ---------------------------------------------------------------------------
+   LA MISMA CASA QUE LA WEB
+   ---------------------------------------------------------------------------
+   La plataforma tenía su propia paleta —los grises de iOS, #f5f5f7 sobre
+   #1d1d1f— y su propia tipografía —la del sistema—. Funcionaba, pero era otra
+   marca: quien sale de la web de Iris y entra aquí se encuentra otro sitio.
 
-  --bg: #f5f5f7;
+   Ahora comparte los cuatro colores de la casa (papel, arena, tinta, granate y
+   oro) y las dos letras (Fraunces para los titulares, Instrument Sans para
+   leer), servidas desde el propio dominio igual que allí.
+
+   Lo que NO cambia es la estructura de este archivo, que estaba bien: los
+   componentes piden el papel —fondo, superficie, borde, texto— y no el valor.
+   Por eso cambiar la marca entera se hace aquí y en ningún sitio más.
+   --------------------------------------------------------------------------- */
+:root {
+  --font-ui: var(--f-texto), -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--f-display), "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  /* La redondez de Fraunces, la misma que en la web: si aquí fuera otra, las
+     dos mitades del proyecto tendrían dos letras que casi son la misma, que es
+     peor que tener dos distintas. */
+  --display-ejes: "SOFT" 62, "WONK" 0;
+
+  --bg: #faf8f4;
   /* Opacas. Translúcidas dejaban pasar el fondo y cada tarjeta cogía un tinte
    * distinto según sobre qué parte del velo cayera. */
   --surface: #ffffff;
-  --surface-2: #fafafc;
+  --surface-2: #f1ede4;
   --surface-solid: #ffffff;
 
-  --border: rgba(0, 0, 0, 0.07);
-  --border-strong: rgba(0, 0, 0, 0.12);
-  --border-accent: rgba(154, 123, 46, 0.3);
+  --border: #e9e5df;
+  --border-strong: #d8d2ca;
+  --border-accent: rgba(125, 95, 30, 0.32);
 
-  --text: #1d1d1f;
-  --text-2: #3a3a3c;
-  --text-3: #6e6e73;
-  --text-4: #8e8e93;
+  --text: #221d1f;
+  --text-2: #605551;
+  /* Los dos grises de apoyo están medidos, no elegidos a ojo. El cuarto tono
+     era #8b817b y sobre el arena se quedaba en 3,25:1 — por debajo del mínimo
+     legible— así que treinta y siete rótulos de la plataforma no cumplían. Éste
+     es el más claro que aún llega a 4,5:1 sobre las DOS superficies, el papel y
+     el arena, que es la condición que hay que cumplir: el mismo rótulo aparece
+     sobre las dos. */
+  --text-3: #605551;
+  --text-4: #6f6560;
 
-  --gold: #9a7b2e;
-  --gold-deep: #6f5619;
-  --gold-soft: rgba(201, 168, 76, 0.14);
+  --gold: #7d5f1e;
+  --gold-deep: #5f4715;
+  --gold-soft: rgba(169, 136, 79, 0.14);
+
+  /*
+   * LOS TRES CAMINOS, EN DOS VERSIONES.
+   *
+   * El mismo color hacía dos trabajos: pintar la línea del árbol e imprimir la
+   * palabra «Origen». Como línea funcionaba —vivo y distinguible—; como texto
+   * se quedaba en 3,15:1 sobre el arena, por debajo del mínimo legible.
+   *
+   * Así que son dos. `--via-*` es la línea, que se queda como estaba porque ahí
+   * el color identifica y no se lee. `--via-*-tx` es la misma familia bajada de
+   * luz hasta pasar de 5:1, y es la que va en las etiquetas. Medido sobre las
+   * dos superficies de cada tema.
+   */
+  --via-origen: #e2574c;
+  --via-transformacion: #4c8fe0;
+  --via-destino: #9d6bd9;
+  --via-origen-tx: #b23a31;
+  --via-transformacion-tx: #2a63a8;
+  --via-destino-tx: #6e3fa8;
   /* La tinta que va encima de un relleno de --gold-deep. En claro el oro es
      oscuro y pide texto blanco; en oscuro el oro se aclara y el blanco encima
      deja de leerse, así que la tinta se invierte con el tema. */
@@ -63,11 +103,15 @@
   --t-head: 28px; /* encabezado de sección */
   --t-hero: clamp(32px, 4vw, 42px); /* nombre de la persona, cifras grandes */
 
-  /* Radios generosos, al gusto de iOS. */
-  --r-xs: 8px;
-  --r-sm: 12px;
-  --r: 18px;
-  --r-lg: 24px;
+  /* Los bordes de la casa: rectos, como una página impresa. Eran «generosos, al
+     gusto de iOS» —hasta 24 px— y eso es exactamente lo que hace que algo se
+     lea como una aplicación de móvil en vez de como un estudio. La curva se
+     reserva para los botones, que es donde distingue lo que se pulsa. */
+  --r-xs: 3px;
+  --r-sm: 3px;
+  --r: 4px;
+  --r-lg: 6px;
+  --r-pill: 100px;
 
 
   /* -------------------------------------------------------------------------
@@ -101,31 +145,47 @@
    se apaga y deja de leerse como oro.
    --------------------------------------------------------------------------- */
 :root[data-tema="oscuro"] {
-  --bg: #0f0e13;
-  --surface: #1c1a23;
-  --surface-2: #22202b;
-  --surface-solid: #1c1a23;
+  /* El oscuro tampoco es el negro azulado de antes: es el granate de la casa,
+     el mismo que la web usa en sus bloques `vino`. Así el modo oscuro no es un
+     tema aparte, es la otra cara de la misma marca. */
+  --bg: #2b1119;
+  --surface: #3a1620;
+  --surface-2: #451a25;
+  --surface-solid: #3a1620;
 
-  --border: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --border-accent: rgba(216, 184, 96, 0.34);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-accent: rgba(226, 205, 162, 0.34);
 
-  --text: #f2f0f5;
-  --text-2: #cdc9d6;
-  --text-3: #9c97a8;
-  --text-4: #726d7e;
+  --text: #fbf6ee;
+  --text-2: #e0d3d6;
+  /* Medidos sobre las dos superficies del granate. El tercer tono estaba en
+     #b9a7ab y dejaba los nombres de los arcanos en 4,36:1, justo por debajo del
+     mínimo: en una plataforma de trabajo, «justo por debajo» es ilegible al
+     final de la tarde. */
+  --text-3: #cbbabe;
+  --text-4: #b9a7ab;
 
-  --gold: #d8b860;
-  --gold-deep: #eed79a;
-  --gold-soft: rgba(216, 184, 96, 0.14);
-  --sobre-oro: #241f2e;
+  --gold: #e2cda2;
+  --gold-deep: #f0e3c6;
+  --gold-soft: rgba(226, 205, 162, 0.14);
+  --sobre-oro: #2b1119;
 
-  --red: #e8705f;
-  --red-soft: rgba(232, 112, 95, 0.1);
-  --red-border: rgba(232, 112, 95, 0.3);
-  --green: #5fbe86;
-  --blue: #6aa9f0;
-  --purple: #b083d8;
+  /* Los colores de código —los tres caminos, los avisos— suben de luz sobre el
+     granate. Con los tonos de antes se quedaban por debajo de 4,5:1 y las
+     etiquetas «Origen», «Transformación» y «Destino» no se leían. */
+  --red: #f0928a;
+  --red-soft: rgba(240, 146, 138, 0.12);
+  --red-border: rgba(240, 146, 138, 0.32);
+  --green: #86d6a6;
+  --blue: #8fc0f5;
+  --purple: #c7a4e6;
+
+  /* Sobre el granate, los tres caminos suben de luz para el texto. Los de línea
+     se quedan: sobre oscuro un trazo vivo se ve perfectamente. */
+  --via-origen-tx: #f0928a;
+  --via-transformacion-tx: #8fc0f5;
+  --via-destino-tx: #c7a4e6;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.22);
@@ -162,15 +222,18 @@ body {
   text-rendering: optimizeLegibility;
 }
 /* ---------------------------------------------------------------------------
-   Detalle tipográfico. San Francisco lleva el trabajo del día; los titulares
-   van en su compañera serif, que es donde una lectura de Kábala se merece algo
-   más que una sans de sistema.
+   Detalle tipográfico. Instrument Sans lleva el trabajo del día; los titulares
+   van en Fraunces, con la misma redondez que en la web.
    --------------------------------------------------------------------------- */
 h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-variation-settings: var(--display-ejes);
+  /* Fraunces trae números antiguos; en un titular queremos los de caja alta,
+     alineados con las mayúsculas. */
+  font-variant-numeric: lining-nums;
+  font-weight: 400;
   letter-spacing: -0.012em;
   line-height: 1.14;
   /* La serif ya trae ligaduras y alternancias: se dejan encendidas. */
@@ -229,8 +292,21 @@ input:focus {
   background-clip: content-box;
 }
 
-/* Campos y botones: reacción suave al foco, como en iOS. */
-input {
+/*
+ * Los campos, del color de la casa.
+ *
+ * Los tenía cada pantalla escritos a mano con un gris sacado del texto
+ * —`color-mix` al 6 %—, y sobre el papel cálido nuevo eso daba un gris frío que
+ * no pega con nada. Van aquí, una vez, con el arena y la línea de la casa, y
+ * las pantallas dejan de decidirlo cada una por su cuenta.
+ */
+input,
+textarea,
+select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   letter-spacing: -0.01em;
 }
@@ -687,4 +763,202 @@ button:not(:disabled):active {
   article {
     break-inside: avoid;
   }
+}
+
+/* ===========================================================================
+   LA PUERTA
+   ===========================================================================
+   La pantalla de entrada. Va siempre en granate, con tema o sin él: es la
+   fachada de la casa y no cambia de color según lo que tenga cada uno puesto.
+   =========================================================================== */
+.puerta {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(20px, 5vw, 56px);
+  background: #2b1119;
+  color: #fbf6ee;
+  position: relative;
+  overflow: hidden;
+}
+/* Un halo dorado muy flojo, descentrado. Sin él, el granate a pantalla completa
+   se ve plano como una cartulina. */
+.puerta-velo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 70% 55% at 30% 20%, rgba(226, 205, 162, 0.14), transparent 62%);
+}
+
+.puerta-caja {
+  position: relative;
+  z-index: 1;
+  width: min(430px, 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.puerta-sello {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(28px, 5vw, 44px);
+}
+.puerta-sello img {
+  display: block;
+  opacity: 0.94;
+}
+.puerta-marca {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: #e2cda2;
+  line-height: 1.4;
+  max-width: 12ch;
+}
+
+.puerta-titulo {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-ejes);
+  font-size: clamp(38px, 6vw, 52px);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #fbf6ee;
+}
+.puerta-sub {
+  margin: 0 0 clamp(26px, 4vw, 34px);
+  font-size: 15px;
+  line-height: 1.6;
+  color: #d8c8cb;
+  max-width: 34ch;
+}
+
+.puerta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.puerta-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.puerta-campo label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: #b9a7ab;
+}
+.puerta-campo input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  font-family: inherit;
+  font-size: 16px; /* menos de 16 y el iPhone hace zoom solo al escribir */
+  color: #fbf6ee;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--r);
+  outline: none;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.puerta-campo input::placeholder {
+  color: #8d7b80;
+}
+.puerta-campo input:focus {
+  border-color: #e2cda2;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.puerta-boton {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 22px;
+  min-height: 48px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2b1119;
+  background: #e2cda2;
+  border: 0;
+  /* La única curva de la pantalla es la del botón: con todo lo demás recto, se
+     distingue lo que se pulsa sin necesidad de un color más. */
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.puerta-boton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.puerta-boton:disabled {
+  opacity: 0.68;
+  cursor: default;
+}
+
+.puerta-error {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #e8a0a0;
+}
+.puerta-error:empty {
+  display: none;
+}
+
+.puerta-aviso {
+  margin-top: clamp(26px, 4vw, 36px);
+  padding: 15px 17px;
+  border: 1px dashed rgba(232, 160, 160, 0.5);
+  border-radius: var(--r);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.puerta-aviso > span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e8a0a0;
+}
+.puerta-aviso p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #cbb8bc;
+}
+.puerta-aviso strong {
+  color: #fbf6ee;
+  font-weight: 600;
+}
+
+.puerta-volver {
+  position: absolute;
+  bottom: clamp(18px, 4vw, 30px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  font-size: 13px;
+  color: #b9a7ab;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.puerta-volver:hover {
+  color: #fbf6ee;
+}
+
+/* El hueco mientras se comprueba si hay alguien dentro. Sin esto, quien ya
+   había entrado veía un parpadeo de la puerta en cada recarga. */
+.puerta-espera {
+  min-height: 100vh;
+  min-height: 100svh;
+  background: #2b1119;
 }

@@ -51,7 +51,7 @@ export function DocArbol({ r }: { r: Resultado }) {
             <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:" + COL[d.k] + ";")}>
               {d.etapa} · {d.rango}
             </div>
-            <div style={css("font-family:'Cinzel',serif;font-size:19px;line-height:1.25;color:#241F2E;")}>
+            <div style={css("font-family:'Cinzel',serif;font-size:19px;line-height:1.25;color:#2B1119;")}>
               {d.c.arcano} · {d.c.carta?.nombre || ""}
             </div>
             <div style={css("font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#6B6478;")}>{d.c.carta?.lema || ""}</div>
@@ -183,7 +183,7 @@ export function DocAlma({ r }: { r: Resultado }) {
 
 const DOC_TH = "font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#9B93A8;display:flex;align-items:center;justify-content:center;padding:5px 0;";
 const DOC_TD = "font-family:'Cinzel',serif;font-size:16px;color:#37323F;display:flex;align-items:center;justify-content:center;padding:8px 0;border:1px solid rgba(201,168,76,.22);border-radius:3px;background:#F3EFE6;";
-const DOC_TD_TOT = DOC_TD.replace("#37323F", "#241F2E").replace("#F3EFE6", "rgba(201,168,76,.22)");
+const DOC_TD_TOT = DOC_TD.replace("#37323F", "#2B1119").replace("#F3EFE6", "rgba(201,168,76,.22)");
 
 export function DocCuentas({ r }: { r: Resultado }) {
   const c = r.cuentas;
@@ -214,7 +214,7 @@ export function DocCuentas({ r }: { r: Resultado }) {
         {karma.map((k, i) => (
           <div key={i} style={css("display:flex;gap:12px;align-items:baseline;border-bottom:1px solid rgba(201,168,76,.25);padding-bottom:7px;")}>
             <span style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#9B93A8;flex:1;")}>{k.label}</span>
-            <span style={css("font-family:'Cinzel',serif;font-size:23px;color:#241F2E;")}>{k.valor}</span>
+            <span style={css("font-family:'Cinzel',serif;font-size:23px;color:#2B1119;")}>{k.valor}</span>
           </div>
         ))}
       </div>
@@ -235,7 +235,7 @@ export function DocCiclos({ r }: { r: Resultado }) {
             <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
               {c.nombre} · {c.rango}
             </div>
-            <div style={css("font-family:'Cinzel',serif;font-size:26px;color:#241F2E;line-height:1.2;")}>{c.numero}</div>
+            <div style={css("font-family:'Cinzel',serif;font-size:26px;color:#2B1119;line-height:1.2;")}>{c.numero}</div>
             <p style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{c.texto}</p>
           </div>
         ))}
@@ -246,7 +246,7 @@ export function DocCiclos({ r }: { r: Resultado }) {
             <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
               Realización {x.n} · {x.rango}
             </div>
-            <div style={css("font-family:'Cinzel',serif;font-size:22px;color:#241F2E;")}>{x.valor}</div>
+            <div style={css("font-family:'Cinzel',serif;font-size:22px;color:#2B1119;")}>{x.valor}</div>
             <p style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{x.texto}</p>
           </div>
         ))}
@@ -257,7 +257,7 @@ export function DocCiclos({ r }: { r: Resultado }) {
             <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
               {x.etiqueta} · {x.rango}
             </div>
-            <div style={css("font-family:'Cinzel',serif;font-size:22px;color:#241F2E;")}>{x.valor}</div>
+            <div style={css("font-family:'Cinzel',serif;font-size:22px;color:#2B1119;")}>{x.valor}</div>
             <p style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{x.texto}</p>
           </div>
         ))}
