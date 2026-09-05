@@ -39,14 +39,23 @@ function PillCTA({ onClick, href, variant, label, curLabel }: { onClick?: () => 
       <span className="pill-arrow">→</span>
     </>
   );
+  /*
+   * Un `div` con onClick no existe para quien no usa ratón: no lo alcanza el
+   * tabulador, no lo activa Intro, y un lector de pantalla no lo anuncia como
+   * algo que se pueda pulsar. Esto era el botón «Hablar con Iris» de la
+   * portada — el más importante de la web.
+   *
+   * La regla: si LLEVA a un sitio, es un enlace; si HACE algo, es un botón.
+   * Los dos vienen con teclado y con foco de fábrica.
+   */
   return href ? (
     <Link href={href} data-mag data-cur-label={curLabel} className={cls}>
       {inner}
     </Link>
   ) : (
-    <div onClick={onClick} data-mag data-cur-label={curLabel} className={cls}>
+    <button type="button" onClick={onClick} data-mag data-cur-label={curLabel} className={cls}>
       {inner}
-    </div>
+    </button>
   );
 }
 
@@ -165,25 +174,29 @@ export default function Home() {
           Los números con los que se trabaja, pasando sin parar. No es
           decoración de relleno: son las doce cifras del oficio, y del 11, 22
           y 33 sale el nombre de la escuela. */}
-      <div className="claro banda-filete" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: '22px 0' }}>
-        <Marquesina segundos={44}>
+      <div className="claro banda-filete" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: '16px 0' }}>
+        <Marquesina segundos={58}>
           {['1', '2', '3', '4', '5', '6', '7', '8', '9', '11', '22', '33'].map((n) => (
             <span
               key={n}
+              /* De cifras de cuarenta y dos píxeles en negrita a una tira
+                 discreta. Doce números gigantes en fila no son un detalle de
+                 la casa: son una valla publicitaria, y era lo primero que se
+                 veía después del titular. */
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 'clamp(28px,4vw,58px)',
-                paddingRight: 'clamp(28px,4vw,58px)',
-                fontSize: 'clamp(26px,3vw,42px)',
-                fontWeight: 700,
-                letterSpacing: '-.03em',
-                color: ['11', '22', '33'].includes(n) ? 'var(--acento-2)' : 'var(--deco)',
+                gap: 'clamp(22px,3vw,44px)',
+                paddingRight: 'clamp(22px,3vw,44px)',
+                fontSize: 'clamp(15px,1.5vw,20px)',
+                fontWeight: 'var(--peso-fino)',
+                letterSpacing: '.02em',
+                color: ['11', '22', '33'].includes(n) ? 'var(--acento)' : 'var(--tx-4)',
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
               {n}
-              <span aria-hidden style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--linea-2)' }} />
+              <span aria-hidden style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--linea-2)' }} />
             </span>
           ))}
         </Marquesina>
@@ -412,13 +425,24 @@ export default function Home() {
               {faqs.map(([q, a], i) => {
                 const on = faq === i;
                 return (
-                  <div key={q} onClick={() => setFaq(on ? -1 : i)} data-mag className="line-hover" style={{ borderTop: '1px solid var(--linea)', borderBottom: i === faqs.length - 1 ? '1px solid var(--linea)' : undefined, padding: '24px 0', cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 18 }}>
-                      <span className="display" style={{ fontSize: 'var(--t-bloque)' }}>{q}</span>
-                      <span style={{ fontSize: 18, color: 'var(--acento)', flexShrink: 0 }}>{on ? '−' : '+'}</span>
-                    </div>
-                    <div style={{ overflow: 'hidden', transition: 'max-height .55s cubic-bezier(.16,1,.3,1),opacity .4s ease', maxHeight: on ? 240 : 0, opacity: on ? 1 : 0 }}>
-                      <p style={{ margin: '12px 0 0', fontSize: 16, lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '48ch' }}>{a}</p>
+                  <div key={q} className="line-hover" style={{ borderTop: '1px solid var(--linea)', borderBottom: i === faqs.length - 1 ? '1px solid var(--linea)' : undefined }}>
+                    {/* Un botón de verdad: se alcanza con el tabulador y se abre
+                        con Intro o con la barra. `aria-expanded` es lo que le
+                        dice a un lector de pantalla si está abierta o cerrada, y
+                        `aria-controls` con qué respuesta va. */}
+                    <button
+                      type="button"
+                      onClick={() => setFaq(on ? -1 : i)}
+                      aria-expanded={on}
+                      aria-controls={`duda-${i}`}
+                      data-mag
+                      className="duda-boton"
+                    >
+                      <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: 'var(--esp-bloque)', textAlign: 'left' }}>{q}</span>
+                      <span aria-hidden style={{ fontSize: 18, color: 'var(--acento)', flexShrink: 0 }}>{on ? '−' : '+'}</span>
+                    </button>
+                    <div id={`duda-${i}`} role="region" hidden={!on} style={{ overflow: 'hidden', transition: 'max-height .55s cubic-bezier(.16,1,.3,1),opacity .4s ease', maxHeight: on ? 240 : 0, opacity: on ? 1 : 0 }}>
+                      <p style={{ margin: '0 0 24px', fontSize: 'var(--t-cuerpo)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '48ch' }}>{a}</p>
                     </div>
                   </div>
                 );

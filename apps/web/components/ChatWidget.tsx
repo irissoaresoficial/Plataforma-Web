@@ -61,6 +61,45 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
 
   useEffect(() => () => clearTimeout(botTimer.current), []);
 
+  /*
+   * EL PANEL SE CIERRA CON ESCAPE Y EL FOCO NO SE ESCAPA DE ÉL.
+   *
+   * Sin esto, quien no usa ratón entraba y se quedaba dentro: podía escribir su
+   * nombre y a partir de ahí no podía elegir día, ni enviar, ni salir. Y con el
+   * tabulador el foco se iba detrás del panel, a cosas tapadas que no se ven.
+   *
+   * La trampa de foco es lo que se espera de cualquier ventana que se abre
+   * encima: mientras esté abierta, el tabulador da vueltas dentro.
+   */
+  const panelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const alPulsar = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const p = panelRef.current;
+      if (!p) return;
+      const focos = p.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focos.length) return;
+      const primero = focos[0];
+      const ultimo = focos[focos.length - 1];
+      if (e.shiftKey && document.activeElement === primero) {
+        e.preventDefault();
+        ultimo.focus();
+      } else if (!e.shiftKey && document.activeElement === ultimo) {
+        e.preventDefault();
+        primero.focus();
+      }
+    };
+    document.addEventListener('keydown', alPulsar);
+    return () => document.removeEventListener('keydown', alPulsar);
+  }, [open]);
+
   /**
    * El bot piensa un momento (los tres puntos) y después escribe: las palabras
    * van apareciendo una a una en vez de soltar el mensaje entero de golpe.
@@ -218,10 +257,12 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
 
   return (
     <>
-      <div
+      <button
+        type="button"
         id="chat-launcher"
         className="vino"
         onClick={openChat}
+        aria-label={t.cbook || 'Reservar una sesión'}
         data-mag
         data-cur-label={t.cbook}
         style={{
@@ -264,12 +305,21 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           <span style={{ fontSize: 14, fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
           <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
         </div>
-        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
+        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 'var(--peso-medio)', flexShrink: 0 }}>
           →
         </span>
-      </div>
+      </button>
 
+      {/* Una ventana que se abre encima tiene que decir que lo es: `dialog`
+          para que un lector de pantalla la anuncie, `aria-modal` para que se
+          entienda que lo de detrás está en pausa, y `aria-hidden` cuando está
+          cerrada para que su contenido no aparezca leyendo el resto. */}
       <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t.ch_title}
+        aria-hidden={!open}
         style={{
           position: 'fixed',
           zIndex: 140,
@@ -303,12 +353,14 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.4)', borderRadius: 100, padding: '4px 8px', flexShrink: 0 }}>
             IA
           </span>
-          <div
+          <button
+            type="button"
             onClick={() => setOpen(false)}
-            style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--tx-2)', fontSize: 16, cursor: 'pointer', flexShrink: 0 }}
+            aria-label="Cerrar"
+            className="chat-cerrar"
           >
             ×
-          </div>
+          </button>
         </div>
 
         {/* Los mensajes se apoyan abajo: si se apilan arriba queda un vacío
@@ -349,19 +401,13 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
         {calOn && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 16px 12px', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-              <div
-                onClick={() => setCalOffset((o) => Math.max(0, o - 1))}
-                style={{ width: 26, height: 26, borderRadius: '50%', border: '1px solid var(--linea-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}
-              >
+              <button type="button" onClick={() => setCalOffset((o) => Math.max(0, o - 1))} aria-label="Mes anterior" className="chat-mes">
                 ‹
-              </div>
+              </button>
               <span style={{ fontSize: 13, fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', textTransform: 'capitalize' }}>{calMonth}</span>
-              <div
-                onClick={() => setCalOffset((o) => Math.min(6, o + 1))}
-                style={{ width: 26, height: 26, borderRadius: '50%', border: '1px solid var(--linea-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, cursor: 'pointer' }}
-              >
+              <button type="button" onClick={() => setCalOffset((o) => Math.min(6, o + 1))} aria-label="Mes siguiente" className="chat-mes">
                 ›
-              </div>
+              </button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 3 }}>
               {calWeekdays.map((w, i) => (
@@ -371,26 +417,28 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
               ))}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 3 }}>
+              {/* Un botón de verdad, y de 44 px de alto: medía 30 y son el paso
+                  obligado para reservar, apretados en siete columnas. Los días
+                  sin hueco van deshabilitados, no invisibles: así el calendario
+                  se sigue entendiendo. */}
               {cells.map((d, i) => (
-                <div
+                <button
+                  type="button"
                   key={i}
+                  disabled={!d.free}
+                  aria-label={d.value ? `${d.label} de ${calMonth}` : undefined}
+                  aria-current={d.sel ? 'date' : undefined}
                   onClick={() => d.value && submit(d.value, { diaISO: d.iso })}
+                  className="chat-dia"
                   style={{
-                    height: 30,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    borderRadius: 9,
-                    cursor: d.free ? 'pointer' : undefined,
+                    visibility: d.label ? 'visible' : 'hidden',
                     color: d.free ? (d.sel ? '#FFFFFF' : 'var(--tx)') : 'var(--tx-4)',
                     background: d.free ? (d.sel ? 'var(--acento)' : 'var(--linea)') : 'transparent',
                     border: d.free ? `1px solid ${d.sel ? 'var(--acento)' : 'var(--linea)'}` : '1px solid transparent',
                   }}
                 >
                   {d.label}
-                </div>
+                </button>
               ))}
             </div>
             <span style={{ fontSize: 10, lineHeight: 1.5, color: 'var(--tx-3)' }}>{t.ch_cal}</span>
@@ -400,13 +448,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
         {opts.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, padding: '0 16px 12px', flexShrink: 0 }}>
             {opts.map((o) => (
-              <div
-                key={o}
-                onClick={() => submit(o)}
-                style={{ border: '1px solid rgba(200,155,74,.5)', color: 'var(--acento)', borderRadius: 100, padding: '9px 14px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-              >
+              <button type="button" key={o} onClick={() => submit(o)} className="chat-hora">
                 {o}
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -417,6 +461,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
             ref={inputRef}
             type="text"
             value={draft}
+            aria-label={cur?.ask || 'Tu respuesta'}
             placeholder={cur?.ph || '…'}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
@@ -427,12 +472,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
             }}
             style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', fontSize: 15, color: 'var(--tx)', padding: '6px 0' }}
           />
-          <div
-            onClick={() => submit(draft)}
-            style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
-          >
+          <button type="button" onClick={() => submit(draft)} aria-label="Enviar" className="chat-enviar">
             →
-          </div>
+          </button>
         </div>
         <div style={{ padding: '0 17px 13px', fontSize: 10, lineHeight: 1.6, color: 'var(--tx-4)' }}>{t.ch_priv}</div>
       </div>
