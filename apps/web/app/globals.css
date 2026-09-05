@@ -2070,3 +2070,75 @@ body[data-nav-claro='si'] .sello-color {
   border-radius: 18px;
   overflow: hidden;
 }
+
+/* ==================================================================
+   LA COLUMNA FIJA
+   La izquierda se queda; la derecha pasa por delante.
+   ================================================================== */
+/*
+ * OJO CON `align-items: start`.
+ *
+ * Con él, cada columna mide lo que mide su contenido, y una columna que mide
+ * lo que su contenido NO TIENE SITIO DONDE PEGARSE: el pegado necesita que la
+ * caja que lo contiene sea más alta que él. Medido: el titular se iba fuera de
+ * pantalla como si no llevara `sticky`.
+ *
+ * Así que la columna se estira todo el alto de la fila —que lo marca la lista
+ * de al lado— y lo que se pega es lo de dentro.
+ */
+.col-fija {
+  display: grid;
+  gap: clamp(30px, 4vw, 64px);
+}
+.col-fija-pasa {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.6vw, 20px);
+  min-width: 0;
+}
+@media (min-width: 900px) {
+  .col-fija {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+  }
+  .col-fija-quieta {
+    align-self: stretch;
+  }
+  .col-fija-quieta > * {
+    position: sticky;
+    /* Debajo de la barra de arriba, que es fija y mide 64 px. */
+    top: 108px;
+  }
+}
+
+/*
+ * Los tres pasos del método: el número a la izquierda y el texto al lado, que
+ * en una columna estrecha se lee mucho mejor que un número arriba y el texto
+ * abajo con treinta píxeles de hueco en medio.
+ *
+ * Y con cuerpo. Medido: apretadas, las tres dejaban la sección en 411 px
+ * —menos de media pantalla— y con tan poco recorrido el titular pegado de al
+ * lado no llegaba a notarse. Aparte de que tres fichas enanas para explicar
+ * cómo trabaja alguien no le hacen justicia a lo que se está contando.
+ */
+.paso-ficha {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(18px, 2.2vw, 30px);
+  min-height: clamp(140px, 15vw, 190px);
+  border: 1px solid var(--linea);
+  border-radius: 22px;
+  padding: clamp(26px, 3vw, 38px);
+}
+.paso-num {
+  flex: none;
+  font-size: clamp(34px, 3.8vw, 52px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--deco);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.5s ease;
+}
+.paso-ficha:hover .paso-num {
+  color: var(--acento-2);
+}

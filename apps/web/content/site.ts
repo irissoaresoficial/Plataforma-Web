@@ -61,6 +61,27 @@ export const CONTACTO = {
 };
 
 /* ------------------------------------------------------------------ */
+/*  LA SESIÓN CON IRIS                                                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Los datos de la sesión.
+ *
+ * Estuvieron escritos a mano dentro de los textos —«Nos vemos 90 minutos», en
+ * los tres idiomas— y nadie los había confirmado nunca: venían del diseño de
+ * partida. Una web que afirma cuánto dura algo y cuánto cuesta y se equivoca
+ * pierde mucho más que la frase en la que se equivoca.
+ *
+ * Aquí van, en un solo sitio y marcados en rojo hasta que sean de verdad.
+ */
+export const SESION = {
+  /** Tal y como se quiera enseñar: "90 minutos", "una hora y media". */
+  duracion: PENDIENTE,
+  /** En euros. null = todavía sin precio, y la web no enseña ninguno. */
+  precio: null as number | null,
+};
+
+/* ------------------------------------------------------------------ */
 /*  MEMBRESÍA — lista de espera                                        */
 /* ------------------------------------------------------------------ */
 

@@ -369,3 +369,43 @@ export function useProgreso(ref: React.RefObject<HTMLElement | null>, offset: ['
   const { scrollYProgress } = useScroll({ target: ref, offset });
   return useSpring(scrollYProgress, { stiffness: 110, damping: 30, restDelta: 0.001 });
 }
+
+/* ------------------------------------------------------------------ */
+/*  COLUMNA FIJA                                                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Dos columnas: la de la izquierda se queda quieta mientras la de la derecha
+ * pasa por delante.
+ *
+ * Es el otro recurso grande, y es distinto del bloque anclado. Allí se para
+ * TODO y por dentro cambia una frase; aquí sólo se para el titular, y el
+ * contenido sigue pasando de verdad. Sirve para lo que es una lista real —los
+ * tres pasos del método— donde importa poder comparar unos con otros.
+ *
+ * Igual que el bloque anclado, por debajo de 900 px no se pega nada: en un
+ * teléfono no hay dos columnas que valgan, y lo pegado se pelea con la barra
+ * del navegador.
+ *
+ * Para que esto funcione, ningún antepasado puede llevar `overflow` distinto
+ * de `visible` en el eje vertical. `overflow-x: hidden` lo cambia sin decirlo;
+ * por eso en toda la web se usa `overflow-x: clip`.
+ */
+export function ColumnaFija({
+  fijo,
+  children,
+  className,
+}: {
+  /** Lo que se queda quieto: normalmente el rótulo y el titular. */
+  fijo: ReactNode;
+  /** Lo que pasa por delante. */
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`col-fija ${className ?? ''}`}>
+      <div className="col-fija-quieta">{fijo}</div>
+      <div className="col-fija-pasa">{children}</div>
+    </div>
+  );
+}

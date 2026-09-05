@@ -5,7 +5,7 @@ import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
 import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
-import { Palabras, Marquesina, Paralaje, Revelado } from '@/components/movimiento';
+import { Palabras, Marquesina, Paralaje, Revelado, ColumnaFija, Entra, Escalonado, Hijo } from '@/components/movimiento';
 import TuNumero from '@/components/TuNumero';
 import Anclado from '@/components/Anclado';
 import Foto from '@/components/Foto';
@@ -14,7 +14,8 @@ import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
-import { CONTACTO, CURSOS, FOTOS, MEMBRESIA, eur, falta } from '@/content/site';
+import { CONTACTO, CURSOS, FOTOS, MEMBRESIA, SESION, eur, falta } from '@/content/site';
+import Pendiente from '@/components/Pendiente';
 
 const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
 const ANCHO = 1320;
@@ -290,35 +291,49 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── CÓMO FUNCIONA ────────────────────────────────────── */}
-      <div id="metodo" className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: '0 clamp(16px,4vw,56px) clamp(76px,10vw,150px)' }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(30px,3.6vw,50px)' }}>
-          <Reveal>
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <Rotulo>{t.m_lab}</Rotulo>
-                <span className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '14ch' }}>{t.m_h}</span>
-              </div>
-              <div style={{ height: 2, background: 'var(--linea)', borderRadius: 2, overflow: 'hidden', width: 'min(200px,40vw)' }}>
-                <div id="mprog" style={{ height: '100%', width: '0%', background: 'var(--acento)', transition: 'width .3s linear' }} />
-              </div>
-            </div>
-          </Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(250px,1fr))', gap: 12 }}>
-            {pasos.map(([titulo, texto], i) => (
-              <Reveal key={titulo} delay={i * 90}>
-                <div data-step data-card className="card-hover" style={{ border: '1px solid var(--linea)', borderRadius: 20, padding: 'clamp(22px,2.4vw,32px)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 30, minHeight: 220 }}>
-                  <span data-cardnum className="display" style={{ fontSize: 40, lineHeight: 1, color: 'var(--deco)', transition: 'color .5s ease' }}>
-                    {String(i + 1).padStart(2, '0')}
+      {/* ── CÓMO FUNCIONA ──────────────────────────────────────
+          El titular se queda quieto y los tres pasos pasan por delante. Es
+          distinto del bloque anclado del dolor: allí se para todo y sólo se ve
+          una frase; aquí los tres pasos pasan de verdad, porque son una lista
+          y hace falta poder compararlos. */}
+      <div id="metodo" className="claro banda">
+        <div className="banda-dentro">
+          <ColumnaFija
+            fijo={
+              <Entra desde="izq">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <Rotulo>{t.m_lab}</Rotulo>
+                  <span style={{ fontSize: 'var(--t-seccion)', fontWeight: 700, lineHeight: 1.07, letterSpacing: '-.03em', maxWidth: '12ch', textWrap: 'balance' }}>
+                    {t.m_h}
                   </span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                    <span className="display" style={{ fontSize: 'var(--t-bloque)' }}>{titulo}</span>
-                    <span style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--tx-2)' }}>{texto}</span>
+                  <div style={{ height: 2, background: 'var(--linea)', borderRadius: 2, overflow: 'hidden', width: 'min(200px,40vw)', marginTop: 6 }}>
+                    <div id="mprog" style={{ height: '100%', width: '0%', background: 'var(--acento)', transition: 'width .3s linear' }} />
                   </div>
                 </div>
-              </Reveal>
-            ))}
-          </div>
+              </Entra>
+            }
+          >
+            <Escalonado paso={0.12} style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(12px,1.6vw,20px)' }}>
+              {pasos.map(([titulo, texto], i) => (
+                <Hijo key={titulo} desde="der">
+                  <div data-step data-card className="card-hover paso-ficha">
+                    <span data-cardnum className="paso-num">{String(i + 1).padStart(2, '0')}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
+                      <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 700, letterSpacing: '-.024em', lineHeight: 1.12 }}>{titulo}</span>
+                      <span style={{ fontSize: 'var(--t-cuerpo)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)' }}>{texto}</span>
+                      {/* La duración sólo aparece cuando alguien la ha
+                          confirmado. Mientras tanto sale marcada, no inventada. */}
+                      {i === 2 && (
+                        <span style={{ marginTop: 6 }}>
+                          {falta(SESION.duracion) ? <Pendiente>Falta la duración</Pendiente> : <span className="rotulo-dato">{SESION.duracion}</span>}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Hijo>
+              ))}
+            </Escalonado>
+          </ColumnaFija>
         </div>
       </div>
 
