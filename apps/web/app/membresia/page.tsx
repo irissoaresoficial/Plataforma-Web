@@ -22,7 +22,7 @@ export default function Membresia() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta="Reservar" ctaHref="#reservar" extra={[{ href: '#reservar', label: 'Reservar mi plaza' }]} />
+      <Nav cta="Entrar en la lista" ctaHref="#reservar" extra={[{ href: '#reservar', label: 'Entrar en la lista' }]} />
 
       {/* HERO */}
       <div id="top" className="claro" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(88px,12vh,130px) clamp(14px,3vw,36px) clamp(30px,5vh,56px)', overflow: 'hidden' }}>
@@ -159,7 +159,7 @@ export default function Membresia() {
             <LeadForm
               origen="membresia"
               detalle={`Reserva a ${eur(MEMBRESIA.precioReserva)} (precio normal ${eur(MEMBRESIA.precio)})`}
-              cta="Reservar mi plaza"
+              cta={`Guardar mi precio de ${eur(MEMBRESIA.precioReserva)}`}
               successTitle="Plaza reservada."
               successText={`Te escribo en cuanto abra, con tu precio de ${eur(MEMBRESIA.precioReserva)} guardado. Si me dejaste el WhatsApp, te aviso también por ahí.`}
               privacidad="No se cobra nada ahora. Te aviso cuando abra y nada más."

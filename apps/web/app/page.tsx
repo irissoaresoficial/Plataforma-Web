@@ -146,7 +146,7 @@ export default function Home() {
               <Reveal delay={220}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
                   <PillCTA onClick={openChat} variant="cream" label={t.hcta} curLabel={t.cbook} />
-                  <Link href="/sinergia" data-mag className="btn-outline">
+                  <Link href="#prueba" data-mag className="btn-outline">
                     {t.hcta2}
                   </Link>
                 </div>
@@ -392,7 +392,7 @@ export default function Home() {
             </Reveal>
 
             <Reveal delay={230}>
-              <PillCTA href="/membresia" variant="dark" label={t.wl_cta} curLabel={t.csee} />
+              <PillCTA href="/membresia" variant="dark" label={t.wl_cta.replace('{p}', eur(MEMBRESIA.precioReserva))} curLabel={t.csee} />
             </Reveal>
           </div>
         </div>

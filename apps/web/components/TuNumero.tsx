@@ -22,7 +22,7 @@
  * consentimiento y sin letra pequeña, y por eso lo dice en voz alta debajo.
  */
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Reduccion from './Reduccion';
@@ -55,6 +55,30 @@ export default function TuNumero() {
   const completa = Boolean(f.dia && f.mes && f.anio);
   const puede = completa && !error;
 
+  /*
+   * AL PULSAR, LA VISTA VA AL RESULTADO.
+   *
+   * En el móvil las dos columnas se apilan, así que el resultado cae DEBAJO del
+   * botón y fuera de la pantalla. Pulsabas «ver mi número» y no pasaba nada
+   * visible; peor todavía, la animación de la cuenta sólo arranca cuando el
+   * bloque entra en pantalla, así que tampoco había empezado. Desde fuera es un
+   * botón roto, y justo en el sitio donde la web da lo único que da gratis.
+   *
+   * En el escritorio el resultado ya está al lado, a la vista, así que llevar la
+   * vista allí no mueve nada: `scrollIntoView` con `nearest` no hace nada si ya
+   * se ve entero. Una sola línea vale para los dos casos.
+   */
+  const resultado = useRef<HTMLDivElement>(null);
+
+  const calcular = () => {
+    if (!puede) return;
+    setAcabado(false);
+    setHecho({ d: +f.dia, m: +f.mes, a: +f.anio });
+    requestAnimationFrame(() =>
+      resultado.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }),
+    );
+  };
+
   const campo = (k: keyof Fecha, etiqueta: string, largo: number, ph: string) => (
     <label className="tn-campo">
       <span className="rotulo-dato">{etiqueta}</span>
@@ -73,7 +97,7 @@ export default function TuNumero() {
           setAcabado(false);
         }}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && puede) { setAcabado(false); setHecho({ d: +f.dia, m: +f.mes, a: +f.anio }); }
+          if (e.key === 'Enter') calcular();
         }}
       />
     </label>
@@ -83,16 +107,25 @@ export default function TuNumero() {
     <div className="tn">
       <div className="tn-lado">
         <span className="rotulo">Empieza por aquí · gratis</span>
-        {/* El gancho ya no es «mira tu número». Nadie busca su cifra por
-            deporte: se busca por alguien. La cuenta es la excusa; la persona con
-            la que siempre acabas igual es el motivo, y es lo que abre el
-            embudo. */}
+        {/*
+            EL TITULAR PROMETE LO QUE HACE EL FORMULARIO QUE TIENE DEBAJO.
+
+            Decía «¿tienes buena sinergia con esa persona con la que siempre
+            acabas igual?» y justo debajo pedía TU día, TU mes y TU año. Quien
+            llega pulsando «ver mi número» se encuentra una pregunta sobre otra
+            persona y tres casillas que no le pegan: en ese medio segundo de
+            desajuste se pierde a la gente.
+
+            La pregunta de la sinergia no se tira, se mueve: aparece al terminar
+            la cuenta, cuando ya te has llevado tu número y la pregunta llega
+            con algo detrás. Ahí sí abre el embudo; aquí sólo confundía.
+        */}
         <h2 className="tn-titulo">
-          ¿Tienes buena sinergia con esa persona con la que <em>siempre acabas igual</em>?
+          ¿Y a ti <em>qué número te tocó</em>?
         </h2>
         <p className="tn-texto">
-          Se ve en dos números: el tuyo y el suyo. Empieza por el tuyo — es la <strong>misma cuenta</strong> que
-          hago yo con quien se sienta delante.
+          Pon tu fecha de nacimiento y lo ves ahora mismo. Es la <strong>misma cuenta</strong> que hago yo con
+          cualquiera que se sienta delante, hecha delante de ti.
         </p>
 
         <div className="tn-fila">
@@ -107,7 +140,7 @@ export default function TuNumero() {
             data-mag
             data-cur-label="Ver"
             disabled={!puede}
-            onClick={() => { if (!puede) return; setAcabado(false); setHecho({ d: +f.dia, m: +f.mes, a: +f.anio }); }}
+            onClick={calcular}
           >
             <span>Ver mi número</span>
             <span className="pill-arrow">→</span>
@@ -121,7 +154,7 @@ export default function TuNumero() {
         </p>
       </div>
 
-      <div className="tn-lado tn-resultado">
+      <div className="tn-lado tn-resultado" ref={resultado}>
         <AnimatePresence mode="wait">
           {hecho ? (
             <motion.div

@@ -90,7 +90,7 @@ export default function Sinergia() {
     <div id="page" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor hitSelector="[data-mag],a,input,[data-card]" />
       <Cortina />
-      <Nav cta="Probarlo gratis" ctaHref="#calc" />
+      <Nav cta="Empezar gratis" ctaHref="#calc" />
 
       <div className="claro" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
         <CampoNumeros intensidad={0.7} />
@@ -127,7 +127,7 @@ export default function Sinergia() {
             </Reveal>
             <Reveal delay={290}>
               <a href="#calc" data-mag data-cur-label="Empezar" className="pill pill-cream" style={{ alignSelf: 'flex-start' }}>
-                <span>Elegir a una persona</span>
+                <span>Empezar — dos minutos</span>
                 <span className="pill-arrow">↓</span>
               </a>
             </Reveal>
@@ -341,7 +341,7 @@ export default function Sinergia() {
                     mirarla entera. Eso es lo que hacemos en una sesión.
                   </p>
                   <Link href="/#cita" data-mag data-cur-label="Reservar" className="pill pill-gold" style={{ justifyContent: 'center' }}>
-                    <span>Mirar mi línea con Iris</span>
+                    <span>Mirar mi árbol con Iris</span>
                     <span>→</span>
                   </Link>
                   <Link href="/#lista-espera" style={{ fontSize: 13, color: 'var(--tx-3)', textAlign: 'center' }}>
