@@ -53,6 +53,32 @@ const MINIMO_MINUTOS = 40;
 const CANAL_HORAS = 48;
 
 /**
+ * EL ORDEN DE LAS CAPAS, DECIDIDO UNA VEZ Y AQUÍ.
+ *
+ * Estaba repartido: cada trozo se ponía su `z-index` a ojo donde hacía falta, y
+ * salieron números que se contradecían — las tarjetas de sesión llevaban un 3 y
+ * la cabecera de los días un 2. Como la cabecera es `sticky`, se queda pegada
+ * arriba al bajar por la rejilla… y las tarjetas le pasaban POR ENCIMA. Lo que
+ * se veía era «Sin nombre · Sesión 1h30» escrito encima de «mar 8», con la
+ * cabecera medio tapada. Se leía como una avería de la agenda.
+ *
+ * Con la escala escrita junta, el orden se lee de un vistazo y una capa nueva
+ * ya no puede colarse en medio por descuido. De abajo arriba:
+ *
+ *   FONDO    las medias horas y las líneas.
+ *   BLOQUE   las sesiones. Por encima de las líneas y por debajo de todo lo
+ *            que se queda pegado a un borde, que es la regla que faltaba.
+ *   AHORA    la raya del presente, que tiene que cruzar por encima de una
+ *            sesión en curso: si no, la sesión de las 12 la esconde justo
+ *            mientras está pasando.
+ *   HORAS    la columna de la izquierda, pegada al desplazar en horizontal.
+ *   DIAS     la cabecera, pegada al desplazar en vertical.
+ *   ESQUINA  el hueco donde se cruzan las dos: tiene que ganar a las dos o al
+ *            desplazar en diagonal se ve una hora asomando por debajo.
+ */
+const CAPA = { FONDO: 0, BLOQUE: 1, AHORA: 2, HORAS: 4, DIAS: 5, ESQUINA: 6 };
+
+/**
  * El color de cada clase de sesión. Es lo único que distingue un bloque de
  * otro y por eso son tres colores y no seis: los tres tipos que existen.
  * Los tres están medidos para leerse sobre el papel y sobre el granate.
@@ -173,7 +199,7 @@ export default function RejillaSemana({
             la izquierda, o al desplazarse deja pasar los números por debajo. */}
         <div
           style={css(
-            "position:sticky;top:0;left:0;z-index:3;background:var(--surface);border-bottom:1px solid var(--border);height:56px;"
+            `position:sticky;top:0;left:0;z-index:${CAPA.ESQUINA};background:var(--surface);border-bottom:1px solid var(--border);height:56px;`
           )}
         />
         {dias.map((d) => {
@@ -184,7 +210,7 @@ export default function RejillaSemana({
             <div
               key={claveDia(d)}
               style={css(
-                "position:sticky;top:0;z-index:2;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;" +
+                `position:sticky;top:0;z-index:${CAPA.DIAS};height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;` +
                   "background:var(--surface);border-bottom:1px solid var(--border);border-left:1px solid var(--border);" +
                   /* El día que se está mirando lleva el granate de la casa —lo
                      elegido— y hoy, cuando no es el elegido, sólo el aro de oro. */
@@ -212,7 +238,7 @@ export default function RejillaSemana({
         })}
 
         {/* ------------------------------------------------- la columna de horas */}
-        <div style={css(`position:sticky;left:0;z-index:1;background:var(--surface-2);height:${alto}px;`)}>
+        <div style={css(`position:sticky;left:0;z-index:${CAPA.HORAS};background:var(--surface-2);height:${alto}px;`)}>
           {horas.map((h, i) => (
             <div
               key={h}
@@ -279,7 +305,7 @@ export default function RejillaSemana({
                   aria-hidden="true"
                   style={css(
                     `position:absolute;left:0;right:0;top:${((minutosAhora - abre * 60) / 60) * ALTO_HORA}px;height:0;` +
-                      "border-top:2px solid var(--accion);z-index:2;pointer-events:none;"
+                      `border-top:2px solid var(--accion);z-index:${CAPA.AHORA};pointer-events:none;`
                   )}
                 />
               )}
@@ -304,7 +330,7 @@ export default function RejillaSemana({
                     onClick={() => alPulsarCita(c)}
                     title={`${nombreDe(c.personaId)} · ${hora(c.inicioISO)} · ${duracion(c.minutos)}`}
                     style={css(
-                      "position:absolute;overflow:hidden;text-align:left;cursor:pointer;z-index:3;transform-origin:top;" +
+                      `position:absolute;overflow:hidden;text-align:left;cursor:pointer;z-index:${CAPA.BLOQUE};transform-origin:top;` +
                         `top:${((desde - abre * 60) / 60) * ALTO_HORA + 1}px;height:${altoBloque - 2}px;` +
                         `left:calc(${carril * ancho}% + 2px);width:calc(${ancho}% - 4px);` +
                         /* La tarjeta de la casa, levantada del hueco, con la
