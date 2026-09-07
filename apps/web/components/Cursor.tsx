@@ -24,10 +24,35 @@ export default function Cursor({
     if (!window.matchMedia('(pointer:fine)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+    /*
+     * EL PUNTERO TIENE QUE VERSE. PARECE OBVIO Y NO LO ERA.
+     *
+     * El aro era un trazo de 1 px de granate al 50 % de opacidad, y el punto de
+     * dentro, 4 px de oro claro. Sobre el crema de la web eso se queda por
+     * debajo de 2:1 de contraste: está ahí, se puede encontrar si lo buscas, y
+     * en movimiento —que es como se usa un puntero— desaparece.
+     *
+     * Y desaparecer es lo peor que puede hacer un puntero personalizado,
+     * porque al ponerlo se ESCONDE el del sistema. Un cursor invisible no es
+     * un cursor discreto: es no tener cursor, y quien lo sufre no sabe siquiera
+     * qué está pasando — sólo que no encuentra el ratón en esta web.
+     *
+     * Se sube el trazo a 1,5 px y la opacidad a 0,78, y el punto pasa a 5 px
+     * del oro que sí se lee como texto.
+     *
+     * Y el halo blanco de fuera —ese `box-shadow` de un píxel— resuelve el otro
+     * caso, que no se veía por estar mirando siempre las bandas claras: sobre
+     * los bloques de granate el aro granate se disolvía en el fondo. Con el
+     * halo, el puntero tiene borde claro por fuera y oscuro por dentro, así que
+     * hay contraste contra lo que haya debajo, sea claro u oscuro. Es el mismo
+     * truco de los subtítulos de la tele.
+     */
+    const HALO = '0 0 0 1px rgba(255,255,255,.55)';
     const aro = document.createElement('div');
     aro.style.cssText =
       'position:fixed;left:0;top:0;width:26px;height:26px;margin:-13px 0 0 -13px;' +
-      'border:1px solid rgba(74,18,32,.5);border-radius:50%;pointer-events:none;z-index:9999;' +
+      'border:1.5px solid rgba(74,18,32,.78);border-radius:50%;pointer-events:none;z-index:9999;' +
+      `box-shadow:${HALO};` +
       'display:flex;align-items:center;justify-content:center;font-family:var(--sans);' +
       'font-size:11px;font-weight:700;letter-spacing:.02em;color:#FBF6EE;background:transparent;' +
       'will-change:transform;' +
@@ -35,8 +60,9 @@ export default function Cursor({
       'margin .35s cubic-bezier(.16,1,.3,1),background .3s ease,border-color .3s ease';
     const punto = document.createElement('div');
     punto.style.cssText =
-      'position:fixed;left:0;top:0;width:4px;height:4px;margin:-2px 0 0 -2px;background:#B8924F;' +
-      'border-radius:50%;pointer-events:none;z-index:9999;will-change:transform;transition:opacity .3s ease';
+      'position:fixed;left:0;top:0;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#7D5F1E;' +
+      `border-radius:50%;pointer-events:none;z-index:9999;box-shadow:${HALO};` +
+      'will-change:transform;transition:opacity .3s ease';
     document.body.append(aro, punto);
     document.body.setAttribute('data-cur', 'on');
 
@@ -76,7 +102,10 @@ export default function Cursor({
       aro.style.height = `${lado}px`;
       aro.style.margin = `${-lado / 2}px 0 0 ${-lado / 2}px`;
       aro.style.background = grande ? '#4A1220' : medio ? 'rgba(74,18,32,.09)' : 'transparent';
-      aro.style.borderColor = grande ? '#4A1220' : 'rgba(74,18,32,.5)';
+      aro.style.borderColor = grande ? '#4A1220' : 'rgba(74,18,32,.78)';
+      /* Relleno de granate: el halo blanco alrededor de una pastilla llena se
+         lee como un borde mal hecho, no como separación. */
+      aro.style.boxShadow = grande ? 'none' : HALO;
       punto.style.opacity = grande ? '0' : '1';
 
       // Solo se toca la foto que se deja y la que se toma, no todas las de la página.
