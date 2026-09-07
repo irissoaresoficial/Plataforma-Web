@@ -53,6 +53,41 @@ service cloud.firestore {
      * se añadirá sabiendo qué hace falta de verdad.
      */
 
+    /**
+     * EL ARRANQUE: CÓMO ENTRA LA PRIMERA PERSONA.
+     *
+     * Sin esto hay un problema de huevo y gallina sin salida: `dentro()` exige
+     * tener ficha, y crear una ficha exige estar dentro. La primera persona no
+     * podría entrar nunca, y la única forma de desatascarlo sería ir a la
+     * consola de Firebase a crear el documento a mano — copiando un
+     * identificador de veintiocho caracteres y escribiendo cuatro campos, que
+     * es donde más gente se equivoca de toda la instalación.
+     *
+     * Así que se abre un solo agujero, del tamaño exacto de una persona:
+     *
+     *   · sólo el correo de la dueña, escrito aquí entero;
+     *   · sólo para SU PROPIA ficha, nunca para la de otro;
+     *   · sólo si no existe ya — `create` no puede pisar un documento que está,
+     *     así que esto deja de funcionar en cuanto se usa una vez;
+     *   · y sólo con el correo verificado por Firebase Auth, que es un dato del
+     *     vale firmado y no algo que el navegador pueda inventarse.
+     *
+     * Para aprovecharlo haría falta controlar ese Gmail. Quien controle ese
+     * Gmail ya es la dueña.
+     *
+     * EL CORREO VA ESCRITO AQUÍ Y TAMBIÉN EN `lib/firebase.ts`, y los dos tienen
+     * que decir exactamente lo mismo. Las reglas no pueden leer variables de
+     * entorno, así que no hay manera de tenerlo en un solo sitio; lo que sí hay
+     * es que si un día discreparan, la plataforma diría que sí y el servidor que
+     * no, y el mensaje que vería la persona no explicaría nada.
+     */
+    function arranque(uid) {
+      return request.auth != null
+        && uid == request.auth.uid
+        && request.auth.token.email.lower() == 'irissoaresoficial@gmail.com'
+        && request.resource.data.activo == true;
+    }
+
     /* ---------------------------------------------------------------- */
     /*  Los usuarios de la plataforma                                    */
     /* ---------------------------------------------------------------- */
@@ -73,7 +108,7 @@ service cloud.firestore {
        * Firebase. Con una sola cuenta viva, ese error es irreversible desde
        * dentro.
        */
-      allow create: if dentro();
+      allow create: if dentro() || arranque(uid);
       allow update: if dentro()
         && (request.resource.data.activo == true || uid != request.auth.uid);
       allow delete: if dentro() && uid != request.auth.uid;

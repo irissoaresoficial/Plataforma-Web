@@ -53,8 +53,8 @@ import {
   signOut,
   type User,
 } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, hayFirebase, nube } from "./firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, CORREO_DUENA, hayFirebase, nube } from "./firebase";
 
 /**
  * UN SOLO NIVEL DE ACCESO, A PROPÓSITO.
@@ -132,7 +132,34 @@ export function SesionProvider({ children }: { children: ReactNode }) {
         return;
       }
       try {
-        const ficha = await getDoc(doc(base, "usuarios", u.uid));
+        const referencia = doc(base, "usuarios", u.uid);
+        let ficha = await getDoc(referencia);
+
+        /*
+         * LA PRIMERA VEZ, LA DUEÑA SE DA ACCESO SOLA.
+         *
+         * Sin esto hay un problema de huevo y gallina que no se resuelve desde
+         * dentro: las reglas exigen tener ficha para poder escribir fichas, así
+         * que la primera persona no podría entrar NUNCA. La salida era ir a la
+         * consola de Firebase, copiar un identificador de veintiocho caracteres
+         * y crear un documento a mano con cuatro campos escritos uno a uno. Es
+         * el paso donde más gente se atasca de toda la instalación, y donde una
+         * letra mal puesta deja la plataforma sin nadie dentro sin decir por qué.
+         *
+         * Sólo puede hacerlo el correo de la dueña, sólo si no tiene ficha ya, y
+         * la regla del servidor dice exactamente lo mismo: aquí no se está
+         * regalando nada que el servidor no permita. Para aprovecharlo haría
+         * falta controlar ese Gmail — y quien controle ese Gmail ya es la dueña.
+         */
+        if (!ficha.exists() && (u.email || "").toLowerCase() === CORREO_DUENA) {
+          await setDoc(referencia, {
+            email: u.email,
+            nombre: (u.displayName || "Iris").trim(),
+            activo: true,
+          });
+          ficha = await getDoc(referencia);
+        }
+
         const d = ficha.data();
         if (!ficha.exists() || d?.activo !== true) {
           /* Tiene cuenta pero no tiene permiso, o se lo han quitado. Se le echa

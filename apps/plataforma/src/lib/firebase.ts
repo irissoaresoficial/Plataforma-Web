@@ -33,24 +33,57 @@ import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
+/**
+ * DOS VARIABLES, NO SEIS.
+ *
+ * El bloque que enseña Firebase al crear una app web trae seis campos, y lo
+ * normal es copiarlos los seis. Aquí hacen falta dos, y los otros cuatro se
+ * deducen o no se usan:
+ *
+ *   · `authDomain` es SIEMPRE `<projectId>.firebaseapp.com`. No es una
+ *     casualidad ni un valor que Google pueda cambiar por proyecto: es cómo se
+ *     construye. Copiarlo a mano sólo añade una casilla más donde equivocarse.
+ *   · `storageBucket` igual, y además esta plataforma no sube archivos.
+ *   · `messagingSenderId` y `appId` son para avisos push y para analítica.
+ *     Ninguna de las dos cosas existe aquí.
+ *
+ * Cada variable que se pide es una oportunidad de pegar mal algo y pasar media
+ * hora buscando por qué no entra nadie. Con dos, o están las dos o no está
+ * ninguna, y el fallo se ve enseguida.
+ *
+ * Las dos que quedan se pueden sobrescribir por si algún día hace falta —un
+ * dominio propio para el inicio de sesión, por ejemplo— pero no hay que
+ * ponerlas para que esto funcione.
+ */
+const proyecto = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+
 const config = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  projectId: proyecto,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || (proyecto ? `${proyecto}.firebaseapp.com` : undefined),
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || (proyecto ? `${proyecto}.firebasestorage.app` : undefined),
 };
 
-/**
- * Con la clave y el proyecto basta para arrancar. Los demás campos hacen falta
- * para cosas que esta plataforma no usa —almacenamiento de archivos, avisos
- * push— y exigirlos dejaría todo apagado por un dato que no sirve para nada
- * aquí.
- */
 export function hayFirebase(): boolean {
   return Boolean(config.apiKey && config.projectId);
 }
+
+/**
+ * QUIÉN ES LA DUEÑA.
+ *
+ * Es el correo que puede darse acceso a sí mismo la primera vez, y sólo la
+ * primera vez. Resuelve el problema del huevo y la gallina: las reglas exigen
+ * tener ficha para poder escribir fichas, así que sin esto la primera persona
+ * no podría entrar nunca sin ir a crear el documento a mano en la consola de
+ * Firebase, copiando un identificador de veintiocho caracteres.
+ *
+ * Va escrito aquí y no en una variable porque tiene que decir exactamente lo
+ * mismo que las reglas de Firestore, y las reglas no pueden leer variables de
+ * entorno. Dos sitios con el mismo valor es peor que uno, pero un valor que
+ * puede discrepar de su regla es mucho peor: el día que no coincidieran, la
+ * plataforma diría que sí y el servidor que no.
+ */
+export const CORREO_DUENA = "irissoaresoficial@gmail.com";
 
 let app: FirebaseApp | null = null;
 
