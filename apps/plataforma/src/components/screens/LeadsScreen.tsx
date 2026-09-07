@@ -23,6 +23,19 @@
  * lado. El trabajo de este panel es mover gente de izquierda a derecha, así que
  * la pantalla tenía que estar hecha de izquierda a derecha.
  *
+ * DOS COSAS DISTINTAS SOBRE DE DÓNDE VIENE CADA UNO
+ * ---------------------------------------------------------------------------
+ * El FORMULARIO por el que entró lo sabe el sistema —lo escribe la web— y el
+ * CANAL por el que llegó a la web no lo sabe nadie más que Iris, porque se
+ * entera hablando con la persona. Las dos preguntas se parecen y no son la
+ * misma: «pidió la prueba gratis» no dice si la mandó una clienta o la vio en
+ * un anuncio, que es lo que decide dónde merece la pena poner el tiempo.
+ *
+ * Aquí eso se traduce en tres sitios: la ficha, donde se pone con un clic; la
+ * tarjeta, donde se lee sin abrir nada; y el renglón de arriba, que dice cuánta
+ * gente llega por cada uno. El tercero es el que sostiene al primero — un campo
+ * que se rellena y no devuelve nada deja de rellenarse.
+ *
  * ARRASTRAR NO PUEDE SER LA ÚNICA FORMA. Arrastrar no existe con el teclado y
  * es incómodo en un móvil, así que cada tarjeta abre su ficha al pulsarla y
  * desde ahí se mueve con botones. Lo mismo, por otro camino.
@@ -38,10 +51,13 @@ import { css } from "@/lib/css";
 import { hayFirebase } from "@/lib/firebase";
 import { hace, diasEntre } from "@/lib/despacho/fechas";
 import {
+  CANALES_LEAD,
   ESTADOS_LEAD,
   anotaLead,
   mueveLead,
+  ponCanal,
   ultimosLeads,
+  type CanalLead,
   type EstadoLead,
   type Lead,
 } from "@/lib/despacho/leads";
@@ -73,6 +89,25 @@ const ORIGENES: Record<string, string> = {
 };
 
 const origenLegible = (o: string) => ORIGENES[o] || o;
+
+const cortoCanal = (k: CanalLead) => CANALES_LEAD.find((c) => c.k === k)?.corto ?? "";
+
+/**
+ * LO QUE DICE LA SEGUNDA LÍNEA DE UNA TARJETA: DE DÓNDE SALIÓ Y POR DÓNDE ENTRÓ.
+ *
+ * Son dos datos distintos y los dos hacen falta, pero un cuarto renglón ahoga
+ * la tarjeta —ya lleva nombre, esto y el cuándo—. Así que van en el mismo, con
+ * una flecha entre medias: se lee como el camino que hizo la persona, «la vio en
+ * Instagram y acabó pidiendo la prueba gratis», que es exactamente lo que es.
+ *
+ * Mientras el canal esté sin decir, la línea es la de siempre: el formulario y
+ * nada más. La tarjeta no enseña un hueco ni un «sin especificar» — sólo gana
+ * información cuando Iris la pone, que es lo que hace que valga la pena ponerla.
+ */
+const deDondeYPorDonde = (l: Lead) => {
+  const canal = cortoCanal(l.canal);
+  return canal ? `${canal} → ${origenLegible(l.origen)}` : origenLegible(l.origen);
+};
 
 /**
  * El color de cada columna. Marca el hilo de arriba y el número, nunca rellena:
@@ -126,6 +161,38 @@ export default function LeadsScreen() {
       carga();
     }
   };
+
+  /* Igual que mover de estado, y a propósito: una escritura de un campo, la
+     pantalla pintada al momento y la base como única fuente de verdad si algo
+     falla. Poner de dónde salió alguien tiene que costar lo mismo que moverlo
+     de columna — un clic— o no se pondrá nunca. */
+  const cambiaCanal = async (id: string, canal: CanalLead) => {
+    setLeads((s) => s?.map((l) => (l.id === id ? { ...l, canal } : l)) ?? s);
+    try {
+      await ponCanal(id, canal);
+    } catch {
+      carga();
+    }
+  };
+
+  /**
+   * CUÁNTA GENTE LLEGA POR CADA CANAL.
+   *
+   * Es la mitad que devuelve el favor: pedirle a Iris que rellene un campo que
+   * no le contesta nada acaba con el campo sin rellenar en una semana. Aquí, en
+   * cuanto pone tres, ya ve por dónde le entra la gente.
+   *
+   * De mayor a menor y sólo los que tienen a alguien: una lista fija con ceros
+   * sería un cuadro de mandos, y esto es un renglón. «No lo sé» va al final
+   * aunque sea el más gordo —que lo va a ser— porque no es un canal: es lo que
+   * falta por saber, y ponerlo primero taparía la respuesta con la pregunta.
+   */
+  const porCanal = useMemo(() => {
+    if (!leads?.length) return [];
+    return CANALES_LEAD.map((c) => ({ ...c, n: leads.filter((l) => l.canal === c.k).length }))
+      .filter((c) => c.n > 0)
+      .sort((a, b) => (a.k === "nose" ? 1 : b.k === "nose" ? -1 : b.n - a.n));
+  }, [leads]);
 
   const guardaNota = async () => {
     if (!activo) return;
@@ -181,6 +248,28 @@ export default function LeadsScreen() {
           llegar y no hace falta una frase para decirlo.
       */}
       <Cabecera titulo="Leads" pie={total === 0 ? "Nadie todavía" : total === 1 ? "1 persona" : `${total} personas`} />
+
+      {/* El recuento por canal: un renglón, sin tarjeta y sin dibujo. Lo que se
+          quiere saber es el reparto, y el reparto de seis cifras se ve leyéndolas
+          — una gráfica de seis barras ocuparía media pantalla para decir lo
+          mismo y convertiría el embudo en un panel de estadísticas. */}
+      {porCanal.length > 0 && (
+        <div style={css("display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s2) var(--s5);margin:calc(var(--gap-lg) * -1 + var(--s2)) 0 var(--gap);")}>
+          <span style={css(rotulo("var(--gold)"))}>De dónde llegan</span>
+          {porCanal.map((c) => (
+            <span key={c.k} style={css("display:inline-flex;align-items:baseline;gap:6px;font-size:var(--t-mini);color:var(--text-3);")}>
+              {/* El nombre corto, el mismo que va en la tarjeta. Con los largos
+                  —«Te la mandó alguien», «Un taller o un evento»— el renglón se
+                  partía en tres en un teléfono, y un recuento que ocupa tres
+                  renglones ya no es un recuento: es un párrafo. */}
+              {c.corto || c.label}
+              <span data-cifras="" style={css("font-weight:640;color:var(--text);")}>
+                {c.n}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {leads === null ? (
         <div style={css(TARJETA + PAD)}>
@@ -281,8 +370,11 @@ export default function LeadsScreen() {
                           <span style={css("display:block;font-size:var(--t-body);font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>
                             {l.nombre || l.email}
                           </span>
-                          <span style={css("display:block;font-size:var(--t-mini);color:var(--text-4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>
-                            {origenLegible(l.origen)}
+                          <span
+                            title={deDondeYPorDonde(l)}
+                            style={css("display:block;font-size:var(--t-mini);color:var(--text-4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}
+                          >
+                            {deDondeYPorDonde(l)}
                           </span>
                           <span style={css("display:block;font-size:var(--t-mini);color:var(--text-4);margin-top:4px;")}>
                             {l.visto ? hace(dias) : ""}
@@ -352,6 +444,41 @@ export default function LeadsScreen() {
                     )}
                   >
                     {e.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={css(RAYA)} />
+
+            {/*
+                DE DÓNDE SALIÓ: LO MISMO QUE «MOVER A», POR DEBAJO.
+                Mismas pastillas, mismo granate para la puesta, misma escritura
+                de un campo. No es un formulario aparte ni un desplegable: se
+                pregunta al teléfono —«¿y tú de qué me conoces?»— y se pulsa
+                mientras se habla. Cualquier cosa que pida más de un clic se
+                queda sin rellenar.
+
+                Va DESPUÉS del estado a propósito: mover a alguien de columna es
+                el trabajo del embudo y tiene que seguir siendo lo primero que se
+                encuentra al abrir la ficha.
+            */}
+            <div>
+              <div style={css(rotulo() + "margin-bottom:8px;")}>De dónde salió</div>
+              <div style={css("display:flex;flex-wrap:wrap;gap:8px;")}>
+                {CANALES_LEAD.map((c) => (
+                  <button
+                    key={c.k}
+                    onClick={() => cambiaCanal(activo.id, c.k)}
+                    aria-pressed={activo.canal === c.k}
+                    style={css(
+                      "padding:7px 13px;border-radius:var(--r-pill);font-size:var(--t-mini);font-weight:590;cursor:pointer;" +
+                        (activo.canal === c.k
+                          ? "border:1px solid var(--accion);background:var(--accion);color:var(--sobre-accion);"
+                          : "border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);")
+                    )}
+                  >
+                    {c.label}
                   </button>
                 ))}
               </div>

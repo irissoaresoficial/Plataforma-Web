@@ -47,7 +47,10 @@ export * from "./tipos";
 export * from "./emisor";
 export * from "./fechas";
 export * from "./relacion";
-export * from "./etapas";
+/* Aquí había un `export * from "./etapas"`. Las etapas eran las cinco columnas
+   del tablero de Clientes y ese tablero ya no existe: Clientes es una lista.
+   Lo único de aquel archivo que se sigue usando —`loQueCuelga`— se ha mudado a
+   `relacion.ts`, que es de donde salía el dato. */
 export * from "./rejilla";
 export * from "./avisos";
 export type { RepoAvisos, RepoCitas, RepoClientes, RepoFacturas, Repositorio } from "./repositorio";

@@ -26,6 +26,56 @@ import { nube } from "../firebase";
 export type OrigenLead = "sinergia" | "membresia" | "curso" | "reserva";
 
 /**
+ * POR DÓNDE LLEGÓ A LA WEB. NO ES LO MISMO QUE EL FORMULARIO, Y HACEN FALTA LAS DOS.
+ *
+ * `origen` dice por qué formulario entró —la prueba gratis, un curso, la lista—
+ * y lo pone la web sola. Eso contesta «qué pidió», no «de dónde salió». Y «de
+ * dónde salió» es la pregunta que decide dónde invierte Iris su tiempo: si la
+ * mitad de la gente viene de una palabra suelta en Instagram, la campaña de pago
+ * sobra.
+ *
+ * Esto NO lo puede saber el sistema. No hay UTM que aguante: la gente busca el
+ * nombre en Google después de ver un reel, entra desde una historia guardada, o
+ * la manda una amiga por WhatsApp. Lo sabe Iris, y lo sabe hablando con la
+ * persona. Así que es un campo que se rellena a mano, y por eso son SEIS
+ * opciones y no quince: una lista larga se rellena mal o no se rellena.
+ *
+ * «NO LO SÉ» EXISTE Y ES EL ESTADO INICIAL. Es la respuesta honesta para la
+ * mayoría de los leads, y tenerla evita lo único que rompería este dato: que
+ * Iris elija cualquier cosa por quitarse el hueco de encima. Un recuento con la
+ * mitad en «no lo sé» sigue sirviendo; uno con la mitad mal puesta, no.
+ */
+export type CanalLead = "nose" | "instagram" | "boca" | "campana" | "google" | "taller";
+
+export const CANALES_LEAD: Array<{ k: CanalLead; label: string; corto: string }> = [
+  { k: "instagram", label: "Instagram", corto: "Instagram" },
+  /* «Te la mandó alguien» y no «recomendación»: es lo que Iris diría en voz
+     alta, y cubre igual a una clienta suya que a una amiga de una clienta. */
+  { k: "boca", label: "Te la mandó alguien", corto: "Boca a boca" },
+  { k: "campana", label: "Campaña de pago", corto: "Campaña" },
+  { k: "google", label: "Buscando en Google", corto: "Google" },
+  /* «Taller o evento» y no «un curso»: «Un curso» ya es el nombre de uno de los
+     formularios de la web, y dos cosas distintas con el mismo nombre en la misma
+     tarjeta serían imposibles de leer. Esto es haberla conocido en persona. */
+  { k: "taller", label: "Un taller o un evento", corto: "Taller" },
+  { k: "nose", label: "No lo sé", corto: "" },
+];
+
+/**
+ * El canal de un lead, tolerando que no lo tenga.
+ *
+ * Los leads que ya están en Firestore se guardaron antes de que este campo
+ * existiera y no lo llevan; los que entran por la web tampoco, porque la web no
+ * sabe esto. Ausente, vacío o con un valor que aquí ya no existe se leen igual:
+ * «no lo sé». Así no hace falta migrar nada ni escribir en documentos que nadie
+ * ha tocado.
+ */
+export const canalDe = (v: unknown): CanalLead =>
+  CANALES_LEAD.some((c) => c.k === v) ? (v as CanalLead) : "nose";
+
+export const etiquetaCanal = (k: CanalLead) => CANALES_LEAD.find((c) => c.k === k)?.label ?? "No lo sé";
+
+/**
  * En qué punto está. Es lo único que mueve Iris, y por eso son cuatro y no
  * doce: un embudo con doce estados es un embudo que nadie mantiene al día, y un
  * estado que nadie mantiene miente.
@@ -48,6 +98,9 @@ export type Lead = {
   whatsapp: string;
   lang: string;
   estado: EstadoLead;
+  /** Por dónde llegó a la web. Lo pone Iris; nunca falta, porque «no lo sé» es
+   *  un valor. Ver `CanalLead`. */
+  canal: CanalLead;
   veces: number;
   /** Cuándo apareció por primera vez y cuándo volvió la última. */
   alta: Date | null;
@@ -85,6 +138,7 @@ export async function ultimosLeads(tope = 200): Promise<Lead[]> {
       whatsapp: x.whatsapp ?? "",
       lang: x.lang ?? "es",
       estado: (x.estado as EstadoLead) ?? "nuevo",
+      canal: canalDe(x.canal),
       veces: typeof x.veces === "number" ? x.veces : 1,
       alta: fecha(x.alta),
       visto: fecha(x.visto),
@@ -178,6 +232,21 @@ const ORIGEN_DE_LEAD: Record<string, string> = {
   curso: "web-curso",
   reserva: "web-cita",
 };
+
+/**
+ * Decir por dónde llegó esta persona. Mismo patrón que `mueveLead`: un campo,
+ * una escritura, y la pantalla ya se ha pintado antes de que vuelva.
+ *
+ * «No lo sé» se ESCRIBE, no se borra el campo. Son dos cosas distintas: un lead
+ * sin campo es uno que nadie ha mirado, y uno con «nose» es uno que Iris miró y
+ * no pudo saberlo. Las dos se leen igual en pantalla —no hay nada que enseñar—
+ * pero borrar el campo dejaría sin marcha atrás a quien se equivoca de pastilla.
+ */
+export async function ponCanal(id: string, canal: CanalLead): Promise<void> {
+  const base = nube();
+  if (!base) throw new Error("sin_nube");
+  await updateDoc(doc(base, "leads", id), { canal });
+}
 
 /** Apuntar algo sobre un lead — lo que se dijo al llamarle, por ejemplo. */
 export async function anotaLead(id: string, nota: string): Promise<void> {

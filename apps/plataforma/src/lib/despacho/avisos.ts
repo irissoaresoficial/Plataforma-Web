@@ -84,8 +84,12 @@ const DIAS_BORRADOR = 7;
  * ruido. Lo mismo con las notas sin escribir después de una semana de vacaciones.
  *
  * Se dicen tres de cada clase, las más urgentes, y el resto no desaparece: está
- * en la lista de clientes con su montón —«Pendiente», «Hace mucho»—, que es
- * donde se mira una lista. Un panel no es una lista.
+ * en la lista de clientes, que es donde se mira una lista. Un panel no es una
+ * lista.
+ *
+ * (Esto decía «con su montón —Pendiente, Hace mucho—», y esos montones ya no
+ * existen: Clientes dejó de ser un tablero de columnas. Lo que sigue siendo
+ * cierto es lo de fondo — la información está ahí, sólo que sin repartir.)
  */
 const MAXIMO_POR_CLASE = 3;
 

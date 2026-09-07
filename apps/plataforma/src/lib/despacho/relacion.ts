@@ -120,6 +120,25 @@ export function comoVaCorto(r: Relacion, ahora = new Date()): string {
 }
 
 /**
+ * Lo que cuelga de esta persona, en dos palabras y eligiendo uno.
+ *
+ * Vivía en `etapas.ts`, junto al reparto en columnas del tablero de clientes.
+ * El tablero se ha quitado; esto no, porque nunca fue del tablero: es una
+ * pregunta sobre la relación —«¿me queda algo por cerrar con ella?»— y se
+ * contesta con la misma `Relacion` que el resto de este archivo. Aquí está al
+ * lado de lo que la calcula.
+ *
+ * Se elige UNO: debajo de un nombre, en una fila de una lista, dos marcas se
+ * leen peor que ninguna. La nota va primero porque el recuerdo caduca y una
+ * factura no.
+ */
+export function loQueCuelga(r: Relacion): string {
+  if (r.sinApuntar) return "sin apuntar";
+  if (r.borradores.length) return r.borradores.length === 1 ? "factura a medias" : `${r.borradores.length} facturas a medias`;
+  return "";
+}
+
+/**
  * Las dos frases de la ficha: lo que viene y lo que hubo, dichas enteras.
  *
  * Aquí sí caben, y aquí hacen falta las dos: la ficha es donde se decide si se
