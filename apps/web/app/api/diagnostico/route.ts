@@ -1,20 +1,81 @@
 import { NextResponse } from 'next/server';
+import { db, hayFirebase, FieldValue } from '@/lib/firebase';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+type Paso = { paso: string; ok: boolean; detalle: string };
+
 /**
- * Comprobación de que la web y el Apps Script se entienden.
+ * ¿ESTÁ EL ARMARIO CON LLAVE PUESTO, Y SE PUEDE ESCRIBIR DENTRO?
+ *
+ * No basta con mirar si las tres variables existen. Una clave privada mal
+ * pegada —a la que le falte un trozo, o le sobren comillas— pasa esa
+ * comprobación tan tranquila y luego falla en cada lead, sin que nadie se
+ * entere hasta que alguien echa de menos a una persona. Eso es exactamente lo
+ * que este diagnóstico existe para evitar.
+ *
+ * Así que escribe de verdad. Un documento en `diagnostico` que se pisa a sí
+ * mismo cada vez: nunca crece, no ensucia los datos de nadie y demuestra las
+ * dos cosas que hay que demostrar — que conecta, y que tiene permiso.
+ */
+async function compruebaFirebase(): Promise<Paso> {
+  const paso = 'Firebase (donde se guardan los correos)';
+  if (!hayFirebase()) {
+    return {
+      paso,
+      ok: false,
+      detalle:
+        'Faltan variables. En Vercel hacen falta las tres: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL y FIREBASE_PRIVATE_KEY. Salen del archivo JSON de Firebase → Configuración del proyecto → Cuentas de servicio → Generar nueva clave privada.',
+    };
+  }
+  const base = db();
+  if (!base) {
+    return {
+      paso,
+      ok: false,
+      detalle:
+        'Las tres variables están puestas, pero no conecta. Casi siempre es la clave privada mal pegada: tiene que ir entera, desde -----BEGIN PRIVATE KEY----- hasta -----END PRIVATE KEY-----.',
+    };
+  }
+  try {
+    await base.collection('diagnostico').doc('ultima-comprobacion').set({ cuando: FieldValue.serverTimestamp() });
+    return {
+      paso,
+      ok: true,
+      detalle: `Conecta y escribe. Proyecto ${process.env.FIREBASE_PROJECT_ID}. A partir de ahora ningún correo se pierde, aunque falle el Apps Script.`,
+    };
+  } catch (err) {
+    const msg = String(err);
+    const sinBase = /NOT_FOUND|does not exist/i.test(msg);
+    return {
+      paso,
+      ok: false,
+      detalle: sinBase
+        ? 'Conecta, pero la base de datos todavía no existe. En Firebase: Compilación → Firestore Database → Crear base de datos → modo producción → región europe-west (Bélgica).'
+        : `Conecta pero no puede escribir: ${msg.slice(0, 180)}`,
+    };
+  }
+}
+
+/**
+ * Comprobación de que la web, Firebase y el Apps Script se entienden.
  * Se abre en el navegador: <tu-web>/api/diagnostico
  *
- * Contesta en castellano qué está bien y qué falta. Nunca devuelve la URL ni la
- * contraseña del script: solo si están puestas y qué ha contestado Google.
+ * Contesta en castellano qué está bien y qué falta. Nunca devuelve la URL, ni
+ * la contraseña del script, ni ninguna clave: solo si están puestas y qué han
+ * contestado Google y Firebase.
  */
 export async function GET() {
   const url = process.env.APPS_SCRIPT_URL;
   const secret = process.env.APPS_SCRIPT_SECRET;
 
-  const pasos: { paso: string; ok: boolean; detalle: string }[] = [];
+  const pasos: Paso[] = [];
+
+  /* Firebase va PRIMERO en la lista porque es lo primero que pasa con un lead:
+     se guarda y después se avisa. Y porque es lo único de los dos que, si está
+     bien, garantiza que no se pierde nada. */
+  pasos.push(await compruebaFirebase());
 
   pasos.push({
     paso: 'Variable APPS_SCRIPT_URL',

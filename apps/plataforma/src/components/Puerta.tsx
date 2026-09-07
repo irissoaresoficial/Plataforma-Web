@@ -26,7 +26,7 @@ import { useSesion } from "@/lib/sesion";
 const CURVA = [0.16, 1, 0.3, 1] as const;
 
 export default function Puerta() {
-  const { entra, entrando, error } = useSesion();
+  const { entra, entrando, error, conNube } = useSesion();
   const [email, setEmail] = useState("");
   const [clave, setClave] = useState("");
 
@@ -94,16 +94,25 @@ export default function Puerta() {
           </p>
         </form>
 
-        {/* Mientras la puerta sea de mentira, hay que decirlo donde se vea. Es
-            la misma regla que en la web: lo que no está terminado sale marcado
-            en rojo, no disimulado. */}
-        <div className="puerta-aviso">
-          <span>Puerta de prueba</span>
-          <p>
-            Todavía no protege nada: la comprobación ocurre en este navegador, no en un servidor. Sirve
-            para montar las pantallas. <strong>No metas datos de clientes hasta que esté conectada.</strong>
-          </p>
-        </div>
+        {/*
+            El aviso sólo sale mientras la puerta sea de mentira, y ahora eso
+            depende de si hay Firebase: con las claves puestas, la contraseña la
+            comprueba Google en su servidor y quien manda son las reglas de
+            Firestore. Sin ellas, esto sigue siendo una pantalla de montaje.
+
+            Se decide con un dato y no a mano a propósito: un cartel de «esto no
+            protege nada» que hay que acordarse de quitar es un cartel que
+            acabará mintiendo en una de las dos direcciones.
+        */}
+        {!conNube && (
+          <div className="puerta-aviso">
+            <span>Puerta de prueba</span>
+            <p>
+              Todavía no protege nada: falta conectar Firebase, así que no hay contraseña que valga. Sirve
+              para montar las pantallas. <strong>No metas datos de clientes hasta que esté conectada.</strong>
+            </p>
+          </div>
+        )}
       </motion.div>
 
       <a className="puerta-volver" href="https://irissoares.com">

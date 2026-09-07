@@ -1,0 +1,138 @@
+rules_version = '2';
+
+/**
+ * QUIÉN PUEDE TOCAR QUÉ.
+ *
+ * Estas reglas se pegan en la consola de Firebase: Firestore Database →
+ * pestaña «Reglas» → Publicar. Sin ellas, Firestore o bien está abierto de par
+ * en par (modo prueba) o bien cerrado del todo, y ninguna de las dos cosas
+ * sirve.
+ *
+ * LA IDEA, EN UNA FRASE: la web ESCRIBE por detrás y la plataforma LEE por
+ * delante, y estas reglas sólo mandan sobre la segunda.
+ *
+ * Es importante entender por qué. La web guarda los leads desde su servidor con
+ * el SDK de administrador, y ese SDK NO PASA POR AQUÍ: tiene permiso de dueño
+ * por definición. Así que nada de lo que se escriba en este archivo puede
+ * romper la captación de correos, y no hace falta abrir ni un hueco para que la
+ * web funcione. Estas reglas existen sólo para lo que se hace desde un
+ * navegador — es decir, la plataforma de Iris.
+ *
+ * Y de ahí sale la regla de oro: TODO CERRADO, y se abre sólo lo justo.
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ---------------------------------------------------------------- */
+    /*  Quién eres                                                       */
+    /* ---------------------------------------------------------------- */
+
+    /**
+     * Estar dentro no es tener una cuenta: es tener una FICHA en `usuarios` con
+     * la cuenta activa. Son dos cosas distintas a propósito.
+     *
+     * Si bastara con tener cuenta en Firebase Auth, quitarle el acceso a
+     * alguien obligaría a borrarle la cuenta entera —y con ella el rastro de lo
+     * que hizo—. Con la ficha aparte, se le pone `activo: false` y esa persona
+     * deja de entrar al instante sin que se pierda nada.
+     */
+    function ficha() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+    function dentro() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && ficha().activo == true;
+    }
+    function esAdmin() {
+      return dentro() && ficha().rol == 'admin';
+    }
+
+    /* ---------------------------------------------------------------- */
+    /*  Los usuarios de la plataforma                                    */
+    /* ---------------------------------------------------------------- */
+
+    match /usuarios/{uid} {
+      /* Cualquiera que esté dentro ve la lista: hace falta para saber quién ha
+         apuntado una nota, y para que la pantalla de accesos tenga algo que
+         enseñar. */
+      allow read: if dentro();
+
+      /**
+       * Sólo un administrador da y quita accesos. Y con dos candados más:
+       *
+       *   · nadie puede ascenderse a sí mismo — `uid != request.auth.uid` en el
+       *     cambio de rol— porque si no, una cuenta de sólo lectura se haría
+       *     administradora en un clic desde la consola del navegador;
+       *   · nadie puede dejarse a sí mismo fuera. Un administrador que se
+       *     desactiva por error deja la plataforma sin nadie que pueda volver a
+       *     activarlo, y eso sólo se arregla entrando a mano en la consola de
+       *     Firebase.
+       */
+      allow create: if esAdmin();
+      allow update: if esAdmin()
+        && (request.resource.data.rol == resource.data.rol || uid != request.auth.uid)
+        && (request.resource.data.activo == true || uid != request.auth.uid);
+      allow delete: if esAdmin() && uid != request.auth.uid;
+    }
+
+    /* ---------------------------------------------------------------- */
+    /*  Los leads que entran por la web                                  */
+    /* ---------------------------------------------------------------- */
+
+    match /leads/{id} {
+      /* Se leen desde la plataforma y se pueden mover de estado —nuevo,
+         contactado, cliente— y anotar. */
+      allow read: if dentro();
+      allow update: if dentro();
+
+      /**
+       * Crear y borrar, NO. Y esto no es una omisión.
+       *
+       * Un lead sólo puede nacer de que una persona real haya rellenado un
+       * formulario en la web, y eso lo escribe el servidor. Si desde el
+       * navegador se pudieran crear, la lista de Iris dejaría de ser un registro
+       * de lo que ha pasado para pasar a ser una lista donde cabe cualquier
+       * cosa.
+       *
+       * Y borrar tampoco: un correo que llegó, llegó. Si sobra, se marca como
+       * descartado —que es un `update`— y así queda el rastro de que estuvo.
+       */
+      allow create, delete: if false;
+    }
+
+    match /reservas/{id} {
+      allow read, update: if dentro();
+      allow create, delete: if false;
+    }
+
+    /* ---------------------------------------------------------------- */
+    /*  El despacho: agenda, clientes y facturas                         */
+    /* ---------------------------------------------------------------- */
+
+    /**
+     * Esto sí lo escribe Iris desde la plataforma, así que aquí sí se abre.
+     * Pero las facturas emitidas no se borran nunca: una factura con número
+     * asignado forma parte de una serie correlativa y hacerla desaparecer deja
+     * un hueco. Se anula —un `update`— y conserva su número.
+     */
+    match /citas/{id}    { allow read, write: if dentro(); }
+    match /clientes/{id} { allow read, write: if dentro(); }
+    match /facturas/{id} {
+      allow read, create, update: if dentro();
+      allow delete: if dentro() && resource.data.numero == null;
+    }
+    match /avisos/{id}   { allow read, write: if dentro(); }
+
+    /* ---------------------------------------------------------------- */
+
+    /* El resto del mundo, cerrado. Incluida la colección `diagnostico`, que
+       sólo toca el servidor. Sin esta línea, cualquier colección nueva nacería
+       sin regla y Firestore la trataría como cerrada de todas formas — pero
+       dejarlo escrito evita que alguien lo dé por supuesto. */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

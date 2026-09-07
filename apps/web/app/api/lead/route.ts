@@ -1,5 +1,27 @@
+/**
+ * GUARDAR PRIMERO. AVISAR DESPUÉS.
+ *
+ * Hasta hoy esta ruta hacía una sola cosa: pasarle el lead al Apps Script de
+ * Google. Y si el Apps Script fallaba —Google caído, la clave mal copiada, el
+ * script reimplementado sin publicar la versión nueva— el correo se perdía
+ * entero. No quedaba copia en ninguna parte.
+ *
+ * Guardar el dato y mandar el aviso son dos cosas distintas, y estaban atadas
+ * de forma que la más frágil se llevaba por delante a la más importante.
+ *
+ * Ahora el orden es el que tiene que ser:
+ *
+ *   1. Se guarda en Firestore. Esto es lo que no se puede perder.
+ *   2. Se avisa al Apps Script, que manda el correo y toca el calendario.
+ *
+ * Si falla el aviso pero el dato está guardado, la persona ve que se ha
+ * apuntado —porque se ha apuntado— y Iris la tiene en su lista aunque el correo
+ * automático no haya salido. Si falla lo de guardar Y lo de avisar, entonces sí
+ * se devuelve error, porque entonces sí se ha perdido.
+ */
 import { NextResponse } from 'next/server';
 import { parseLead } from '@/lib/booking';
+import { guardaLead } from '@/lib/leads-firebase';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -34,8 +56,22 @@ export async function POST(request: Request) {
   const { lead, error } = parseLead(body);
   if (!lead) return NextResponse.json({ ok: false, reason: `invalid_${error}` }, { status: 400 });
 
+  /* ---------------------------------------------------------------- 1 */
+  /* Se guarda ANTES de intentar nada más. Si Firebase no está configurado esto
+     devuelve `sin_configurar` y no pasa nada: se sigue como se seguía antes. */
+  const enBase = await guardaLead(lead, { ip: ip.slice(0, 45), agente: (request.headers.get('user-agent') || '').slice(0, 200) });
+
+  /* ---------------------------------------------------------------- 2 */
   if (!url) {
-    console.warn('[lead] APPS_SCRIPT_URL sin configurar. Lead perdido:', lead.email, lead.origen);
+    /* Sin Apps Script no hay correo de bienvenida ni aviso a Iris. Pero si el
+       dato está en Firebase, la persona SÍ se ha apuntado y decirle que no
+       sería mentira: se le contesta que sí y se apunta en el registro que el
+       correo automático no ha salido. */
+    if (enBase.guardado) {
+      console.warn('[lead] Guardado en Firebase, pero sin APPS_SCRIPT_URL: no sale correo.', lead.email, lead.origen);
+      return NextResponse.json({ ok: true, aviso: 'sin_correo' });
+    }
+    console.error('[lead] LEAD PERDIDO: ni Firebase ni Apps Script configurados.', lead.email, lead.origen);
     return NextResponse.json({ ok: false, reason: 'not_configured' }, { status: 503 });
   }
 
@@ -48,18 +84,24 @@ export async function POST(request: Request) {
       signal: AbortSignal.timeout(15_000),
     });
     const text = await res.text();
-    let data: any = null;
+    let data: unknown = null;
     try {
       data = JSON.parse(text);
     } catch {}
 
-    if (!res.ok || !data?.ok) {
+    const bien = res.ok && (data as { ok?: boolean } | null)?.ok === true;
+    if (!bien) {
       console.error('[lead] Apps Script respondió mal:', res.status, text.slice(0, 300));
+      /* El aviso falló. Si el dato está guardado, la persona está apuntada de
+         verdad y lo único que no ha salido es el correo automático: eso no es
+         un error para quien rellenó el formulario. */
+      if (enBase.guardado) return NextResponse.json({ ok: true, aviso: 'sin_correo' });
       return NextResponse.json({ ok: false, reason: 'upstream' }, { status: 502 });
     }
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[lead] Error llamando al Apps Script:', err);
+    if (enBase.guardado) return NextResponse.json({ ok: true, aviso: 'sin_correo' });
     return NextResponse.json({ ok: false, reason: 'upstream' }, { status: 502 });
   }
 }
