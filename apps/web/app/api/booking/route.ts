@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { parseBooking } from '@/lib/booking';
-import { guardaLead, guardaReserva } from '@/lib/leads-firebase';
+import { guardaCita, guardaLead, guardaReserva } from '@/lib/leads-firebase';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -71,6 +71,9 @@ export async function POST(request: Request) {
    *     que quien pide la sinergia, y en la lista de Iris tiene que salir como
    *     todos los demás. Si no, la única gente que de verdad ha pedido una cita
    *     sería justo la que no aparece en la bandeja.
+   *   · `citas` guarda LA HORA en la agenda. Sin esto, la agenda de Iris decía
+   *     «esa semana la tienes libre entera» con una sesión ya vendida dentro.
+   *     Nace como `pedida`: la web no confirma nada por su cuenta.
    */
   const [enReservas, enLeads] = await Promise.all([
     guardaReserva({ ...booking, ip: ip.slice(0, 45) }),
@@ -85,6 +88,7 @@ export async function POST(request: Request) {
       },
       { diaISO: booking.diaISO, hora: booking.hora },
     ),
+    guardaCita(booking, `reserva__${booking.email}`.replace(/[/\\.#$[\]]/g, '_')),
   ]);
   const guardado = enReservas.guardado || enLeads.guardado;
 

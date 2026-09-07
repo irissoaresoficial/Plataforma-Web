@@ -99,6 +99,91 @@ export async function guardaLead(lead: Lead, extra?: Record<string, unknown>): P
  * dejado su correo, y en la lista de Iris tiene que aparecer como todos los
  * demás. Eso lo hace quien llama.
  */
+/**
+ * LA HORA ESPAÑOLA, ESCRITA DE FORMA QUE NO SE PUEDA MALINTERPRETAR.
+ *
+ * El chat trabaja con «el día 8 a las 12:30, hora española». Eso, guardado tal
+ * cual, es ambiguo: en enero las 12:30 en Madrid son las 11:30 UTC y en julio
+ * las 10:30. Si se guarda sin decir cuál, la agenda pinta la cita una hora
+ * corrida durante medio año — y una agenda que se equivoca una hora es peor que
+ * no tener agenda, porque nadie duda de ella hasta que alguien se planta solo
+ * delante de una pantalla.
+ *
+ * Así que se le pega el desfase real de ESE día. El propio navegador de Node
+ * sabe cuál es —Intl lleva las reglas de los husos— y no hay que mantener a
+ * mano ninguna tabla de cuándo cambia la hora.
+ *
+ * El desfase se pregunta suponiendo primero que la hora era UTC. En la práctica
+ * eso sólo se equivocaría en las dos horas exactas del cambio de hora de
+ * octubre y marzo, de madrugada, que es cuando no hay sesiones.
+ */
+function isoConHusoDeMadrid(dia: string, hora: string): string {
+  try {
+    const tentativo = new Date(`${dia}T${hora}:00Z`);
+    const parte = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Madrid',
+      timeZoneName: 'longOffset',
+    })
+      .formatToParts(tentativo)
+      .find((p) => p.type === 'timeZoneName')?.value;
+    // Viene como "GMT+02:00"; en invierno en Canarias vendría "GMT" a secas.
+    const desfase = (parte || '').replace('GMT', '').trim() || '+00:00';
+    return `${dia}T${hora}:00${desfase}`;
+  } catch {
+    return `${dia}T${hora}:00+01:00`;
+  }
+}
+
+/**
+ * La cita en la agenda de Iris.
+ *
+ * Sin esto, una sesión reservada por la web llegaba a `reservas` y a `leads` y
+ * NO a la agenda, que es donde Iris mira para saber qué tiene mañana. La agenda
+ * decía «esa semana la tienes libre entera» con una sesión ya vendida dentro.
+ *
+ * Nace en estado `pedida` a propósito: la web no confirma nada por su cuenta.
+ * Es exactamente para lo que existe ese estado — algo que ha entrado solo y que
+ * Iris todavía no ha mirado.
+ */
+export async function guardaCita(
+  booking: { diaISO: string; hora: string; nombre: string; motivo: string; email: string },
+  personaId: string,
+): Promise<ResultadoGuardado> {
+  const base = db();
+  if (!base) return { guardado: false, motivo: 'sin_configurar' };
+  try {
+    /* El identificador se construye con el hueco, no al azar: si la misma
+       persona reserva dos veces el mismo día y hora —doble clic, recarga— sale
+       una cita, no dos. */
+    const id = `web__${booking.diaISO}__${booking.hora.replace(':', '')}__${personaId}`
+      .replace(/[/\\.#$[\]]/g, '_')
+      .slice(0, 380);
+    await base
+      .collection('citas')
+      .doc(id)
+      .set(
+        {
+          id,
+          personaId,
+          inicioISO: isoConHusoDeMadrid(booking.diaISO, booking.hora),
+          /* 90 minutos porque es lo que el Apps Script bloquea en el calendario
+             de Google. Si algún día cambia, tiene que cambiar en los dos sitios
+             a la vez o la agenda y el calendario dirán cosas distintas. */
+          minutos: 90,
+          tipo: 'sesion',
+          estado: 'pedida',
+          notas: `${booking.nombre} · ${booking.email}\n${booking.motivo}`.slice(0, 900),
+          creada: new Date().toISOString(),
+        },
+        { merge: true },
+      );
+    return { guardado: true };
+  } catch (err) {
+    console.error('[firebase] No se pudo guardar la cita:', err);
+    return { guardado: false, motivo: 'error' };
+  }
+}
+
 export async function guardaReserva(datos: Record<string, unknown>): Promise<ResultadoGuardado> {
   const base = db();
   if (!base) return { guardado: false, motivo: 'sin_configurar' };

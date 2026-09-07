@@ -243,13 +243,31 @@
    se apaga y deja de leerse como oro.
    --------------------------------------------------------------------------- */
 :root[data-tema="oscuro"] {
-  /* El oscuro tampoco es el negro azulado de antes: es el granate de la casa,
-     el mismo que la web usa en sus bloques `vino`. Así el modo oscuro no es un
-     tema aparte, es la otra cara de la misma marca. */
-  --bg: #2b1119;
-  --surface: #3a1620;
-  --surface-2: #451a25;
-  --surface-solid: #3a1620;
+  /*
+   * EL GRANATE ES EL ACENTO, NO LA PARED.
+   *
+   * Esto era granate lleno —#2b1119— en el fondo, en las tarjetas y en las
+   * bandas. La idea era que el modo oscuro fuese «la otra cara de la marca», y
+   * como idea suena bien; delante de la pantalla no lo es. Un rojo saturado
+   * ocupando el campo de visión entero durante una tarde de trabajo cansa, y
+   * ese cansancio no es una opinión: es lo primero que dijo la persona que lo
+   * usa. Además se comía sus propios acentos — sobre pared roja, un aviso rojo
+   * no avisa de nada.
+   *
+   * Ahora el fondo es un neutro CÁLIDO, casi negro, con el granate dentro pero
+   * desaturado hasta el punto en que se lee como temperatura y no como color.
+   * Sigue sin ser el gris azulado de cualquier panel de administración —eso era
+   * lo que había que evitar y se evita— y deja el granate y el oro libres para
+   * lo único que tienen que hacer: marcar dónde estás y qué se pulsa.
+   *
+   * Las superficies suben de luz en pasos cortos y parejos. Antes saltaban de
+   * #2b1119 a #451a25, que además de rojo era un salto de brillo grande: cada
+   * tarjeta se recortaba del fondo como una pegatina.
+   */
+  --bg: #171214;
+  --surface: #1f191b;
+  --surface-2: #272023;
+  --surface-solid: #1f191b;
 
   --border: rgba(255, 255, 255, 0.1);
   --border-strong: rgba(255, 255, 255, 0.18);
@@ -267,7 +285,7 @@
   --gold: #e2cda2;
   --gold-deep: #f0e3c6;
   --gold-soft: rgba(226, 205, 162, 0.14);
-  --sobre-oro: #2b1119;
+  --sobre-oro: #171214;
 
   /* La acción, sobre granate, es el oro claro: un botón vino sobre pared vino
      no existe. La tinta de encima es el propio fondo, que es lo que hace que
@@ -276,7 +294,7 @@
   --accion-honda: #f2e6ca;
   --accion-suave: rgba(226, 205, 162, 0.13);
   --accion-borde: rgba(226, 205, 162, 0.34);
-  --sobre-accion: #2b1119;
+  --sobre-accion: #171214;
 
   /* Los colores de código —los tres caminos, los avisos— suben de luz sobre el
      granate. Con los tonos de antes se quedaban por debajo de 4,5:1 y las
@@ -305,8 +323,8 @@
   --nm-hondo: inset 2px 2px 6px var(--nm-sombra), inset -1px -1px 4px var(--nm-luz);
   --nm-pulsado: inset 3px 3px 8px var(--nm-sombra-honda), inset -1px -1px 4px var(--nm-luz);
 
-  --vidrio: rgba(58, 22, 32, 0.7);
-  --vidrio-denso: rgba(58, 22, 32, 0.88);
+  --vidrio: rgba(31, 25, 27, 0.72);
+  --vidrio-denso: rgba(31, 25, 27, 0.9);
   --vidrio-borde: rgba(255, 245, 235, 0.12);
 
   --shadow-sm: inset 1px 1px 0 rgba(255, 245, 235, 0.05), 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -331,7 +349,12 @@
   background-attachment: fixed;
 }
 :root[data-tema="oscuro"] [data-app-root] {
-  background-image: radial-gradient(1200px 700px at 12% -10%, rgba(216, 184, 96, 0.07), transparent 58%);
+  /* Dos velos y no uno: el dorado de siempre arriba a la izquierda, y ABAJO A
+     LA DERECHA un granate muy flojo. Ahí es donde vuelve el color de la casa —
+     como una luz al fondo de la habitación, no como la pintura de la pared. */
+  background-image:
+    radial-gradient(1100px 640px at 10% -8%, rgba(216, 184, 96, 0.055), transparent 58%),
+    radial-gradient(900px 560px at 96% 104%, rgba(122, 40, 58, 0.16), transparent 62%);
 }
 
 html,

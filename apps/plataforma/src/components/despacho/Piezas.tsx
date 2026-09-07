@@ -15,6 +15,7 @@
 import { useEffect, useRef, useState } from "react";
 import { css } from "@/lib/css";
 import { CABECERA, APOYO, NOTA, PAD, tarjetaCon, rotulo } from "@/lib/ui";
+import { guardadoEnLaNube } from "@/lib/despacho";
 
 /**
  * ¿ESTAMOS EN UNA PANTALLA ESTRECHA?
@@ -127,6 +128,21 @@ export function Cabecera({ titulo, pie }: { titulo: string; pie: string }) {
  * se puede perder — las facturas. El color marca; no rellena.
  */
 export function AvisoNavegador({ que, tono = "nota" }: { que: string; tono?: "nota" | "aviso" }) {
+  /*
+   * CON NUBE, ESTE AVISO NO SE ENSEÑA. NO SE SUAVIZA: DESAPARECE.
+   *
+   * Decía «viven sólo en este navegador… si cambias de ordenador se pierden», y
+   * desde que el despacho guarda en Firestore eso es sencillamente falso. Un
+   * cartel de alarma que miente hace un daño concreto y difícil de deshacer:
+   * enseña a no leer los carteles. El día que haya uno de verdad —y lo habrá—
+   * ya nadie lo mirará.
+   *
+   * Se decide con el mismo dato que decide dónde se guarda, no a mano. Un aviso
+   * que hay que acordarse de quitar es un aviso que acabará mintiendo en una de
+   * las dos direcciones.
+   */
+  if (guardadoEnLaNube) return null;
+
   const texto = `${que} viven sólo en este navegador. Todavía no hay servidor: si se borran los datos del navegador o cambias de ordenador, se pierden.`;
 
   if (tono === "nota") {
