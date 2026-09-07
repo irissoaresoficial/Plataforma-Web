@@ -189,7 +189,9 @@ export default function Sidebar() {
       style={css(
         "position:sticky;top:63px;align-self:start;flex:none;width:" +
           (lateral ? "238px" : "62px") +
-          ";height:calc(100vh - 63px);overflow-y:auto;overflow-x:hidden;padding:14px 12px 28px;background:var(--bg);border-right:1px solid var(--border);transition:width .3s cubic-bezier(.22,1,.36,1);"
+          /* Cristal, igual que la cabecera: es la otra pieza que se queda quieta
+             mientras el contenido pasa por detrás. */
+          ";height:calc(100vh - 63px);overflow-y:auto;overflow-x:hidden;padding:14px 12px 28px;background:var(--vidrio);backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);border-right:1px solid var(--border);transition:width .3s cubic-bezier(.22,1,.36,1);"
       )}
     >
       <button

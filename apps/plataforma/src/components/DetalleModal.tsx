@@ -49,7 +49,12 @@ export default function DetalleModal() {
       data-chrome="1"
       onClick={cerrarDetalle}
       style={css(
-        "position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.32);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:clamp(20px,5vw,48px) clamp(12px,3vw,24px);overflow-y:auto;animation:es33-in .25s ease both;"
+        /* El velo era negro al 32 %, que sobre una plataforma blanca cae como
+           un telón de teatro: apaga la pantalla entera para enseñar una ficha.
+           Ahora es un velo cálido y flojo con más desenfoque: lo de detrás se
+           reconoce pero queda claramente fuera de foco, que es lo que hace que
+           una hoja se lea como una hoja encima y no como otra pantalla. */
+        "position:fixed;inset:0;z-index:60;background:rgba(74,58,48,.22);backdrop-filter:saturate(1.2) blur(14px);-webkit-backdrop-filter:saturate(1.2) blur(14px);display:flex;align-items:flex-start;justify-content:center;padding:clamp(20px,5vw,48px) clamp(12px,3vw,24px);overflow-y:auto;animation:es33-in .25s ease both;"
       )}
     >
       <div

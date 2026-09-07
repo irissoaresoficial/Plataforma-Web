@@ -57,7 +57,13 @@ export default function Shell() {
         data-chrome="1"
         data-app-header=""
         style={css(
-          "position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:clamp(12px,2vw,22px);flex-wrap:wrap;padding:12px clamp(14px,3vw,28px);background:color-mix(in srgb, var(--bg) 78%, transparent);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border-bottom:1px solid var(--border);"
+          /* La cabecera es cristal: se ve pasar el contenido por debajo al hacer
+             scroll, y por eso se lee como una capa que flota y no como una
+             franja pegada. El desenfoque y el color salen de los tokens de la
+             casa (`--vidrio`), no de una mezcla escrita aquí, para que el
+             cristal de la cabecera, el del lateral y el de las hojas sean
+             exactamente el mismo cristal. */
+          "position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:clamp(12px,2vw,22px);flex-wrap:wrap;padding:12px clamp(14px,3vw,28px);background:var(--vidrio);backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);border-bottom:1px solid var(--border);"
         )}
       >
         <BotonMenu onClick={() => setMenu(true)} />
