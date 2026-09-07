@@ -340,6 +340,24 @@ export default function AgendaScreen() {
     await recargar();
   };
 
+  /**
+   * CONFIRMAR UNA SESIÓN QUE HA ENTRADO POR LA WEB.
+   *
+   * Faltaba, y por eso faltaba también el aviso: una cita que entra sola se
+   * pintaba «Por confirmar» y no había forma de confirmarla desde ningún sitio.
+   * Iris veía la etiqueta, no podía hacer nada con ella, y la etiqueta se
+   * quedaba ahí para siempre — con lo cual dejaba de significar nada.
+   *
+   * Confirmar no manda ningún correo. Es la decisión de Iris sobre su propia
+   * agenda: «esta hora la doy por buena». Quien reservó ya recibió su
+   * invitación de Google cuando reservó.
+   */
+  const confirmar = async (c: Cita) => {
+    await repoCitas.guardar({ ...c, estado: "confirmada" });
+    setAviso(`Confirmada: ${nombreDe(c.personaId)}, ${diaRelativo(new Date(c.inicioISO)).toLocaleLowerCase("es")} a las ${hora(c.inicioISO)}.`);
+    await recargar();
+  };
+
   const quitar = async (c: Cita) => {
     await repoCitas.borrar(c.id);
     setHoja(null);
@@ -875,8 +893,21 @@ export default function AgendaScreen() {
             )}
 
             <div style={css(RAYA + "margin-top:var(--s5);padding-top:var(--s4);display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;")}>
+              {/* Confirmar va PRIMERO y en el botón lleno cuando la sesión ha
+                  entrado por la web: es lo único que hay que hacer con ella, y
+                  hasta que se haga sigue saliendo en los avisos. «Ya está
+                  hecha» pasa entonces al botón plano — es de otro momento del
+                  día, no de este. */}
+              {sesionAbierta.estado === "pedida" && (
+                <button onClick={() => void confirmar(sesionAbierta)} style={css(BOTON_NORMAL)}>
+                  Confirmar esta hora
+                </button>
+              )}
               {sesionAbierta.estado !== "hecha" && (
-                <button onClick={() => void marcarHecha(sesionAbierta)} style={css(BOTON_NORMAL)}>
+                <button
+                  onClick={() => void marcarHecha(sesionAbierta)}
+                  style={css(sesionAbierta.estado === "pedida" ? BOTON_PLANO : BOTON_NORMAL)}
+                >
                   Ya está hecha
                 </button>
               )}

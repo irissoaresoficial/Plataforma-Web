@@ -16,6 +16,7 @@ import Menu, { BotonMenu } from "./Menu";
 import Tema from "./Tema";
 import Cuenta from "./Cuenta";
 import Avisos from "./despacho/Avisos";
+import Novedades from "./despacho/Novedades";
 import Particulas from "./Particulas";
 
 export default function Shell() {
@@ -182,6 +183,12 @@ export default function Shell() {
       </div>
 
       <Menu abierto={menu} cerrar={() => setMenu(false)} />
+      {/* Los avisos que aparecen solos cuando entra alguien por la web. Van
+          aquí, al final y fuera de todo, porque son una capa que flota encima:
+          dentro de cualquier bloque heredarían su `overflow` o su `z-index` y
+          acabarían recortados por una tarjeta. */}
+      <Novedades />
+
       <DetalleModal />
     </div>
   );

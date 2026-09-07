@@ -26,10 +26,13 @@
  *  · «Faltan tus datos fiscales» — permanente y ya dicho en su pantalla (2).
  *  · «Esta ficha no tiene consentimiento» — permanente: no es algo que pasa
  *    hoy, es como está esa ficha, y ya sale en rojo dentro de ella (2).
- *  · «Hay una sesión pedida por la web sin confirmar» — parece un aviso y no
- *    lo es todavía: la agenda ya la marca «Por confirmar» y no hay ningún botón
- *    para confirmarla, así que el aviso llevaría a un sitio donde no se puede
- *    hacer nada (1). Vuelve el día que la agenda tenga ese botón.
+ *  · «Hay una sesión pedida por la web sin confirmar» — ESTABA DESCARTADO Y HA
+ *    VUELTO. El motivo de descartarlo era la regla 1: no había botón para
+ *    confirmarla, así que el aviso llevaba a un sitio donde no se podía hacer
+ *    nada. Ese motivo ya no existe: la agenda tiene el botón, y sobre todo
+ *    ahora entran reservas DE VERDAD por la web. Una sesión vendida que Iris no
+ *    ha visto es exactamente lo que un panel de avisos existe para no dejar
+ *    pasar — es lo primero de la lista y es lo que más cuesta si se escapa.
  *  · «Cumpleaños» — la ficha no guarda fecha de nacimiento. La que hay vive en
  *    los estudios y se cruza por el nombre, que es una atadura con cuerda: un
  *    aviso que felicita a quien no toca es peor que ninguno.
@@ -98,6 +101,41 @@ export function calculaAvisos({ citas, clientes, facturas, vistos, ahora = new D
   const callado = (id: string, sello: string) => vistos.some((v) => v.id === id && v.sello === sello);
   const lista: Aviso[] = [];
   const nombreDe = (id: string) => clientes.find((c) => c.id === id)?.nombre ?? "alguien sin ficha";
+
+  /* --------------------------------------------- sesiones pedidas por la web */
+  /*
+   * VA EL PRIMERO DE TODOS, Y NO ES CASUALIDAD.
+   *
+   * Alguien ha entrado en la web, ha elegido día y hora y ha dejado su correo.
+   * Eso es lo más cerca de una venta que pasa en esta plataforma sin que Iris
+   * levante un dedo — y hasta hoy no salía por ningún lado: la agenda la
+   * pintaba «por confirmar» y ya está, así que si no abría la agenda esa semana
+   * no se enteraba. Alguien se plantaría solo en una videollamada.
+   *
+   * El sello es el propio identificador de la cita: callado éste, no vuelve. Y
+   * en cuanto se confirma, el aviso desaparece porque deja de cumplir el filtro
+   * — no hay que acordarse de quitarlo.
+   */
+  const pedidas = citas
+    .filter((c) => c.estado === "pedida" && c.inicioISO >= ahora.toISOString())
+    .filter((c) => !callado(`pedida:${c.id}`, c.id))
+    .sort((a, b) => a.inicioISO.localeCompare(b.inicioISO))
+    .slice(0, MAXIMO_POR_CLASE);
+
+  pedidas.forEach((c) => {
+    lista.push({
+      id: `pedida:${c.id}`,
+      sello: c.id,
+      titulo: `Han pedido sesión para el ${diaRelativo(new Date(c.inicioISO), ahora)} a las ${hora(c.inicioISO)}`,
+      /* La nota de la cita trae el nombre y el correo de quien reservó: quien
+         lee esto quiere saber quién es antes de decidir si abre la agenda. */
+      detalle: (c.notas || "").split("\n")[0] || "Entró por la web. Confírmala o cámbiala.",
+      destino: { pantalla: "agenda" },
+      /* Rojo, como lo que se pierde. Porque eso es: una sesión vendida que se
+         puede caer por no mirarla. */
+      tono: "pierde",
+    });
+  });
 
   /* ------------------------------------------------------------------ hoy */
   /* Lo que queda de hoy, en UN aviso y no en uno por sesión: en un día de
