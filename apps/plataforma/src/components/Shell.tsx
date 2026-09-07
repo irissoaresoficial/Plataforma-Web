@@ -14,6 +14,7 @@ import Sidebar from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
 import Tema from "./Tema";
 import Cuenta from "./Cuenta";
+import Avisos from "./despacho/Avisos";
 import Particulas from "./Particulas";
 
 export default function Shell() {
@@ -143,6 +144,12 @@ export default function Shell() {
             pantalla estás cuando la columna no cabe, y el tema.
         */}
         <span style={css("margin-left:auto;")} />
+        {/* Los avisos van aquí y no en la columna: la columna es una lista de
+            sitios y un aviso no es un sitio, además de que desaparece dentro del
+            cajón por debajo de 980 px. El porqué entero está escrito en
+            `despacho/Avisos.tsx`. Delante del tema, porque es lo que a veces
+            hay que mirar y el tema se toca una vez en la vida. */}
+        <Avisos />
         <Tema />
         <Cuenta />
       </header>

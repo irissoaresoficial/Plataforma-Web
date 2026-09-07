@@ -83,7 +83,7 @@ const COLOR_ESTADO: Record<Factura["estado"], string> = {
 };
 
 export default function FacturasScreen() {
-  const { marca, setView, setClienteAbierto } = useApp();
+  const { marca, setView, setClienteAbierto, facturaAbierta, setFacturaAbierta, recado, setRecado } = useApp();
 
   const [lista, setLista] = useState<Factura[]>([]);
   const [gente, setGente] = useState<Cliente[]>([]);
@@ -156,6 +156,39 @@ export default function FacturasScreen() {
         : b
     );
   };
+
+  /*
+   * LOS RECADOS QUE LLEGAN DE OTRA PANTALLA.
+   *
+   * Dos, y los dos vienen de fuera: «abre ESTA factura» —lo manda el aviso de
+   * la cabecera cuando un borrador lleva días parado, y el botón «Abrirla» de
+   * la ficha de un cliente— y «hazle una factura a ESTA persona», que lo manda
+   * la ficha. Sin esto, los dos botones sólo cambiarían de pantalla y dejarían
+   * a Iris buscando en la lista lo que ella acaba de señalar.
+   *
+   * Se consumen y se apagan en el acto: son un recado, no un estado. Si se
+   * quedaran puestos, cada vuelta a Facturas reabriría lo mismo.
+   *
+   * Se espera a que esté leído el disco: sin la lista no se sabe qué factura es
+   * la del identificador, y sin los clientes no se pueden traer solos el NIF y
+   * el domicilio de quien se va a facturar.
+   */
+  /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+  useEffect(() => {
+    if (cargando) return;
+    if (facturaAbierta) {
+      const f = lista.find((x) => x.id === facturaAbierta);
+      if (f) abrir(f);
+      setFacturaAbierta(null);
+      return;
+    }
+    if (recado) {
+      nueva();
+      cambiaCliente(recado);
+      setRecado(null);
+    }
+  }, [cargando, facturaAbierta, recado, lista]);
+  /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 
   const guardarBorrador = async () => {
     if (!borrador) return;

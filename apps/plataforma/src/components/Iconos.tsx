@@ -166,6 +166,21 @@ export const IcoFacturas = (p: P) => (
   </Caja>
 );
 
+/**
+ * La campana de los avisos.
+ *
+ * Es la campana de toda la vida y no un dibujo propio, a propósito: es el único
+ * icono de la plataforma que hay que reconocer sin rótulo al lado, porque en la
+ * cabecera no cabe la palabra. Cualquier otra cosa —un sobre, una chincheta, un
+ * punto— habría que explicarla, y lo que hay que explicar no se usa.
+ */
+export const IcoAviso = (p: P) => (
+  <Caja {...p}>
+    <path d="M6.4 10.6a5.6 5.6 0 0 1 11.2 0c0 3.9 1.4 5.2 1.4 5.2H5s1.4-1.3 1.4-5.2z" />
+    <path d="M10.3 18.8a1.9 1.9 0 0 0 3.4 0" opacity=".7" />
+  </Caja>
+);
+
 /** Un lápiz pequeño: marca lo que se puede reescribir. */
 export const IcoEditar = (p: P) => (
   <Caja {...p}>

@@ -11,13 +11,14 @@
  * interfaces de `repositorio.ts`.
  */
 
-import type { Cita, Cliente, Factura } from "./tipos";
-import type { RepoCitas, RepoClientes, RepoFacturas } from "./repositorio";
+import type { AvisoVisto, Cita, Cliente, Factura } from "./tipos";
+import type { RepoAvisos, RepoCitas, RepoClientes, RepoFacturas } from "./repositorio";
 import { EMISOR, emisorCompleto, faltaDelEmisor } from "./emisor";
 
 const LS_CITAS = "es33.citas.v1";
 const LS_CLIENTES = "es33.clientes.v1";
 const LS_FACTURAS = "es33.facturas.v1";
+const LS_AVISOS = "es33.avisos-vistos.v1";
 
 /* --------------------------------------------------------------- el disco */
 
@@ -226,5 +227,40 @@ export const facturasLocal: RepoFacturas = {
     if (!motivo.trim()) throw new Error("Escribe por qué se anula.");
     const anulada: Factura = { ...f, estado: "anulada", motivoAnulacion: motivo.trim() };
     return guardaEn(LS_FACTURAS, anulada);
+  },
+};
+
+/* --------------------------------------------------------------- avisos */
+
+/**
+ * Lo marcado hace más de medio año deja de contar.
+ *
+ * Un aviso callado se guarda con el sello del estado que lo produjo, y ese
+ * estado hace tiempo que no existe: la sesión de la que no se apuntó nada se
+ * quedó sin apuntar para siempre y el aviso ya no se genera. Sin esta poda, la
+ * lista sólo crece — y el almacén del navegador tiene un tamaño, así que un día
+ * dejaría de caber una nota por culpa de avisos de hace tres años.
+ */
+const MEDIO_ANO = 183 * 86400000;
+
+const leeVistos = (): AvisoVisto[] => {
+  const corte = Date.now() - MEDIO_ANO;
+  return lee<AvisoVisto>(LS_AVISOS).filter((v) => Date.parse(v.cuando) > corte);
+};
+
+export const avisosLocal: RepoAvisos = {
+  async vistos() {
+    return leeVistos();
+  },
+
+  async marcar(nuevos) {
+    const cuando = new Date().toISOString();
+    // Uno por identificador, y el último manda. Acumular una entrada por cada
+    // sello haría crecer la lista con estados que ya nadie va a volver a ver:
+    // lo que hace falta saber es en qué estado se calló ESTE aviso la última
+    // vez, no todos los estados por los que pasó.
+    const porId = new Map(leeVistos().map((v) => [v.id, v]));
+    nuevos.forEach(({ id, sello }) => porId.set(id, { id, sello, cuando }));
+    escribe(LS_AVISOS, [...porId.values()]);
   },
 };

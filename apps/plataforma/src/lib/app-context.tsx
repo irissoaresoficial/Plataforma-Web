@@ -147,6 +147,38 @@ type Ctx = {
    */
   clienteAbierto: string | null;
   setClienteAbierto: (id: string | null) => void;
+  /**
+   * Con qué se abre la ficha, cuando se llega a ella desde un aviso.
+   *
+   * El aviso «viste a Carmen ayer y no apuntaste nada» tiene que dejar el cursor
+   * dentro del hueco de la nota. Si sólo abriera la ficha, quedaría la mitad del
+   * trabajo hecha —llevarla— y la otra mitad —encontrar dónde se escribe— para
+   * ella. La pantalla lo consume y lo apaga: es un recado, no un modo.
+   */
+  focoFicha: "nota" | null;
+  setFocoFicha: (f: "nota" | null) => void;
+  /**
+   * Qué factura hay que abrir al entrar en Facturas.
+   *
+   * Igual que `clienteAbierto`, y por lo mismo: el aviso de «esta factura lleva
+   * once días en borrador» tiene que caer sobre ESA factura, no sobre la lista.
+   */
+  facturaAbierta: string | null;
+  setFacturaAbierta: (id: string | null) => void;
+  /**
+   * EL NOMBRE QUE VIAJA CON EL CLIC.
+   *
+   * Desde la ficha de alguien se va a apuntarle una sesión o a hacerle una
+   * factura, y en las dos pantallas lo primero que hay que escribir es su
+   * nombre. Volver a teclearlo es lo que convierte un botón que promete
+   * «hazle una factura» en un botón que sólo cambia de pantalla.
+   *
+   * Se deja aquí, lo recoge la pantalla que se abre y lo borra. Es un recado y
+   * no un estado: si se quedara puesto, la siguiente visita a la agenda vendría
+   * con un nombre escrito que nadie ha pedido.
+   */
+  recado: string | null;
+  setRecado: (n: string | null) => void;
   f: FormState;
   set: (k: keyof FormState, v: string) => void;
   r: Resultado | null;
@@ -194,6 +226,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [seccion, setSeccion] = useState<Seccion>("resumen");
   const [disciplina, setDisciplina] = useState<Disciplina>("kabala");
   const [clienteAbierto, setClienteAbierto] = useState<string | null>(null);
+  const [focoFicha, setFocoFicha] = useState<"nota" | null>(null);
+  const [facturaAbierta, setFacturaAbierta] = useState<string | null>(null);
+  const [recado, setRecado] = useState<string | null>(null);
   // La columna de la izquierda se pliega para leer el estudio a todo lo ancho.
   const [lateral, setLateral] = useState(true);
   const [f, setF] = useState<FormState>(FORM_VACIO);
@@ -379,6 +414,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSeccion,
       clienteAbierto,
       setClienteAbierto,
+      focoFicha,
+      setFocoFicha,
+      facturaAbierta,
+      setFacturaAbierta,
+      recado,
+      setRecado,
       f,
       set,
       r,
@@ -408,7 +449,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       marca: MARCA,
       anioUniversal,
     }),
-    [view, setView, seccion, disciplina, lateral, clienteAbierto, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
+    [view, setView, seccion, disciplina, lateral, clienteAbierto, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
   );
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;

@@ -21,7 +21,7 @@
  * archivo.
  */
 
-import type { Cita, Cliente, Factura } from "./tipos";
+import type { AvisoVisto, Cita, Cliente, Factura } from "./tipos";
 
 /** Lo que se puede hacer con cualquier cosa guardada. */
 export interface Repositorio<T> {
@@ -78,4 +78,28 @@ export interface RepoFacturas extends Repositorio<Factura> {
    * dice bien claro que no tiene efecto.
    */
   anular(id: string, motivo: string): Promise<Factura>;
+}
+
+/**
+ * QUÉ AVISOS SE HAN VISTO YA.
+ *
+ * No es un `Repositorio<T>` como los otros tres y no debe serlo: aquí no hay
+ * nada que listar, obtener por identificador ni borrar uno a uno. Lo único que
+ * se pregunta es «¿de qué me callo?», y lo único que se escribe es «de esto
+ * también». Forzarlo dentro de la interfaz genérica obligaría a inventar un
+ * `obtener` y un `borrar` que ninguna pantalla va a llamar nunca.
+ *
+ * Los avisos en sí NO se guardan en ninguna parte: se calculan cada vez desde
+ * las citas, las fichas y las facturas (ver `avisos.ts`). Guardarlos sería
+ * guardar dos veces el mismo dato, y el día que no cuadraran ninguno serviría.
+ */
+export interface RepoAvisos {
+  vistos(): Promise<AvisoVisto[]>;
+  /**
+   * Callar uno o varios de golpe. Van juntos y no de uno en uno porque
+   * «marcarlo todo como visto» es una sola decisión de Iris: si fueran cinco
+   * escrituras, con base de datos serían cinco viajes y cinco ocasiones de que
+   * la mitad se guarde y la otra mitad no.
+   */
+  marcar(avisos: Array<{ id: string; sello: string }>): Promise<void>;
 }

@@ -81,6 +81,38 @@ export type Cliente = Omit<Persona, "consentimiento" | "notas"> & {
 };
 
 /* ------------------------------------------------------------------ */
+/*  AVISOS                                                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * UN AVISO QUE YA SE HA VISTO.
+ *
+ * Los avisos no se guardan: se calculan cada vez a partir de las sesiones, las
+ * fichas y las facturas, que es lo único que hay. Lo que sí hay que guardar es
+ * cuáles ya ha mirado Iris, o cada mañana volvería a encontrarse los mismos.
+ *
+ * POR QUÉ NO BASTA CON EL IDENTIFICADOR, y aquí está toda la gracia.
+ *
+ * «Hace tres meses que no ves a Mónica» se marca como visto un martes. El
+ * miércoles la misma situación genera «hace tres meses y un día», que es otro
+ * texto y el mismo aviso: si sólo se guardara el identificador y éste llevara
+ * dentro los días, volvería a salir. Y si el identificador no llevara los días,
+ * el aviso quedaría callado para siempre — también el día que Mónica vuelva,
+ * tenga una sesión y se enfríe otra vez, que es justo cuando hay que avisar.
+ *
+ * Por eso se guardan dos cosas: QUÉ aviso era (`id`, estable — la persona, la
+ * factura, el día) y EN QUÉ ESTADO estaba cuando se calló (`sello`). Mientras el
+ * sello no cambie, el aviso sigue callado. Cuando el estado cambia de verdad
+ * —Mónica tiene una sesión nueva— el sello cambia y el aviso puede volver.
+ */
+export type AvisoVisto = {
+  id: string;
+  sello: string;
+  /** Cuándo se marcó, en ISO. Sólo sirve para poder limpiar lo viejo. */
+  cuando: string;
+};
+
+/* ------------------------------------------------------------------ */
 /*  FACTURAS                                                           */
 /* ------------------------------------------------------------------ */
 

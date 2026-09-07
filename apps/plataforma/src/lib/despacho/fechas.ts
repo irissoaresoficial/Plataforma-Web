@@ -62,6 +62,40 @@ export function diaRelativo(d: Date, referencia = new Date()): string {
   return diaLargo(d).replace(/^./, (c) => c.toLocaleUpperCase("es"));
 }
 
+/**
+ * CUÁNTO HACE, DICHO COMO SE DICE.
+ *
+ * «Hace 92 días» es un dato de máquina: para saber si eso es mucho hay que
+ * dividir entre treinta mentalmente. Lo que Iris necesita saber es si a alguien
+ * lo vio la semana pasada o el invierno pasado, y eso se dice con la unidad que
+ * corresponde. Por eso los tramos suben: días hasta la semana, semanas hasta el
+ * mes, meses hasta el año.
+ *
+ * Se redondea, y a propósito: «hace 3 meses» es verdad tanto a los 88 días como
+ * a los 95, y ninguna decisión cambia por esos siete días.
+ */
+export function hace(dias: number): string {
+  if (dias <= 0) return "hoy";
+  if (dias === 1) return "ayer";
+  if (dias < 7) return `hace ${dias} días`;
+  if (dias < 14) return "hace una semana";
+  if (dias < 31) return `hace ${Math.round(dias / 7)} semanas`;
+  if (dias < 60) return "hace un mes";
+  if (dias < 365) return `hace ${Math.round(dias / 30)} meses`;
+  if (dias < 730) return "hace más de un año";
+  return "hace años";
+}
+
+/**
+ * Días de calendario entre dos instantes. Se cuenta por días y no por horas
+ * porque «la viste ayer» tiene que ser verdad a las nueve de la mañana igual
+ * que a las once de la noche: restando milisegundos, una sesión de ayer a las
+ * ocho de la tarde saldría hoy hasta pasada esa hora.
+ */
+export function diasEntre(desde: Date, hasta: Date): number {
+  return Math.round((abreDia(hasta).getTime() - abreDia(desde).getTime()) / 86400000);
+}
+
 /** «18:30». */
 export const hora = (iso: string) => {
   const d = new Date(iso);

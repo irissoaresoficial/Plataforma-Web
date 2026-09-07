@@ -53,7 +53,7 @@ const COLOR_ESTADO: Record<Cita["estado"], string> = {
 };
 
 export default function AgendaScreen() {
-  const { setView, setClienteAbierto } = useApp();
+  const { setView, setClienteAbierto, recado, setRecado } = useApp();
 
   const [citas, setCitas] = useState<Cita[]>([]);
   const [gente, setGente] = useState<Cliente[]>([]);
@@ -91,6 +91,21 @@ export default function AgendaScreen() {
     setDia(claveDia(new Date()));
     setHoraTexto(proximaMediaHora());
   }, [recargar]);
+
+  /*
+   * SI SE VIENE DE UNA FICHA, EL NOMBRE YA ESTÁ PUESTO.
+   *
+   * «Apuntarle una sesión» desde la ficha de alguien tiene que llegar aquí con
+   * su nombre escrito: si hubiera que volver a teclearlo, el botón sólo habría
+   * cambiado de pantalla. Se recoge el recado y se apaga en el acto — dejarlo
+   * puesto haría que la siguiente visita a la agenda apareciera con un nombre
+   * que nadie ha pedido.
+   */
+  useEffect(() => {
+    if (!recado) return;
+    setNombre(recado);
+    setRecado(null);
+  }, [recado, setRecado]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const nombreDe = useCallback(
