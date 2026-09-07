@@ -210,16 +210,46 @@ export function SesionProvider({ children }: { children: ReactNode }) {
         /* No se hace nada más aquí: el aviso de arriba se encarga de cargar la
            ficha y de decidir si pasa. Un solo camino para entrar, y da igual si
            se acaba de escribir la contraseña o si la sesión venía de ayer. */
-      } catch {
+      } catch (err) {
         /*
-         * EL MISMO MENSAJE PARA TODOS LOS FALLOS, Y ES A PROPÓSITO.
+         * DOS FAMILIAS DE FALLO, Y NO SE PUEDEN CONTAR IGUAL.
          *
-         * Firebase distingue «ese correo no existe» de «la contraseña está
-         * mal». Repetirlo aquí le confirmaría a cualquiera qué cuentas existen,
-         * que es media entrada regalada. Iris sabe su correo; quien lo esté
-         * probando, no tiene por qué averiguarlo.
+         * 1) LAS CREDENCIALES. Firebase distingue «ese correo no existe» de «la
+         *    contraseña está mal», y aquí eso se aplasta a propósito en un solo
+         *    mensaje: repetir la diferencia le confirmaría a cualquiera qué
+         *    cuentas existen, que es media entrada regalada. Iris sabe su
+         *    correo; quien lo esté probando, no tiene por qué averiguarlo.
+         *
+         * 2) LA INSTALACIÓN. Que el dominio no esté en la lista de Firebase,
+         *    que el acceso por correo esté apagado, que no haya red. Aquí el
+         *    mensaje genérico no es prudencia: es una mentira. Le dice a Iris
+         *    que se ha equivocado de contraseña cuando su contraseña está bien,
+         *    y la manda a probar veinte veces algo que nunca va a funcionar
+         *    mientras el fallo esté en la consola de Firebase y no en sus
+         *    dedos. Esto pasó de verdad y costó una tarde.
+         *
+         * Estos códigos no revelan nada de nadie —hablan de la configuración
+         * del proyecto, no de qué cuentas hay dentro—, así que se dicen enteros
+         * y con el sitio exacto donde se arreglan.
          */
-        setError("No hemos podido entrar con esos datos.");
+        const codigo = (err as { code?: string })?.code || "";
+        const CONFIG: Record<string, string> = {
+          "auth/unauthorized-domain":
+            "Firebase no reconoce esta dirección. En la consola de Firebase → Authentication → Configuración → Dominios autorizados, añade el dominio de esta página. No es tu contraseña.",
+          "auth/operation-not-allowed":
+            "El acceso con correo y contraseña está apagado en Firebase. Actívalo en Authentication → Sign-in method → Correo electrónico/contraseña. No es tu contraseña.",
+          "auth/network-request-failed":
+            "No hay manera de hablar con Firebase: revisa la conexión. No es tu contraseña.",
+          "auth/invalid-api-key":
+            "La clave de Firebase de esta página no es válida. Revisa NEXT_PUBLIC_FIREBASE_API_KEY en Vercel. No es tu contraseña.",
+          "auth/api-key-not-valid":
+            "La clave de Firebase de esta página no es válida. Revisa NEXT_PUBLIC_FIREBASE_API_KEY en Vercel. No es tu contraseña.",
+          "auth/configuration-not-found":
+            "Este proyecto de Firebase todavía no tiene Authentication activado. Actívalo en la consola de Firebase → Authentication → Comenzar. No es tu contraseña.",
+          "auth/too-many-requests":
+            "Firebase ha bloqueado los intentos un rato por seguridad. Espera unos minutos y vuelve a probar.",
+        };
+        setError(CONFIG[codigo] || "No hemos podido entrar con esos datos.");
       } finally {
         setEntrando(false);
       }

@@ -25,6 +25,20 @@ import { useSesion } from "@/lib/sesion";
 
 const CURVA = [0.16, 1, 0.3, 1] as const;
 
+/**
+ * A DÓNDE VUELVE «Volver a la web».
+ *
+ * Aquí había escrito a mano `https://irissoares.com`, que es la web VIEJA de
+ * WordPress. Es decir: el enlace funcionaba —no daba error— y precisamente por
+ * eso el fallo era peor, porque sacaba a quien lo pulsara de la casa que
+ * estamos construyendo y lo dejaba en la anterior sin que nada pareciera roto.
+ *
+ * Ahora sale de una variable, con la dirección de hoy como respaldo. El día que
+ * el dominio esté puesto, se cambia `NEXT_PUBLIC_WEB_URL` en Vercel y ya está:
+ * ni tocar código ni acordarse de este archivo.
+ */
+const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://plataforma-web-two.vercel.app";
+
 export default function Puerta() {
   const { entra, entrando, error, conNube } = useSesion();
   const [email, setEmail] = useState("");
@@ -115,7 +129,7 @@ export default function Puerta() {
         )}
       </motion.div>
 
-      <a className="puerta-volver" href="https://irissoares.com">
+      <a className="puerta-volver" href={WEB}>
         ← Volver a la web
       </a>
     </div>

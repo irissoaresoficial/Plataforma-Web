@@ -16,7 +16,7 @@ import { descargaRespaldo, importaRespaldo, type ResultadoImportar } from "./res
  * factura no es una parte de Kábala— así que van al mismo nivel y se puede
  * entrar en ellas sin haber calculado nada.
  */
-export type View = "inicio" | "panel" | "estudio" | "pareja" | "agenda" | "clientes" | "facturas";
+export type View = "inicio" | "panel" | "estudio" | "pareja" | "agenda" | "clientes" | "facturas" | "leads";
 
 /** Las que sólo tienen sentido con un estudio abierto. Las demás se abren
  *  siempre: entrar a mirar la agenda no puede exigir calcular una carta. */
@@ -33,6 +33,7 @@ const RUTA: Record<View, string> = {
   panel: "/panel",
   estudio: "/estudio",
   pareja: "/pareja",
+  leads: "/leads",
   agenda: "/agenda",
   clientes: "/clientes",
   facturas: "/facturas",
@@ -42,6 +43,7 @@ const VISTA: Record<string, View> = {
   "/panel": "panel",
   "/estudio": "estudio",
   "/pareja": "pareja",
+  "/leads": "leads",
   "/agenda": "agenda",
   "/clientes": "clientes",
   "/facturas": "facturas",

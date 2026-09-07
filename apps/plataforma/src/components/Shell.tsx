@@ -6,6 +6,7 @@ import ConsultaScreen from "./screens/ConsultaScreen";
 import PanelScreen from "./screens/PanelScreen";
 import EstudioScreen from "./screens/EstudioScreen";
 import ParejaScreen from "./screens/ParejaScreen";
+import LeadsScreen from "./screens/LeadsScreen";
 import AgendaScreen from "./screens/AgendaScreen";
 import ClientesScreen from "./screens/ClientesScreen";
 import FacturasScreen from "./screens/FacturasScreen";
@@ -169,6 +170,7 @@ export default function Shell() {
           {view === "panel" && <PanelScreen />}
           {view === "estudio" && <EstudioScreen />}
           {view === "pareja" && <ParejaScreen />}
+          {view === "leads" && <LeadsScreen />}
           {view === "agenda" && <AgendaScreen />}
           {view === "clientes" && <ClientesScreen />}
           {view === "facturas" && <FacturasScreen />}

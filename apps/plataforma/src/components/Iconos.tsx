@@ -224,3 +224,11 @@ export const IcoPareja = (p: P) => (
     <path d="M10.2 7h3.6" strokeDasharray="1.6 1.8" />
   </Caja>
 );
+
+/** Un sobre entreabierto: lo que ha entrado, esperando respuesta. */
+export const IcoLeads = (p: P) => (
+  <Caja {...p}>
+    <path d="M3.2 6.4h17.6v12H3.2z" />
+    <path d="M3.6 6.8l8.4 6.6 8.4-6.6" opacity=".7" />
+  </Caja>
+);
