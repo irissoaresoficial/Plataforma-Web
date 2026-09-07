@@ -101,9 +101,19 @@ var CONFIG = {
   SHEET_NAME: 'Reservas',
   LEADS_SHEET_NAME: 'Leads',
 
-  // Adónde manda la gente la secuencia de correos (la sección de la comunidad).
-  WEB_URL: 'https://irissoares.com',
-  COMUNIDAD_URL: 'https://irissoares.com/membresia',
+  /*
+   * ADÓNDE MANDA LA GENTE LA SECUENCIA DE CORREOS.
+   *
+   * Apuntaban a irissoares.com, que es el WordPress ANTERIOR. Los enlaces
+   * funcionaban —no daban error— y por eso el fallo era peor: cada correo
+   * automático que salía llevaba a la gente a la web vieja, con otros precios y
+   * otra oferta, sin que nada pareciera roto.
+   *
+   * Cuando esté el dominio definitivo se cambian estas dos líneas y se vuelve a
+   * implementar. Es lo único de aquí que habrá que tocar ese día.
+   */
+  WEB_URL: 'https://plataforma-web-two.vercel.app',
+  COMUNIDAD_URL: 'https://plataforma-web-two.vercel.app/membresia',
 
   // Pon false si quieres guardar los correos pero no enviar todavía la secuencia.
   SECUENCIA_ACTIVA: true,
