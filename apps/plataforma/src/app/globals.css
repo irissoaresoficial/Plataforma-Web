@@ -124,6 +124,32 @@
   --gold-deep: #5f4715;
   --gold-soft: rgba(169, 136, 79, 0.14);
 
+  /* -------------------------------------------------------------------------
+     EL GRANATE ES LA ACCIÓN.
+
+     Sobre blanco había un solo color de marca, el oro, y hacía dos oficios a la
+     vez: adornar —el filete, el número grande, el rótulo— y mandar —el botón,
+     la pestaña elegida—. Cuando el mismo color adorna y manda, deja de mandar:
+     la pantalla se llena de oro y el ojo ya no sabe cuál de los seis sitios
+     dorados es el que hay que pulsar.
+
+     Así que se reparten. El ORO se queda con el adorno, que es lo suyo y lo que
+     da el aire de la casa. El GRANATE —el mismo vino de la web, el mismo de la
+     puerta— se queda con lo que se pulsa y con lo que está elegido. En una
+     pantalla blanca sólo hay un par de manchas de granate, y son exactamente
+     las dos cosas que la persona tiene que ver.
+
+     En oscuro no puede ser el granate: el fondo YA es granate y un botón vino
+     sobre pared vino desaparece. Allí la acción vuelve a ser el oro claro, que
+     es lo único que se recorta contra ese fondo. La regla no cambia —«la acción
+     tiene su propio color»—, cambia cuál es ese color en cada cara.
+     ------------------------------------------------------------------------- */
+  --accion: #4a1a26;
+  --accion-honda: #35111a;
+  --accion-suave: rgba(74, 26, 38, 0.075);
+  --accion-borde: rgba(74, 26, 38, 0.26);
+  --sobre-accion: #fbf6ee;
+
   /*
    * LOS TRES CAMINOS, EN DOS VERSIONES.
    *
@@ -242,6 +268,15 @@
   --gold-deep: #f0e3c6;
   --gold-soft: rgba(226, 205, 162, 0.14);
   --sobre-oro: #2b1119;
+
+  /* La acción, sobre granate, es el oro claro: un botón vino sobre pared vino
+     no existe. La tinta de encima es el propio fondo, que es lo que hace que
+     el botón se lea como un recorte en la pared y no como una pegatina. */
+  --accion: #e7d3ac;
+  --accion-honda: #f2e6ca;
+  --accion-suave: rgba(226, 205, 162, 0.13);
+  --accion-borde: rgba(226, 205, 162, 0.34);
+  --sobre-accion: #2b1119;
 
   /* Los colores de código —los tres caminos, los avisos— suben de luz sobre el
      granate. Con los tonos de antes se quedaban por debajo de 4,5:1 y las

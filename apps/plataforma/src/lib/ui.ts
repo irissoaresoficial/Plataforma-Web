@@ -85,16 +85,35 @@ const BOTON =
   "font-family:var(--font-ui);font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;" +
   "white-space:nowrap;cursor:pointer;transition:background .18s,border-color .18s,color .18s;";
 
+/*
+ * EL BOTÓN PRINCIPAL VA EN GRANATE, NO EN ORO.
+ *
+ * Sobre blanco el oro estaba haciendo dos oficios: adornar —el filete, la
+ * cifra grande, el rótulo de sección— y mandar. Y cuando el mismo color adorna
+ * y manda, deja de mandar: la pantalla se llena de dorado y el ojo ya no sabe
+ * cuál de las seis manchas de oro es la que hay que pulsar.
+ *
+ * El granate es el vino de la casa, el mismo de la web y el de la puerta. En
+ * una pantalla blanca sólo hay una mancha de granate por pantalla, y es
+ * exactamente lo que la persona tiene que ver.
+ *
+ * En oscuro `--accion` vuelve a ser el oro claro por sí solo, porque un botón
+ * vino sobre pared vino no existe. Aquí no hay que saberlo: se pide la acción
+ * y llega la de la cara en la que se esté.
+ */
 export const botonPrincipal = (activo = true) =>
   BOTON +
   "padding:12px 24px;border:1px solid " +
-  (activo ? "var(--gold-deep)" : "transparent") +
+  (activo ? "var(--accion)" : "transparent") +
   ";background:" +
-  (activo ? "var(--gold-deep)" : "color-mix(in srgb, var(--text) 9%, transparent)") +
+  (activo ? "var(--accion)" : "color-mix(in srgb, var(--text) 9%, transparent)") +
   ";color:" +
-  (activo ? "var(--sobre-oro)" : "var(--text-4)") +
+  (activo ? "var(--sobre-accion)" : "var(--text-4)") +
   ";" +
-  (activo ? "" : "cursor:not-allowed;");
+  /* Levantado del papel, como las tarjetas. El aviso de que se ha pulsado lo
+     sigue dando el `:active` de globals.css —encoge un pelo—, que funciona
+     igual en los tres botones y no depende de que éste lleve relieve. */
+  (activo ? "box-shadow:var(--nm-alto);" : "cursor:not-allowed;");
 
 export const BOTON_NORMAL =
   BOTON + "padding:9px 18px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);";

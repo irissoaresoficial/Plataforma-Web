@@ -45,12 +45,17 @@ export default function EstudioScreen() {
                 style={css(
                   "display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;text-align:left;white-space:nowrap;transition:all .2s;" +
                     (on
-                      ? "border:1px solid var(--gold-deep);background:var(--gold-deep);color:var(--sobre-oro);"
+                      /* La elegida en granate; las otras, papel. Lo que está
+                         elegido y lo que se pulsa comparten color a propósito:
+                         es la misma idea —«esto es lo activo»— y tenerla en dos
+                         colores distintos es lo que obliga a aprenderse la
+                         pantalla en vez de mirarla. */
+                      ? "border:1px solid var(--accion);background:var(--accion);color:var(--sobre-accion);"
                       : "border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);")
                 )}
               >
                 <span style={css("font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;")}>{label}</span>
-                <span style={css("font-size:var(--t-mini);color:" + (on ? "color-mix(in srgb, var(--sobre-oro) 72%, transparent)" : "var(--text-4)") + ";")}>{pie}</span>
+                <span style={css("font-size:var(--t-mini);color:" + (on ? "color-mix(in srgb, var(--sobre-accion) 74%, transparent)" : "var(--text-4)") + ";")}>{pie}</span>
               </button>
             );
           })}

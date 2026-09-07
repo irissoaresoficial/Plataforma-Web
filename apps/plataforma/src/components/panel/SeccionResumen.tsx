@@ -186,13 +186,13 @@ export default function SeccionResumen() {
                 style={css(
                   "text-align:left;padding:17px 18px;cursor:pointer;border-radius:var(--r);" +
                     (x.destacada
-                      ? "border:1px solid var(--gold-deep);color:var(--sobre-oro);background:var(--gold-deep);"
+                      ? "border:1px solid var(--accion);color:var(--sobre-accion);background:var(--accion);box-shadow:var(--nm-alto);"
                       : TARJETA)
                 )}
               >
-                <div style={css("font-size:var(--t-mini);font-weight:590;color:" + (x.destacada ? "color-mix(in srgb, var(--sobre-oro) 82%, transparent)" : "var(--text-3)") + ";")}>{x.label}</div>
-                <div style={css("font-size:var(--t-hero);font-weight:700;letter-spacing:-.028em;line-height:1.1;margin-top:6px;color:" + (x.destacada ? "var(--sobre-oro)" : "var(--text)") + ";")}>{x.valor}</div>
-                <div style={css("font-size:var(--t-mini);margin-top:3px;line-height:1.3;color:" + (x.destacada ? "color-mix(in srgb, var(--sobre-oro) 72%, transparent)" : "var(--text-4)") + ";")}>{x.pie}</div>
+                <div style={css("font-size:var(--t-mini);font-weight:590;color:" + (x.destacada ? "color-mix(in srgb, var(--sobre-accion) 84%, transparent)" : "var(--text-3)") + ";")}>{x.label}</div>
+                <div style={css("font-size:var(--t-hero);font-weight:700;letter-spacing:-.028em;line-height:1.1;margin-top:6px;color:" + (x.destacada ? "var(--sobre-accion)" : "var(--text)") + ";")}>{x.valor}</div>
+                <div style={css("font-size:var(--t-mini);margin-top:3px;line-height:1.3;color:" + (x.destacada ? "color-mix(in srgb, var(--sobre-accion) 76%, transparent)" : "var(--text-4)") + ";")}>{x.pie}</div>
               </button>
             ))}
           </div>

@@ -73,10 +73,13 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
       style={css(
         "display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:9px 10px;white-space:nowrap;border:none;border-radius:var(--r-sm);cursor:pointer;letter-spacing:-.01em;line-height:1.25;transition:background .18s,color .18s;" +
           (grande ? "font-size:var(--t-read);font-weight:600;" : "font-size:var(--t-body);font-weight:590;") +
+          /* Dónde estás, en granate. Es la misma regla que el botón: lo activo
+             y lo que se pulsa comparten color, y el oro se queda para adornar.
+             En oscuro `--accion` es el oro claro por sí solo. */
           "background:" +
-          (activo ? "var(--gold-soft)" : "transparent") +
+          (activo ? "var(--accion-suave)" : "transparent") +
           ";color:" +
-          (activo ? "var(--gold-deep)" : grande ? "var(--text)" : "var(--text-3)") +
+          (activo ? "var(--accion)" : grande ? "var(--text)" : "var(--text-3)") +
           ";"
       )}
     >
