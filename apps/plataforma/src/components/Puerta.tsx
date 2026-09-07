@@ -39,10 +39,22 @@ const CURVA = [0.16, 1, 0.3, 1] as const;
  */
 const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://plataforma-web-two.vercel.app";
 
+/** El ojo del campo de contraseña. Tachado cuando la contraseña está tapada. */
+function Ojo({ abierto }: { abierto: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden>
+      <path d="M2.2 12S5.6 5.8 12 5.8 21.8 12 21.8 12 18.4 18.2 12 18.2 2.2 12 2.2 12Z" />
+      <circle cx="12" cy="12" r="3.1" />
+      {!abierto && <path d="M4 20 20 4" />}
+    </svg>
+  );
+}
+
 export default function Puerta() {
   const { entra, entrando, error, conNube } = useSesion();
   const [email, setEmail] = useState("");
   const [clave, setClave] = useState("");
+  const [verClave, setVerClave] = useState(false);
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,16 +97,36 @@ export default function Puerta() {
             />
           </div>
 
+          {/*
+              VER LO QUE UNO ESCRIBE.
+              Una contraseña tapada en una pantalla que ya ha fallado una vez no
+              protege de nadie —no hay nadie mirando por encima del hombro— y sí
+              impide lo único que hace falta ahí: comprobar si la mayúscula del
+              principio se ha colado. El ojo va DENTRO del campo, no al lado, para
+              no partir la caja en dos.
+          */}
           <div className="puerta-campo">
             <label htmlFor="p-clave">Contraseña</label>
-            <input
-              id="p-clave"
-              type="password"
-              autoComplete="current-password"
-              value={clave}
-              onChange={(e) => setClave(e.target.value)}
-              placeholder="••••••••"
-            />
+            <div className="puerta-secreto">
+              <input
+                id="p-clave"
+                type={verClave ? "text" : "password"}
+                autoComplete="current-password"
+                value={clave}
+                onChange={(e) => setClave(e.target.value)}
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                className="puerta-ojo"
+                onClick={() => setVerClave((v) => !v)}
+                aria-pressed={verClave}
+                aria-label={verClave ? "Ocultar la contraseña" : "Ver la contraseña"}
+                title={verClave ? "Ocultar" : "Ver"}
+              >
+                <Ojo abierto={verClave} />
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="puerta-boton" disabled={entrando}>

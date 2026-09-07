@@ -1136,6 +1136,61 @@ button:not(:disabled):active {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/*
+   EL AUTORRELLENO DE CHROME PINTABA EL CAMPO DE AZUL CLARO.
+
+   Chrome le mete un fondo propio a los campos que rellena solo, y ese fondo
+   ignora `background`: es una capa suya. Sobre esta pantalla oscura el resultado
+   era una caja blanca azulada en mitad del granate — parecía un error de carga.
+
+   No se quita: se tapa. Una sombra interior enorme del color que toca ocupa el
+   hueco entero, y `-webkit-text-fill-color` devuelve la letra a claro, porque
+   `color` tampoco le vale. El retardo absurdo de la transición es el truco
+   conocido para que Chrome no lo vuelva a pintar encima al enfocar.
+*/
+.puerta-campo input:-webkit-autofill,
+.puerta-campo input:-webkit-autofill:hover,
+.puerta-campo input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fbf6ee;
+  -webkit-box-shadow: 0 0 0 60px #35181f inset;
+  caret-color: #fbf6ee;
+  transition: background-color 100000s ease-in-out 0s;
+}
+
+/* El campo de contraseña lleva el ojo dentro, así que necesita sitio a la
+   derecha para que la letra no pase por debajo del icono. */
+.puerta-secreto {
+  position: relative;
+  display: flex;
+}
+.puerta-secreto input {
+  padding-right: 52px;
+}
+.puerta-ojo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #a08d92;
+  cursor: pointer;
+  border-radius: var(--r);
+  transition: color 0.2s ease;
+}
+.puerta-ojo:hover,
+.puerta-ojo[aria-pressed="true"] {
+  color: #e2cda2;
+}
+.puerta-ojo:focus-visible {
+  outline: 2px solid #e2cda2;
+  outline-offset: -3px;
+}
+
 .puerta-boton {
   margin-top: 6px;
   display: flex;
@@ -1164,11 +1219,18 @@ button:not(:disabled):active {
   cursor: default;
 }
 
+/* Un fallo de instalación se cuenta entero, y entero ocupa varias líneas: que
+   respire y se lea, en vez de quedar apretado debajo del botón. */
 .puerta-error {
   margin: 0;
+  padding: 11px 13px;
+  border: 1px solid rgba(232, 160, 160, 0.34);
+  border-radius: var(--r);
+  background: rgba(232, 160, 160, 0.08);
   font-size: 13px;
-  line-height: 1.5;
-  color: #e8a0a0;
+  line-height: 1.55;
+  color: #f0c0c0;
+  overflow-wrap: anywhere;
 }
 .puerta-error:empty {
   display: none;

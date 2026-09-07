@@ -133,7 +133,18 @@ export function SesionProvider({ children }: { children: ReactNode }) {
       }
       try {
         const referencia = doc(base, "usuarios", u.uid);
-        let ficha = await getDoc(referencia);
+
+        /*
+         * QUE UNA LECTURA DENEGADA NO MATE EL ARRANQUE.
+         *
+         * Si las reglas publicadas son las de antes —las que exigían tener
+         * ficha para poder leer tu ficha— esta lectura contesta
+         * `permission-denied`. Antes eso saltaba al catch de abajo y echaba a la
+         * dueña sin haber intentado siquiera crearle la ficha. Ahora un fallo
+         * aquí se trata como lo que significa de verdad: «no hay ficha que
+         * leer», y se sigue al paso de arranque.
+         */
+        let ficha = await getDoc(referencia).catch(() => null);
 
         /*
          * LA PRIMERA VEZ, LA DUEÑA SE DA ACCESO SOLA.
@@ -151,7 +162,7 @@ export function SesionProvider({ children }: { children: ReactNode }) {
          * regalando nada que el servidor no permita. Para aprovecharlo haría
          * falta controlar ese Gmail — y quien controle ese Gmail ya es la dueña.
          */
-        if (!ficha.exists() && (u.email || "").toLowerCase() === CORREO_DUENA) {
+        if (!ficha?.exists() && (u.email || "").toLowerCase() === CORREO_DUENA) {
           await setDoc(referencia, {
             email: u.email,
             nombre: (u.displayName || "Iris").trim(),
@@ -160,8 +171,8 @@ export function SesionProvider({ children }: { children: ReactNode }) {
           ficha = await getDoc(referencia);
         }
 
-        const d = ficha.data();
-        if (!ficha.exists() || d?.activo !== true) {
+        const d = ficha?.data();
+        if (!ficha?.exists() || d?.activo !== true) {
           /* Tiene cuenta pero no tiene permiso, o se lo han quitado. Se le echa
              y se le dice — dejarle dentro con todas las pantallas vacías es
              peor: parecería que la herramienta está rota. */
@@ -176,11 +187,18 @@ export function SesionProvider({ children }: { children: ReactNode }) {
           nombre: d.nombre || u.displayName || (u.email || "").split("@")[0],
           activo: true,
         });
-      } catch {
-        /* Si no se puede leer la ficha —sin red, reglas mal puestas— no se
-           inventa un permiso: no entra. */
+      } catch (e) {
+        /* Si no se puede escribir la ficha —sin red, reglas mal puestas— no se
+           inventa un permiso: no entra. Pero se dice POR QUÉ, con el código
+           delante: «vuelve a intentarlo» sobre un fallo de reglas es mandar a
+           alguien a repetir para siempre algo que nunca va a salir. */
+        const c = (e as { code?: string })?.code || String(e);
         setUsuario(false);
-        setError("No hemos podido comprobar tu acceso. Vuelve a intentarlo.");
+        setError(
+          c.includes("permission-denied")
+            ? "Tu contraseña es correcta, pero Firestore no deja crear tu ficha. Publica de nuevo las reglas de firebase/firestore.rules en la consola de Firebase."
+            : `Tu contraseña es correcta, pero no hemos podido comprobar tu acceso. Copia esto: ${c}`,
+        );
       }
     });
   }, [conNube]);
@@ -206,7 +224,23 @@ export function SesionProvider({ children }: { children: ReactNode }) {
 
       setEntrando(true);
       try {
-        await signInWithEmailAndPassword(a, correo, clave);
+        /*
+         * UN RELOJ, PORQUE UN BOTÓN PEGADO EN «ENTRANDO…» NO ES UN ERROR: ES PEOR.
+         *
+         * Si la llamada a Google no vuelve —red rara, una extensión del
+         * navegador que la corta, la clave del proyecto con restricciones de
+         * dominio— esta promesa se queda esperando para siempre y la pantalla se
+         * queda en «Entrando…» sin decir absolutamente nada. Quien está delante
+         * no sabe si va lento, si se ha equivocado, o si tiene que volver a
+         * pulsar. Esperar callado no es una opción: a los quince segundos esto
+         * se rinde y lo dice.
+         */
+        await Promise.race([
+          signInWithEmailAndPassword(a, correo, clave),
+          new Promise((_, falla) =>
+            setTimeout(() => falla({ code: "local/sin-respuesta" }), 15_000),
+          ),
+        ]);
         /* No se hace nada más aquí: el aviso de arriba se encarga de cargar la
            ficha y de decidir si pasa. Un solo camino para entrar, y da igual si
            se acaba de escribir la contraseña o si la sesión venía de ayer. */
@@ -248,8 +282,40 @@ export function SesionProvider({ children }: { children: ReactNode }) {
             "Este proyecto de Firebase todavía no tiene Authentication activado. Actívalo en la consola de Firebase → Authentication → Comenzar. No es tu contraseña.",
           "auth/too-many-requests":
             "Firebase ha bloqueado los intentos un rato por seguridad. Espera unos minutos y vuelve a probar.",
+          "auth/user-disabled":
+            "Esa cuenta está desactivada en Firebase → Authentication → Usuarios.",
+          "local/sin-respuesta":
+            "Google no ha contestado en quince segundos. No es tu contraseña: o no hay conexión, o algo está cortando la llamada (una extensión del navegador, o la clave de Firebase con restricciones de dominio).",
         };
-        setError(CONFIG[codigo] || "No hemos podido entrar con esos datos.");
+
+        const conocido = CONFIG[codigo];
+        /*
+         * CREDENCIALES: MISMO MENSAJE Y SIN CÓDIGO. Éstos son los que no pueden
+         * dar detalle, y son exactamente tres.
+         */
+        const esCredencial =
+          codigo === "auth/invalid-credential" ||
+          codigo === "auth/wrong-password" ||
+          codigo === "auth/user-not-found" ||
+          codigo === "auth/invalid-email";
+
+        if (conocido) setError(conocido);
+        else if (esCredencial) setError("No hemos podido entrar con esos datos.");
+        else {
+          /*
+           * LO QUE NO ESTÁ EN LA LISTA SE ENSEÑA TAL CUAL.
+           *
+           * Tapar un fallo desconocido con «datos incorrectos» es lo que nos
+           * costó la tarde de ayer: el mensaje bonito se comía la única pista
+           * que había. Un código que no reconozco habla de la instalación, no
+           * de quién hay dentro, así que sale entero — feo, pero se puede
+           * copiar y pegar, y eso lo arregla en un minuto en vez de en una
+           * tarde.
+           */
+          setError(
+            `No hemos podido entrar, y el motivo no es uno de los habituales. Copia esto tal cual: ${codigo || String((err as { message?: string })?.message || err)}`,
+          );
+        }
       } finally {
         setEntrando(false);
       }

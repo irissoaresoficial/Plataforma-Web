@@ -95,8 +95,22 @@ service cloud.firestore {
     match /usuarios/{uid} {
       /* Cualquiera que esté dentro ve la lista: hace falta para saber quién ha
          apuntado una nota, y para que la pantalla de accesos tenga algo que
-         enseñar. */
-      allow read: if dentro();
+         enseñar.
+         ----------------------------------------------------------------
+         Y CUALQUIERA PUEDE LEER LA SUYA. Esta segunda mitad no es un capricho:
+         sin ella el arranque de más abajo es inalcanzable y NO ENTRA NADIE NUNCA.
+
+         La secuencia real, que costó una tarde: la dueña escribe su contraseña,
+         Firebase Auth la acepta, la plataforma va a leer su ficha para saber si
+         tiene permiso… y ESTA LÍNEA se lo niega, porque `dentro()` exige tener
+         ficha y ella todavía no la tiene. La lectura falla, el código la echa, y
+         la pantalla vuelve a la puerta como si la contraseña estuviera mal. El
+         `allow create` de abajo estaba bien escrito y no se ejecutaba jamás.
+
+         Leer TU PROPIA ficha no enseña nada de nadie: o dice que estás activo o
+         dice que no, y las dos cosas las sabes ya por lo que tienes delante. Lo
+         que abre es exactamente el paso que faltaba, ni un milímetro más. */
+      allow read: if dentro() || (request.auth != null && uid == request.auth.uid);
 
       /**
        * Dar y quitar accesos lo hace quien está dentro, con un candado: NADIE
