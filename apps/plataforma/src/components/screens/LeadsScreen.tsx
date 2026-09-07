@@ -45,8 +45,24 @@ import {
   type EstadoLead,
   type Lead,
 } from "@/lib/despacho/leads";
-import { APOYO, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, TITULO, rotulo, tarjetaCon } from "@/lib/ui";
-import { Avatar } from "../despacho/Piezas";
+import { APOYO, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, rotulo, tarjetaCon } from "@/lib/ui";
+import { Avatar, Cabecera } from "../despacho/Piezas";
+import HojaLateral from "../despacho/HojaLateral";
+
+/**
+ * EL MARCO DE LA PÁGINA ES EL MISMO QUE EL DE LAS OTRAS TRES.
+ *
+ * Esta pantalla tenía el suyo: 1180 px de ancho en la rama sin conectar, 1400
+ * en la de trabajo, un `padding` de `--gutter` por los cuatro lados y un título
+ * de `--t-hero` escrito a mano. Las otras tres del despacho usan 1320, el
+ * `padding` de arriba corto y el título de `Cabecera`.
+ *
+ * Eso se veía: al pasar de Agenda a Leads el título saltaba once píxeles a la
+ * derecha y crecía catorce, y la página entera se estrechaba ciento cuarenta.
+ * Cuatro pantallas que son la misma herramienta y que no empiezan en el mismo
+ * sitio se leen como cuatro sitios distintos.
+ */
+const MARCO = "max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);min-width:0;";
 
 /** Cómo se llama cada origen cuando se le enseña a Iris. */
 const ORIGENES: Record<string, string> = {
@@ -94,14 +110,9 @@ export default function LeadsScreen() {
     setNota(activo?.nota ?? "");
   }, [activo?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* Cerrar la ficha con Escape. Un panel que tapa media pantalla y sólo se cierra
-     con la equis pequeña de la esquina es un panel que estorba. */
-  useEffect(() => {
-    if (!activo) return;
-    const f = (e: KeyboardEvent) => e.key === "Escape" && setAbierto(null);
-    window.addEventListener("keydown", f);
-    return () => window.removeEventListener("keydown", f);
-  }, [activo]);
+  /* Escape y el clic en el velo cierran la ficha, y de eso se encarga
+     `HojaLateral`: es la misma salida que en las otras tres pantallas y no hace
+     falta —ni conviene— que ésta se la escriba por su cuenta. */
 
   const porEstado = (e: EstadoLead) => leads?.filter((l) => l.estado === e) ?? [];
 
@@ -127,35 +138,49 @@ export default function LeadsScreen() {
     }
   };
 
+  const total = leads?.length ?? 0;
+
   if (!conNube) {
     return (
-      <div style={css("max-width:1180px;margin:0 auto;padding:var(--gutter);")}>
-        <h1 style={css(TITULO + "font-size:var(--t-hero);margin:0 0 var(--s2);")}>Leads</h1>
-        <div style={css(tarjetaCon("var(--red)") + PAD)}>
-          <div style={css(rotulo("var(--red)") + "margin-bottom:var(--s2);")}>Sin conectar</div>
+      <main style={css(MARCO)}>
+        <Cabecera titulo="Leads" pie="Los que dejan su correo en la web caen aquí." />
+        {/*
+            SIN RAYA ROJA, Y NO ES UN DESCUIDO.
+            Estaba en una tarjeta con el canto rojo, como los avisos de lo que se
+            puede perder. Pero esto no es una avería ni algo urgente: es el
+            estado normal de una instalación a la que todavía no le han puesto
+            las claves, y sale IGUAL cada vez que se entra. Un rojo permanente
+            deja de significar «mira esto» y pasa a ser el color de esta
+            pantalla — y el día que haya una alarma de verdad, ya no avisará.
+        */}
+        {/* La tarjeta se acota al ancho de lo que dice. Estirada a los mil
+            quinientos píxeles de la página, tres renglones de texto dentro de
+            una caja vacía se leen como una franja de aviso, no como una
+            explicación. */}
+        <section style={css(TARJETA + PAD + "max-width:62ch;")}>
+          <div style={css(rotulo() + "margin-bottom:var(--s2);")}>Todavía sin conectar</div>
           <p style={css(APOYO + "margin:0;")}>
-            Esta pantalla lee de Firebase, y Firebase todavía no está conectado aquí.
+            Esta pantalla lee de Firebase. Mientras no estén puestas sus claves aquí no aparece nadie — y lo que se apunte en la
+            web sigue guardándose igual, así que no se pierde nada por el camino.
           </p>
-        </div>
-      </div>
+        </section>
+      </main>
     );
   }
 
-  const total = leads?.length ?? 0;
-
   return (
-    <div style={css("max-width:1400px;margin:0 auto;padding:var(--gutter);display:flex;flex-direction:column;gap:var(--gap-lg);")}>
+    <main style={css(MARCO)}>
       {/*
-          LA CABECERA, DE UNA LÍNEA.
+          LA CABECERA, LA MISMA DE LAS OTRAS TRES.
           Había aquí dos frases explicando qué es un lead y que la lista se llena
           sola. Se lee una vez, el primer día, y después son dos renglones que
           empujan hacia abajo lo único que importa —la gente— en todas las visitas
           restantes. Lo que la pantalla hace se ve haciéndolo.
+
+          La cuenta va donde `Cabecera` pone el pie: es lo que se quiere saber al
+          llegar y no hace falta una frase para decirlo.
       */}
-      <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
-        <h1 style={css(TITULO + "font-size:var(--t-hero);margin:0;")}>Leads</h1>
-        <span style={css(NOTA)}>{total === 0 ? "Nadie todavía" : total === 1 ? "1 persona" : `${total} personas`}</span>
-      </div>
+      <Cabecera titulo="Leads" pie={total === 0 ? "Nadie todavía" : total === 1 ? "1 persona" : `${total} personas`} />
 
       {leads === null ? (
         <div style={css(TARJETA + PAD)}>
@@ -239,11 +264,15 @@ export default function LeadsScreen() {
                         }}
                         onClick={() => setAbierto(l.id)}
                         style={css(
-                          TARJETA +
-                            "text-align:left;padding:12px 13px;cursor:grab;display:flex;gap:10px;align-items:flex-start;" +
-                            "border-left:2px solid " + COLOR_ESTADO[e.k] + ";" +
+                          /* La raya del color de la columna la pone
+                             `tarjetaCon`: escrita a mano como `border-left`,
+                             con el canto blando de la casa se convertía en una
+                             coma envolviendo la tarjeta. El porqué entero está
+                             en `lib/ui.ts`. */
+                          tarjetaCon(COLOR_ESTADO[e.k]) +
+                            "text-align:left;padding:12px 13px 12px 20px;cursor:grab;display:flex;gap:10px;align-items:flex-start;" +
                             (yendo ? "opacity:.45;" : "opacity:1;") +
-                            (abierto === l.id ? "outline:1px solid var(--accion);" : "") +
+                            (abierto === l.id ? "outline:2px solid var(--accion);outline-offset:-2px;" : "") +
                             "transition:opacity .15s ease,transform .15s ease;"
                         )}
                       >
@@ -276,38 +305,22 @@ export default function LeadsScreen() {
           las tres cuartas partes del tiempo enseñaba «elige a alguien de la
           lista». El embudo necesita ese ancho; la ficha sólo aparece cuando hace
           falta y se quita con Escape.
-      */}
-      {activo && (
-        <div
-          onClick={() => setAbierto(null)}
-          style={css(
-            "position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.42);display:flex;justify-content:flex-end;"
-          )}
-        >
-          <aside
-            onClick={(ev) => ev.stopPropagation()}
-            style={css(
-              "width:min(380px,100%);height:100%;overflow-y:auto;background:var(--surface-solid);" +
-                "border-left:1px solid var(--border);padding:var(--pad-card);display:flex;flex-direction:column;gap:var(--gap);"
-            )}
-          >
-            <div style={css("display:flex;align-items:flex-start;gap:var(--s3);")}>
-              <Avatar nombre={activo.nombre || activo.email} tamano={40} />
-              <div style={css("min-width:0;flex:1;")}>
-                <div style={css("font-size:var(--t-title);font-weight:600;color:var(--text);overflow-wrap:anywhere;")}>
-                  {activo.nombre || "Sin nombre"}
-                </div>
-                <div style={css(NOTA)}>{origenLegible(activo.origen)}</div>
-              </div>
-              <button
-                onClick={() => setAbierto(null)}
-                aria-label="Cerrar"
-                style={css("flex:none;border:0;background:transparent;color:var(--text-4);font-size:19px;cursor:pointer;line-height:1;padding:2px 4px;")}
-              >
-                ×
-              </button>
-            </div>
 
+          Y ES LA MISMA HOJA QUE EN LAS OTRAS TRES PANTALLAS. Aquí estaba escrita
+          a mano: 380 px en vez de 580, velo negro plano en vez del velo cálido y
+          desenfocado, cabecera que se iba con el scroll, una × de 19 px en la
+          esquina en vez del botón de 44, y su propio manejo de Escape. Era la
+          misma acción —abrir a alguien— con otra forma según la pantalla, y con
+          su propio código que mantener. `HojaLateral` ya resolvía todo eso.
+      */}
+      <HojaLateral
+        abierta={Boolean(activo)}
+        cerrar={() => setAbierto(null)}
+        titulo={activo ? activo.nombre || "Sin nombre" : ""}
+        pie={activo ? origenLegible(activo.origen) : undefined}
+      >
+        {activo && (
+          <div style={css("display:flex;flex-direction:column;gap:var(--gap);")}>
             <div style={css("display:flex;flex-direction:column;gap:8px;font-size:var(--t-body);")}>
               <a href={`mailto:${activo.email}`} style={css("color:var(--accion);text-decoration:none;overflow-wrap:anywhere;")}>
                 {activo.email}
@@ -330,8 +343,9 @@ export default function LeadsScreen() {
                     key={e.k}
                     onClick={() => cambiaEstado(activo.id, e.k)}
                     title={e.que}
+                    aria-pressed={activo.estado === e.k}
                     style={css(
-                      "padding:7px 13px;border-radius:980px;font-size:var(--t-mini);font-weight:590;cursor:pointer;" +
+                      "padding:7px 13px;border-radius:var(--r-pill);font-size:var(--t-mini);font-weight:590;cursor:pointer;" +
                         (activo.estado === e.k
                           ? "border:1px solid var(--accion);background:var(--accion);color:var(--sobre-accion);"
                           : "border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);")
@@ -358,9 +372,9 @@ export default function LeadsScreen() {
                 {guardando ? "Guardando…" : "Guardar la nota"}
               </button>
             </div>
-          </aside>
-        </div>
-      )}
-    </div>
+          </div>
+        )}
+      </HojaLateral>
+    </main>
   );
 }

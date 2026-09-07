@@ -43,7 +43,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { NOTA, PAD, PAD_SM, RAYA, TARJETA, TARJETA_ELEGIDA, botonPrincipal, rotulo } from "@/lib/ui";
+import { NOTA, PAD, PAD_SM, PASTILLA, PASTILLA_ELEGIDA, RAYA, TARJETA, botonPrincipal, rotulo } from "@/lib/ui";
 import { titulo as enTitulo } from "@/lib/format";
 import {
   citas as repoCitas,
@@ -257,28 +257,42 @@ export default function ClientesScreen() {
     return (
       <motion.button
         key={g.c.id}
-        initial={quieto ? false : { opacity: 0, y: 12 }}
+        initial={quieto ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={quieto ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+        exit={quieto ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
         /* Escalonada, pero con tope: en una columna de treinta, esperar
            metro y medio de retraso a la última haría que la pantalla
-           tardara dos segundos en estar entera. */
-        transition={{ duration: 0.4, delay: Math.min(i, 7) * 0.035, ease: [0.22, 1, 0.36, 1] }}
+           tardara dos segundos en estar entera. Y corta —la casa no pasa de
+           un tercio de segundo—, que es lo que la separa de una animación
+           bonita de enseñar y molesta de usar. */
+        transition={{ duration: 0.28, delay: Math.min(i, 7) * 0.03, ease: [0.16, 1, 0.3, 1] }}
         /* El levantarse al pasar por encima lo lleva framer y no el
            `[data-alza]` de la hoja de estilos, y no es un capricho: la tarjeta
            entra con una animación que deja su `transform` escrito en línea, y
            un `transform` en línea se come cualquier `:hover` del CSS. Con la
            regla de la hoja, el gesto sencillamente no ocurriría. */
-        whileHover={quieto ? undefined : { y: -3 }}
+        whileHover={quieto ? undefined : { y: -2 }}
         whileTap={quieto ? undefined : { scale: 0.99 }}
         onClick={() => setClienteAbierto(g.c.id)}
         style={css(
-          /* La tarjeta de quien tiene la ficha abierta va en granate: la misma
-             regla que la pestaña puesta en la columna de la plataforma y que el
-             botón principal. Es lo que ata la hoja de la derecha con el sitio
-             del tablero de donde salió. */
-          (elegida ? TARJETA_ELEGIDA : TARJETA) +
-            "display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;cursor:pointer;padding:12px;box-shadow:var(--nm-alto);"
+          /*
+             UNA PASTILLA, NO UNA TARJETA. Esto era una tarjeta blanca levantada
+             DENTRO de la tarjeta blanca de la columna, que es justo lo que la
+             regla de la casa prohíbe. En claro se veían dos cantos y dos
+             sombras discutiendo por el mismo borde; en oscuro era peor, porque
+             la columna y la ficha son el mismo color y sólo las separaba una
+             línea de un pelo: veinte fichas se leían como una mancha.
+
+             Hundida sobre el fondo de su columna se distingue de un vistazo y
+             además dice lo que es —algo que está dentro de esto— sin necesidad
+             de competir con la tarjeta que la contiene.
+
+             La de quien tiene la ficha abierta va en granate: la misma regla
+             que la pestaña puesta en la columna de la plataforma y que el botón
+             principal. Es lo que ata la hoja de la derecha con el sitio del
+             tablero de donde salió. */
+          (elegida ? PASTILLA_ELEGIDA : PASTILLA) +
+            "display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;cursor:pointer;padding:11px 12px;"
         )}
       >
         <Avatar nombre={g.c.nombre} tamano={32} />
@@ -297,6 +311,21 @@ export default function ClientesScreen() {
 
   /* ------------------------------------------------------------- la columna */
 
+  /*
+   * LA CABEZA DE COLUMNA, SIN EL RENGLÓN DE INSTRUCCIONES.
+   *
+   * Debajo del título iba siempre `e.hacer` — «Tienen ficha y ninguna sesión.
+   * Ponles la primera.»— y ocupaba dos o tres renglones. Por cinco columnas eso
+   * son QUINCE líneas de instrucciones permanentes en la pantalla, más que todo
+   * el contenido de las columnas juntas la mayoría de los días. Se leen el
+   * primer día; a partir del segundo son la mancha gris que hay que saltarse
+   * para llegar a los nombres, y enseñan a no leer el texto de esta pantalla.
+   *
+   * No se pierde: sigue estando donde de verdad hace falta —en la columna
+   * VACÍA, que es la única que no se explica sola— y a un golpe de ratón en el
+   * título, que es donde va a buscar quien no lo recuerde. Lo que se ha quitado
+   * es que se lo cuente todos los días a quien ya lo sabe.
+   */
   const cabezaColumna = (k: ClaveEtapa) => {
     const e = ETAPAS.find((x) => x.k === k)!;
     const n = porEtapa[k]?.length ?? 0;
@@ -304,14 +333,13 @@ export default function ClientesScreen() {
       <>
         {/* La raya de color al canto de arriba, el rótulo del mismo color y la
             cuenta. El color marca de qué columna se trata; no rellena nada. */}
-        <div style={css(`height:2px;background:${e.color};border-radius:2px;margin-bottom:10px;`)} />
-        <div style={css("display:flex;align-items:baseline;gap:var(--s2);")}>
+        <div aria-hidden="true" style={css(`height:2px;background:${e.color};border-radius:2px;margin-bottom:10px;`)} />
+        <div title={e.hacer} style={css("display:flex;align-items:baseline;gap:var(--s2);")}>
           <span style={css(rotulo(e.color))}>{e.titulo}</span>
           <span data-cifras="" style={css(NOTA + "margin-left:auto;font-weight:600;color:var(--text-3);")}>
             {n}
           </span>
         </div>
-        <p style={css(NOTA + "margin:4px 0 0;line-height:1.45;")}>{e.hacer}</p>
       </>
     );
   };
@@ -354,8 +382,12 @@ export default function ClientesScreen() {
             aria-label="Buscar por nombre"
             style={css(entrada + "flex:1 1 240px;")}
           />
-          {/* La única mancha de granate de la pantalla. */}
-          <button onClick={() => void nueva()} style={css(botonPrincipal())}>
+          {/* La única mancha de granate de la pantalla. En estrecho se estira
+              hasta el borde de la tarjeta: debajo del buscador, un botón que
+              acaba a dos tercios del ancho deja el canto derecho partido — y es
+              la misma regla que en la agenda, donde el botón principal también
+              ocupa su renglón entero cuando no cabe al lado de nada. */}
+          <button onClick={() => void nueva()} style={css(botonPrincipal() + (estrecho ? "flex:1 1 100%;" : ""))}>
             Añadir una persona
           </button>
         </div>
@@ -374,10 +406,10 @@ export default function ClientesScreen() {
               {estaSemana.slice(0, CARAS_A_LA_VISTA).map((g, i) => (
                 <motion.button
                   key={g.c.id}
-                  initial={quieto ? false : { opacity: 0, scale: 0.86 }}
+                  initial={quieto ? false : { opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   whileHover={quieto ? undefined : { y: -3 }}
-                  transition={{ duration: 0.38, delay: Math.min(i, 8) * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.3, delay: Math.min(i, 8) * 0.035, ease: [0.16, 1, 0.3, 1] }}
                   onClick={() => setClienteAbierto(g.c.id)}
                   title={`${g.c.nombre} · ${comoVaCorto(g.r)}`}
                   style={css(
@@ -417,8 +449,12 @@ export default function ClientesScreen() {
       ) : estrecho ? (
         /* -------------------------------------------- una columna cada vez */
         <div style={css("min-width:0;")}>
+          {/* `="pagina"`: esta tira va suelta en la página, no dentro de una
+              tarjeta, así que el margen de la página se lo pone la hoja de
+              estilos para que no se corte a ras del borde del cristal. El
+              porqué entero está en globals.css. */}
           <div
-            data-tira=""
+            data-tira="pagina"
             style={css("display:flex;gap:6px;overflow-x:auto;padding-bottom:var(--s3);scrollbar-width:none;overscroll-behavior-x:contain;")}
           >
             {ETAPAS.map((e) => {
@@ -474,13 +510,28 @@ export default function ClientesScreen() {
                 : "")
           )}
         >
-          <div style={css("display:grid;grid-template-columns:repeat(5,minmax(206px,1fr));gap:var(--s3);align-items:start;min-width:1060px;")}>
+          {/*
+              LAS CINCO ACABAN A LA MISMA ALTURA.
+
+              Iban con `align-items:start`, así que cada columna medía lo que
+              medía su contenido: cinco tarjetas con cinco cantos inferiores
+              distintos, uno a 884 y el de al lado a 1047. El ojo lee eso como
+              cinco cosas sueltas, y esta pantalla existe justamente para que se
+              lean como UNA: un tablero del que se ve la forma entera.
+
+              Con `stretch` todas cogen el alto de la más llena —hasta el tope,
+              donde cada una empieza a desplazarse por dentro— y el tablero
+              vuelve a tener un borde de abajo. El `min-height` es para el caso
+              contrario: cinco columnas casi vacías se quedaban en dos dedos de
+              alto y el tablero desaparecía.
+          */}
+          <div style={css("display:grid;grid-template-columns:repeat(5,minmax(206px,1fr));gap:var(--s3);align-items:stretch;min-width:1060px;")}>
             {ETAPAS.map((e, ci) => (
               <motion.section
                 key={e.k}
-                initial={quieto ? false : { opacity: 0, y: 14 }}
+                initial={quieto ? false : { opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: ci * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.3, delay: ci * 0.04, ease: [0.16, 1, 0.3, 1] }}
                 style={css(
                   TARJETA +
                     PAD_SM +
@@ -488,7 +539,7 @@ export default function ClientesScreen() {
                        queda: con veinte personas en «Se te están enfriando», sin
                        esto la página entera se haría el triple de larga y las
                        otras cuatro columnas quedarían colgando arriba. */
-                    "min-width:0;max-height:calc(100vh - 300px);overflow-y:auto;overscroll-behavior:contain;"
+                    "min-width:0;min-height:260px;max-height:calc(100vh - 300px);overflow-y:auto;overscroll-behavior:contain;"
                 )}
               >
                 <div style={css("position:sticky;top:0;z-index:1;background:var(--surface);padding-bottom:var(--s2);margin:-2px 0 0;")}>

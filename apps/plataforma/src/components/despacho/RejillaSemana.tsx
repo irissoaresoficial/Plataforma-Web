@@ -308,10 +308,17 @@ export default function RejillaSemana({
                         `top:${((desde - abre * 60) / 60) * ALTO_HORA + 1}px;height:${altoBloque - 2}px;` +
                         `left:calc(${carril * ancho}% + 2px);width:calc(${ancho}% - 4px);` +
                         /* La tarjeta de la casa, levantada del hueco, con la
-                           raya de color al canto que dice de qué clase es. */
-                        "background:var(--surface);border:1px solid var(--border);border-left:3px solid " +
-                        color +
-                        ";border-radius:var(--r);box-shadow:var(--nm-alto);padding:5px 7px;" +
+                           raya de color que dice de qué clase es.
+                           La raya va pintada en el fondo y no como `border-left`
+                           por lo mismo que en `lib/ui.ts`: con el canto blando,
+                           un borde de un solo lado da la vuelta a las dos
+                           esquinas y sale una coma en vez de una raya. Aquí
+                           además el bloque puede medir treinta y ocho píxeles,
+                           así que la barra se mide en porcentaje. */
+                        "background:var(--surface);border:1px solid var(--border);" +
+                        "background-image:linear-gradient(" + color + "," + color + ");" +
+                        "background-repeat:no-repeat;background-position:0 50%;background-size:3px 64%;" +
+                        "border-radius:var(--r);box-shadow:var(--nm-alto);padding:5px 7px 5px 12px;" +
                         (anulada ? "opacity:.62;" : "")
                     )}
                   >

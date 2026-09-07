@@ -165,7 +165,11 @@ export default function Shell() {
             la navegación, esconderla en cinco de las seis pantallas dejaría
             cinco pantallas sin salida. */}
         <Sidebar />
-        <div style={css("flex:1;min-width:0;")}>
+        {/* `key={view}` es lo que hace que la pantalla nueva sea un elemento
+            nuevo y no el mismo repintado: sin eso, React reutiliza el nodo y la
+            animación de entrada de `[data-vista]` no vuelve a dispararse nunca.
+            El porqué de que haya animación está en globals.css. */}
+        <div key={view} data-vista="" style={css("flex:1;min-width:0;")}>
           {view === "inicio" && <ConsultaScreen />}
           {view === "panel" && <PanelScreen />}
           {view === "estudio" && <EstudioScreen />}

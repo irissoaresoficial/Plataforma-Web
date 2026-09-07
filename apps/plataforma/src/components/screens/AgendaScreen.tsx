@@ -365,7 +365,7 @@ export default function AgendaScreen() {
       key={c.id}
       initial={quieto ? false : { opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.34, delay: Math.min(i, 8) * 0.03, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.28, delay: Math.min(i, 8) * 0.03, ease: [0.16, 1, 0.3, 1] }}
       onClick={() => setHoja({ modo: "sesion", id: c.id })}
       style={css(
         "display:flex;align-items:center;gap:var(--s3);width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;padding:var(--s3) 0;" +
@@ -586,6 +586,25 @@ export default function AgendaScreen() {
         <div style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;")}>
           {/* ------------------------------------------------------------ la barra */}
           <section style={css(TARJETA + PAD + "min-width:0;")}>
+            {/*
+                EN UN TELÉFONO, PRIMERO QUÉ DÍA ES.
+
+                Los cuatro trozos —flechas, tramo, selector y botón— iban en una
+                sola fila que se envolvía sola. En 390 px eso salía en cuatro
+                renglones desiguales y, lo peor, el tramo («Hoy, 7 de
+                septiembre») quedaba apretado A LA DERECHA de las flechas, en
+                una caja de 120 px, partido en dos líneas. La primera pregunta de
+                una agenda —¿qué día estoy mirando?— contestada en letra rota y
+                en el segundo sitio donde mira el ojo.
+
+                En estrecho va en su propio renglón y arriba del todo, que es
+                donde se lee sin buscarlo. En ancho no hace falta: ahí caben los
+                cuatro en una fila y el tramo va entre las flechas y el selector,
+                como en cualquier calendario.
+            */}
+            {estrecho && (
+              <h2 style={css(TITULO + "margin:0 0 var(--s3);")}>{tituloDelTramo()}</h2>
+            )}
             <div style={css("display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);")}>
               <div style={css("display:flex;align-items:center;gap:var(--s2);")}>
                 {flecha(-1)}
@@ -597,18 +616,18 @@ export default function AgendaScreen() {
 
               {/* El tramo que se está viendo. Va en el título de tarjeta porque
                   es lo que dice dónde estás, que es la primera pregunta. */}
-              <h2 style={css(TITULO + "margin:0;flex:1 1 120px;min-width:0;")}>{tituloDelTramo()}</h2>
+              {!estrecho && <h2 style={css(TITULO + "margin:0;flex:1 1 120px;min-width:0;")}>{tituloDelTramo()}</h2>}
 
               {/* El selector y el botón van juntos en su propia caja: al
                   estrecharse la pantalla bajan a la misma línea en vez de
                   repartirse en dos renglones y comerse media pantalla de
                   teléfono antes de llegar a la agenda. */}
-              <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;")}>
+              <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;" + (estrecho ? "flex:1 1 100%;" : ""))}>
                 {/* Día / Semana / Mes, con la pastilla de la casa. */}
                 <div
                   role="group"
                   aria-label="Cómo ver la agenda"
-                  style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:980px;padding:3px;flex:none;")}
+                  style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:var(--r-pill);padding:3px;flex:none;")}
                 >
                   {VISTAS.map((v) => {
                     const on = vista === v.k;
@@ -618,7 +637,8 @@ export default function AgendaScreen() {
                         onClick={() => elegirVista(v.k)}
                         aria-pressed={on}
                         style={css(
-                          "padding:7px 14px;border-radius:980px;border:none;cursor:pointer;font-size:var(--t-mini);font-weight:590;white-space:nowrap;transition:all .2s;background:" +
+                          "padding:7px 14px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:var(--t-mini);font-weight:590;white-space:nowrap;" +
+                            "transition:background .2s cubic-bezier(.16,1,.3,1),color .2s,box-shadow .2s;background:" +
                             (on ? "var(--surface-solid)" : "transparent") +
                             ";box-shadow:" +
                             (on ? "var(--shadow-sm)" : "none") +
@@ -633,13 +653,16 @@ export default function AgendaScreen() {
                   })}
                 </div>
 
-                {/* La única mancha de granate de la pantalla. */}
+                {/* La única mancha de granate de la pantalla. En estrecho se
+                    estira hasta el borde de la tarjeta: un botón principal
+                    acabando a dos tercios del ancho deja un canto derecho
+                    partido, y además es lo que más se pulsa con el pulgar. */}
                 <button
                   onClick={() => {
                     setAviso("");
                     setHoja({ modo: "apuntar" });
                   }}
-                  style={css(botonPrincipal())}
+                  style={css(botonPrincipal() + (estrecho ? "flex:1 1 100%;" : ""))}
                 >
                   Apuntar una sesión
                 </button>
@@ -675,7 +698,7 @@ export default function AgendaScreen() {
                       initial={quieto ? { opacity: 0 } : { opacity: 0, height: 0 }}
                       animate={quieto ? { opacity: 1 } : { opacity: 1, height: "auto" }}
                       exit={quieto ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                      transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
                       style={css("overflow:hidden;")}
                     >
                       <div style={css(RAYA + "margin-top:var(--s4);padding-top:var(--s4);")}>{filtros}</div>
@@ -771,14 +794,16 @@ export default function AgendaScreen() {
 
           <div style={css("display:flex;flex-direction:column;gap:6px;")}>
             <span style={css(rotulo())}>¿Qué es?</span>
-            <div style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:980px;padding:3px;")}>
+            <div style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:var(--r-pill);padding:3px;")}>
               {TIPOS_CITA.map((t) => (
                 <button
                   key={t.k}
                   type="button"
                   onClick={() => setTipo(t.k)}
+                  aria-pressed={tipo === t.k}
                   style={css(
-                    "flex:1;padding:8px 10px;border-radius:980px;border:none;cursor:pointer;font-size:var(--t-body);font-weight:590;white-space:nowrap;transition:all .2s;background:" +
+                    "flex:1;padding:8px 10px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:var(--t-body);font-weight:590;white-space:nowrap;" +
+                      "transition:background .2s cubic-bezier(.16,1,.3,1),color .2s,box-shadow .2s;background:" +
                       (tipo === t.k ? "var(--surface-solid)" : "transparent") +
                       ";box-shadow:" +
                       (tipo === t.k ? "var(--shadow-sm)" : "none") +

@@ -6,17 +6,29 @@
  *
  * Aquí está decidido una sola vez. Las reglas:
  *
- *   · una sola tarjeta: fondo opaco, línea de un pelo, sin sombra ni desenfoque.
- *     Lo que flota de verdad — cabecera, hojas que se abren — lleva sombra
- *     aparte;
+ *   · una sola tarjeta: fondo opaco, canto blando, línea de un pelo y la sombra
+ *     difusa de la casa. Lo que flota de verdad — cabecera, hojas que se abren —
+ *     lleva la sombra grande;
  *   · el color no rellena, marca. Un bloque de bloqueo no es una tarjeta
  *     morada: es una tarjeta normal con una raya morada al canto y su rótulo
  *     del mismo color. Se sigue sabiendo qué es cada cosa y deja de gritar;
- *   · dentro de una tarjeta no va otra tarjeta. Lo que separa es una línea.
+ *   · dentro de una tarjeta no va otra tarjeta. Lo que separa es una línea, o
+ *     una PASTILLA — que es lo de dentro y por eso se hunde en vez de subir.
  */
 
-/** La tarjeta, y no hay otra. */
-export const TARJETA = "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);";
+/**
+ * La tarjeta, y no hay otra.
+ *
+ * AHORA LLEVA SOMBRA, y antes ponía aquí «sin sombra ni desenfoque». El motivo
+ * de entonces era que las tarjetas no compitieran entre sí, y se resolvía
+ * dejando que la separase el borde. Pero entonces cada pantalla que quería una
+ * tarjeta con algo de peso se escribía su `box-shadow:var(--nm-alto)` a mano, y
+ * el resultado era el que se quería evitar: en la misma pantalla convivían
+ * tarjetas planas y tarjetas levantadas sin ninguna regla que dijera cuál era
+ * cuál. Puesta aquí, todas suben lo mismo y ninguna decide por su cuenta.
+ */
+export const TARJETA =
+  "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);box-shadow:var(--nm-alto);";
 
 /**
  * La misma tarjeta cuando está ELEGIDA: el granate de la casa, que es el color
@@ -30,10 +42,56 @@ export const TARJETA = "background:var(--surface);border:1px solid var(--border)
  * propiedades peleándose por lo mismo.
  */
 export const TARJETA_ELEGIDA =
-  "background:var(--accion-suave);border:1px solid var(--accion-borde);border-radius:var(--r);";
+  "background:var(--accion-suave);border:1px solid var(--accion-borde);border-radius:var(--r-tarjeta);box-shadow:var(--nm-alto);";
 
-/** Tarjeta con el canto de color: el acento va en la raya, no en el fondo. */
-export const tarjetaCon = (color: string) => TARJETA + "border-left:2px solid " + color + ";";
+/**
+ * Tarjeta con el canto de color: el acento va en la raya, no en el fondo.
+ *
+ * LA RAYA YA NO ES UN BORDE, Y NO PODÍA SEGUIR SIÉNDOLO.
+ *
+ * Era `border-left`, y con el canto recto de antes se veía como lo que quería
+ * ser: una pletina de color pegada al lado izquierdo. Con el canto blando, un
+ * borde de un solo lado recorre las dos esquinas redondeadas y sale una coma
+ * gorda envolviendo la tarjeta — no se lee como una raya, se lee como un
+ * defecto de dibujo. Es el fallo clásico de subir el radio sin mirar qué había
+ * apoyado en el borde.
+ *
+ * Ahora es una barra pintada en el fondo, centrada y más corta que la tarjeta,
+ * así que sus dos extremos quedan lejos de las curvas y no las tocan. Además ha
+ * ganado algo: una raya que empieza y acaba dentro de la tarjeta se lee como
+ * una marca puesta ahí a propósito, y una que va de canto a canto se lee como
+ * parte de la caja.
+ *
+ * En porcentaje y no en píxeles para que valga igual en la tarjeta de un aviso
+ * de tres renglones y en la de una sección entera del panel.
+ */
+export const tarjetaCon = (color: string) =>
+  TARJETA +
+  "background-image:linear-gradient(" +
+  color +
+  "," +
+  color +
+  ");background-repeat:no-repeat;background-position:0 50%;background-size:3px 62%;";
+
+/**
+ * LA PASTILLA: una fila de una lista, dentro de una tarjeta.
+ *
+ * Es la pieza que faltaba y por la que se estaba rompiendo la regla de «dentro
+ * de una tarjeta no va otra tarjeta». El tablero de clientes metía tarjetas
+ * blancas levantadas dentro de columnas blancas levantadas: en claro se veían
+ * dos cantos y dos sombras discutiendo, y en oscuro sencillamente no se
+ * distinguían — la columna y la ficha son el mismo color.
+ *
+ * Una pastilla es lo contrario de una tarjeta: no sube, se apoya. Fondo arena
+ * —el mismo del hueco de un campo—, canto de lo de dentro y ninguna sombra. Se
+ * lee como algo que está DENTRO de la tarjeta, que es lo que es.
+ */
+export const PASTILLA =
+  "background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);";
+
+/** La pastilla elegida. El granate de siempre: lo que está seleccionado. */
+export const PASTILLA_ELEGIDA =
+  "background:var(--accion-suave);border:1px solid var(--accion-borde);border-radius:var(--r);";
 
 /** Relleno estándar y el más apretado, para tarjetas secundarias. */
 export const PAD = "padding:var(--pad-card);";

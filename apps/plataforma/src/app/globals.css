@@ -57,37 +57,54 @@
   --border-accent: rgba(125, 95, 30, 0.32);
 
   /* -------------------------------------------------------------------------
-     RELIEVE (neomorfismo) — el detalle, no el sistema.
+     PROFUNDIDAD — UNA SOLA, Y AHORA ES LA LUZ.
 
-     Dos tokens y de ahí sale todo: una luz y una sombra. La luz es blanca y
-     entra por arriba a la izquierda; la sombra es CÁLIDA —marrón muy rebajado,
-     no negro— porque una sombra neutra sobre papel cálido se ve gris sucio y
-     es lo que hace que el neomorfismo parezca plástico de 2020.
+     Aquí había neomorfismo: una luz blanca entrando por arriba a la izquierda y
+     una sombra cálida derramándose a la derecha, más un filo blanco por dentro.
+     Estaba bien resuelto y la explicación de por qué la sombra era cálida sigue
+     valiendo entera —una sombra neutra sobre papel cálido se ve gris sucio— así
+     que el color se queda. Lo que cambia es la DIRECCIÓN.
 
-     Dónde se usa: para levantar la tarjeta del fondo y para hundir lo que se
-     rellena (campos, barras, huecos). Dónde NO: nunca sustituye a un borde ni
-     a un contraste de texto. Cada superficie mantiene su línea de un pelo, así
-     que si alguien mira la pantalla con el brillo bajo o con luz de sol —donde
-     una sombra suave desaparece— los bordes siguen ahí. El relieve es adorno;
-     el borde es el que responde de que se entienda.
+     El motivo: el relieve direccional y la sombra difusa son dos lenguajes de
+     profundidad distintos, y las dos cosas juntas en la misma pantalla se leen
+     como desorden. El relieve dice «esto está tallado en el papel»; la sombra
+     difusa dice «esto flota un poco por encima». Con las dos, una tarjeta tenía
+     un filo blanco arriba, una sombra dura a 2 px y otra blanda a 18: tres
+     bordes distintos para un solo canto.
+
+     Se queda la difusa, y no por gusto: es la que hace el trabajo que se pide
+     ahora —que una tarjeta blanca se separe de un fondo casi blanco sin
+     necesitar una línea— y es la que aguanta un radio grande. El filo blanco
+     interior, en cambio, sólo se ve bien en un canto de 4 px; a 22 se convierte
+     en un aro.
+
+     LO QUE NO CAMBIA: el hueco. `--nm-hondo` sigue siendo direccional a
+     propósito, porque ahí la dirección SIGNIFICA algo —«esto está hundido, aquí
+     se mete cosa»— y es lo que distingue un campo de una pastilla. Levantado y
+     hundido dejan de ser dos sistemas y pasan a ser los dos extremos de uno:
+     luz por fuera para lo que sube, sombra por dentro para lo que baja.
+
+     Y el borde sigue estando. Una sombra suave desaparece con el brillo bajo o
+     con sol de frente; la línea de un pelo, no. El relieve es adorno; el borde
+     es el que responde de que se entienda.
      ------------------------------------------------------------------------- */
   --nm-luz: #ffffff;
   --nm-sombra: rgba(96, 78, 64, 0.14);
   --nm-sombra-honda: rgba(96, 78, 64, 0.2);
   /*
-   * Levantado: la luz por arriba-izquierda, la sombra derramada abajo-derecha,
-   * y un filo blanco por dentro que es lo que da el canto redondeado.
+   * Levantado: tres capas de la misma sombra cálida, cada una más ancha y más
+   * floja que la anterior. Ninguna dibuja un canto — el canto lo dibuja el
+   * borde— y por eso la tarjeta se lee como una hoja apoyada sobre la mesa y no
+   * como un botón de plástico.
    *
-   * La sombra va en DOS capas y no en una, y esto es lo que hace que funcione.
-   * Con una sola capa difusa la tarjeta se veía plana: sobre un fondo casi
-   * blanco, una sombra ancha y suave se disuelve antes de llegar a marcar el
-   * canto, así que a tamaño de tarjeta —600 píxeles de ancho— no se notaba
-   * nada. La capa corta (2 px) dibuja el filo, la larga (18 px) hace el peso.
-   * Las dos juntas son las que la levantan del papel.
+   * Siguen siendo varias capas y no una por la misma razón de siempre: sobre un
+   * fondo casi blanco una sola sombra ancha se disuelve antes de llegar a
+   * separar nada. La corta (2 px) despega, la media (8 px) da el volumen, la
+   * larga (28 px) el peso.
    */
-  --nm-alto: inset 1px 1px 0 rgba(255, 255, 255, 0.9), -2px -2px 6px var(--nm-luz), 1px 2px 3px rgba(96, 78, 64, 0.07),
-    5px 8px 18px var(--nm-sombra);
-  /* Hundido: las dos invertidas y por dentro. Es el hueco donde se escribe. */
+  --nm-alto: 0 1px 2px rgba(96, 78, 64, 0.05), 0 4px 8px rgba(96, 78, 64, 0.05), 0 12px 28px rgba(96, 78, 64, 0.07);
+  /* Hundido: la sombra por dentro y la luz enfrente. Es el hueco donde se
+     escribe, y aquí la dirección sí dice algo. */
   --nm-hondo: inset 2px 2px 5px var(--nm-sombra), inset -2px -2px 5px var(--nm-luz);
   /* Pulsado: el mismo hueco pero más marcado, para el instante del clic. */
   --nm-pulsado: inset 3px 3px 7px var(--nm-sombra-honda), inset -2px -2px 6px var(--nm-luz);
@@ -184,9 +201,9 @@
    * que ninguna pantalla ha tenido que tocarse — piden `--shadow` como pedían
    * antes y lo que les llega es el volumen nuevo. La línea de un pelo sigue en
    * su sitio debajo de cada una. */
-  --shadow-sm: inset 1px 1px 0 rgba(255, 255, 255, 0.8), 0 1px 2px rgba(96, 78, 64, 0.06);
+  --shadow-sm: 0 1px 2px rgba(96, 78, 64, 0.06), 0 2px 6px rgba(96, 78, 64, 0.05);
   --shadow: var(--nm-alto);
-  --shadow-lg: inset 1px 1px 0 rgba(255, 255, 255, 0.9), -4px -4px 12px var(--nm-luz), 8px 12px 34px var(--nm-sombra-honda);
+  --shadow-lg: 0 2px 6px rgba(96, 78, 64, 0.06), 0 10px 24px rgba(96, 78, 64, 0.09), 0 28px 60px rgba(96, 78, 64, 0.11);
 
   /* -------------------------------------------------------------------------
      Escala tipográfica. Siete cuerpos y ni uno más: antes había veinticuatro
@@ -201,14 +218,35 @@
   --t-head: 28px; /* encabezado de sección */
   --t-hero: clamp(32px, 4vw, 42px); /* nombre de la persona, cifras grandes */
 
-  /* Los bordes de la casa: rectos, como una página impresa. Eran «generosos, al
-     gusto de iOS» —hasta 24 px— y eso es exactamente lo que hace que algo se
-     lea como una aplicación de móvil en vez de como un estudio. La curva se
-     reserva para los botones, que es donde distingue lo que se pulsa. */
-  --r-xs: 3px;
-  --r-sm: 3px;
-  --r: 4px;
-  --r-lg: 6px;
+  /* -------------------------------------------------------------------------
+     LOS CANTOS, AHORA BLANDOS.
+
+     Aquí ponía: «rectos, como una página impresa; la curva se reserva para los
+     botones, que es donde distingue lo que se pulsa». El argumento era bueno
+     para lo que se estaba defendiendo entonces —que la plataforma no pareciera
+     una aplicación de móvil— y por eso duró.
+
+     Ya no vale, y no porque estuviera mal razonado: porque el problema que
+     resolvía no es el que hay. Con la sombra difusa haciendo la separación, un
+     canto de 4 px es exactamente lo que delata el truco — la esquina se ve
+     picuda contra una sombra redonda y la tarjeta parece un recorte pegado. El
+     radio grande no es un guiño a iOS, es lo que hace que la sombra y el canto
+     digan lo mismo.
+
+     Y la curva sigue distinguiendo lo que se pulsa: lo hace la PASTILLA
+     (`--r-pill`), que es un radio de otra clase, no un radio mayor. Entre una
+     tarjeta de 22 y un botón de 100 no hay forma de confundirse.
+
+     Tres escalones y no uno:
+       · `--r-tarjeta` (22) — el bloque grande, lo que se apoya sobre el fondo.
+       · `--r` (12) — lo de dentro: campos, filas, controles.
+       · `--r-xs` / `--r-sm` (7 / 9) — lo pequeño que va dentro de lo de dentro.
+     ------------------------------------------------------------------------- */
+  --r-xs: 7px;
+  --r-sm: 9px;
+  --r: 12px;
+  --r-lg: 16px;
+  --r-tarjeta: 22px;
   --r-pill: 100px;
 
 
@@ -227,13 +265,23 @@
   --s8: 60px;
 
   /* Aire de la página y relleno de las tarjetas: crecen con la ventana, pero
-   * lo hacen a la vez en todas partes. */
-  --gutter: clamp(16px, 3.4vw, 40px);
-  --pad-card: clamp(18px, 2.2vw, 26px);
-  --pad-card-sm: clamp(16px, 1.8vw, 20px);
+   * lo hacen a la vez en todas partes.
+   *
+   * SUBEN, Y ES EL CAMBIO QUE MÁS SE NOTA. Lo que hace que un panel se lea como
+   * caro no es ningún adorno: es el vacío. Estaban ajustados para meter todo lo
+   * posible en la ventana, y con eso las seis pantallas salían apretadas y
+   * ninguna dejaba respirar a la de al lado.
+   *
+   * Suben poco, eso sí, y a propósito: esto se abre cinco veces al día para
+   * mirar algo concreto. El aire que empuja el trabajo por debajo del borde de
+   * la ventana deja de ser aire y pasa a ser un scroll. La otra mitad del sitio
+   * ha salido de quitar texto, que no cuesta nada de alto. */
+  --gutter: clamp(16px, 3.4vw, 44px);
+  --pad-card: clamp(20px, 2.4vw, 30px);
+  --pad-card-sm: clamp(16px, 2vw, 24px);
   /* Separación entre tarjetas hermanas y entre bloques de una sección. */
-  --gap: clamp(14px, 1.6vw, 20px);
-  --gap-lg: clamp(20px, 2.4vw, 30px);
+  --gap: clamp(14px, 1.7vw, 22px);
+  --gap-lg: clamp(24px, 2.9vw, 38px);
   --ancho: 1320px;
 }
 
@@ -312,14 +360,23 @@
   --via-transformacion-tx: #8fc0f5;
   --via-destino-tx: #c7a4e6;
 
-  /* El mismo relieve, dado la vuelta. Sobre el granate la «luz» no puede ser
-     blanca —un filo blanco sobre vino oscuro es una raya de neón— así que es el
-     propio granate subido de luz, y la sombra es casi negra porque sobre oscuro
-     una sombra suave sencillamente no se ve. */
+  /* LA MISMA PROFUNDIDAD, NO OTRO SISTEMA.
+   *
+   * En claro una tarjeta sube porque proyecta sombra sobre el papel; aquí una
+   * tarjeta sube porque ES más clara que el lienzo y además hunde una sombra
+   * casi negra debajo. Es el mismo mecanismo —la luz separa— con el signo
+   * cambiado, que es lo único que cambia entre las dos caras.
+   *
+   * La sombra es casi negra y no cálida rebajada: sobre un fondo de un 8 % de
+   * luz, una sombra suave sencillamente no existe.
+   *
+   * `--nm-hondo` sigue llevando el filo de luz enfrente, y en oscuro esa luz no
+   * puede ser blanca —un filo blanco sobre casi negro es una raya de neón— así
+   * que es el propio fondo subido de luz. */
   --nm-luz: rgba(255, 245, 235, 0.07);
   --nm-sombra: rgba(0, 0, 0, 0.42);
   --nm-sombra-honda: rgba(0, 0, 0, 0.6);
-  --nm-alto: inset 1px 1px 0 rgba(255, 245, 235, 0.06), -2px -2px 6px var(--nm-luz), 3px 4px 14px var(--nm-sombra);
+  --nm-alto: 0 1px 2px rgba(0, 0, 0, 0.34), 0 4px 10px rgba(0, 0, 0, 0.3), 0 14px 32px rgba(0, 0, 0, 0.28);
   --nm-hondo: inset 2px 2px 6px var(--nm-sombra), inset -1px -1px 4px var(--nm-luz);
   --nm-pulsado: inset 3px 3px 8px var(--nm-sombra-honda), inset -1px -1px 4px var(--nm-luz);
 
@@ -327,9 +384,9 @@
   --vidrio-denso: rgba(31, 25, 27, 0.9);
   --vidrio-borde: rgba(255, 245, 235, 0.12);
 
-  --shadow-sm: inset 1px 1px 0 rgba(255, 245, 235, 0.05), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.24);
   --shadow: var(--nm-alto);
-  --shadow-lg: inset 1px 1px 0 rgba(255, 245, 235, 0.07), -4px -4px 12px var(--nm-luz), 8px 14px 40px var(--nm-sombra-honda);
+  --shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.4), 0 12px 30px rgba(0, 0, 0, 0.44), 0 32px 70px rgba(0, 0, 0, 0.4);
 }
 
 /* El velo de color del fondo. Va en CSS y no en el componente para que pueda
@@ -486,6 +543,34 @@ button:not(:disabled):active {
 }
 
 /* ---------------------------------------------------------------------------
+   EL FOCO DE TECLADO, DE LA CASA.
+   ---------------------------------------------------------------------------
+   No había ninguno: los campos tenían su aro de oro y todo lo demás —que son
+   casi todos los botones de la plataforma— se quedaba con el que pinta el
+   navegador. Ese aro es un gris oscuro fijo, así que en el tema oscuro es negro
+   sobre casi negro: mirando la pantalla no hay forma de saber dónde estás.
+   Quien navega con el teclado se queda tabulando a ciegas.
+
+   Es `:focus-visible` y no `:focus` a propósito: sólo aparece cuando se llegó
+   con el teclado. Con el ratón no sale, que es lo que evita el aro pegado a un
+   botón después de pulsarlo.
+
+   El color es el oro, el mismo del foco de los campos, y no el granate: el
+   granate ya significa «esto está elegido», y un botón enfocado no está
+   elegido. Dos aros del mismo color serían dos cosas distintas dichas igual.
+   --------------------------------------------------------------------------- */
+:where(button, a, [role="button"], [tabindex]:not([tabindex="-1"]), summary):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+/* Los campos ya tienen el suyo —el aro sobre el hueco— y lleva la señal de
+   dónde se está escribiendo. Que no se sumen dos. */
+:where(input, textarea, select):focus-visible {
+  outline: none;
+}
+
+/* ---------------------------------------------------------------------------
    LAS DOS HERRAMIENTAS, COMO CLASES
    ---------------------------------------------------------------------------
    `.vidrio` para lo que flota por encima del contenido; `.relieve` y
@@ -594,12 +679,23 @@ button:not(:disabled):active {
     transform: none;
   }
 }
-/* Entrada escalonada: cada hijo directo aparece un poco después que el
- * anterior. Es el mismo gesto de las fichas de un panel de iOS al abrirse. */
+/* ---------------------------------------------------------------------------
+   EL MOVIMIENTO DE LA CASA: CORTO, CON SALIDA SUAVE, Y SIEMPRE EXPLICANDO ALGO.
+   ---------------------------------------------------------------------------
+   Una curva —la de salida suave— y un tramo de tiempo: entre 150 y 350 ms. Lo
+   que dura más de un tercio de segundo deja de leerse como una respuesta y
+   empieza a leerse como una espera, y esto se abre cinco veces al día.
+
+   La cascada duraba 0,62 s por pieza y encadenaba retrasos hasta 0,4: la última
+   tarjeta de una pantalla aterrizaba pasado un segundo. La primera vez es
+   bonito; la número doscientos es la pantalla tardando en estar. Ahora entra en
+   0,3 y el escalón es de 0,04, así que una pantalla entera está puesta antes
+   del medio segundo y se sigue viendo el orden en que se coloca.
+   --------------------------------------------------------------------------- */
 @keyframes es33-alza {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.985);
+    transform: translateY(10px) scale(0.99);
   }
   to {
     opacity: 1;
@@ -608,33 +704,61 @@ button:not(:disabled):active {
 }
 [data-cascada] > * {
   opacity: 0;
-  animation: es33-alza 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: es33-alza 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 [data-cascada] > *:nth-child(1) {
-  animation-delay: 0.04s;
+  animation-delay: 0.02s;
 }
 [data-cascada] > *:nth-child(2) {
-  animation-delay: 0.1s;
+  animation-delay: 0.06s;
 }
 [data-cascada] > *:nth-child(3) {
-  animation-delay: 0.16s;
+  animation-delay: 0.1s;
 }
 [data-cascada] > *:nth-child(4) {
-  animation-delay: 0.22s;
+  animation-delay: 0.14s;
 }
 [data-cascada] > *:nth-child(5) {
-  animation-delay: 0.28s;
+  animation-delay: 0.18s;
 }
 [data-cascada] > *:nth-child(6) {
-  animation-delay: 0.34s;
+  animation-delay: 0.22s;
 }
 [data-cascada] > *:nth-child(n + 7) {
-  animation-delay: 0.4s;
+  animation-delay: 0.26s;
+}
+
+/*
+ * CAMBIAR DE PANTALLA SE VE.
+ *
+ * Las seis secciones se pintaban de golpe, sin ninguna transición: se pulsaba
+ * «Clientes» en la columna y el contenido aparecía ya puesto. Con la columna y
+ * la cabecera quietas —que es lo que son— el cambio ocurría sin que nada dijera
+ * que había ocurrido, y en dos pantallas que se parecen —el Panel y el Estudio—
+ * había que leer el título para saber si había pasado algo.
+ *
+ * Un desplazamiento de ocho píxeles y una entrada de opacidad bastan: no es
+ * decoración, es el acuse de recibo del clic. Va en CSS y con la vista como
+ * clave de React, así que no hace falta ningún envoltorio de animación ni
+ * esperar a que la anterior se vaya — la pantalla nueva ya está.
+ */
+@keyframes es33-vista {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+[data-vista] {
+  animation: es33-vista 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Las tarjetas que llevan a algún sitio se levantan al pasar por encima. */
 [data-alza] {
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s, border-color 0.28s;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s, border-color 0.24s;
 }
 [data-alza]:hover {
   transform: translateY(-3px);
@@ -660,6 +784,13 @@ button:not(:disabled):active {
 @media (prefers-reduced-motion: reduce) {
   [data-cascada] > * {
     opacity: 1 !important;
+  }
+  /* La pantalla nueva aparece puesta: sin desplazamiento y sin desvanecido.
+     El bloque de abajo apaga la duración de todas las animaciones, pero
+     `both` deja el fotograma inicial pegado durante ese instante y el
+     contenido llegaría movido ocho píxeles. */
+  [data-vista] {
+    animation: none !important;
   }
   [data-alza]:hover,
   [data-alza]:active {
@@ -796,6 +927,29 @@ button:not(:disabled):active {
  * las flechas y en el propio gesto. */
 [data-tira]::-webkit-scrollbar {
   display: none;
+}
+/*
+ * Y LA TIRA SE PARA EN EL MARGEN DE LA PÁGINA.
+ *
+ * En un teléfono, la tira de pestañas de Clientes se coloca sola para dejar a
+ * la vista la que está puesta, y al hacerlo la anterior se quedaba cortada a
+ * ras del cristal, en x=0: era lo único de la pantalla que tocaba el borde,
+ * mientras todo lo demás respetaba el margen. Se leía como un fallo de
+ * maquetación, no como «esto sigue».
+ *
+ * Con el margen por dentro y `scroll-padding` a juego, la tira empieza y acaba
+ * donde empiezan y acaban las tarjetas, y lo que se coloca solo se coloca
+ * también respetándolo.
+ *
+ * Sólo para la tira que va SUELTA en la página (`="pagina"`). La tira de caras
+ * de Clientes vive dentro de una tarjeta, y ahí el margen negativo la sacaría
+ * por fuera del relleno de su propia tarjeta: el problema es del borde de la
+ * ventana, no de toda tira que se arrastre.
+ */
+[data-tira="pagina"] {
+  padding-inline: var(--gutter);
+  margin-inline: calc(var(--gutter) * -1);
+  scroll-padding-inline: var(--gutter);
 }
 
 /* Las secciones del panel están cortadas por el mismo patrón: a la izquierda
@@ -1046,6 +1200,49 @@ button:not(:disabled):active {
    * y salía la factura impresa en un tercio del folio. */
   [data-hoja] {
     display: block !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     LA FACTURA, EN PAPEL DE VERDAD.
+
+     Tres cosas que en pantalla están bien y en el folio no:
+
+     1. EL COLOR DE FONDO. Por defecto los navegadores tiran los fondos al
+        imprimir —para ahorrar tinta— y esta hoja tiene la mitad de su jerarquía
+        en fondos: la banda de granate de arriba, la fila de cabecera de la
+        tabla y el bloque del TOTAL. Sin ellos sale una hoja de texto suelto con
+        letra blanca sobre blanco, es decir, con la palabra FACTURA invisible.
+        `print-color-adjust: exact` es la única forma de decir que estos fondos
+        no son decoración.
+
+     2. EL PAPEL ES BLANCO. La hoja general pinta el crema del estudio, que ahí
+        es la marca; una factura va a una gestoría o a Hacienda y se imprime en
+        blanco. Va con `:has` sobre el cuerpo para no tocar el estudio, que
+        comparte esta misma hoja de impresión.
+
+     3. EL ANCHO Y EL CANTO. En pantalla mide 8,5 pulgadas para que se lea como
+        un folio; en el folio tiene que ocupar el folio. Y el canto blando y la
+        sombra son de pantalla: en papel una esquina redondeada es una esquina
+        recta con las puntas sin imprimir.
+     ------------------------------------------------------------------------- */
+  body:has([data-factura]),
+  html:has([data-factura]) {
+    background: #ffffff !important;
+  }
+  [data-factura] {
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  /* El `* { box-shadow:none }` de arriba ya se lleva las sombras; lo que no
+     hereda es el ajuste de color, que hay que repetir dentro. */
+  [data-factura] * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 

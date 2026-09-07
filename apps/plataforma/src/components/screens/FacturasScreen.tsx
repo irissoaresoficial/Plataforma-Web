@@ -6,10 +6,13 @@
  * Emitir una por una sesión o por un curso, verla y descargarla. Y tres reglas
  * que no son de diseño sino de la cosa en sí:
  *
- *  1. LOS DATOS FISCALES DEL EMISOR NO EXISTEN todavía. No se inventan: salen
- *     marcados como PENDIENTE aquí y en la propia hoja, y mientras falten no se
- *     puede emitir una factura definitiva. Un borrador sí, que no es un
- *     documento.
+ *  1. LOS DATOS FISCALES DEL EMISOR SE ESCRIBEN AQUÍ. Estaban en el código y la
+ *     pantalla enseñaba la ruta del archivo, que es tanto como pedirle a una
+ *     numeróloga que edite TypeScript para poder cobrar. Ahora hay un
+ *     formulario. Lo que no cambia: mientras falte cualquiera de los tres —
+ *     nombre, NIF y domicilio— se pueden guardar borradores pero NO emitir. No
+ *     es una limitación nuestra, es la ley, y lo que falta sale marcado aquí y
+ *     en la propia hoja en vez de inventarse.
  *
  *  2. LA NUMERACIÓN ES CORRELATIVA Y SIN HUECOS. El número no se reserva al
  *     empezar a escribir: se asigna al emitir. Por eso un borrador se puede
@@ -27,24 +30,30 @@
 import { useCallback, useEffect, useState } from "react";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, TITULO, botonPrincipal, rotulo, tarjetaCon } from "@/lib/ui";
+import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
 import { imprimir, AYUDA_IMPRIMIR } from "@/lib/imprimir";
 import {
   clientes as repoClientes,
   facturas as repoFacturas,
+  cargaEmisor,
   claveDia,
+  emisorCargado,
   emisorCompleto,
   euros,
+  falta,
   faltaDelEmisor,
   fechaDeFactura,
+  guardaEmisor,
   nuevoId,
   numeroDe,
   sinTildes,
   totales,
+  EMISOR,
   type Cliente,
+  type DatosFiscales,
   type Factura,
 } from "@/lib/despacho";
-import { AvisoNavegador, Cabecera, Estado, Vacio, useLlevaAlDetalle } from "../despacho/Piezas";
+import { AvisoNavegador, Cabecera, Estado, Vacio, useEstrecho, useLlevaAlDetalle } from "../despacho/Piezas";
 import HojaFactura from "../despacho/HojaFactura";
 
 /** El tipo general de IVA en España. Se puede cambiar en el formulario: no
@@ -76,6 +85,20 @@ function facturaVacia(fecha: string): Factura {
   };
 }
 
+/**
+ * Los datos fiscales, preparados para escribirse encima.
+ *
+ * Lo que falta vale `PENDIENTE` por dentro —es la palabra que usa toda la casa
+ * para «esto no tiene valor todavía»— y esa palabra no puede aparecer dentro de
+ * un campo de texto: quien la vea escrita creerá que ya hay algo puesto y
+ * borrará una letra de más. En el formulario, lo que falta es un hueco vacío.
+ */
+const paraEditar = (d: DatosFiscales): DatosFiscales => ({
+  nombre: falta(d.nombre) ? "" : d.nombre,
+  nif: falta(d.nif) ? "" : d.nif,
+  direccion: falta(d.direccion) ? "" : d.direccion,
+});
+
 const COLOR_ESTADO: Record<Factura["estado"], string> = {
   borrador: "var(--gold)",
   emitida: "var(--green)",
@@ -94,8 +117,36 @@ export default function FacturasScreen() {
   const [motivo, setMotivo] = useState("");
   const [cargando, setCargando] = useState(true);
 
-  const completo = emisorCompleto();
+  /* El mismo corte que usa `[data-dos]` en globals.css para dejar la lista y el
+     documento en una sola columna. Aquí sólo decide una cosa: si el botón de los
+     datos fiscales cabe al final del renglón o necesita el suyo. */
+  const estrecho = useEstrecho(900);
+
+  /*
+   * LOS DATOS FISCALES, QUE AHORA SE ESCRIBEN AQUÍ.
+   *
+   * `mios` es el borrador de los tres campos mientras se están escribiendo, y
+   * `sello` sube cada vez que se guardan de verdad: es lo que obliga a esta
+   * pantalla a releer `EMISOR` —que es un objeto que se muta, no un estado de
+   * React— y a que el botón de emitir se encienda en el acto en vez de al
+   * siguiente clic en cualquier otra cosa.
+   */
+  const [mios, setMios] = useState<DatosFiscales | null>(null);
+  const [abriendoDatos, setAbriendoDatos] = useState(false);
+  const [guardandoDatos, setGuardandoDatos] = useState(false);
+  const [falloDatos, setFalloDatos] = useState("");
+  const [sello, setSello] = useState(0);
+
+  /* `sello` se lee aquí para que quede escrito de qué depende este cálculo:
+     `EMISOR` es un objeto que se muta —ver la cabecera de `emisor.ts`—, así que
+     nada de lo que React vigila cambia al guardarlo. Sin un estado que suba, el
+     botón de emitir se quedaría apagado con los datos ya escritos. */
+  const completo = sello >= 0 && emisorCompleto();
   const huecos = faltaDelEmisor();
+  /* Hasta que termina la primera carga no se sabe si faltan o no. Acusar a
+     alguien de no haber rellenado algo que sí rellenó es la peor forma de
+     saludar, así que mientras tanto no se dice nada. */
+  const sabemosDelEmisor = emisorCargado();
 
   const recargar = useCallback(async () => {
     const [f, g] = await Promise.all([repoFacturas.listar(), repoClientes.listar()]);
@@ -111,6 +162,13 @@ export default function FacturasScreen() {
   useEffect(() => {
     void recargar();
     setBorrador(facturaVacia(claveDia(new Date())));
+    /* Y los datos fiscales, que viven en la nube o en el navegador igual que
+       todo lo demás. Al volver se sube el sello: es lo único que hace que la
+       pantalla se entere de que `EMISOR` ya no está vacío. */
+    void cargaEmisor().then((d) => {
+      setMios(paraEditar(d));
+      setSello((n) => n + 1);
+    });
   }, [recargar]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -190,6 +248,28 @@ export default function FacturasScreen() {
   }, [cargando, facturaAbierta, recado, lista]);
   /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 
+  /*
+   * GUARDAR LOS DATOS FISCALES.
+   *
+   * Se enseña el fallo y no se cierra el formulario si algo va mal: si Iris
+   * escribe su NIF, ve que se guarda y no se guardó, la siguiente factura sale
+   * sin él — con número puesto y sin poder borrarla.
+   */
+  const guardarMisDatos = async () => {
+    if (!mios) return;
+    setGuardandoDatos(true);
+    setFalloDatos("");
+    try {
+      await guardaEmisor(mios);
+      setSello((n) => n + 1);
+      setAbriendoDatos(false);
+    } catch (e) {
+      setFalloDatos(e instanceof Error ? e.message : "No se han podido guardar.");
+    } finally {
+      setGuardandoDatos(false);
+    }
+  };
+
   const guardarBorrador = async () => {
     if (!borrador) return;
     try {
@@ -259,31 +339,104 @@ export default function FacturasScreen() {
           pie="Numeradas seguidas, sin saltarse ninguna."
         />
 
-        {/* --------------------------------------------- lo que falta y manda */}
-        {!completo && (
-          <div style={css(tarjetaCon("var(--red)") + PAD + "margin-bottom:var(--gap-lg);")}>
-            <div style={css(rotulo("var(--red)") + "margin-bottom:var(--s2);")}>Faltan tus datos fiscales</div>
-            <p style={css(APOYO + "margin:0 0 var(--s3);max-width:64ch;")}>
-              En una factura española son obligatorios y nadie los ha dado todavía, así que no se han inventado. Hasta que estén,
-              puedes dejar la factura en borrador, pero no emitirla.
-            </p>
-            <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s3);")}>
-              {huecos.map((h) => (
-                <span
-                  key={h}
-                  style={css(
-                    "display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--red-border);border-radius:999px;font-size:var(--t-mini);font-weight:590;color:var(--red);"
-                  )}
+        {/* ------------------------------------------------ quién factura */}
+        {/*
+            ANTES: UN AVISO ROJO CON LA RUTA DE UN ARCHIVO .TS DENTRO.
+
+            Decía «se escriben en un solo sitio: src/lib/despacho/emisor.ts».
+            Es decir: la plataforma le estaba pidiendo a una numeróloga que
+            abriera un archivo de TypeScript y volviera a desplegar antes de
+            poder cobrar su primera factura. Un aviso que no se puede atender
+            desde la propia pantalla no es un aviso: es un muro con un cartel.
+
+            Ahora es un formulario. Y sigue siendo lo primero de la pantalla
+            SÓLO mientras falte algo — en cuanto los tres estén, se pliega a un
+            renglón que se puede volver a abrir para corregirlos, porque un NIF
+            se cambia una vez cada muchos años y no puede ocupar el sitio del
+            trabajo de todos los días.
+
+            La regla no se ha tocado: sin los tres se guardan borradores pero no
+            se emite. Eso no es una limitación nuestra, es la ley española, y
+            está dicho junto al botón apagado, que es donde hace falta leerlo.
+        */}
+        {sabemosDelEmisor && mios && (
+          <section style={css(TARJETA + PAD + "margin-bottom:var(--gap-lg);")}>
+            <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
+              <span style={css(rotulo(completo ? "var(--gold)" : "var(--red)"))}>
+                {completo ? "Quien factura" : "Faltan tus datos fiscales"}
+              </span>
+              <span style={css(NOTA + "min-width:0;overflow-wrap:anywhere;")}>
+                {completo ? `${EMISOR.nombre} · ${EMISOR.nif}` : `${huecos.join(", ")} — sin ellos no se puede emitir.`}
+              </span>
+              {!abriendoDatos && (
+                <button
+                  onClick={() => setAbriendoDatos(true)}
+                  /* En ancho va al final del renglón; en estrecho el renglón es
+                     suyo entero, porque un botón colgando a la derecha debajo de
+                     dos líneas de texto se lee como si se hubiera caído ahí. */
+                  style={css((completo ? BOTON_PLANO : botonPrincipal()) + (estrecho ? "flex:1 1 100%;" : "margin-left:auto;"))}
                 >
-                  {h} · PENDIENTE
-                </span>
-              ))}
+                  {completo ? "Cambiarlos" : "Ponerlos ahora"}
+                </button>
+              )}
             </div>
-            <p style={css(NOTA + "margin:0;line-height:1.5;")}>
-              Se escriben en un solo sitio: <code>src/lib/despacho/emisor.ts</code>. En cuanto estén, el botón de emitir se
-              enciende solo.
-            </p>
-          </div>
+
+            {abriendoDatos && (
+              <div style={css(RAYA + "margin-top:var(--s4);padding-top:var(--s4);display:flex;flex-direction:column;gap:var(--s3);")}>
+                {campo(
+                  "Tu nombre o razón social",
+                  <input
+                    value={mios.nombre}
+                    onChange={(e) => setMios({ ...mios, nombre: e.target.value })}
+                    placeholder="Iris Soares"
+                    style={css(entrada)}
+                  />
+                )}
+                <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:var(--s3);")}>
+                  {campo(
+                    "Tu NIF",
+                    <input
+                      value={mios.nif}
+                      onChange={(e) => setMios({ ...mios, nif: e.target.value })}
+                      placeholder="12345678Z"
+                      style={css(entrada)}
+                    />
+                  )}
+                  {campo(
+                    "Tu domicilio fiscal",
+                    <input
+                      value={mios.direccion}
+                      onChange={(e) => setMios({ ...mios, direccion: e.target.value })}
+                      placeholder="Calle, número, código postal y ciudad"
+                      style={css(entrada)}
+                    />
+                  )}
+                </div>
+                <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;")}>
+                  <button onClick={() => void guardarMisDatos()} disabled={guardandoDatos} style={css(botonPrincipal(!guardandoDatos))}>
+                    {guardandoDatos ? "Guardando…" : "Guardar mis datos"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      /* Al dejarlo se recupera lo guardado: si no, lo escrito a
+                         medias se quedaría en pantalla como si fuera lo bueno. */
+                      setMios(paraEditar(EMISOR));
+                      setFalloDatos("");
+                      setAbriendoDatos(false);
+                    }}
+                    style={css(BOTON_PLANO)}
+                  >
+                    Dejarlo
+                  </button>
+                </div>
+                {falloDatos && (
+                  <p role="alert" style={css(APOYO + "margin:0;color:var(--red);")}>
+                    {falloDatos} Tus datos no se han guardado: vuelve a intentarlo antes de emitir nada.
+                  </p>
+                )}
+              </div>
+            )}
+          </section>
         )}
       </div>
 
@@ -324,12 +477,18 @@ export default function FacturasScreen() {
                         ";"
                     )}
                   >
+                    {/* En un borrador el renglón de arriba era «Borrador» y la
+                        pastilla de la derecha, otra vez «Borrador»: la misma
+                        palabra dos veces en la misma fila y ni rastro de a
+                        quién era. El estado lo dice la pastilla, que es su
+                        oficio; arriba va lo que identifica la factura — el
+                        número cuando lo tiene y, mientras no, la persona. */}
                     <span style={css("flex:1;min-width:0;")}>
-                      <span data-cifras="" style={css("display:block;font-size:var(--t-body);font-weight:590;")}>
-                        {f.estado === "borrador" ? "Borrador" : numeroDe(f)}
+                      <span data-cifras="" style={css("display:block;font-size:var(--t-body);font-weight:590;overflow-wrap:anywhere;")}>
+                        {f.estado === "borrador" ? f.cliente.nombre || "Sin nombre" : numeroDe(f)}
                       </span>
                       <span style={css(NOTA + "display:block;margin-top:2px;overflow-wrap:anywhere;")}>
-                        {f.cliente.nombre || "Sin nombre"} · {euros(t.total)}
+                        {f.estado === "borrador" ? euros(t.total) : `${f.cliente.nombre || "Sin nombre"} · ${euros(t.total)}`}
                       </span>
                     </span>
                     <Estado
@@ -348,7 +507,16 @@ export default function FacturasScreen() {
             </div>
           </section>
 
-          <AvisoNavegador que="Las facturas" tono="aviso" />
+          {/* EN TONO DE NOTA, NO DE ALARMA — Y ES UN CAMBIO A PROPÓSITO.
+              Iba en tarjeta con la raya roja al canto por ser las facturas lo
+              que menos se puede perder, y el argumento sigue siendo verdad. Lo
+              que no funcionaba era el resultado: en esta pantalla convivían dos
+              bloques rojos a la vez —éste y el de los datos fiscales— más tres
+              pastillas rojas, y con la pantalla entera en rojo ninguno de los
+              dos avisaba de nada. Un solo rojo por pantalla, y aquí ese rojo es
+              el que se puede arreglar pulsando: el de arriba. El texto es el
+              mismo, dicho con la voz con la que se dice en las otras tres. */}
+          <AvisoNavegador que="Las facturas" />
         </div>
 
         {/* ------------------------------------------- el formulario o la hoja */}
@@ -421,10 +589,13 @@ export default function FacturasScreen() {
             /* ------------------------------------------------ el borrador */
             borrador && (
               <section data-chrome="1" style={css(TARJETA + PAD)}>
-                <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s2);")}>Nueva factura</div>
-                <p style={css(APOYO + "margin:0 0 var(--s5);")}>
-                  Mientras sea un borrador puedes cambiar lo que quieras y tirarlo si no vale. El número se le pone al emitirla.
-                </p>
+                {/* Sobraba debajo: «Mientras sea un borrador puedes cambiar lo
+                    que quieras y tirarlo si no vale. El número se le pone al
+                    emitirla». Los tres botones del pie —emitir, guardar el
+                    borrador, tirarlo— ya dicen las tres cosas, y la hoja de
+                    abajo lleva su propia banda de BORRADOR. Contarlo además en
+                    un párrafo es explicar lo que ya se está viendo. */}
+                <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s4);")}>Nueva factura</div>
 
                 <div style={css("display:flex;flex-direction:column;gap:var(--s4);")}>
                   {/* -------------------------------------------- a quién */}
@@ -466,10 +637,10 @@ export default function FacturasScreen() {
                         />
                       )}
                     </div>
-                    <p style={css(NOTA + "margin:0;line-height:1.5;")}>
-                      Si no pones NIF ni domicilio, la factura sale sin ellos. Para una empresa, o si la persona la necesita para
-                      desgravar, hacen falta.
-                    </p>
+                    {/* Sobraba: «Si no pones NIF ni domicilio, la factura sale
+                        sin ellos…». Los dos campos ya llevan «Si hace falta»
+                        escrito dentro, que dice lo mismo en tres palabras y en
+                        el sitio donde se está mirando. */}
                   </div>
 
                   {/* --------------------------------------------- qué se factura */}
@@ -494,11 +665,12 @@ export default function FacturasScreen() {
 
                     {/* Las tres casillas de cada línea no llevan rótulo encima
                      * —serían tres rótulos por línea y la tarjeta se llenaría
-                     * de letra pequeña— así que se dice una vez, en cristiano. */}
-                    <p style={css(NOTA + "margin:0;line-height:1.5;")}>
-                      En cada línea: qué es, cuántas veces y a cuánto sale la unidad sin IVA.
-                    </p>
-
+                     * de letra pequeña—. Se decía en un renglón aparte: «En
+                     * cada línea: qué es, cuántas veces y a cuánto sale la
+                     * unidad sin IVA». Ahora lo dice cada casilla desde dentro,
+                     * que es donde se mira al escribir, y el renglón se ha ido.
+                     * Los `aria-label` ya estaban y siguen: quien no ve el
+                     * hueco escrito oye el nombre entero del campo. */}
                     {borrador.lineas.map((l, i) => (
                       <div key={i} data-linea-factura="" style={css("display:grid;grid-template-columns:minmax(0,1fr) 74px 96px auto;gap:var(--s2);align-items:center;")}>
                         <input
@@ -516,6 +688,7 @@ export default function FacturasScreen() {
                           onChange={(e) =>
                             cambia({ lineas: borrador.lineas.map((x, j) => (j === i ? { ...x, cantidad: Number(e.target.value.replace(/\D/g, "")) || 0 } : x)) })
                           }
+                          placeholder="Cant."
                           aria-label="Cantidad"
                           style={css(entrada + "text-align:right;")}
                         />
@@ -525,6 +698,7 @@ export default function FacturasScreen() {
                           onChange={(e) =>
                             cambia({ lineas: borrador.lineas.map((x, j) => (j === i ? { ...x, precio: Number(e.target.value.replace(",", ".").replace(/[^\d.]/g, "")) || 0 } : x)) })
                           }
+                          placeholder="€ sin IVA"
                           aria-label="Precio sin IVA"
                           style={css(entrada + "text-align:right;")}
                         />
@@ -565,9 +739,10 @@ export default function FacturasScreen() {
                       />
                     )}
                   </div>
-                  <p style={css(NOTA + "margin:0;line-height:1.5;")}>
-                    El 21 % es el tipo general. Cámbialo si a lo que facturas le corresponde otro.
-                  </p>
+                  {/* Sobraba: «El 21 % es el tipo general. Cámbialo si a lo que
+                      facturas le corresponde otro». El campo se llama «IVA (%)»
+                      y viene con 21 puesto: la frase repetía las dos cosas que
+                      ya se ven. */}
 
                   {campo(
                     "Al pie de la factura (si quieres)",
@@ -601,9 +776,35 @@ export default function FacturasScreen() {
                   </button>
                 </div>
 
-                {!completo && (
-                  <p style={css(NOTA + "margin:var(--s3) 0 0;line-height:1.5;color:var(--red);")}>
-                    No se puede emitir hasta que estén tus datos fiscales. El borrador sí se guarda.
+                {/* UN BOTÓN APAGADO TIENE QUE DECIR POR QUÉ, Y AQUÍ SE PUEDE
+                    ARREGLAR SIN MOVERSE. Antes esta línea sólo explicaba; el
+                    remedio estaba en un archivo del código. Ahora lleva al
+                    formulario de arriba y lo abre. */}
+                {sabemosDelEmisor && !completo && (
+                  <p style={css(NOTA + "margin:var(--s3) 0 0;line-height:1.5;")}>
+                    {/* Los huecos van con su nombre tal cual —«NIF», no «nif»—:
+                        pasarlos a minúscula para que encajaran en la frase
+                        dejaba las siglas escritas mal en un texto sobre la ley. */}
+                    <span style={css("color:var(--red);")}>
+                      En España no hay factura sin {huecos.length === 3 ? "tus datos fiscales" : huecos.join(" ni ")}.
+                    </span>{" "}
+                    El borrador sí se guarda.{" "}
+                    <button
+                      onClick={() => {
+                        setAbriendoDatos(true);
+                        /* El desplazamiento suave se apaga con el resto del
+                           movimiento: quien pide menos animación no quiere que
+                           la página se le mueva sola durante medio segundo. */
+                        const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                        window.scrollTo({ top: 0, behavior: quieto ? "auto" : "smooth" });
+                      }}
+                      style={css(
+                        "background:none;border:none;padding:0;cursor:pointer;font:inherit;color:var(--accion);font-weight:590;text-decoration:underline;"
+                      )}
+                    >
+                      Ponlos ahora
+                    </button>
+                    .
                   </p>
                 )}
 
