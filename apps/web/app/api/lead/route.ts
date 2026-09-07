@@ -25,6 +25,9 @@ import { guardaLead } from '@/lib/leads-firebase';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+/* Como en /api/booking: Google tarda en mandar los correos, y cortarle a los
+   diez segundos por defecto de Vercel deja a medias algo que iba bien. */
+export const maxDuration = 60;
 
 const hits = new Map<string, number[]>();
 const WINDOW_MS = 10 * 60_000;
@@ -59,7 +62,15 @@ export async function POST(request: Request) {
   /* ---------------------------------------------------------------- 1 */
   /* Se guarda ANTES de intentar nada más. Si Firebase no está configurado esto
      devuelve `sin_configurar` y no pasa nada: se sigue como se seguía antes. */
-  const enBase = await guardaLead(lead, { ip: ip.slice(0, 45), agente: (request.headers.get('user-agent') || '').slice(0, 200) });
+  /* El correo escrito para la persona NO se guarda en la base: es texto que se
+     vuelve a componer igual en cualquier momento a partir de las fechas, así que
+     guardarlo sería meter un párrafo largo por lead para no usarlo jamás. Al
+     Apps Script sí va, que es quien tiene que mandarlo. */
+  const { asunto: _a, parrafos: _p, ...paraGuardar } = lead;
+  const enBase = await guardaLead(paraGuardar, {
+    ip: ip.slice(0, 45),
+    agente: (request.headers.get('user-agent') || '').slice(0, 200),
+  });
 
   /* ---------------------------------------------------------------- 2 */
   if (!url) {
@@ -81,7 +92,7 @@ export async function POST(request: Request) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'lead', secret, lead }),
       redirect: 'follow',
-      signal: AbortSignal.timeout(15_000),
+      signal: AbortSignal.timeout(45_000),
     });
     const text = await res.text();
     let data: unknown = null;

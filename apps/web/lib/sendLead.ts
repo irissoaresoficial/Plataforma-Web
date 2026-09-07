@@ -9,6 +9,10 @@ export async function sendLead(payload: {
   detalle?: string;
   whatsapp?: string;
   lang?: string;
+  /* El correo ya escrito para la persona. Sólo lo manda la sinergia; ver
+     `correo-sinergia.ts` y el comentario del tipo `Lead` en `booking.ts`. */
+  asunto?: string;
+  parrafos?: string[];
 }): Promise<boolean> {
   try {
     const res = await fetch('/api/lead', {

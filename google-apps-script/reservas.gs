@@ -473,19 +473,68 @@ function enviarPaso(email, nombre, paso) {
 
 /** Día 0: el resultado de la calculadora, nada más dejar el correo. */
 function correoResultado(lead) {
-  var cuerpo =
-    '<p>Hola ' + primerNombre(lead.nombre) + ',</p>' +
-    '<p>Aquí tienes lo que ha salido:</p>' +
-    '<p style="background:#f5f4f0;border-radius:12px;padding:16px;font-size:16px">' + (lead.detalle || '') + '</p>' +
-    '<p>Esto es una foto de lo que se activa entre vosotros dos. Explica el roce, pero no de dónde viene: eso está en tu línea familiar, y hace falta mirarla entera.</p>' +
-    '<p>Mañana te escribo para contarte por qué se repite. Si prefieres que no lo haga, te puedes borrar abajo en un clic.</p>';
+  /*
+   * EL TEXTO VIENE ESCRITO DE LA WEB. AQUÍ SÓLO SE ENVUELVE.
+   *
+   * Antes este correo pegaba `lead.detalle` tal cual dentro de una caja gris:
+   *
+   *     «Mi madre: Iris 3 · Iris 3 · juntos 6 (Espejo) · 5 repeticiones»
+   *
+   * Eso está bien escrito para Iris —es su ficha de un vistazo antes de una
+   * llamada— y no dice absolutamente nada a quien acaba de dejar su correo por
+   * primera vez: no sabe qué es un 3, ni un 6, ni un Espejo. Y es el momento
+   * más caro de todo el embudo: esa persona ha escrito el nombre de su madre en
+   * una web y ha esperado un correo. Está abierta. Lo que recibía era una línea
+   * de base de datos.
+   *
+   * Ahora la web manda los párrafos ya escritos, con cada número explicado (ver
+   * `lib/correo-sinergia.ts`). Van como texto y no como HTML a propósito: así
+   * este archivo no puede romperse por lo que llegue de fuera, y el envoltorio
+   * —tipografía, ancho, el pie con la baja— lo sigue poniendo la plantilla de
+   * aquí.
+   *
+   * Si por lo que sea no llegan párrafos —una versión vieja de la web— se cae al
+   * texto de antes en vez de mandar un correo vacío.
+   */
+  var cuerpo;
+  var asunto;
+
+  if (lead.parrafos && lead.parrafos.length) {
+    cuerpo = '';
+    for (var i = 0; i < lead.parrafos.length; i++) {
+      cuerpo += '<p style="font-size:16px;line-height:1.6;margin:0 0 16px">' + escapaSalvoSaltos(lead.parrafos[i]) + '</p>';
+    }
+    asunto = lead.asunto || 'Lo que se repite';
+  } else {
+    cuerpo =
+      '<p>Hola ' + primerNombre(lead.nombre) + ',</p>' +
+      '<p>Aquí tienes lo que ha salido:</p>' +
+      '<p style="background:#f5f4f0;border-radius:12px;padding:16px;font-size:16px">' + (lead.detalle || '') + '</p>' +
+      '<p>Esto es una foto de lo que se activa entre vosotros dos. Explica el roce, pero no de dónde viene: eso está en tu línea familiar, y hace falta mirarla entera.</p>';
+    asunto = 'Tu resultado';
+  }
+
   MailApp.sendEmail({
     to: lead.email,
     name: 'Iris Soares',
     replyTo: CONFIG.IRIS_EMAIL,
-    subject: 'Tu resultado',
+    subject: asunto,
     htmlBody: plantilla(cuerpo, lead.email)
   });
+}
+
+/**
+ * Deja el texto a salvo de convertirse en etiquetas, pero conserva el único
+ * trozo de HTML que sí lleva —el salto de línea de la firma—. Escapar del todo
+ * dejaría un «<br>» escrito a la vista al final del correo; no escapar nada
+ * dejaría que un nombre con un signo raro rompiera el mensaje entero.
+ */
+function escapaSalvoSaltos(t) {
+  return String(t || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/&lt;br&gt;/g, '<br>');
 }
 
 /**

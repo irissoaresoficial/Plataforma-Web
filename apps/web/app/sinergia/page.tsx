@@ -10,6 +10,7 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import { estudio, emailValido, limpiar, SENTIDO, type Estudio } from '@/lib/numerologia';
+import { correoSinergia } from '@/lib/correo-sinergia';
 import { sendLead } from '@/lib/sendLead';
 import Informe from '@/components/Informe';
 
@@ -85,6 +86,16 @@ export default function Sinergia() {
 
       // El resultado se enseña igual: si el correo no se puede guardar, se avisa abajo.
       const r = res || estudio(aName, aDate, bName, bDate, rel);
+      /*
+       * DOS TEXTOS, Y NO UNO, PORQUE SON PARA DOS PERSONAS DISTINTAS.
+       *
+       * `detalle` es la ficha de Iris: densa, de un vistazo, para mirarla antes
+       * de una llamada. Se estaba mandando además como correo a quien acaba de
+       * dejar su dato, y ahí no significaba nada —«juntos 6 (Espejo)» no se
+       * entiende sin saber ya numerología, que es justo lo que esa persona no
+       * sabe—. El correo se compone aparte, con cada número explicado.
+       */
+      const paraElla = correoSinergia(r);
       sendLead({
         email,
         nombre: aName,
@@ -93,6 +104,8 @@ export default function Sinergia() {
           `${rel ? rel + ': ' : ''}${r.a.nombrePila} ${r.a.camino.valor} · ${r.b.nombrePila} ${r.b.camino.valor} · ` +
           `juntos ${r.comun} (${r.nombreVinculo})` +
           (r.repeticiones.length ? ` · ${r.repeticiones.length} repeticiones` : ''),
+        asunto: paraElla.asunto,
+        parrafos: paraElla.parrafos,
       }).then(setLeadOk);
     }
   };

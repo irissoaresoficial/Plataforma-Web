@@ -57,6 +57,26 @@ export type Lead = {
   detalle: string; // resultado de la sinergia, curso al que se apunta, etc.
   whatsapp: string;
   lang: string;
+  /*
+   * EL CORREO ESCRITO PARA QUIEN LO VA A ABRIR.
+   *
+   * `detalle` y esto son dos cosas distintas y hacía falta separarlas. `detalle`
+   * es la ficha de Iris: «Mi madre: Iris 3 · Iris 3 · juntos 6 (Espejo) · 5
+   * repeticiones» — densa, de un vistazo, perfecta antes de una llamada. Se
+   * estaba mandando TAL CUAL como correo a la persona, y a quien acaba de dejar
+   * su correo por primera vez esa línea no le dice nada: no sabe qué es un 3,
+   * ni un 6, ni un Espejo.
+   *
+   * Así que el texto de la persona se compone aparte, en `correo-sinergia.ts`,
+   * con cada número explicado. Van párrafos y no HTML: el envoltorio lo pone la
+   * plantilla del Apps Script, así que esto no puede romper el diseño del
+   * correo ni la plantilla necesita saber de numerología.
+   *
+   * Es opcional porque sólo lo llena la sinergia. Un curso o la lista de espera
+   * no tienen nada que explicar: se apuntan y ya.
+   */
+  asunto?: string;
+  parrafos?: string[];
 };
 
 export const LEAD_SOURCES = ['sinergia', 'membresia', 'curso'] as const;
@@ -77,6 +97,23 @@ export function parseLead(input: unknown): { lead: Lead | null; error: string } 
     whatsapp: str('whatsapp', 40),
     lang: str('lang', 2) || 'es',
   };
+
+  /* Los párrafos se limpian uno a uno: son texto que va a acabar dentro de un
+     correo en HTML, así que ni se aceptan de cualquier tamaño ni en cualquier
+     cantidad. Diez párrafos de mil caracteres es un correo largo; cien de diez
+     mil es otra cosa. */
+  const brutos = (input as Record<string, unknown>).parrafos;
+  if (Array.isArray(brutos)) {
+    const limpios = brutos
+      .filter((x): x is string => typeof x === 'string')
+      .map((x) => x.trim().slice(0, 1200))
+      .filter(Boolean)
+      .slice(0, 14);
+    if (limpios.length) {
+      lead.parrafos = limpios;
+      lead.asunto = str('asunto', 140);
+    }
+  }
 
   if (!EMAIL_RE.test(lead.email)) return { lead: null, error: 'email' };
   if (!(LEAD_SOURCES as readonly string[]).includes(lead.origen)) return { lead: null, error: 'origen' };
