@@ -45,9 +45,13 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
         && ficha().activo == true;
     }
-    function esAdmin() {
-      return dentro() && ficha().rol == 'admin';
-    }
+    /*
+     * NO HAY ROLES. Hoy esto lo usa una persona, y un sistema de permisos para
+     * un solo usuario no protege de nada: sólo añade condiciones que nadie
+     * comprueba nunca porque no existe el segundo caso. Quien está dentro,
+     * puede. El día que entre alguien con permisos distintos se añade aquí, y
+     * se añadirá sabiendo qué hace falta de verdad.
+     */
 
     /* ---------------------------------------------------------------- */
     /*  Los usuarios de la plataforma                                    */
@@ -60,21 +64,19 @@ service cloud.firestore {
       allow read: if dentro();
 
       /**
-       * Sólo un administrador da y quita accesos. Y con dos candados más:
+       * Dar y quitar accesos lo hace quien está dentro, con un candado: NADIE
+       * PUEDE DEJARSE A SÍ MISMO FUERA.
        *
-       *   · nadie puede ascenderse a sí mismo — `uid != request.auth.uid` en el
-       *     cambio de rol— porque si no, una cuenta de sólo lectura se haría
-       *     administradora en un clic desde la consola del navegador;
-       *   · nadie puede dejarse a sí mismo fuera. Un administrador que se
-       *     desactiva por error deja la plataforma sin nadie que pueda volver a
-       *     activarlo, y eso sólo se arregla entrando a mano en la consola de
-       *     Firebase.
+       * No es una precaución teórica. Si Iris se desactiva por error, la
+       * plataforma se queda sin una sola persona capaz de volver a activarla, y
+       * eso ya no se arregla desde aquí: hay que entrar a mano en la consola de
+       * Firebase. Con una sola cuenta viva, ese error es irreversible desde
+       * dentro.
        */
-      allow create: if esAdmin();
-      allow update: if esAdmin()
-        && (request.resource.data.rol == resource.data.rol || uid != request.auth.uid)
+      allow create: if dentro();
+      allow update: if dentro()
         && (request.resource.data.activo == true || uid != request.auth.uid);
-      allow delete: if esAdmin() && uid != request.auth.uid;
+      allow delete: if dentro() && uid != request.auth.uid;
     }
 
     /* ---------------------------------------------------------------- */

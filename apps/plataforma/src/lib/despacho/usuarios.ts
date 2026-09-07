@@ -30,13 +30,11 @@
 
 import { collection, deleteDoc, doc, getDocs, orderBy, query, setDoc, updateDoc } from "firebase/firestore";
 import { nube } from "../firebase";
-import type { Rol } from "../sesion";
 
 export type FichaUsuario = {
   uid: string;
   email: string;
   nombre: string;
-  rol: Rol;
   activo: boolean;
 };
 
@@ -63,12 +61,11 @@ export async function daAcceso(f: FichaUsuario): Promise<void> {
   await setDoc(doc(base, "usuarios", f.uid), {
     email: f.email.trim().toLowerCase(),
     nombre: f.nombre.trim(),
-    rol: f.rol,
     activo: f.activo,
   });
 }
 
-/** Cambiar el rol o encender y apagar el acceso. */
+/** Encender y apagar el acceso de alguien, o corregirle el nombre. */
 export async function cambiaUsuario(uid: string, cambios: Partial<Omit<FichaUsuario, "uid">>): Promise<void> {
   const base = nube();
   if (!base) throw new Error("sin_nube");

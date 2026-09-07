@@ -16,8 +16,8 @@
  * ------------------------------------------------------------------
  * Firebase Auth. La contraseña la comprueba Google en su servidor, no este
  * código; lo que llega aquí es un vale firmado que el navegador no puede
- * falsificar. Y con ese vale, las reglas de Firestore deciden qué puede tocar
- * cada uno — están en `firebase/firestore.rules`, comentadas una a una.
+ * falsificar. Y con ese vale, las reglas de Firestore deciden qué se puede
+ * tocar — están en `firebase/firestore.rules`, comentadas una a una.
  *
  * DOS COSAS Y NO UNA: TENER CUENTA Y TENER FICHA
  * ------------------------------------------------------------------
@@ -29,7 +29,7 @@
  * Están separadas a propósito. Si bastara con la cuenta, quitarle el acceso a
  * alguien obligaría a borrarle la cuenta entera y con ella el rastro de lo que
  * hizo. Con la ficha aparte se le pone `activo: false` y deja de entrar al
- * instante, sin perder nada. Es también lo que permite que haya roles.
+ * instante, sin perder nada.
  *
  * Y ES LA MISMA COMPROBACIÓN QUE HACE EL SERVIDOR. Esto no es seguridad
  * —ninguna comprobación en un navegador lo es— sino cortesía: enseñar un
@@ -56,20 +56,26 @@ import {
 import { doc, getDoc } from "firebase/firestore";
 import { auth, hayFirebase, nube } from "./firebase";
 
-/** Lo que puede hacer alguien dentro. */
-export type Rol = "admin" | "trabajo" | "lectura";
-
-export const ROLES: Array<{ k: Rol; label: string; que: string }> = [
-  { k: "admin", label: "Administradora", que: "Todo, y además da y quita accesos." },
-  { k: "trabajo", label: "Trabajo", que: "Ve y cambia los estudios, la agenda, los clientes y las facturas." },
-  { k: "lectura", label: "Sólo mirar", que: "Lo ve todo pero no puede cambiar nada." },
-];
-
+/**
+ * UN SOLO NIVEL DE ACCESO, A PROPÓSITO.
+ *
+ * Hubo aquí tres roles —administradora, trabajo y sólo mirar— y se han quitado.
+ * Hoy esto lo usa una persona: Iris. Un sistema de permisos para un solo
+ * usuario no protege de nada y sí complica todo: hay que decidir un rol en cada
+ * alta, cada pantalla tiene que preguntar si puede o no puede, y las reglas del
+ * servidor se llenan de condiciones que nadie está comprobando nunca porque
+ * sólo existe un caso.
+ *
+ * El día que entre una segunda persona con permisos distintos, se añade — y se
+ * añadirá sabiendo qué hace falta de verdad, en vez de haberlo adivinado hoy.
+ *
+ * Lo que sí se queda es `activo`: quitarle el acceso a alguien tiene que poder
+ * hacerse sin borrarle la cuenta y con ella el rastro de lo que hizo.
+ */
 export type Usuario = {
   uid: string;
   email: string;
   nombre: string;
-  rol: Rol;
   activo: boolean;
 };
 
@@ -82,15 +88,12 @@ type Estado = {
   conNube: boolean;
   entra: (email: string, clave: string) => Promise<void>;
   sale: () => void;
-  /** Atajo para las pantallas: ¿puede cambiar cosas o sólo mirar? */
-  puedeEditar: boolean;
-  esAdmin: boolean;
 };
 
 const Ctx = createContext<Estado | null>(null);
 
 /** El usuario de mentira de cuando no hay nube. Sólo existe en desarrollo. */
-const LOCAL: Usuario = { uid: "local", email: "local", nombre: "Iris", rol: "admin", activo: true };
+const LOCAL: Usuario = { uid: "local", email: "local", nombre: "Iris", activo: true };
 
 export function SesionProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null | false>(null);
@@ -144,7 +147,6 @@ export function SesionProvider({ children }: { children: ReactNode }) {
           uid: u.uid,
           email: u.email || d.email || "",
           nombre: d.nombre || u.displayName || (u.email || "").split("@")[0],
-          rol: (d.rol as Rol) || "lectura",
           activo: true,
         });
       } catch {
@@ -204,21 +206,10 @@ export function SesionProvider({ children }: { children: ReactNode }) {
     setUsuario(false);
   }, []);
 
-  const valor = useMemo<Estado>(() => {
-    /* `usuario` es tres cosas: null (todavía no se sabe), false (no hay nadie)
-       o la persona. Sólo la tercera tiene rol. */
-    const u = usuario ? usuario : null;
-    return {
-      usuario,
-      entrando,
-      error,
-      conNube,
-      entra,
-      sale,
-      puedeEditar: !u ? false : u.rol === "admin" || u.rol === "trabajo",
-      esAdmin: !u ? false : u.rol === "admin",
-    };
-  }, [usuario, entrando, error, conNube, entra, sale]);
+  const valor = useMemo<Estado>(
+    () => ({ usuario, entrando, error, conNube, entra, sale }),
+    [usuario, entrando, error, conNube, entra, sale],
+  );
 
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>;
 }

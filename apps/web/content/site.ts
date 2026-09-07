@@ -202,6 +202,25 @@ export const MEMBRESIA = {
   /** Lo que pagan los que reservan ahora desde la lista de espera. */
   precioReserva: 33,
   /**
+   * CUÁNTAS PERSONAS SE QUEDAN CON ESE PRECIO.
+   *
+   * Es el dato que faltaba, y es el que hace que el precio signifique algo. Los
+   * 33 € no son un descuento abierto: la comunidad abre con diez personas
+   * porque cada mes se revisa un caso en voz alta, y con cuarenta eso no se
+   * puede hacer. Las diez primeras se quedan con ese precio mientras sigan
+   * dentro; la undécima paga los 67 €.
+   *
+   * La web no lo decía en ninguna parte —sólo lo decía el cuarto correo de la
+   * secuencia, al que llega poca gente— así que quien miraba la página veía un
+   * descuento sin motivo. Un descuento sin motivo no acelera a nadie: parece
+   * que mañana seguirá ahí.
+   *
+   * Es una escasez REAL, y por eso se puede decir en grande. El día que deje de
+   * serlo, se cambia este número o se pone a null y desaparece de la página —
+   * no se deja puesto mintiendo.
+   */
+  plazasLanzamiento: 10 as number | null,
+  /**
    * Lo que incluye la membresía. Cada línea que dejes como PENDIENTE sale
    * marcada en rojo. Añade o quita las que quieras.
    */

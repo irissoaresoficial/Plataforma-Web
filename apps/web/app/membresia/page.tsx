@@ -120,7 +120,33 @@ export default function Membresia() {
             */}
             <div id="reservar" />
             <div className="pv">
-              <span className="pv-cinta">Precio de lista de espera</span>
+              {/*
+                  LAS DIEZ PRIMERAS, EN GRANDE Y ARRIBA DEL TODO.
+
+                  Faltaba el motivo del precio. La página enseñaba 33 € tachando
+                  67 € y un −51 %, sin decir en ningún sitio POR QUÉ. Un
+                  descuento sin motivo no acelera a nadie: parece que mañana
+                  seguirá ahí, y quien lo ve se lo piensa otro día.
+
+                  El motivo existe y es de verdad: la comunidad abre con diez
+                  personas porque cada mes se revisa un caso en voz alta, y con
+                  cuarenta eso no se puede hacer. Las diez primeras se quedan
+                  con ese precio; la undécima paga los 67 €. Estaba escrito
+                  únicamente en el cuarto correo de la secuencia, al que llega
+                  poca gente — o sea, escondido justo donde se decide la compra.
+
+                  Sale del dato, no escrito a mano: el día que dejen de ser diez
+                  plazas, se cambia el número en site.ts o se pone a null y esta
+                  cinta desaparece sola. Una escasez que se queda puesta cuando
+                  ya no es cierta es lo que hace que nadie se crea la siguiente.
+              */}
+              {MEMBRESIA.plazasLanzamiento ? (
+                <span className="pv-plazas">
+                  Solo las <b>{MEMBRESIA.plazasLanzamiento} primeras</b> personas
+                </span>
+              ) : (
+                <span className="pv-cinta">Precio de lista de espera</span>
+              )}
 
               <div className="pv-cifra">
                 <b>{eur(MEMBRESIA.precioReserva)}</b>
@@ -151,6 +177,13 @@ export default function Membresia() {
                 Hoy <strong>no se te cobra nada</strong>. Cuando abra, entras por {eur(MEMBRESIA.precioReserva)} en vez
                 de {eur(MEMBRESIA.precio)} — y sigues pagando {eur(MEMBRESIA.precioReserva)} el mes doce, y el
                 veinticuatro. <strong>El precio se queda contigo</strong>, no con la fecha.
+                {MEMBRESIA.plazasLanzamiento ? (
+                  <>
+                    {' '}El grupo abre con <strong>{MEMBRESIA.plazasLanzamiento} personas</strong> porque cada mes
+                    se mira un caso en voz alta, y eso con cuarenta no se puede hacer. Quien llegue después,
+                    entra por {eur(MEMBRESIA.precio)}.
+                  </>
+                ) : null}
               </p>
             </div>
 

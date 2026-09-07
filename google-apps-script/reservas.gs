@@ -372,8 +372,13 @@ function guardarLead(lead) {
   var yaEstaba = saveLeadRow(lead);
 
   if (lead.origen === 'sinergia') {
+    // Su acuse de recibo ES el resultado, y detrás va la secuencia de 5 días.
     if (!yaEstaba) correoResultado(lead);
   } else {
+    // A la persona, su confirmación — sólo la primera vez, para que apuntarse
+    // dos veces por si acaso no le llene la bandeja.
+    if (!yaEstaba) acuseDeRecibo(lead);
+    // Y a Iris, siempre: que alguien insista es en sí una señal.
     notificarIrisLead(lead);
   }
   return json({ ok: true });
@@ -480,6 +485,58 @@ function correoResultado(lead) {
     replyTo: CONFIG.IRIS_EMAIL,
     subject: 'Tu resultado',
     htmlBody: plantilla(cuerpo, lead.email)
+  });
+}
+
+/**
+ * ACUSE DE RECIBO, DISTINTO SEGÚN DE DÓNDE VENGA.
+ *
+ * El que se apunta a la lista de espera o a un curso no recibía NADA. Se avisaba
+ * a Iris y a la persona se le dejaba en silencio, mirando un formulario que le
+ * había dicho «listo» y ya. En un lanzamiento eso es lo peor que puede pasar:
+ * la persona no tiene ni una prueba de que se apuntó, así que a los tres días
+ * no se acuerda, y si le llega el correo de apertura le suena a publicidad de
+ * alguien a quien no le dio permiso.
+ *
+ * Y NO es el mismo correo para los dos. Quien pide la sinergia entra en la
+ * secuencia de cinco días y lo primero que recibe es su resultado; a ése no hay
+ * que darle la bienvenida dos veces. Quien reserva su precio en la membresía
+ * necesita que le confirmen exactamente qué ha reservado y cuándo va a saber
+ * algo. Y quien se apunta a un curso, en qué fecha es.
+ *
+ * Son tres situaciones distintas y mandar el mismo «gracias por suscribirte» a
+ * las tres es la manera más rápida de que esto parezca un boletín automático en
+ * vez de la consulta de una persona.
+ */
+function acuseDeRecibo(lead) {
+  var textos = {
+    membresia: {
+      asunto: 'Tu sitio está guardado',
+      cuerpo:
+        '<p>Hola {nombre},</p>' +
+        '<p>Ya tienes tu sitio en la lista. <b>Hoy no se te cobra nada.</b></p>' +
+        '<p>La comunidad abre el <b>7 de noviembre</b> y entra con diez personas. ' +
+        'Las diez primeras se quedan con el precio de lanzamiento mientras sigan dentro, ' +
+        'y tú estás en esa lista.</p>' +
+        '<p>Te escribo yo cuando abra, con tu precio guardado. No tienes que hacer nada más.</p>'
+    },
+    curso: {
+      asunto: 'Apuntada al curso',
+      cuerpo:
+        '<p>Hola {nombre},</p>' +
+        '<p>Te tengo apuntada. Antes del curso te escribo con la hora, el sitio y lo que tienes que llevar.</p>' +
+        '<p>Si te surge cualquier duda, contesta a este correo: lo leo yo.</p>'
+    }
+  };
+  var t = textos[lead.origen];
+  if (!t) return; // Un origen nuevo no manda nada hasta que se le escriba su texto.
+
+  MailApp.sendEmail({
+    to: lead.email,
+    name: 'Iris Soares',
+    replyTo: CONFIG.IRIS_EMAIL,
+    subject: t.asunto,
+    htmlBody: plantilla(t.cuerpo.replace(/{nombre}/g, primerNombre(lead.nombre)), lead.email)
   });
 }
 

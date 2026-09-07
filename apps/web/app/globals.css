@@ -2890,6 +2890,55 @@ body[data-nav-claro='si'] .sello-color {
   text-transform: uppercase;
   color: var(--acento);
 }
+
+/*
+ * LAS DIEZ PRIMERAS.
+ *
+ * Es el rótulo que va donde estaba «Precio de lista de espera», y va bastante
+ * más alto: el rótulo anterior era una etiqueta administrativa —decía en qué
+ * pantalla estás— y éste es el motivo por el que el precio es ése. Se lee antes
+ * que la cifra, no después.
+ *
+ * Aun así no compite con los 33 €, que siguen midiendo hasta 104 píxeles. Este
+ * bloque tiene una sola cosa que gritar, y es el número; esto es la razón, y la
+ * razón se lee, no se grita.
+ *
+ * El punto delante no es un adorno: sin él, una línea suelta encima de una
+ * cifra enorme se lee como el pie de lo de arriba en vez de como la entrada de
+ * lo de abajo.
+ */
+.pv-plazas {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: clamp(14px, 1.5vw, 17px);
+  line-height: 1.3;
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.01em;
+  color: var(--acento);
+}
+.pv-plazas::before {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  /* Late despacio: es una plaza que se puede acabar, no una alarma. */
+  animation: pv-late 2.6s ease-in-out infinite;
+}
+.pv-plazas b {
+  font-weight: 600;
+  /* Las cifras del número de plazas, alineadas con las mayúsculas de al lado. */
+  font-variant-numeric: lining-nums;
+}
+@keyframes pv-late {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-plazas::before { animation: none; }
+}
 .pv-cifra {
   display: flex;
   align-items: baseline;
