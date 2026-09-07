@@ -77,6 +77,10 @@ export const COPY = {
     ch_sum: 'Sesión reservada: {d} a las {h} (hora española), por videollamada.',
     ch_conf: 'Te acabo de enviar la invitación a {e}. Ábrela y se te guarda en el calendario. Iris ya la tiene en el suyo.',
     ch_err: 'Se me ha caído la conexión al enviar la invitación. Escribe a irissoaresoficial@gmail.com con tu día y hora y lo dejamos cerrado.',
+    /* Se ha guardado la reserva pero la invitación no ha salido todavía. Ni se
+       promete un correo que no ha salido, ni se le dice a alguien que se ha
+       caído todo cuando su cita está apuntada: las dos cosas son mentira. */
+    ch_apuntado: 'Lo tengo apuntado: {d} a las {h}. La invitación puede tardar un poco en llegarte; si en un rato no la ves, escribe a irissoaresoficial@gmail.com y Iris te la manda.',
     ch_taken: 'Vaya, ese hueco se acaba de ocupar mientras hablábamos. Elige otro día y lo cerramos.',
   },
   pt: {
@@ -151,6 +155,7 @@ export const COPY = {
     ch_sum: 'Sessão marcada: {d} às {h} (hora de Espanha), por videochamada.',
     ch_conf: 'Acabei de enviar o convite para {e}. Abre-o e fica guardado no teu calendário. A Iris já o tem no dela.',
     ch_err: 'Caiu-me a ligação ao enviar o convite. Escreve para irissoaresoficial@gmail.com com o teu dia e hora e fica tratado.',
+    ch_apuntado: 'Já está apontado: {d} às {h}. O convite pode demorar um pouco a chegar; se daqui a um bocado não o vires, escreve para irissoaresoficial@gmail.com e a Iris envia-to.',
     ch_taken: 'Esse horário acabou de ficar ocupado enquanto falávamos. Escolhe outro dia e fechamos.',
   },
   en: {
@@ -225,6 +230,7 @@ export const COPY = {
     ch_sum: 'Session booked: {d} at {h} (Spanish time), over video call.',
     ch_conf: 'I have just sent the invite to {e}. Open it and it saves to your calendar. Iris already has it in hers.',
     ch_err: 'My connection dropped while sending the invite. Email irissoaresoficial@gmail.com with your day and time and we will get it confirmed.',
+    ch_apuntado: 'You are down for {d} at {h}. The invite may take a little while to arrive; if you do not see it soon, email irissoaresoficial@gmail.com and Iris will send it over.',
     ch_taken: 'That slot just got taken while we were talking. Pick another day and we will lock it in.',
   },
 } as const;

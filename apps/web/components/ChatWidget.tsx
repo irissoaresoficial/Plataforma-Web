@@ -320,6 +320,24 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
       setTyping(false);
 
       if (out?.ok) {
+        /*
+         * GUARDADA SÍ, CONFIRMADA TODAVÍA NO.
+         *
+         * El servidor avisa con `sin_confirmar` cuando la reserva ha quedado
+         * apuntada pero Google no ha contestado a tiempo. Es un caso real y
+         * corriente: crear el evento y mandar los dos correos tarda, y la
+         * invitación acaba llegando minutos más tarde.
+         *
+         * Aquí no se puede decir «te acabo de enviar la invitación», porque
+         * puede que todavía no haya salido. Y tampoco «se me ha caído la
+         * conexión», porque la cita está apuntada y esa persona a lo mejor
+         * tiene el correo ya delante — que es exactamente lo que pasó. Se dice
+         * lo que ha ocurrido de verdad.
+         */
+        if (out.aviso === 'sin_confirmar') {
+          bot(t.ch_apuntado.replace('{d}', booking.dia || '').replace('{h}', booking.hora || ''), 300);
+          return;
+        }
         bot(t.ch_sum.replace('{d}', booking.dia || '').replace('{h}', booking.hora || ''), 260);
         setTimeout(() => bot(t.ch_conf.replace('{e}', booking.email || ''), 500), 2600);
         return;
