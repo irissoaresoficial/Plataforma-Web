@@ -112,8 +112,8 @@ var CONFIG = {
    * Cuando esté el dominio definitivo se cambian estas dos líneas y se vuelve a
    * implementar. Es lo único de aquí que habrá que tocar ese día.
    */
-  WEB_URL: 'https://plataforma-web-two.vercel.app',
-  COMUNIDAD_URL: 'https://plataforma-web-two.vercel.app/membresia',
+  WEB_URL: 'https://escueladesabiduria33.com',
+  COMUNIDAD_URL: 'https://escueladesabiduria33.com/membresia',
 
   // Pon false si quieres guardar los correos pero no enviar todavía la secuencia.
   SECUENCIA_ACTIVA: true,

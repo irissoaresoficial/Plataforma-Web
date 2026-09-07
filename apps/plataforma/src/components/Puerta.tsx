@@ -37,7 +37,7 @@ const CURVA = [0.16, 1, 0.3, 1] as const;
  * el dominio esté puesto, se cambia `NEXT_PUBLIC_WEB_URL` en Vercel y ya está:
  * ni tocar código ni acordarse de este archivo.
  */
-const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://plataforma-web-two.vercel.app";
+const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com";
 
 /** El ojo del campo de contraseña. Tachado cuando la contraseña está tapada. */
 function Ojo({ abierto }: { abierto: boolean }) {

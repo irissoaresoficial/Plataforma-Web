@@ -52,8 +52,26 @@ const texto = Instrument_Sans({
 });
 
 export const metadata: Metadata = {
+  /*
+   * LA DIRECCIÓN DE CASA, ESCRITA UNA VEZ.
+   *
+   * Sin `metadataBase`, Next resuelve las direcciones de las imágenes para
+   * compartir contra `localhost` al compilar. Eso no rompe la web —se ve
+   * perfecta— pero cuando alguien pega el enlace en WhatsApp o en Instagram, la
+   * vista previa sale sin imagen: el sitio que la lee va a buscarla a un
+   * localhost que no es el suyo. Es el fallo que sólo se descubre cuando ya lo
+   * ha compartido alguien.
+   *
+   * Sale de una variable para que las vistas previas de Vercel apunten a sí
+   * mismas en vez de al dominio de producción.
+   */
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://escueladesabiduria33.com'),
   title: 'Iris Soares · Numerología Transgeneracional',
   description: 'Deja de repetir una vida que no elegiste. Consultas, membresía y formación en el método IRIS.',
+  /* El dominio canónico. Con www y sin www sirviendo lo mismo, Google trata dos
+     direcciones como dos páginas iguales y reparte el crédito entre las dos.
+     Esto le dice cuál es la buena. */
+  alternates: { canonical: '/' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
