@@ -3491,6 +3491,48 @@ body[data-nav-claro='si'] .sello-color {
   background: var(--superficie);
   border-color: var(--acento);
 }
+/*
+   LOS TRES DESPLEGABLES DE LA FECHA DE NACIMIENTO.
+
+   Se estilan a mano porque un `select` sin tocar hereda la letra del sistema y
+   el gris de Windows, y en mitad de una conversación que va en Instrument Sans
+   sobre crema eso se lee como si esa parte estuviera rota. Lo que NO se toca es
+   la lista que se abre al pulsar: la pinta el sistema operativo, y en un móvil
+   esa ruleta es mejor que cualquier cosa que se pueda hacer aquí.
+
+   44 px de alto, como el resto de lo que se pulsa en el chat.
+*/
+.chat-nac {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 26px 0 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--tx);
+  background-color: var(--superficie);
+  border: 1px solid var(--linea-2);
+  border-radius: 12px;
+  cursor: pointer;
+  /* Sin esto, Safari le pinta su propio relieve gris y se sale del conjunto. */
+  -webkit-appearance: none;
+  appearance: none;
+  /* La flechita, dibujada aquí: al quitar la apariencia del sistema se va la
+     suya, y un desplegable sin flecha no parece un desplegable. */
+  background-image: linear-gradient(45deg, transparent 50%, var(--tx-3) 50%),
+    linear-gradient(135deg, var(--tx-3) 50%, transparent 50%);
+  background-position: calc(100% - 15px) center, calc(100% - 10px) center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  transition: border-color 0.25s ease;
+}
+.chat-nac:hover {
+  border-color: var(--acento-2);
+}
+.chat-nac:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
 .chat-enviar {
   width: 44px;
   height: 44px;

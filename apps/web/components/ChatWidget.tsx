@@ -98,6 +98,11 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   const [data, setData] = useState<Data>({});
   const [done, setDone] = useState(false);
   const [calOffset, setCalOffset] = useState(0);
+  /* Los tres trozos de la fecha de nacimiento, cada uno por su lado: hasta que
+     no están los tres no hay fecha que validar ni número que calcular. */
+  const [nacDia, setNacDia] = useState('');
+  const [nacMes, setNacMes] = useState('');
+  const [nacAnio, setNacAnio] = useState('');
   const [avail, setAvail] = useState<Availability | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -133,7 +138,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
 
   const flow = [
     { key: 'nombre' as const, ask: t.ch_a1, ph: t.ch_p1 },
-    { key: 'fecha' as const, ask: t.ch_a2, ph: t.ch_p2, first: true },
+    /* La fecha de nacimiento se ELIGE, no se teclea. Ver el bloque de los tres
+       desplegables más abajo para el porqué. */
+    { key: 'fecha' as const, ask: t.ch_a2, ph: t.ch_p2, first: true, nacimiento: true },
     { key: 'motivo' as const, ask: t.ch_a3, ph: t.ch_p3, sugerencias: PATRONES },
     { key: 'dia' as const, ask: t.ch_a4, calendar: true },
     { key: 'hora' as const, ask: t.ch_a5, options: true },
@@ -432,11 +439,39 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     cells.push({ label: String(d), value: free ? label : '', iso, free, sel: data.diaISO === iso });
   }
 
+  /*
+   * Los meses con nombre y no con número, que es de lo que va todo esto: en
+   * cuanto pone «marzo» ya no hay forma de confundirlo con el 4 de marzo.
+   * Salen del propio navegador en el idioma que toque, así que no hay tres
+   * listas que mantener a mano.
+   */
+  const NOMBRES_MES = Array.from({ length: 12 }, (_, i) =>
+    new Date(2000, i, 1).toLocaleDateString(loc, { month: 'long' }),
+  ).map((m) => m.charAt(0).toUpperCase() + m.slice(1));
+
+  /* Del año pasado hacia atrás, cien años. Del más nuevo al más viejo: hay
+     muchísima más gente en los años recientes y así llega antes. */
+  const esteAnio = new Date().getFullYear();
+  const anios = Array.from({ length: 100 }, (_, i) => esteAnio - i);
+
+  /*
+   * La fecha ya escrita, o cadena vacía si todavía no vale.
+   *
+   * Se comprueba con `arma`, que es el mismo que usa el lector de texto libre:
+   * así el 31 de febrero se cae por el mismo sitio, elija como elija la persona.
+   * Se manda con el mes en letra —«29 de marzo de 1996»— porque eso es lo que
+   * se va a ver en el globo del chat y en la ficha de Iris, y ahí no puede haber
+   * ninguna duda de cuál es el día y cuál el mes.
+   */
+  const nacISO = nacDia && nacMes && nacAnio ? arma(Number(nacDia), Number(nacMes), Number(nacAnio)) : null;
+  const nacListo = nacISO ? `${nacDia} de ${NOMBRES_MES[Number(nacMes) - 1].toLowerCase()} de ${nacAnio}` : '';
+
   const ocupado = typing || Boolean(escrito);
   const calOn = !ocupado && cur?.calendar;
+  const nacOn = !ocupado && cur?.nacimiento;
   const hourOptions = data.diaISO && avail?.[data.diaISO] ? avail[data.diaISO] : DEFAULT_HOURS;
   const opts = !ocupado && cur?.options ? hourOptions : [];
-  const typable = !done && cur && !cur.options && !cur.calendar;
+  const typable = !done && cur && !cur.options && !cur.calendar && !cur.nacimiento;
 
   const bubbleWrap = (me: boolean): React.CSSProperties => ({ display: 'flex', justifyContent: me ? 'flex-end' : 'flex-start' });
   const bubbleStyle = (me: boolean): React.CSSProperties => ({
@@ -637,6 +672,93 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
               ))}
             </div>
             <span style={{ fontSize: 10, lineHeight: 1.5, color: 'var(--tx-3)' }}>{t.ch_cal}</span>
+          </div>
+        )}
+
+        {/*
+            LA FECHA DE NACIMIENTO SE ELIGE. NO SE TECLEA.
+
+            Estaba como cuadro de texto libre con el ejemplo «dd / mm / aaaa», y
+            eso es pedirle a alguien que teclee ocho cifras y dos barras en el
+            móvil, de pie, para poder seguir. Cuesta, y cuesta justo en el
+            segundo paso: antes de que la persona se haya llevado nada.
+
+            Y hay un problema peor que el esfuerzo, que es la AMBIGÜEDAD. «03/04»
+            es el 3 de abril para quien lo escribe aquí y el 4 de marzo para
+            medio mundo. El lector de fechas de arriba adivina bien casi siempre
+            —y se queda— pero adivinar es lo que hay que hacer cuando ya no se
+            puede preguntar. Aquí sí se puede: con el mes escrito con letra no
+            hay nada que adivinar. Y si la fecha de nacimiento sale mal, TODO lo
+            que viene detrás sale mal, porque el número entero se calcula de ahí.
+
+            UN CALENDARIO AQUÍ SERÍA PEOR, y por eso no lo es. El calendario de
+            más abajo sirve para elegir un día de la semana que viene, a dos
+            clics. Para una fecha de nacimiento habría que retroceder trescientos
+            y pico meses de uno en uno. Tres desplegables se resuelven en tres
+            toques y el móvil los abre con su propia ruleta, que es lo que la
+            gente ya sabe usar.
+
+            El año va del más nuevo al más viejo: quien nació en 1996 llega antes
+            que quien nació en 1930, y hay muchísima más gente en los años
+            recientes.
+        */}
+        {nacOn && (
+          <div style={{ display: 'flex', gap: 7, padding: '0 16px 12px', flexShrink: 0, alignItems: 'stretch' }}>
+            <select
+              aria-label="Día de nacimiento"
+              value={nacDia}
+              onChange={(e) => setNacDia(e.target.value)}
+              className="chat-nac"
+              style={{ flex: '1 1 0' }}
+            >
+              <option value="">Día</option>
+              {Array.from({ length: 31 }, (_, i) => String(i + 1)).map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+
+            <select
+              aria-label="Mes de nacimiento"
+              value={nacMes}
+              onChange={(e) => setNacMes(e.target.value)}
+              className="chat-nac"
+              style={{ flex: '1.5 1 0' }}
+            >
+              <option value="">Mes</option>
+              {NOMBRES_MES.map((m, i) => (
+                <option key={m} value={String(i + 1)}>{m}</option>
+              ))}
+            </select>
+
+            <select
+              aria-label="Año de nacimiento"
+              value={nacAnio}
+              onChange={(e) => setNacAnio(e.target.value)}
+              className="chat-nac"
+              style={{ flex: '1.1 1 0' }}
+            >
+              <option value="">Año</option>
+              {anios.map((a) => (
+                <option key={a} value={String(a)}>{a}</option>
+              ))}
+            </select>
+
+            {/*
+                El botón sólo aparece cuando la fecha está entera Y existe. Un
+                botón siempre visible que a veces no hace nada es peor que uno
+                que aparece: quien lo pulsa dos veces sin respuesta da por hecho
+                que está roto y cierra el chat.
+            */}
+            <button
+              type="button"
+              disabled={!nacListo}
+              onClick={() => nacListo && submit(nacListo)}
+              aria-label="Confirmar la fecha"
+              className="chat-enviar"
+              style={{ flex: 'none', opacity: nacListo ? 1 : 0.4, cursor: nacListo ? 'pointer' : 'default' }}
+            >
+              →
+            </button>
           </div>
         )}
 
