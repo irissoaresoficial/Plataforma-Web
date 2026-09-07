@@ -99,7 +99,7 @@ export async function GET() {
 
   // Le preguntamos al script por los huecos libres: es la llamada más inofensiva
   // que existe y prueba de una vez la URL, la contraseña y el calendario.
-  let respuesta = '';
+  let respuestaCompleta = '';
   let datos: any = null;
   let estado = 0;
   try {
@@ -108,9 +108,23 @@ export async function GET() {
       signal: AbortSignal.timeout(20_000),
     });
     estado = r.status;
-    respuesta = (await r.text()).slice(0, 400);
+    /*
+     * EL CORTE VA DESPUÉS DE LEER, NO ANTES.
+     *
+     * Aquí se cortaba a 400 caracteres el texto ANTES de intentar leerlo como
+     * JSON. El calendario de Iris con varios días de huecos libres genera una
+     * respuesta más larga que eso, así que el corte caía a mitad de una
+     * palabra y `JSON.parse` fallaba siempre — con el script funcionando
+     * perfectamente. El diagnóstico decía «no está en el formato esperado»
+     * sobre una respuesta que sí lo estaba: el que estaba mal era yo, no Google.
+     *
+     * Ahora se analiza el texto entero, y el recorte a unos pocos caracteres
+     * sólo se usa más abajo, para el mensaje de error que se le enseña a
+     * alguien — ahí sí sobra ver el JSON entero.
+     */
+    respuestaCompleta = await r.text();
     try {
-      datos = JSON.parse(respuesta);
+      datos = JSON.parse(respuestaCompleta);
     } catch {}
   } catch (err) {
     pasos.push({
@@ -122,13 +136,13 @@ export async function GET() {
   }
 
   if (!datos) {
-    const pideLogin = /accounts\.google\.com|iniciar sesión|Sign in/i.test(respuesta);
+    const pideLogin = /accounts\.google\.com|iniciar sesión|Sign in/i.test(respuestaCompleta);
     pasos.push({
       paso: 'Llamar al Apps Script',
       ok: false,
       detalle: pideLogin
         ? 'Google devuelve una pantalla de inicio de sesión: el despliegue no está abierto a todo el mundo.'
-        : `Google contestó ${estado} pero no en el formato esperado. Empieza así: ${respuesta.slice(0, 120)}`,
+        : `Google contestó ${estado} pero no en el formato esperado. Empieza así: ${respuestaCompleta.slice(0, 120)}`,
     });
     return NextResponse.json({
       listo: false,
