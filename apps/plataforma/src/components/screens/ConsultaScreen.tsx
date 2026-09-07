@@ -2,6 +2,8 @@
 import { motion } from "framer-motion";
 import { css } from "@/lib/css";
 import Copia from "../Copia";
+import Confirmar from "../Confirmar";
+import Despacho from "../despacho/Despacho";
 import { botonPrincipal } from "@/lib/ui";
 import { useApp, valida } from "@/lib/app-context";
 import { analizaNombre, esCifra, esVocal } from "@/lib/engine";
@@ -93,7 +95,7 @@ export default function ConsultaScreen() {
             />
             <div style={css("text-align:left;")}>
               <div style={css("font-family:var(--font-display);font-weight:500;font-size:var(--t-read);letter-spacing:-.008em;color:var(--text);line-height:1.15;")}>Escuela de Sabiduría 33</div>
-              <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-top:1px;")}>Kábala · Feng Shui · Numerología</div>
+              <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-top:1px;")}>Kábala · Numerología</div>
             </div>
           </div>
           <h1 style={css("font-size:clamp(28px,3.8vw,40px);line-height:1.08;letter-spacing:-.018em;color:var(--text);margin:0 0 var(--s3);")}>
@@ -222,6 +224,14 @@ botonPrincipal(listo) + "width:100%;margin-top:var(--s5);"
           </motion.section>
 
           <div data-entrada-lado="" data-cascada="" style={css("display:flex;flex-direction:column;gap:var(--gap);")}>
+            {/* El despacho va lo primero de la columna. Esta pantalla no tiene
+             * cabecera, así que es la única puerta a la agenda, los clientes y
+             * las facturas; y lo que trae —«Hoy tienes 3 sesiones»— es lo
+             * primero que hace falta saber al abrir la plataforma. El desglose
+             * de las letras sigue debajo: sólo dice algo cuando ya se está
+             * escribiendo, y para entonces la vista está en el formulario. */}
+            <Despacho />
+
             <div style={css(TARJETA)}>
               <div style={css(ROTULO + "margin-bottom:var(--s4);")}>Valor del nombre</div>
               {n.palabras.length === 0 ? (
@@ -304,13 +314,32 @@ botonPrincipal(listo) + "width:100%;margin-top:var(--s5);"
                           {h.f.tipo === "empresa" ? `Empresa · valor del nombre ${h.corazon}` : `${h.fecha} · corazón ${h.corazon}`}
                         </div>
                       </button>
-                      <button
-                        onClick={() => borrar(h)}
-                        title="Eliminar"
-                        style={css("flex:none;background:none;border:1px solid var(--red-border);color:var(--red);border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:var(--t-body);line-height:1;")}
+                      {/*
+                          Borrar un estudio pregunta, y el área de pulsado sube
+                          de 26 a 40 px.
+
+                          Las dos cosas por lo mismo: tres centímetros más abajo
+                          esta misma tarjeta avisa de que estos estudios «viven
+                          sólo en este navegador» y de que la copia «es lo único
+                          que queda». Una pantalla que sabe que el dato es
+                          frágil y aun así lo borra a la primera se está
+                          contradiciendo. Y con un dedo en una tableta, 26 px
+                          pegados al nombre que quieres abrir es un accidente
+                          esperando a ocurrir.
+
+                          La pregunta se abre hacia la izquierda porque el botón
+                          está pegado al borde derecho de la tarjeta.
+                      */}
+                      <Confirmar
+                        titulo={`Quitar el estudio de ${h.nombre}`}
+                        alineado="derecha"
+                        estilo="flex:none;display:grid;place-items:center;background:none;border:1px solid var(--red-border);color:var(--red);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:var(--t-title);line-height:1;"
+                        pregunta={`¿Quitar el estudio de ${h.nombre}? No se puede recuperar: sólo estaba en este navegador.`}
+                        confirmar="Sí, quitarlo"
+                        alConfirmar={() => borrar(h)}
                       >
                         ×
-                      </button>
+                      </Confirmar>
                     </div>
                   ))}
                 </div>

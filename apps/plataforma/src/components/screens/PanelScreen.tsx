@@ -1,4 +1,6 @@
 "use client";
+import { useEffect } from "react";
+import { useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { titulo } from "@/lib/format";
 import { useApp, type Seccion } from "@/lib/app-context";
@@ -28,6 +30,32 @@ const SECCIONES: Array<{ k: Seccion; label: string; pie: string }> = [
 
 export default function PanelScreen() {
   const { r, re, seccion, disciplina } = useApp();
+  const quieto = useReducedMotion();
+
+  /*
+   * AL CAMBIAR DE SECCIÓN, LA VISTA VUELVE ARRIBA.
+   *
+   * Cambiar de sección era sólo cambiar un estado: la página se quedaba a la
+   * altura que estuviera. Estando a 3.000 píxeles dentro de «Estructura» —que
+   * mide casi 4.900, cinco pantallas y media— y pulsando «Ciclos vitales», se
+   * aparecía a 2.100 dentro de Ciclos: en mitad de un párrafo, con el nombre de
+   * la persona, el título de la sección y su explicación fuera de pantalla por
+   * arriba.
+   *
+   * Es la maniobra que más se repite en una consulta, y el lateral decía
+   * «Ciclos vitales» mientras la pantalla no lo confirmaba: había que subir a
+   * ciegas para comprobar que se había llegado donde se quería.
+   *
+   * Va suave porque encadena con la animación de entrada del contenido, y de
+   * golpe si el sistema pide menos movimiento.
+   *
+   * El efecto va antes del `return null` de abajo a propósito: un hook no puede
+   * saltarse en unos renders y en otros no.
+   */
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: quieto ? "auto" : "smooth" });
+  }, [seccion, disciplina, quieto]);
+
   // Un estudio de empresa se lee sólo del nombre: no tiene fecha, ni
   // estructura, ni ciclos, así que tampoco tiene las siete secciones.
   const empresa = !!re;
@@ -41,6 +69,10 @@ export default function PanelScreen() {
     { label: "Estructura", valor: r.estructura.tipo },
     { label: "Imagen del alma", valor: r.imagenAlma.numero },
   ] : [];
+
+  /* La tira de cifras del banner sale en todas las secciones de Kábala menos en
+     el Resumen, donde las mismas seis ya están en las tarjetas de debajo. */
+  const mostrarTira = disciplina === "kabala" && seccion !== "resumen" && !empresa;
 
   return (
     <main style={css("max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);")}>
@@ -83,15 +115,28 @@ export default function PanelScreen() {
           </div>
         </div>
 
-        {/* En el resumen estas mismas cifras ya salen en las tarjetas, así que
-         * la tira sólo aparece en las demás secciones. */}
+        {/*
+            En el resumen estas mismas cifras ya salen en las tarjetas, así que
+            la tira sólo aparece en las demás secciones.
+
+            Y NO SE APAGA CON UN `display:none` EN LÍNEA: se deja de dibujar.
+
+            Con el estilo en línea, la regla de móvil —que necesita un
+            `display:grid !important` para colocar las cifras en tres columnas—
+            se lo pisaba, y en el Resumen salían las seis cifras DOS VECES: en
+            la tira y en las tarjetas de justo debajo. 138 píxeles repetidos en
+            una pantalla de 844, y ninguna forma de arreglarlo desde la hoja de
+            estilos sin quitarle el `!important` a la única regla que lo
+            necesita.
+
+            Quien decide si esto existe es React; quien decide cómo se coloca es
+            el CSS. Cuando los dos discuten por la misma propiedad, gana el que
+            grita más fuerte, y eso nunca es un buen sistema.
+        */}
+        {mostrarTira && (
         <div
           data-tira-cifras=""
-          style={css(
-            "display:" +
-              (disciplina !== "kabala" || seccion === "resumen" || empresa ? "none" : "flex") +
-              ";position:relative;z-index:1;flex-wrap:wrap;margin-left:auto;"
-          )}
+          style={css("position:relative;z-index:1;display:flex;flex-wrap:wrap;margin-left:auto;")}
         >
           {resumen.map((k, i) => (
             <div
@@ -106,6 +151,7 @@ export default function PanelScreen() {
             </div>
           ))}
         </div>
+        )}
       </div>
 
 
@@ -125,12 +171,6 @@ export default function PanelScreen() {
        * así la animación de entrada se reproduce en cada salto y no sólo la
        * primera vez. */}
       <div key={disciplina + seccion} style={css("animation:es33-alza .5s cubic-bezier(.22,1,.36,1) both;")}>
-        {disciplina === "fengshui" && (
-          <Pendiente
-            titulo="Feng Shui"
-            pie="El estudio del espacio: cómo la casa y la orientación acompañan lo que dice la carta. Todavía no está desarrollado."
-          />
-        )}
         {disciplina === "numerologia" && (
           <Pendiente
             titulo="Numerología"

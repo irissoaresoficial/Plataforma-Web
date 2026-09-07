@@ -5,7 +5,22 @@ import { analizaNombre, calcula, calculaEmpresa, comparaPareja, ficha as fichaDe
 import { cargaHistorial, guardaHistorial, cargaEdits, guardaEdits, cargaActual, guardaActual, type HistItem, type Edits } from "./storage";
 import { descargaRespaldo, importaRespaldo, type ResultadoImportar } from "./respaldo";
 
-export type View = "inicio" | "panel" | "estudio" | "pareja";
+/**
+ * LAS DOS MITADES DE LA PLATAFORMA
+ *
+ * `inicio`, `panel`, `estudio` y `pareja` son EL ESTUDIO: los cuatro pasos de
+ * leerle la carta a alguien, y los cuatro necesitan que haya un estudio abierto.
+ *
+ * `agenda`, `clientes` y `facturas` son EL DESPACHO: lo que Iris hace cuando no
+ * está leyendo una carta. No cuelgan de un estudio ni de una disciplina —una
+ * factura no es una parte de Kábala— así que van al mismo nivel y se puede
+ * entrar en ellas sin haber calculado nada.
+ */
+export type View = "inicio" | "panel" | "estudio" | "pareja" | "agenda" | "clientes" | "facturas";
+
+/** Las que sólo tienen sentido con un estudio abierto. Las demás se abren
+ *  siempre: entrar a mirar la agenda no puede exigir calcular una carta. */
+export const VISTAS_DE_ESTUDIO: View[] = ["panel", "estudio", "pareja"];
 
 /**
  * Cada pantalla tiene su dirección. La consulta es la raíz; las demás cuelgan
@@ -18,13 +33,44 @@ const RUTA: Record<View, string> = {
   panel: "/panel",
   estudio: "/estudio",
   pareja: "/pareja",
+  agenda: "/agenda",
+  clientes: "/clientes",
+  facturas: "/facturas",
 };
-const VISTA: Record<string, View> = { "/": "inicio", "/panel": "panel", "/estudio": "estudio", "/pareja": "pareja" };
+const VISTA: Record<string, View> = {
+  "/": "inicio",
+  "/panel": "panel",
+  "/estudio": "estudio",
+  "/pareja": "pareja",
+  "/agenda": "agenda",
+  "/clientes": "clientes",
+  "/facturas": "facturas",
+};
+/**
+ * Los nombres de las pantallas, escritos una sola vez.
+ *
+ * Los usan la tira de pestañas de la cabecera y el cajón del móvil, que son la
+ * misma navegación en dos anchos. Si cada uno tuviera su lista acabarían
+ * discrepando, que es justo lo que ya pasó con la lateral y el cajón.
+ */
+export type Pestana = { k: View; label: string; grupo: "estudio" | "despacho" };
+export const PESTANAS: Pestana[] = [
+  { k: "inicio", label: "Consulta", grupo: "estudio" },
+  { k: "panel", label: "Panel", grupo: "estudio" },
+  { k: "estudio", label: "Estudio", grupo: "estudio" },
+  { k: "agenda", label: "Agenda", grupo: "despacho" },
+  { k: "clientes", label: "Clientes", grupo: "despacho" },
+  { k: "facturas", label: "Facturas", grupo: "despacho" },
+];
+
 export type Seccion = "resumen" | "arbol" | "numeros" | "estructura" | "alma" | "cuentas" | "ciclos";
 
-/** Las tres disciplinas de la escuela. Kábala es la que está construida; las
- *  otras dos existen ya en la navegación y avisan de que están por hacer. */
-export type Disciplina = "kabala" | "fengshui" | "numerologia";
+/** Las disciplinas de la escuela. Kábala es la que está construida; Numerología
+ *  existe ya en la navegación y avisa de que está por hacer.
+ *
+ *  Feng Shui estaba aquí y se ha quitado: era un hueco vacío en la navegación y
+ *  el dueño ha pedido retirarlo hasta que haya algo que enseñar. */
+export type Disciplina = "kabala" | "numerologia";
 /** Un estudio se hace de una persona o de una empresa. La empresa no tiene
  *  apellidos, ni género, ni fecha: se lee entera de su nombre. */
 export type Tipo = "persona" | "empresa";
@@ -92,6 +138,15 @@ type Ctx = {
   setLateral: (v: boolean) => void;
   setDisciplina: (d: Disciplina) => void;
   setSeccion: (s: Seccion) => void;
+  /**
+   * A quién se está mirando en Clientes.
+   *
+   * Vive aquí y no dentro de la pantalla porque se llega desde fuera: pulsar
+   * un nombre en la agenda o en una factura abre su ficha, y para eso la
+   * pantalla de destino tiene que saber a quién antes de montarse.
+   */
+  clienteAbierto: string | null;
+  setClienteAbierto: (id: string | null) => void;
   f: FormState;
   set: (k: keyof FormState, v: string) => void;
   r: Resultado | null;
@@ -138,6 +193,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setView = useCallback((v: View) => router.push(RUTA[v]), [router]);
   const [seccion, setSeccion] = useState<Seccion>("resumen");
   const [disciplina, setDisciplina] = useState<Disciplina>("kabala");
+  const [clienteAbierto, setClienteAbierto] = useState<string | null>(null);
   // La columna de la izquierda se pliega para leer el estudio a todo lo ancho.
   const [lateral, setLateral] = useState(true);
   const [f, setF] = useState<FormState>(FORM_VACIO);
@@ -321,6 +377,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       lateral,
       setLateral,
       setSeccion,
+      clienteAbierto,
+      setClienteAbierto,
       f,
       set,
       r,
@@ -350,7 +408,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       marca: MARCA,
       anioUniversal,
     }),
-    [view, setView, seccion, disciplina, lateral, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
+    [view, setView, seccion, disciplina, lateral, clienteAbierto, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
   );
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;

@@ -10,9 +10,10 @@ import BloqueView from "../estudio/BloqueView";
 import HojaCliente from "../estudio/HojaCliente";
 import HojaClienteEmpresa from "../estudio/HojaClienteEmpresa";
 import styles from "../estudio/Estudio.module.css";
+import Confirmar from "../Confirmar";
 
 export default function EstudioScreen() {
-  const { r, re, marca, txt, guardaEdit, restablecer } = useApp();
+  const { r, re, marca, txt, guardaEdit, restablecer, edits, id } = useApp();
   const capitulos = useMemo(() => (r ? construyeCapitulos(r) : re ? construyeCapitulosEmpresa(re) : []), [r, re]);
   // Dos documentos distintos con el mismo botón de imprimir: el estudio
   // entero, que es la herramienta de Iris, y la hoja que se lleva el cliente.
@@ -22,6 +23,12 @@ export default function EstudioScreen() {
   const hoja = modo === "hoja";
   const empresa = !!re;
   const nombreTexto = (r ?? re!).nombre.texto;
+  /* Cuántos párrafos ha reescrito Iris en ESTE estudio. Se cuenta para poder
+     decírselo antes de borrarlos: la diferencia entre «¿estás seguro?» y «vas a
+     perder veinte párrafos» es la diferencia entre una pregunta que se contesta
+     que sí sin leerla y una que se piensa. Y si no ha tocado nada, el botón de
+     descartar ni siquiera aparece: no hay nada que descartar. */
+  const misCambios = id && edits[id] ? Object.keys(edits[id]).length : 0;
 
   return (
     <div className={styles.wrap}>
@@ -63,14 +70,25 @@ export default function EstudioScreen() {
         <span className={styles.hint} style={css("font-size:var(--t-body);color:var(--text-4);")}>
           {hoja ? "Una página, sin fórmulas ni claves: lo que se lleva la persona." : "Haz clic en cualquier párrafo para reescribirlo con tus palabras."}
         </span>
-        <div style={css("margin-left:auto;display:flex;gap:9px;")}>
-          {!hoja && (
-            <button
-              onClick={restablecer}
-              style={css(BOTON_NORMAL)}
+        {/* Las acciones envuelven de verdad en el móvil.
+            Con `margin-left:auto` los dos botones se pegaban al borde derecho y
+            en una pantalla de 390 px el documento se podía desplazar de lado:
+            «Exportar PDF» quedaba medio fuera. La barra sigue empujando a la
+            derecha cuando hay sitio, pero por debajo de 700 px los dos botones
+            pasan a ocupar el renglón entero, uno al lado del otro. */}
+        <div className={styles.acciones}>
+          {/* El botón sólo existe si hay algo que descartar, y dice de quién es
+              lo que se pierde. Decía «Restablecer textos», que suena a devolver
+              algo a su sitio; lo que hace es tirar el trabajo de Iris. */}
+          {!hoja && misCambios > 0 && (
+            <Confirmar
+              estilo={BOTON_NORMAL}
+              pregunta={`Vas a descartar ${misCambios === 1 ? "el párrafo que has reescrito" : `los ${misCambios} párrafos que has reescrito`} de ${titulo(nombreTexto)} y volver al texto de fábrica. Esto no se puede deshacer.`}
+              confirmar="Sí, descartar"
+              alConfirmar={restablecer}
             >
-              Restablecer textos
-            </button>
+              Descartar mis cambios
+            </Confirmar>
           )}
           <button
             onClick={() => imprimir()}

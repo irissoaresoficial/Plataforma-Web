@@ -2,29 +2,24 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { useApp, type View } from "@/lib/app-context";
+import { useApp, PESTANAS, VISTAS_DE_ESTUDIO } from "@/lib/app-context";
 import { NavDisciplinas } from "./Sidebar";
-
-const VISTAS: Array<{ k: View; label: string }> = [
-  { k: "inicio", label: "Consulta" },
-  { k: "panel", label: "Panel" },
-  { k: "estudio", label: "Estudio" },
-];
 
 /**
  * El menú de móvil y tableta en vertical.
  *
  * Ahí no cabe la columna de la izquierda, y la tira de pestañas que la
- * sustituía metía en la misma fila las tres disciplinas y las siete partes de
+ * sustituía metía en la misma fila las disciplinas y las siete partes de
  * Kábala: diez pestañas desplazándose en horizontal, sin jerarquía y sin que
  * se viera dónde acababa una cosa y empezaba la otra. Con el botón, la
- * navegación entera cabe de una vez y se lee como lo que es — tres
- * disciplinas, y dentro de una, sus partes.
+ * navegación entera cabe de una vez y se lee como lo que es — las disciplinas
+ * y, dentro de una, sus partes.
  *
- * Es la misma lista que la columna de escritorio: <NavDisciplinas />.
+ * Es la misma lista que la columna de escritorio: <NavDisciplinas />, y las
+ * mismas pestañas que la cabecera: PESTANAS.
  */
 export default function Menu({ abierto, cerrar }: { abierto: boolean; cerrar: () => void }) {
-  const { view, setView, r } = useApp();
+  const { view, setView, r, re } = useApp();
   const quieto = useReducedMotion();
 
   // Con el cajón abierto la página de debajo no se desplaza, y la tecla de
@@ -73,7 +68,7 @@ export default function Menu({ abierto, cerrar }: { abierto: boolean; cerrar: ()
               />
               <div style={css("min-width:0;")}>
                 <div style={css("font-family:var(--font-display);font-weight:500;font-size:var(--t-body);color:var(--text);line-height:1.15;")}>Escuela de Sabiduría 33</div>
-                <div style={css("font-size:var(--t-micro);color:var(--text-4);")}>Kábala · Feng Shui · Numerología</div>
+                <div style={css("font-size:var(--t-micro);color:var(--text-4);")}>Kábala · Numerología</div>
               </div>
               <button
                 onClick={cerrar}
@@ -86,39 +81,51 @@ export default function Menu({ abierto, cerrar }: { abierto: boolean; cerrar: ()
               </button>
             </div>
 
-            {/* Consulta, panel y estudio también viven aquí: en la cabecera
-             * estrecha ocupaban una fila entera para ellas solas. */}
-            <div style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 8%, transparent);border-radius:980px;padding:3px;")}>
-              {VISTAS.map((v) => {
-                const on = view === v.k;
-                const bloqueado = v.k !== "inicio" && !r;
-                return (
-                  <button
-                    key={v.k}
-                    onClick={() => {
-                      if (bloqueado) return;
-                      setView(v.k);
-                      cerrar();
-                    }}
-                    style={css(
-                      "flex:1;padding:8px 6px;border-radius:980px;border:none;white-space:nowrap;font-size:var(--t-body);font-weight:590;cursor:" +
-                        (bloqueado ? "not-allowed" : "pointer") +
-                        ";background:" +
-                        (on ? "var(--surface-solid)" : "transparent") +
-                        ";box-shadow:" +
-                        (on ? "0 2px 6px rgba(0,0,0,.09)" : "none") +
-                        ";color:" +
-                        (on ? "var(--text)" : bloqueado ? "var(--text-4)" : "var(--text-3)") +
-                        ";"
-                    )}
-                  >
-                    {v.label}
-                  </button>
-                );
-              })}
-            </div>
+            {/* Las pestañas de la cabecera también viven aquí: en la cabecera
+             * estrecha ocupaban una fila entera para ellas solas.
+             *
+             * Van en dos pistas y no en una como arriba porque en 300 px de
+             * ancho seis pestañas no caben en un renglón, y apiladas sin
+             * separar no se vería que son dos cosas distintas. El rótulo de
+             * cada grupo hace de separación. */}
+            {(["estudio", "despacho"] as const).map((grupo) => (
+              <div key={grupo} style={css("display:flex;flex-direction:column;gap:var(--s2);")}>
+                <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-4);padding:0 8px;")}>
+                  {grupo === "estudio" ? "El estudio" : "El despacho"}
+                </div>
+                <div style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 8%, transparent);border-radius:980px;padding:3px;")}>
+                  {PESTANAS.filter((v) => v.grupo === grupo).map((v) => {
+                    const on = view === v.k || (v.k === "panel" && view === "pareja");
+                    const bloqueado = VISTAS_DE_ESTUDIO.includes(v.k) && !r && !re;
+                    return (
+                      <button
+                        key={v.k}
+                        onClick={() => {
+                          if (bloqueado) return;
+                          setView(v.k);
+                          cerrar();
+                        }}
+                        style={css(
+                          "flex:1;padding:8px 6px;border-radius:980px;border:none;white-space:nowrap;font-size:var(--t-body);font-weight:590;cursor:" +
+                            (bloqueado ? "not-allowed" : "pointer") +
+                            ";background:" +
+                            (on ? "var(--surface-solid)" : "transparent") +
+                            ";box-shadow:" +
+                            (on ? "0 2px 6px rgba(0,0,0,.09)" : "none") +
+                            ";color:" +
+                            (on ? "var(--text)" : bloqueado ? "var(--text-4)" : "var(--text-3)") +
+                            ";"
+                        )}
+                      >
+                        {v.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
 
-            {r && <NavDisciplinas alCambiar={cerrar} />}
+            {(r || re) && <NavDisciplinas alCambiar={cerrar} />}
           </motion.aside>
         </motion.div>
       )}

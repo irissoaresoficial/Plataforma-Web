@@ -110,6 +110,24 @@ botonPrincipal(listo) + "margin-top:20px;"
         >
           Comparar
         </button>
+        {/*
+            EL BOTÓN GRIS AHORA DICE POR QUÉ ESTÁ GRIS.
+
+            `errP` se calculaba arriba y no se pintaba en ninguna parte: con el
+            formulario a medias, el botón se quedaba apagado y en la pantalla no
+            aparecía ni una palabra. Desde fuera eso no se distingue de una
+            herramienta colgada, y quien lo ve se queda mirando sin saber si le
+            falta un dato o si hay que recargar.
+
+            La pantalla de entrada sí lo hace bien —«Falta el nombre.», «El día
+            debe estar entre 1 y 31.»—. Aquí faltaba enseñar el mensaje que ya
+            estaba escrito.
+        */}
+        {errP && (
+          <p style={css("margin:var(--s3) 0 0;font-size:var(--t-body);color:var(--text-3);")} role="status">
+            {errP}
+          </p>
+        )}
       </section>
 
       {comp && pr && (

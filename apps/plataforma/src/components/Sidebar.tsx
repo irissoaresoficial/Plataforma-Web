@@ -9,7 +9,6 @@ import {
   IcoCiclos,
   IcoCuentas,
   IcoEstructura,
-  IcoFengShui,
   IcoNumerologia,
   IcoNumeros,
   IcoPlegar,
@@ -32,10 +31,10 @@ const KABALA: Item[] = [
   { k: "ciclos", label: "Ciclos vitales", Ico: IcoCiclos },
 ];
 
-/** Las tres disciplinas de la escuela, en el orden en que se estudian. */
+/** Las disciplinas de la escuela, en el orden en que se estudian. Feng Shui
+ *  estaba aquí en tercer lugar y se ha retirado: no había nada detrás. */
 export const DISCIPLINAS: Array<{ k: Disciplina; label: string; Ico: Ico }> = [
   { k: "kabala", label: "Kábala", Ico: IcoArbol },
-  { k: "fengshui", label: "Feng Shui", Ico: IcoFengShui },
   { k: "numerologia", label: "Numerología", Ico: IcoNumerologia },
 ];
 
@@ -44,6 +43,10 @@ export const DISCIPLINAS: Array<{ k: Disciplina; label: string; Ico: Ico }> = [
  * siete partes. Es la misma lista en los dos sitios donde aparece — la columna
  * de la izquierda en pantalla ancha y el cajón del menú en móvil y tableta —
  * para que no haya dos navegaciones que mantener y que puedan discrepar.
+ *
+ * Aquí sólo va el estudio. La agenda, los clientes y las facturas no son partes
+ * de una disciplina —una factura no cuelga de Kábala— así que viven arriba, en
+ * la tira de pestañas, al mismo nivel que la consulta y el panel.
  *
  * `alCambiar` lo usa el cajón para cerrarse en cuanto se elige algo.
  */
@@ -115,7 +118,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
     <nav style={css("display:flex;flex-direction:column;gap:var(--s5);")}>
       {DISCIPLINAS.map((d) => {
         const dentro = disciplina === d.k;
-        // Sólo Kábala tiene partes por ahora; las otras dos no llevan flecha
+        // Sólo Kábala tiene partes por ahora; Numerología no lleva flecha
         // porque no hay nada que desplegar todavía.
         const partes = d.k === "kabala" ? partesKabala : [];
         const abierta = partes.length > 0 && (compacta || abiertas.includes(d.k));

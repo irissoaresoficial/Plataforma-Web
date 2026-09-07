@@ -66,9 +66,21 @@ export default function ArbolVida({
           strokeDasharray="7 9"
           initial={vivo ? { opacity: 0 } : false}
           animate={vivo ? { opacity: 1, strokeDashoffset: [0, -32] } : { opacity: 1 }}
+          /*
+           * Las discontinuas marchan dos vueltas y se paran.
+           *
+           * Iban con `repeat: Infinity`: a los diez segundos de haber entrado en
+           * la sección seguían avanzando, y siguen mientras esté abierta. El
+           * árbol es la única pantalla que está para mirar con calma —es lo que
+           * Iris gira hacia la clienta— y cuatro hileras de hormigas marchando
+           * debajo del texto es ruido permanente justo donde hace falta quietud.
+           *
+           * Dos vueltas bastan para decir lo que tienen que decir: «este camino
+           * no es el tuyo, es el que hace pareja». Dicho eso, se callan.
+           */
           transition={{
-            opacity: { delay: c.delay, duration: 0.6 },
-            strokeDashoffset: { duration: 1.6, repeat: Infinity, ease: "linear" },
+            opacity: { delay: c.delay, duration: 0.45 },
+            strokeDashoffset: { delay: c.delay, duration: 1.4, repeat: 1, ease: "linear" },
           }}
         />
       ))}

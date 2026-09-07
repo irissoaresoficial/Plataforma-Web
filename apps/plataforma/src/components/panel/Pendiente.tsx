@@ -6,9 +6,9 @@ import Particulas from "../Particulas";
 /**
  * El sitio de una disciplina que todavía no está hecha.
  *
- * Existe para que Feng Shui y Numerología tengan ya su hueco en la
- * navegación: al abrirlas se ve que están previstas y sin desarrollar, en vez
- * de una pantalla en blanco o un enlace que no lleva a ninguna parte.
+ * Existe para que Numerología tenga ya su hueco en la navegación: al abrirla
+ * se ve que está prevista y sin desarrollar, en vez de una pantalla en blanco o
+ * un enlace que no lleva a ninguna parte.
  */
 export default function Pendiente({ titulo, pie }: { titulo: string; pie: string }) {
   const quieto = useReducedMotion();

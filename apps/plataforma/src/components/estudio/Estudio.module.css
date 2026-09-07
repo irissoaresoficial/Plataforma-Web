@@ -69,9 +69,55 @@
   gap: 14px;
   flex-wrap: wrap;
   padding: 12px clamp(14px, 3vw, 28px);
-  background: rgba(8, 9, 15, 0.9);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.14);
+  /*
+   * El color venía de la época anterior: `rgba(8,9,15,.9)` —casi negro— con un
+   * filete dorado escrito a mano. Sobre la plataforma blanca esa barra era una
+   * franja oscura cruzando la pantalla: el único trozo del producto que no se
+   * había enterado del cambio de casa.
+   *
+   * Ahora es el mismo cristal que la cabecera y el lateral, pedido por los
+   * tokens. Cambia solo con el tema, y si mañana cambia el cristal de la casa
+   * cambia también el de aquí, que es de lo que se trata.
+   */
+  background: var(--vidrio);
+  -webkit-backdrop-filter: var(--vidrio-difuminado);
+  backdrop-filter: var(--vidrio-difuminado);
+  border-bottom: 1px solid var(--border);
+}
+
+/*
+ * LAS ACCIONES DE LA BARRA.
+ *
+ * Llevaban `margin-left:auto` y nada más, así que en el móvil los dos botones
+ * se clavaban al borde derecho sin poder envolver: la página del estudio
+ * pasaba a medir 477 px en una pantalla de 390 —se movía de lado mientras se
+ * leía— y «Exportar PDF», que es el único motivo por el que existe esta
+ * pantalla, quedaba medio fuera por la derecha.
+ *
+ * Con sitio siguen empujando a la derecha, igual que antes. Sin sitio bajan a
+ * su propio renglón y se reparten el ancho.
+ */
+.acciones {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+@media screen and (max-width: 700px) {
+  .acciones {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+  .acciones > * {
+    flex: 1 1 0;
+  }
+  /* El de descartar vive dentro de un envoltorio con su confirmación, así que
+     para que ocupe su mitad hay que estirar también al botón de dentro. */
+  .acciones button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* Maquetas de dos columnas del documento.

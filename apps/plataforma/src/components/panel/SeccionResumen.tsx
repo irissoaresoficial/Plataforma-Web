@@ -1,6 +1,6 @@
 "use client";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL } from "@/lib/ui";
+import { BOTON_NORMAL, tarjetaCon } from "@/lib/ui";
 import { useApp } from "@/lib/app-context";
 import { COL, COL_TX } from "@/lib/tree";
 import { frase, recorta, titulo } from "@/lib/format";
@@ -183,16 +183,39 @@ export default function SeccionResumen() {
                 key={i}
                 data-alza=""
                 onClick={() => (x.ir ? setSeccion(x.ir) : verNumero(x.n!))}
+                /*
+                 * SEIS TARJETAS IGUALES QUE HACEN DOS COSAS DISTINTAS.
+                 *
+                 * Cuatro de estas seis se van a otra sección y cambian la
+                 * pantalla entera; las otras dos abren una ficha encima. Por
+                 * fuera eran idénticas, así que Iris pulsaba «Número de esencia»,
+                 * leía la ficha, la cerraba, pulsaba «Edad de cambio» esperando
+                 * otra ficha — y se le iba la pantalla. Se aprende a base de
+                 * sustos qué tarjeta es de qué clase, que es exactamente lo que
+                 * no debería tener que aprenderse.
+                 *
+                 * Ahora cada una dice a dónde lleva, en su pie. La flecha marca
+                 * la diferencia: «→» es irse, sin flecha es abrir aquí mismo.
+                 *
+                 * Y el relleno granate se va. Lo puse yo al repartir los colores
+                 * —granate para lo que se pulsa y lo que está elegido— sin caer
+                 * en que esta tarjeta lleva el relleno SIEMPRE: se leía como
+                 * «seleccionada» cuando nadie la había seleccionado. Destacar y
+                 * estar elegido no son lo mismo, así que destaca por el canto,
+                 * que es como destaca todo lo demás en esta casa.
+                 */
                 style={css(
                   "text-align:left;padding:17px 18px;cursor:pointer;border-radius:var(--r);" +
-                    (x.destacada
-                      ? "border:1px solid var(--accion);color:var(--sobre-accion);background:var(--accion);box-shadow:var(--nm-alto);"
-                      : TARJETA)
+                    (x.destacada ? tarjetaCon("var(--accion)") + "box-shadow:var(--nm-alto);" : TARJETA)
                 )}
               >
-                <div style={css("font-size:var(--t-mini);font-weight:590;color:" + (x.destacada ? "color-mix(in srgb, var(--sobre-accion) 84%, transparent)" : "var(--text-3)") + ";")}>{x.label}</div>
-                <div style={css("font-size:var(--t-hero);font-weight:700;letter-spacing:-.028em;line-height:1.1;margin-top:6px;color:" + (x.destacada ? "var(--sobre-accion)" : "var(--text)") + ";")}>{x.valor}</div>
-                <div style={css("font-size:var(--t-mini);margin-top:3px;line-height:1.3;color:" + (x.destacada ? "color-mix(in srgb, var(--sobre-accion) 76%, transparent)" : "var(--text-4)") + ";")}>{x.pie}</div>
+                <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>{x.label}</div>
+                <div style={css("font-size:var(--t-hero);font-weight:700;letter-spacing:-.028em;line-height:1.1;margin-top:6px;color:var(--text);")}>{x.valor}</div>
+                <div style={css("font-size:var(--t-mini);margin-top:3px;line-height:1.3;color:var(--text-4);")}>{x.pie}</div>
+                <div style={css("display:flex;align-items:center;gap:5px;margin-top:9px;font-size:var(--t-mini);font-weight:590;color:var(--accion);")}>
+                  {x.ir ? "Ver la sección" : "Ver la ficha"}
+                  {x.ir && <span aria-hidden>→</span>}
+                </div>
               </button>
             ))}
           </div>

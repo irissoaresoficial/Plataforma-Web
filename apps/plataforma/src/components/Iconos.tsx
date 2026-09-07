@@ -106,15 +106,6 @@ export const IcoCiclos = (p: P) => (
   </Caja>
 );
 
-/** El bagua: el octógono del feng shui, con el tao en el centro. */
-export const IcoFengShui = (p: P) => (
-  <Caja {...p}>
-    <path d="M8.6 2.9h6.8l4.7 4.7v6.8l-4.7 4.7H8.6l-4.7-4.7V7.6z" />
-    <path d="M8.6 2.9v18.2M15.4 2.9v18.2M3.9 7.6h16.2M3.9 16.4h16.2" opacity=".4" />
-    <circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none" opacity=".9" />
-  </Caja>
-);
-
 /** La tetraktys: diez puntos en cuatro filas, el emblema pitagórico. */
 export const IcoNumerologia = (p: P) => (
   <Caja {...p}>
@@ -137,6 +128,41 @@ export const IcoPlegar = ({ abierto = true, ...p }: P & { abierto?: boolean }) =
     <rect x="3" y="4" width="18" height="16" rx="3" />
     <path d="M9.4 4v16" />
     <path d={abierto ? "M17 9.6 14.4 12l2.6 2.4" : "M14 9.6 16.6 12 14 14.4"} opacity=".7" />
+  </Caja>
+);
+
+/* --------------------------------------------------------------- despacho */
+/* Los tres del trabajo de despacho. Siguen la misma regla que los de arriba:
+ * cada uno dibuja la cosa que abre, no un símbolo genérico de aplicación. */
+
+/** El mes colgado en la pared, con el día de hoy marcado. */
+export const IcoAgenda = (p: P) => (
+  <Caja {...p}>
+    <rect x="3.2" y="4.8" width="17.6" height="16" rx="2.4" />
+    <path d="M3.2 9.4h17.6" opacity=".55" />
+    <path d="M7.8 3.2v3.4M16.2 3.2v3.4" />
+    <rect x="6.6" y="12" width="4" height="3.4" rx=".8" fill="currentColor" stroke="none" opacity=".9" />
+    <path d="M13.4 13.7h4M6.6 18h10.8" opacity=".45" />
+  </Caja>
+);
+
+/** La ficha de una persona: su cabeza y las dos líneas que Iris apunta debajo. */
+export const IcoClientes = (p: P) => (
+  <Caja {...p}>
+    <rect x="3.2" y="4" width="17.6" height="16" rx="2.4" />
+    <circle cx="9" cy="10" r="2.3" />
+    <path d="M5.6 16.4a3.8 3.8 0 0 1 6.8 0" opacity=".7" />
+    <path d="M14.8 9.4h3.6M14.8 12.6h3.6" opacity=".45" />
+  </Caja>
+);
+
+/** La hoja de la factura: sus renglones y, abajo, la raya del total. */
+export const IcoFacturas = (p: P) => (
+  <Caja {...p}>
+    <path d="M5.4 3.2h9.2l4 4v13.6H5.4z" />
+    <path d="M14.2 3.4v4.2h4" opacity=".55" />
+    <path d="M8.4 11h7.2M8.4 13.8h7.2" opacity=".45" />
+    <path d="M8.4 17.2h7.2" strokeWidth="2.2" />
   </Caja>
 );
 

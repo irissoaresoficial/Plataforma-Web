@@ -97,7 +97,7 @@ export function arbolGeometria(r: Resultado) {
         color: COL[rol],
         w: GROSOR,
         o: 0.95,
-        delay: 1.15 + ORDEN_CAMINOS.indexOf(rol) * 0.28,
+        delay: 0.2 + ORDEN_CAMINOS.indexOf(rol) * 0.18,
       });
     });
   });
@@ -134,7 +134,7 @@ export function arbolGeometria(r: Resultado) {
     // uno en su margen: juntos en el mismo lado se pisaban.
     const aparta = -(((roles.length - 1) / 2) * SEPARACION + 11);
     const { x, y } = rotuloDe(p1, p2, aparta);
-    marcasCamino.push({ x, y: y + 4, n: idx, color: COL[roles[0]], delay: 2.0 + i * 0.28 });
+    marcasCamino.push({ x, y: y + 4, n: idx, color: COL[roles[0]], delay: 0.62 + i * 0.14 });
   });
 
   // Caminos complementarios: los senderos que hacen pareja con los tuyos.
@@ -183,7 +183,7 @@ export function arbolGeometria(r: Resultado) {
         color,
         n: comp,
         de: colores.length,
-        delay: 2.1 + i * 0.2 + k * 0.08,
+        delay: 0.78 + i * 0.12 + k * 0.05,
       });
     });
 
@@ -193,7 +193,7 @@ export function arbolGeometria(r: Resultado) {
         ...rotuloDe(a, b, ((colores.length - 1) / 2) * SEPARACION + 11),
         nombre,
         color: colores[0],
-        delay: 2.5 + i * 0.2,
+        delay: 1.06 + i * 0.12,
       });
     }
   });

@@ -1,4 +1,6 @@
 "use client";
+import { useEffect } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { KDATA } from "@/lib/kdata";
@@ -6,9 +8,43 @@ import { chipsDeFicha } from "@/lib/chips";
 // Se renombran porque aquí ya hay variables locales llamadas titulo y frase.
 import { frase as enFrase, titulo as enTitulo } from "@/lib/format";
 
+type Detalle = NonNullable<ReturnType<typeof useApp>["detalle"]>;
+
+/**
+ * LA FICHA.
+ *
+ * Es lo que más se abre de toda la plataforma: el diccionario de la
+ * herramienta, veinte veces por consulta. Y hasta ahora atrapaba.
+ *
+ * Escape no la cerraba —la tecla que prueba todo el mundo sin pensar—, y
+ * mientras estaba abierta el velo se comía las pulsaciones, así que el lateral
+ * y las pestañas dejaban de responder: la única salida era una × de 30 px en
+ * una esquina, justo donde el pulgar no llega en una tableta. Curiosamente el
+ * menú de la cuenta, que importa mucho menos, sí escuchaba Escape.
+ *
+ * Y se iba de golpe: entraba con un fundido suave y desaparecía como si se
+ * apagara la luz, porque un `return null` no puede animar su salida. Por eso el
+ * componente está partido en dos — la envoltura vive siempre y `AnimatePresence`
+ * ve marcharse a la hoja.
+ */
 export default function DetalleModal() {
-  const { detalle, cerrarDetalle, verNumero } = useApp();
-  if (!detalle) return null;
+  const { detalle, cerrarDetalle } = useApp();
+
+  useEffect(() => {
+    if (!detalle) return;
+    const tecla = (e: KeyboardEvent) => {
+      if (e.key === "Escape") cerrarDetalle();
+    };
+    document.addEventListener("keydown", tecla);
+    return () => document.removeEventListener("keydown", tecla);
+  }, [detalle, cerrarDetalle]);
+
+  return <AnimatePresence>{detalle && <Hoja detalle={detalle} />}</AnimatePresence>;
+}
+
+function Hoja({ detalle }: { detalle: Detalle }) {
+  const { cerrarDetalle, verNumero } = useApp();
+  const quieto = useReducedMotion();
 
   let tipo = "";
   let titulo = "";
@@ -45,27 +81,41 @@ export default function DetalleModal() {
   }
 
   return (
-    <div
+    <motion.div
       data-chrome="1"
       onClick={cerrarDetalle}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       style={css(
         /* El velo era negro al 32 %, que sobre una plataforma blanca cae como
            un telón de teatro: apaga la pantalla entera para enseñar una ficha.
            Ahora es un velo cálido y flojo con más desenfoque: lo de detrás se
            reconoce pero queda claramente fuera de foco, que es lo que hace que
            una hoja se lea como una hoja encima y no como otra pantalla. */
-        "position:fixed;inset:0;z-index:60;background:rgba(74,58,48,.22);backdrop-filter:saturate(1.2) blur(14px);-webkit-backdrop-filter:saturate(1.2) blur(14px);display:flex;align-items:flex-start;justify-content:center;padding:clamp(20px,5vw,48px) clamp(12px,3vw,24px);overflow-y:auto;animation:es33-in .25s ease both;"
+        "position:fixed;inset:0;z-index:60;background:rgba(74,58,48,.22);backdrop-filter:saturate(1.2) blur(14px);-webkit-backdrop-filter:saturate(1.2) blur(14px);display:flex;align-items:flex-start;justify-content:center;padding:clamp(20px,5vw,48px) clamp(12px,3vw,24px);overflow-y:auto;"
       )}
     >
-      <div
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-label={titulo}
         onClick={(e) => e.stopPropagation()}
+        initial={quieto ? false : { opacity: 0, y: 14, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={quieto ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.99 }}
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
         style={css(
           "max-width:760px;width:100%;background:var(--surface-solid);box-shadow:var(--shadow-lg);border:1px solid var(--border-accent);border-radius:var(--r);padding:clamp(22px,3.4vw,34px) clamp(20px,3.6vw,38px) clamp(26px,4vw,40px);position:relative;"
         )}
       >
+        {/* De 30 a 44 px. Es la medida a partir de la cual un dedo acierta sin
+            mirar, y ésta es la salida que más se usa de toda la plataforma. */}
         <button
           onClick={cerrarDetalle}
-          style={css("position:absolute;top:16px;right:16px;background:none;border:1px solid var(--border-accent);color:var(--gold);border-radius:980px;width:30px;height:30px;cursor:pointer;font-size:var(--t-body);line-height:1;")}
+          aria-label="Cerrar la ficha"
+          style={css("position:absolute;top:12px;right:12px;display:grid;place-items:center;background:none;border:1px solid var(--border-accent);color:var(--gold);border-radius:980px;width:44px;height:44px;cursor:pointer;font-size:var(--t-title);line-height:1;")}
         >
           ×
         </button>
@@ -88,7 +138,7 @@ export default function DetalleModal() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
