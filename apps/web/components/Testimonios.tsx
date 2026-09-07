@@ -206,6 +206,20 @@ export default function Testimonios() {
     onBlurCapture: () => setParado(false),
   };
 
+  /*
+   * LA SECCIÓN ENTERA, O NADA.
+   *
+   * Ocultar sólo el carrusel dejaba el titular «Esto no lo digo yo.» colgando
+   * sobre un vacío: un título que anuncia algo que no llega es peor que no
+   * tener título, porque quien lo lee se queda esperando y baja pensando que la
+   * página está rota.
+   *
+   * Así que sin comentarios que enseñar y fuera de las direcciones de prueba,
+   * este componente no pinta nada. La página se cierra sola por encima y por
+   * debajo y nadie echa de menos una sección que no sabe que existía.
+   */
+  if (!hay && !enPruebas) return null;
+
   return (
     <div className="testi">
       <Entra desde="izq">
@@ -259,9 +273,25 @@ export default function Testimonios() {
             </div>
           ))}
         </motion.div>
-      ) : (
-        /* El hueco dice exactamente qué va aquí y cómo se rellena. Un hueco que
-           no explica nada acaba olvidado; éste se lee como una tarea. */
+      ) : !enPruebas ? null : (
+        /*
+         * EL HUECO ES UNA NOTA PARA QUIEN MONTA LA WEB, NO PARA QUIEN LA VISITA.
+         *
+         * Y se estaba enseñando en el dominio de verdad. Es decir: una clienta
+         * entraba en la sección de opiniones y leía «abre content/site.ts, busca
+         * TESTIMONIOS y pega ahí los comentarios». Instrucciones de programación
+         * en el sitio donde tenía que encontrar a gente hablando bien de Iris.
+         * Eso no es un hueco: es la obra a la vista, y en la sección que más
+         * confianza tiene que dar de toda la página.
+         *
+         * En el dominio real y sin comentarios reales, la sección entera
+         * DESAPARECE. No hay cartel, no hay caja punteada, no hay nada. Una
+         * sección que falta no la echa de menos nadie porque nadie sabe que
+         * tenía que estar; una caja de obra la ve todo el mundo.
+         *
+         * Sigue viéndose en localhost y en las direcciones de prueba, que es
+         * donde sirve de algo: ahí se lee como una tarea pendiente.
+         */
         <div className="testi-hueco">
           <Pendiente>Faltan los comentarios</Pendiente>
           <p>
