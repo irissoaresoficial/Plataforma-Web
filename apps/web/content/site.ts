@@ -96,17 +96,41 @@ export const TESTIMONIOS: Testimonio[] = [];
  * Ómnibus. La multa es lo de menos: toda esta web se sostiene sobre que lo que
  * no está confirmado sale marcado, y una reseña falsa la desmonta entera.
  *
- * Así que no se dejan a mano de nadie. La regla está en el código, en
- * `Testimonios.tsx`, y es ésta:
+ * LA REGLA, Y EL INTERRUPTOR DE ABAJO
  *
- *   - En localhost y en las direcciones de prueba de Vercel se ven, con un
- *     aviso pequeño encima que dice lo que son.
- *   - En cualquier otro dominio NO SE VEN. Ni con aviso ni sin él.
+ * Por defecto: se ven en localhost y en las direcciones de prueba, y en
+ * cualquier otro dominio NO. El día que se ponga el dominio de Iris desaparecen
+ * solos, sin que nadie tenga que acordarse — que es exactamente como se quedan
+ * puestas estas cosas.
  *
- * Es decir: el día que se ponga el dominio de Iris, desaparecen solos. Nadie
- * tiene que acordarse de quitarlos, que es exactamente como se quedan puestos
- * estas cosas.
+ * Y hay un interruptor para enseñarlos igualmente mientras la web se está
+ * PRESENTANDO, que es para lo que se ha encendido hoy. Ver
+ * `MUESTRA_EN_PRESENTACION` justo debajo.
  */
+/**
+ * ENSEÑAR LOS DE MUESTRA AUNQUE EL DOMINIO SEA EL DE VERDAD.
+ *
+ * Está en `true` porque la web todavía no se ha abierto al público y hay que
+ * poder enseñarla entera para presentarla. Con la sección vacía no se ve cómo
+ * queda, y cómo queda es justo lo que hay que enseñar.
+ *
+ * MIENTRAS ESTÉ ENCENDIDO, CADA TARJETA LLEVA LA PALABRA «EJEMPLO». Y eso no es
+ * una pega puesta a regañadientes: es lo único que separa una demostración de
+ * una infracción. Lo que la ley persigue no es enseñar un comentario de
+ * mentira, es hacerlo pasar por real — un nombre, un icono de Instagram y una
+ * fecha son exactamente eso. Con la etiqueta puesta, quien lo ve sabe qué está
+ * viendo, y la sección cumple su función en la presentación sin afirmar nada
+ * que no sea cierto.
+ *
+ * SE APAGA SOLO EN CUANTO HAYA UNO REAL. Basta con pegar un comentario de
+ * verdad arriba, en `TESTIMONIOS`: los de muestra dejan de salir y esta
+ * constante deja de importar. No hay que acordarse de volver aquí.
+ *
+ * Y si se abre al público antes de tener comentarios reales, esto se pone en
+ * `false` y la sección desaparece entera, como estaba.
+ */
+export const MUESTRA_EN_PRESENTACION = true;
+
 export const TESTIMONIOS_MUESTRA: Testimonio[] = [
   {
     nombre: 'Carmen',

@@ -35,7 +35,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { TESTIMONIOS, TESTIMONIOS_MUESTRA, type Testimonio } from '@/content/site';
+import { MUESTRA_EN_PRESENTACION, TESTIMONIOS, TESTIMONIOS_MUESTRA, type Testimonio } from '@/content/site';
 import { CURVA, Entra } from './movimiento';
 import Pendiente from './Pendiente';
 
@@ -55,9 +55,18 @@ function IconoInstagram({ tam = 16 }: { tam?: number }) {
   );
 }
 
-function Tarjeta({ t }: { t: Testimonio }) {
+function Tarjeta({ t, ejemplo }: { t: Testimonio; ejemplo?: boolean }) {
   return (
     <article className="testi-tarjeta">
+      {/*
+          LA ETIQUETA VA DENTRO DE LA TARJETA, NO EN UN AVISO ARRIBA.
+          Un aviso encima de la sección lo lee quien baja despacio y se lo salta
+          quien no — y sobre todo, no viaja: basta una captura de pantalla de una
+          tarjeta para que el comentario de mentira circule por WhatsApp sin
+          nada que diga lo que es. Dentro de la tarjeta, la etiqueta va donde
+          vaya la tarjeta.
+      */}
+      {ejemplo && <span className="testi-ejemplo">Ejemplo</span>}
       <header className="testi-cab">
         <span className="testi-avatar" aria-hidden>
           {/* La inicial del nombre. Una foto de perfil de otra persona no se
@@ -88,7 +97,15 @@ export default function Testimonios() {
   useEffect(() => setEnPruebas(esSitioDePrueba(window.location.hostname)), []);
 
   const hayReales = TESTIMONIOS.length > 0;
-  const deMuestra = !hayReales && enPruebas;
+  /*
+   * `MUESTRA_EN_PRESENTACION` abre la puerta a que se vean en el dominio de
+   * verdad mientras la web se enseña y todavía no está abierta al público. Lo
+   * que NO abre es que se vean sin decir lo que son: `deMuestra` es lo que
+   * enciende la etiqueta «Ejemplo» de cada tarjeta, unas líneas más abajo, y
+   * las dos cosas salen del mismo dato a propósito — así no hay forma de
+   * enseñarlos sin marcarlos.
+   */
+  const deMuestra = !hayReales && (enPruebas || MUESTRA_EN_PRESENTACION);
   const lista = hayReales ? TESTIMONIOS : deMuestra ? TESTIMONIOS_MUESTRA : [];
 
   /*
@@ -269,7 +286,7 @@ export default function Testimonios() {
             /* La segunda copia se esconde de los lectores de pantalla: la cinta
                es un truco visual, y oír seis comentarios repetidos no lo es. */
             <div key={i} aria-hidden={i >= lista.length ? true : undefined} style={{ display: 'contents' }}>
-              <Tarjeta t={t} />
+              <Tarjeta t={t} ejemplo={deMuestra} />
             </div>
           ))}
         </motion.div>
