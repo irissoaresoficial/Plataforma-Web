@@ -23,7 +23,11 @@
  *     Las pestañas "Reservas" y "Leads" se crean solas con sus cabeceras la
  *     primera vez que entre un dato: no hay que preparar nada a mano.
  *  2. Dentro de la hoja: Extensiones → Apps Script. Borra lo que haya y pega este archivo.
- *  3. Cambia los valores de CONFIG que hay justo debajo (sobre todo IRIS_EMAIL y SECRET).
+ *  3. Configuración del proyecto (rueda dentada) → Propiedades de la secuencia
+ *     de comandos → Añadir propiedad: SECRET = la misma cadena larga que pongas
+ *     en Vercel como APPS_SCRIPT_SECRET. NO se escribe en el código: si
+ *     estuviera aquí, la próxima vez que se pegue este archivo se borraría.
+ *     Los demás valores de CONFIG sí van abajo (sobre todo IRIS_EMAIL).
  *  4. Arriba a la izquierda, en el nombre del proyecto, ponle "Reservas web Iris".
  *  5. Configuración del proyecto (rueda dentada) → Zona horaria: Europe/Madrid.
  *  6. Implementar → Nueva implementación → tipo "Aplicación web":
@@ -31,7 +35,6 @@
  *        - Quién tiene acceso: Cualquier usuario
  *     Acepta los permisos que pida (calendario, hoja y correo).
  *  7. Copia la URL que acaba en /exec y pégala en la web como APPS_SCRIPT_URL.
- *     El mismo SECRET de aquí va en APPS_SCRIPT_SECRET.
  *  8. Para que salgan los correos diarios de la secuencia: reloj (Activadores)
  *     → Añadir activador → función "enviarSecuencia", según tiempo, temporizador
  *     por días, sobre las 9:00. Con eso basta; el script decide a quién le toca.
@@ -39,6 +42,21 @@
  * Cada vez que cambies este código hay que volver a Implementar → Gestionar
  * implementaciones → editar → Nueva versión, para que la URL sirva lo nuevo.
  */
+
+/**
+ * Un ajuste guardado en las Propiedades del script.
+ *
+ * Va envuelto en `try` porque `PropertiesService` puede fallar mientras se
+ * están dando los permisos por primera vez, y un error aquí arriba tumbaría el
+ * archivo entero antes de llegar a ninguna función.
+ */
+function propiedad(clave) {
+  try {
+    return PropertiesService.getScriptProperties().getProperty(clave) || '';
+  } catch (e) {
+    return '';
+  }
+}
 
 var CONFIG = {
   // Correo de Iris: recibe el aviso de cada reserva y es la dueña del calendario.
@@ -48,8 +66,31 @@ var CONFIG = {
   // Si quieres uno aparte, crea un calendario y pega aquí su ID.
   CALENDAR_ID: 'primary',
 
-  // Contraseña compartida con la web. Inventa una larga y pégala también en la web.
-  SECRET: 'cambia-esto-por-una-clave-larga',
+  /*
+   * LA CONTRASEÑA NO SE ESCRIBE AQUÍ. Y ES POR UN MOTIVO CONCRETO.
+   *
+   * Estaba escrita en esta línea, con el texto de ejemplo puesto. Funcionaba
+   * hasta el día en que hubo que cambiar el código: se copió este archivo del
+   * repositorio, se pegó encima del script… y con él se pegó el texto de
+   * ejemplo, que borró la contraseña buena. A partir de ese momento la web y el
+   * script dejaron de entenderse y no salió ni un correo, sin que nada
+   * pareciera roto por ningún lado: la reserva se guardaba, la cita aparecía en
+   * la agenda, y el correo simplemente no llegaba.
+   *
+   * Un archivo que hay que acordarse de editar a mano DESPUÉS de pegarlo es una
+   * trampa, y las trampas se pisan. Así que la contraseña vive donde pegar
+   * código no la toca: en las Propiedades del script.
+   *
+   *   Configuración del proyecto (la rueda dentada de la izquierda)
+   *     → Propiedades de la secuencia de comandos
+   *     → Añadir propiedad
+   *         Propiedad: SECRET
+   *         Valor:     la misma cadena larga que hay en Vercel
+   *
+   * Se hace UNA vez. A partir de ahí este archivo se puede pegar encima las
+   * veces que haga falta sin romper nada.
+   */
+  SECRET: propiedad('SECRET'),
 
   // La hoja de cálculo donde se guarda todo. Es el trozo largo de la URL de la
   // hoja, el que va entre /d/ y /edit. Ya está puesto el de la hoja "Datos".
@@ -131,8 +172,21 @@ function doPost(e) {
 
 /* ---------------------------------------------------------------- */
 
+/**
+ * SIN CONTRASEÑA CONFIGURADA NO SE PASA. ANTES SÍ SE PASABA.
+ *
+ * Decía `if (!CONFIG.SECRET) return true`: sin contraseña puesta, el script
+ * aceptaba a cualquiera. La idea era «que funcione mientras se instala», y el
+ * problema es que una instalación a medias no avisa de nada — se queda
+ * funcionando, se olvida, y lo que queda es una dirección pública que escribe
+ * en el calendario de Iris y manda correos en su nombre a quien la encuentre.
+ *
+ * Ahora, sin contraseña, se rechaza y se dice por qué. Es un paso más al
+ * instalar y es el correcto: fallar ruidoso mientras se monta algo es barato;
+ * quedarse abierto en silencio, no.
+ */
 function checkSecret(given) {
-  if (!CONFIG.SECRET) return true;
+  if (!CONFIG.SECRET) return false;
   return String(given || '') === CONFIG.SECRET;
 }
 

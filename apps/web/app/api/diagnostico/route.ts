@@ -159,14 +159,14 @@ export async function GET() {
       paso: 'Contraseña compartida',
       ok: false,
       detalle: esSecret
-        ? 'El script ha rechazado la contraseña: APPS_SCRIPT_SECRET y el SECRET del script no coinciden.'
+        ? 'El script ha rechazado la contraseña. Casi siempre es esto: al pegar el archivo reservas.gs encima del script se borró la contraseña que había. Por eso ya no se escribe en el código — va en Propiedades del script, donde pegar código no la toca.'
         : `El script ha contestado: ${datos.reason}`,
     });
     return NextResponse.json({
       listo: false,
       pasos,
       siguiente: esSecret
-        ? 'Copia el SECRET del script y pégalo tal cual en Vercel. Después, Redeploy.'
+        ? 'En Apps Script: Configuración del proyecto (rueda dentada) → Propiedades de la secuencia de comandos → Añadir propiedad → SECRET = el mismo valor que APPS_SCRIPT_SECRET en Vercel. Después, Implementar → Gestionar implementaciones → lápiz → Nueva versión.'
         : 'Mírate ese motivo en el archivo reservas.gs.',
     });
   }
