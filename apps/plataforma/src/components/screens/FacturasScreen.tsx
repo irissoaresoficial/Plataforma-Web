@@ -256,7 +256,7 @@ export default function FacturasScreen() {
       <div data-chrome="1">
         <Cabecera
           titulo="Facturas"
-          pie="Emite una factura por una sesión o por un curso, mírala y descárgala. Los números van seguidos y no se saltan ninguno."
+          pie="Numeradas seguidas, sin saltarse ninguna."
         />
 
         {/* --------------------------------------------- lo que falta y manda */}

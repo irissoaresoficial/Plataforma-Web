@@ -402,7 +402,7 @@ export default function AgendaScreen() {
       return (
         <Vacio>
           {vista === "dia"
-            ? "Ese día lo tienes libre. Con «Apuntar una sesión» le pones algo."
+            ? "Ese día lo tienes libre."
             : "Esa semana la tienes libre entera."}
         </Vacio>
       );
@@ -554,7 +554,7 @@ export default function AgendaScreen() {
     <main style={css("max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);min-width:0;")}>
       <Cabecera
         titulo="Agenda"
-        pie="Tu semana con las horas a la vista. Pulsa un rato libre para apuntar algo ahí, o una sesión para abrirla."
+        pie="Pulsa un hueco para apuntar algo."
       />
 
       <div
@@ -700,12 +700,13 @@ export default function AgendaScreen() {
                     mide seiscientos píxeles aunque esté vacía, así que un aviso
                     al pie se queda fuera de la ventana justo el día que hace
                     falta leerlo. */}
-                {enLosDias.length === 0 && (
-                  <p style={css(APOYO + "margin:0 0 var(--s3);")}>
-                    {vista === "dia" ? "Ese día lo tienes libre." : "Esa semana la tienes libre entera."} Pulsa la hora que quieras
-                    para apuntar algo.
-                  </p>
-                )}
+                {/* AQUÍ NO VA NINGÚN AVISO, Y ES A PROPÓSITO.
+                    Decía «esa semana la tienes libre entera. Pulsa la hora que
+                    quieras para apuntar algo» encima de una rejilla vacía. La
+                    rejilla vacía ya dice que está vacía —para eso está dibujada—
+                    y lo de pulsar se aprende en el primer clic, no leyéndolo.
+                    Una frase que repite lo que ya se ve enseña a saltarse el
+                    texto de esta pantalla. */}
                 <RejillaSemana
                   dias={diasVisibles}
                   citas={visibles}

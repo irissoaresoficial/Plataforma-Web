@@ -106,12 +106,24 @@ export function useLlevaAlDetalle(abierto: unknown) {
   return ref;
 }
 
-/** El título de la pantalla y la línea que dice para qué sirve. */
+/**
+ * EL TÍTULO DE LA PANTALLA, Y AL LADO —NO DEBAJO— PARA QUÉ SIRVE.
+ *
+ * Estaba en un párrafo de dos renglones debajo del título, en cada pantalla.
+ * Sumando las cuatro eso son ocho líneas de instrucciones que se leen el primer
+ * día y que después, TODOS los días, empujan hacia abajo lo único que se venía
+ * a ver: la agenda, las fichas, la gente. Una herramienta de trabajo se abre
+ * cinco veces al día; un manual se lee una.
+ *
+ * Ahora el pie va en la misma línea, pequeño y al lado. Sigue estando para
+ * quien lo necesite, y ha dejado de ocupar el sitio de lo que importa. Por eso
+ * se pide corto en el tipo: si vuelve a hacerse un párrafo, vuelve a estorbar.
+ */
 export function Cabecera({ titulo, pie }: { titulo: string; pie: string }) {
   return (
-    <div style={css("margin-bottom:var(--gap-lg);")}>
+    <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--gap-lg);")}>
       <h1 style={css(CABECERA + "margin:0;")}>{titulo}</h1>
-      <p style={css(APOYO + "margin:6px 0 0;max-width:64ch;")}>{pie}</p>
+      <p style={css(NOTA + "margin:0;max-width:52ch;")}>{pie}</p>
     </div>
   );
 }

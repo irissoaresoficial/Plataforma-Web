@@ -339,7 +339,7 @@ export default function ClientesScreen() {
     <main style={css("max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);min-width:0;")}>
       <Cabecera
         titulo="Clientes"
-        pie="Tu gente repartida por lo que toca hacer con cada uno. Las columnas se mueven solas según lo que tengas apuntado: no hay nada que arrastrar."
+        pie="Se reparten solos según lo que tengas apuntado."
       />
 
       {/* ================================================== buscar y las caras */}
@@ -365,7 +365,7 @@ export default function ClientesScreen() {
           {cargando ? (
             <Vacio>Un momento…</Vacio>
           ) : estaSemana.length === 0 ? (
-            <Vacio>No tienes ninguna sesión apuntada para los próximos siete días. Se apuntan desde «Agenda».</Vacio>
+            <Vacio>Nada apuntado esta semana.</Vacio>
           ) : (
             <div
               data-tira=""
@@ -411,7 +411,7 @@ export default function ClientesScreen() {
           <Vacio>
             {busca
               ? "Aquí no hay nadie con ese nombre. Pruébalo con menos letras."
-              : "Todavía no tienes a nadie fichado. En cuanto apuntes una sesión en la agenda, la persona aparece aquí sola; o añádela tú con el botón de arriba."}
+              : "Todavía no hay nadie. Se llena solo al apuntar sesiones."}
           </Vacio>
         </section>
       ) : estrecho ? (
