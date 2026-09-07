@@ -22,7 +22,7 @@
  */
 
 import type { Cita, Cliente, Factura } from "./tipos";
-import { diaRelativo, diasEntre, hace, hora } from "./fechas";
+import { diaRelativo, diaRelativoCorto, diasEntre, hace, hora } from "./fechas";
 
 export type Relacion = {
   /** La última sesión que ya ha pasado. Nula si nunca ha habido ninguna. */
@@ -105,11 +105,14 @@ export function relacionDe(
  * hay nada por delante se dice cuánto hace de la última — que es entonces el
  * dato que decide si hay que llamar.
  *
- * Corto de verdad: cabe debajo de un nombre en una columna de 300 px.
+ * Corto de verdad: cabe debajo de un nombre en la tarjeta de una columna del
+ * tablero, que son doscientos píxeles. Por eso la fecha va en su forma corta
+ * —«Miércoles 9», y el mes sólo si es otro—: con el mes escrito entero, la
+ * tarjeta se iba a tres renglones para no decir nada más.
  */
 export function comoVaCorto(r: Relacion, ahora = new Date()): string {
   if (r.proxima) {
-    const cuando = diaRelativo(new Date(r.proxima.inicioISO), ahora);
+    const cuando = diaRelativoCorto(new Date(r.proxima.inicioISO), ahora);
     return `${cuando} a las ${hora(r.proxima.inicioISO)}`;
   }
   if (r.diasSinVerse === null) return "Sin ninguna sesión todavía";

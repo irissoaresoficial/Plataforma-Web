@@ -30,5 +30,7 @@ export * from "./tipos";
 export * from "./emisor";
 export * from "./fechas";
 export * from "./relacion";
+export * from "./etapas";
+export * from "./rejilla";
 export * from "./avisos";
 export type { RepoAvisos, RepoCitas, RepoClientes, RepoFacturas, Repositorio } from "./repositorio";

@@ -41,6 +41,65 @@ export function cierraSemana(d: Date): Date {
   return cierraDia(masDias(d, haciaDomingo));
 }
 
+/**
+ * El lunes con el que empieza la semana de una fecha, a las 00:00.
+ *
+ * Es el ancla de la rejilla semanal: todo lo que la rejilla dibuja se mide
+ * desde aquí. Va en pareja con `cierraSemana` y con la misma regla —la semana
+ * empieza el lunes— porque si las dos no coincidieran, la última columna de la
+ * rejilla enseñaría un día que la cuenta de «esta semana» ya no incluye.
+ */
+export function abreSemana(d: Date): Date {
+  const desdeLunes = (d.getDay() + 6) % 7; // lunes = 0, domingo = 6
+  return abreDia(masDias(d, -desdeLunes));
+}
+
+/** Los siete días de la semana de una fecha, de lunes a domingo. */
+export function semanaDe(d: Date): Date[] {
+  const lunes = abreSemana(d);
+  return Array.from({ length: 7 }, (_, i) => masDias(lunes, i));
+}
+
+/**
+ * Suma meses cayendo siempre dentro del mes que toca.
+ *
+ * `setMonth` sobre un 31 de enero devuelve el 3 de marzo, y en un calendario
+ * que se mueve con flechas eso significa saltarse febrero entero. Se ancla en
+ * el día 1, que es lo único que existe en los doce meses.
+ */
+export const masMeses = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth() + n, 1);
+
+/** «septiembre de 2026», para la cabecera del calendario del mes. */
+export const mesYAno = (d: Date) => `${MESES[d.getMonth()]} de ${d.getFullYear()}`;
+
+/** Las iniciales de los días en la cabecera del mini calendario, empezando en
+ *  lunes. La X del miércoles es la de toda la vida en España. */
+export const INICIALES_DIA = ["L", "M", "X", "J", "V", "S", "D"];
+
+/** El nombre corto del día: «lun», «mar». Para la cabecera de cada columna de
+ *  la rejilla, donde el nombre entero no cabe en siete columnas. */
+export const diaCorto = (d: Date) => DIAS[d.getDay()].slice(0, 3);
+
+/**
+ * Los días que se pintan en la cuadrícula de un mes: el mes entero más lo que
+ * haga falta de los meses vecinos para que empiece en lunes y acabe en domingo.
+ *
+ * Se devuelven siempre 42 (seis semanas) y no las que salgan: si la cuadrícula
+ * cambiara de alto según el mes, la página daría un salto al pasar de febrero a
+ * marzo y lo que hay debajo se movería de sitio.
+ */
+export function cuadriculaDelMes(d: Date): Date[] {
+  const primero = abreSemana(new Date(d.getFullYear(), d.getMonth(), 1));
+  return Array.from({ length: 42 }, (_, i) => masDias(primero, i));
+}
+
+/** Minutos desde las 00:00 de su propio día. Es la coordenada vertical de la
+ *  rejilla: a qué altura empieza un bloque dentro de su columna. */
+export function minutosDelDia(iso: string): number {
+  const d = new Date(iso);
+  return d.getHours() * 60 + d.getMinutes();
+}
+
 /** «7 de septiembre». */
 export const diaYMes = (d: Date) => `${d.getDate()} de ${MESES[d.getMonth()]}`;
 
@@ -60,6 +119,32 @@ export function diaRelativo(d: Date, referencia = new Date()): string {
   if (k === claveDia(referencia)) return "Hoy";
   if (k === claveDia(masDias(referencia, 1))) return "Mañana";
   return diaLargo(d).replace(/^./, (c) => c.toLocaleUpperCase("es"));
+}
+
+/**
+ * LO MISMO, PERO SIN EL MES CUANDO EL MES SE DA POR SABIDO.
+ *
+ * «Miércoles, 9 de septiembre a las 20:00» son tres renglones en la tarjeta de
+ * una columna de doscientos píxeles, y dos de esos renglones no dicen nada
+ * nuevo: si estamos en septiembre, el mes sobra. Sólo se escribe cuando la
+ * fecha cae en otro mes, que es justo cuando hace falta para no confundirse.
+ */
+export function diaRelativoCorto(d: Date, referencia = new Date()): string {
+  const k = claveDia(d);
+  if (k === claveDia(referencia)) return "Hoy";
+  if (k === claveDia(masDias(referencia, 1))) return "Mañana";
+  const base = `${DIAS[d.getDay()]} ${d.getDate()}`;
+  const conMes = d.getMonth() === referencia.getMonth() ? base : `${base} de ${MESES[d.getMonth()]}`;
+  return conMes.replace(/^./, (c) => c.toLocaleUpperCase("es"));
+}
+
+/** Lo más corto que sigue diciendo qué día es: «Hoy», «Mañana», «mié 9». Para
+ *  el hueco de debajo de una cara, donde caben once caracteres y no más. */
+export function diaMinimo(d: Date, referencia = new Date()): string {
+  const k = claveDia(d);
+  if (k === claveDia(referencia)) return "Hoy";
+  if (k === claveDia(masDias(referencia, 1))) return "Mañana";
+  return `${DIAS[d.getDay()].slice(0, 3)} ${d.getDate()}`;
 }
 
 /**

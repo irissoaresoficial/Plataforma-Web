@@ -12,9 +12,75 @@
  * ningún cuerpo de letra nuevo.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { css } from "@/lib/css";
 import { CABECERA, APOYO, NOTA, PAD, tarjetaCon, rotulo } from "@/lib/ui";
+
+/**
+ * ¿ESTAMOS EN UNA PANTALLA ESTRECHA?
+ *
+ * Hay dos maquetas que no se pueden resolver con CSS: el tablero de clientes
+ * —que en ancho son cinco columnas y en estrecho una sola con sus pestañas— y
+ * la rejilla de la semana —que en estrecho pasa a ser un día—. En los dos casos
+ * lo que cambia no es cómo se coloca lo mismo, sino QUÉ se pinta, y eso lo
+ * decide React.
+ *
+ * Arranca siempre en `false` y no en lo que mida la ventana, a propósito: estas
+ * páginas se generan en el servidor, donde no hay ventana. Si el primer render
+ * dependiera del ancho, el HTML del servidor y el del navegador no coincidirían
+ * y React tiraría el árbol entero. Se mide después de montar.
+ */
+export function useEstrecho(px = 860): boolean {
+  const [estrecho, setEstrecho] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${px}px)`);
+    const mide = () => setEstrecho(mq.matches);
+    mide();
+    mq.addEventListener("change", mide);
+    return () => mq.removeEventListener("change", mide);
+  }, [px]);
+  return estrecho;
+}
+
+/**
+ * LA CARA DE ALGUIEN, CUANDO NO HAY FOTO.
+ *
+ * El tablero pide una tira de caras arriba y una cara en cada tarjeta, y aquí
+ * no hay ninguna foto: la ficha de una persona guarda su nombre, su correo y su
+ * teléfono, y pedirle a Iris que suba doscientas fotos no va a pasar. Así que
+ * la cara es la inicial, que es lo que de verdad sirve para reconocer un nombre
+ * de un vistazo en una columna.
+ *
+ * Un círculo por persona y todos del mismo color: teñir cada inicial de un
+ * color sacado del nombre —lo que hace medio internet— llenaría la pantalla de
+ * quince colores que no significan nada, justo lo que la casa no hace.
+ */
+export function Avatar({ nombre, tamano = 34 }: { nombre: string; tamano?: number }) {
+  // Dos iniciales cuando hay apellido; una cuando no. Tres ya no se leen a 34
+  // píxeles y convierten el círculo en una mancha.
+  const iniciales = (nombre || "?")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p.charAt(0).toLocaleUpperCase("es"))
+    .join("");
+
+  return (
+    <span
+      aria-hidden="true"
+      style={css(
+        "display:inline-grid;place-items:center;flex:none;border-radius:50%;" +
+          `width:${tamano}px;height:${tamano}px;` +
+          /* El hueco de la casa: la inicial va hundida en el papel, como los
+             campos. Es lo que la separa de una pegatina de color. */
+          "background:var(--surface-2);border:1px solid var(--border);box-shadow:var(--nm-hondo);" +
+          `color:var(--text-3);font-size:${Math.round(tamano * 0.38)}px;font-weight:600;letter-spacing:0;`
+      )}
+    >
+      {iniciales || "?"}
+    </span>
+  );
+}
 
 /**
  * En pantalla ancha la lista y la ficha están una al lado de la otra, así que

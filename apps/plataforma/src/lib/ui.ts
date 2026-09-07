@@ -18,6 +18,20 @@
 /** La tarjeta, y no hay otra. */
 export const TARJETA = "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);";
 
+/**
+ * La misma tarjeta cuando está ELEGIDA: el granate de la casa, que es el color
+ * de lo que se pulsa y de lo que está seleccionado.
+ *
+ * Existe como constante entera —y no como un `border-color` añadido detrás de
+ * `TARJETA`— porque React avisa por consola cuando una propiedad abreviada
+ * (`border`) y una de sus partes (`border-color`) cambian a la vez entre dos
+ * pintadas, y además en algún repintado se queda la que no toca: una tarjeta
+ * deseleccionada conservando el canto granate. Escrito de una vez, no hay dos
+ * propiedades peleándose por lo mismo.
+ */
+export const TARJETA_ELEGIDA =
+  "background:var(--accion-suave);border:1px solid var(--accion-borde);border-radius:var(--r);";
+
 /** Tarjeta con el canto de color: el acento va en la raya, no en el fondo. */
 export const tarjetaCon = (color: string) => TARJETA + "border-left:2px solid " + color + ";";
 
