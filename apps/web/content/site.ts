@@ -186,6 +186,17 @@ export const MEMBRESIA = {
   abreISO: '2026-11-07T23:59:59',
   /** Desde cuándo está abierta la lista. Es lo que llena el anillo. */
   listaDesdeISO: '2026-09-05T00:00:00',
+  /**
+   * LOS DOS PRECIOS — CONFIRMADOS por Gerson el 7 de septiembre de 2026.
+   *
+   * Se anota porque venían del diseño de partida sin que nadie los hubiera
+   * dicho, y estuvieron publicados en cuatro sitios sin confirmar. Ya no hace
+   * falta volver a preguntarlo.
+   *
+   * De estos dos números salen solos el −51 %, los 34 € menos al mes y los
+   * 408 € menos al año de la landing. Si algún día cambian, se cambian aquí y
+   * las tres cuentas se recalculan solas.
+   */
   /** Lo que costará cuando abra. */
   precio: 67,
   /** Lo que pagan los que reservan ahora desde la lista de espera. */
