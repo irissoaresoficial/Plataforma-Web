@@ -176,6 +176,11 @@ service cloud.firestore {
     }
     match /avisos/{id}   { allow read, write: if dentro(); }
 
+    /* Los ajustes de la casa: hoy, los datos fiscales de quien factura. Se
+       escriben desde la pantalla y no desde el código, así que necesitan regla
+       — y sólo la necesita quien ya está dentro. */
+    match /ajustes/{id}  { allow read, write: if dentro(); }
+
     /* ---------------------------------------------------------------- */
 
     /* El resto del mundo, cerrado. Incluida la colección `diagnostico`, que
