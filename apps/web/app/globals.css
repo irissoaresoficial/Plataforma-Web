@@ -2040,15 +2040,54 @@ body[data-nav-claro='si'] .sello-color {
 /* ==================================================================
    TU NÚMERO
    La pieza donde el visitante ve plegarse su propia fecha.
+
+   POR QUÉ ESTA PIEZA SE SALE DEL SISTEMA, Y SÓLO ESTA.
+
+   La web entera es de canto recto —radio 4— y está decidido a propósito: los
+   bloques rectos se leen como una página impresa y no como una aplicación de
+   móvil. Eso no se toca en ningún otro sitio.
+
+   Aquí sí, y por un motivo. Esto no es un bloque que se lee: es el único
+   INSTRUMENTO de toda la página —tres casillas donde se escribe y un botón que
+   contesta—, y hasta ahora se leía como todo lo demás. Un aparato tiene que
+   parecer un aparato: relieve, canto blando, y la sensación física de que se
+   puede tocar. Dentro de una página seria, un mando bien hecho no desentona;
+   llama.
+
+   EL RELIEVE ES DE UN SOLO COLOR. Lo que estaba mal antes no era el gusto: era
+   que la tarjeta del resultado era beige sobre blanco, así que se leía como un
+   rectángulo gris grande y medio vacío en mitad de la página. El relieve de
+   verdad no se hace con un color distinto, se hace con LUZ: la pieza es
+   exactamente del mismo tono que el fondo y lo único que la separa son dos
+   sombras, una clara arriba a la izquierda y una cálida abajo a la derecha. Por
+   eso la banda entera pasa a arena — para que no haya ni un solo cambio de
+   color, sólo cambios de altura.
    ================================================================== */
+
+/* El juego de luces. Se declara aquí y no en :root porque vive sólo en esta
+   pieza: si algún día hay otra con relieve, se sube entonces y no antes. */
 .tn {
+  --nm-luz: #ffffff;
+  /*
+     LA SOMBRA, FLOJA. Es donde el relieve se echa a perder: subida de tono, la
+     pieza deja de parecer un objeto y pasa a parecer plastilina, que es el
+     defecto de manual de este acabado. Lo que se busca es una luz de tarde
+     entrando por la izquierda, no un foco.
+  */
+  --nm-sombra: rgba(122, 106, 84, 0.22);
+  --nm-canto: 16px;
+  /* Saliente: se puede tocar. */
+  --nm-alto: 5px 5px 12px var(--nm-sombra), -5px -5px 12px var(--nm-luz);
+  /* Hundido: aquí se escribe. */
+  --nm-hondo: inset 3px 3px 7px var(--nm-sombra), inset -3px -3px 7px var(--nm-luz);
+
   display: grid;
-  gap: clamp(34px, 5vw, 72px);
+  gap: clamp(34px, 5vw, 68px);
   align-items: center;
 }
 @media (min-width: 900px) {
   .tn {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
   }
 }
 .tn-lado {
@@ -2084,13 +2123,13 @@ body[data-nav-claro='si'] .sello-color {
 
 .tn-fila {
   display: flex;
-  gap: 10px;
-  margin-top: 6px;
+  gap: 14px;
+  margin-top: 10px;
 }
 .tn-campo {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 9px;
   min-width: 0;
 }
 /* El año necesita el doble de sitio que el día o el mes. */
@@ -2100,44 +2139,88 @@ body[data-nav-claro='si'] .sello-color {
 .tn-campo:not(:last-child) {
   flex: 1;
 }
+
+/* LAS CASILLAS ESTÁN HUNDIDAS, Y ESO ES LA INSTRUCCIÓN.
+   Un hueco excavado en la superficie dice «esto se rellena» sin ninguna
+   palabra: es la misma razón por la que un enchufe no lleva cartel. Y la cifra
+   va centrada y grande porque son tres números cortos, no un texto — alineados
+   a la izquierda quedaban perdidos contra el canto. */
 .tn-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 13px 14px;
-  border: 1px solid var(--linea-2);
-  border-radius: var(--radio);
-  background: var(--superficie);
+  padding: 17px 14px;
+  border: 0;
+  border-radius: var(--nm-canto);
+  background: var(--bg);
+  box-shadow: var(--nm-hondo);
   color: var(--tx);
-  font-size: 19px;
+  font-family: inherit;
+  font-size: 22px;
   font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
   outline: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  transition: box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
 }
+/* Sin rebajar la opacidad. A 0,72 el gris del ejemplo se quedaba en 3,3:1 sobre
+   la arena: parecía un campo estropeado en vez de un ejemplo. */
 .tn-input::placeholder {
   color: var(--tx-4);
   font-weight: 300;
+  opacity: 1;
 }
+/*
+   EL FOCO NO ES UN BORDE: ES UN ANILLO SOBRE EL RELIEVE.
+   Un `border` cambiaría el tamaño de la caja y haría saltar la fila entera al
+   escribir. El anillo va en la misma propiedad que el relieve, así que se suma
+   sin mover ni un píxel. Y va dorado y a dos píxeles porque el foco tiene que
+   verse de verdad: quien navega con el teclado necesita saber dónde está.
+*/
 .tn-input:focus {
-  border-color: var(--acento-2);
-  background: var(--bg);
-  box-shadow: 0 0 0 3px rgba(184, 146, 79, 0.16);
+  box-shadow: var(--nm-hondo), 0 0 0 2px var(--acento-2);
 }
 
 .tn-acciones {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   flex-wrap: wrap;
-  margin-top: 4px;
+  margin-top: 12px;
 }
-/* Deshabilitado se dice apagando, no escondiendo: el botón sigue ahí y se ve
-   que hará algo en cuanto la fecha esté entera. */
-/* Apagado, no invisible. A 0,42 el texto del botón bajaba de 3,6:1 y parecía
-   estropeado en vez de a la espera; a 0,6 sigue leyéndose que todavía no hace
-   nada, pero se lee. */
+/*
+   EL BOTÓN SE HUNDE AL PULSARLO.
+   Es el detalle que convierte el relieve en algo creíble: si al apretar no baja,
+   el relieve era un dibujo. Sube un pelo al pasar por encima y baja al pulsar,
+   con la misma curva que usa el resto de la web.
+*/
+/*
+   UN BOTÓN DE COLOR NO LLEVA LA LUZ BLANCA.
+   El relieve de esta pieza son dos sombras, una oscura y una clara, y la clara
+   funciona porque las piezas son del color del fondo. Sobre el granate lleno
+   esa luz no se lee como luz: se lee como un borde blanco alrededor del botón,
+   que es justo lo que no queremos. Aquí sólo va la sombra que proyecta.
+*/
+.tn-acciones .pill,
+.tn-siguiente .pill {
+  box-shadow: 5px 6px 14px var(--nm-sombra);
+  transition:
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    gap 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tn-acciones .pill:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 7px 9px 20px var(--nm-sombra);
+}
+.tn-acciones .pill:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.32), inset -2px -2px 6px rgba(255, 255, 255, 0.14);
+}
+/* Apagado, no invisible: el botón sigue ahí y se ve que hará algo en cuanto la
+   fecha esté entera. Sin relieve, porque todavía no se puede tocar. */
 .tn-acciones .pill:disabled {
-  opacity: 0.68;
+  opacity: 0.62;
   cursor: default;
   transform: none;
   box-shadow: none;
@@ -2145,38 +2228,55 @@ body[data-nav-claro='si'] .sello-color {
 .tn-acciones .pill:disabled:hover {
   gap: 12px;
   transform: none;
+  box-shadow: none;
 }
 .tn-error {
   font-size: var(--t-nota);
   color: #a33b3b;
 }
 .tn-nota {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   font-size: var(--t-nota);
   line-height: 1.55;
   color: var(--tx-3);
   max-width: 42ch;
 }
 
-/* El lado del resultado: una tarjeta que sostiene el hueco mientras no hay
-   nada, para que el bloque no dé un salto cuando aparece la cuenta. */
+/*
+   EL LADO DEL RESULTADO.
+   Levantado del fondo, del mismo tono que el fondo, y sin una sola línea de
+   borde: el canto lo dibuja la luz. Sostiene el hueco mientras no hay nada para
+   que el bloque no pegue un salto cuando aparece la cuenta.
+*/
 .tn-resultado {
   justify-content: center;
-  min-height: 300px;
-  padding: clamp(24px, 3vw, 38px);
-  border: 1px solid var(--linea);
-  border-radius: var(--radio);
-  background: var(--superficie);
-  box-shadow: 0 1px 2px var(--sombra), 0 18px 50px -30px var(--sombra);
+  align-items: center;
+  text-align: center;
+  min-height: 320px;
+  padding: clamp(26px, 3.4vw, 42px);
+  border: 0;
+  border-radius: calc(var(--nm-canto) + 8px);
+  background: var(--bg);
+  box-shadow: var(--nm-alto);
+}
+/* Con la cuenta hecha, el contenido manda y vuelve a alinearse a la izquierda:
+   una columna de sumas centrada no se sigue con la vista. */
+.tn-resultado:has(.tn-siguiente) {
+  text-align: left;
+  align-items: stretch;
 }
 /* Lo que se ve al terminar la cuenta: qué se lleva, el botón, y que es gratis.
    El botón solo no prometía nada, y aquí es donde arranca el embudo. */
 .tn-siguiente {
-  margin-top: 22px;
+  margin-top: 24px;
+  padding-top: 22px;
+  /* La única raya de la pieza, y muy tenue: separa el regalo de la cuenta sin
+     meter otra caja dentro de la caja. */
+  border-top: 1px solid var(--linea);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: 13px;
 }
 .tn-regalo {
   margin: 0;
@@ -2189,19 +2289,47 @@ body[data-nav-claro='si'] .sello-color {
   font-weight: var(--peso-medio);
   color: var(--tx);
 }
+.tn-siguiente .pill {
+  transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tn-siguiente .pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 7px 9px 20px var(--nm-sombra);
+}
+.tn-siguiente .pill:active {
+  transform: translateY(1px);
+  box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.32);
+}
 .tn-regalo-nota {
   font-size: var(--t-nota);
   color: var(--tx-3);
 }
 
-/* El hueco de espera. Ya no enseña una cuenta de ejemplo —competía con los
-   marcadores de posición de las casillas y hacía creer que estaba todo hecho—:
-   señala hacia arriba y dice qué hay que hacer. */
+/*
+   EL HUECO DE ESPERA.
+
+   Ya no enseña una cuenta de ejemplo: competía con los marcadores de las
+   casillas y hacía creer que estaba todo hecho. Y ya no es una flecha suelta
+   flotando en un rectángulo vacío, que era la mitad de lo que se veía mal.
+
+   Ahora es un hueco excavado, redondo, con la flecha dentro respirando. Se lee
+   como lo que es —un sitio esperando algo— y como el mismo hueco que tienen las
+   casillas de al lado, que es exactamente adonde señala.
+*/
+.tn-hueco {
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: var(--nm-hondo);
+}
 .tn-flecha-arriba {
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1;
   color: var(--acento);
-  animation: tn-sube 2.4s ease-in-out infinite;
+  animation: tn-sube 2.6s cubic-bezier(0.45, 0, 0.15, 1) infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .tn-flecha-arriba {
@@ -2209,20 +2337,21 @@ body[data-nav-claro='si'] .sello-color {
   }
 }
 @keyframes tn-sube {
-  0%, 100% { transform: translateY(0); opacity: 0.55; }
-  50% { transform: translateY(-6px); opacity: 1; }
+  0%, 100% { transform: translateY(3px); opacity: 0.5; }
+  50% { transform: translateY(-4px); opacity: 1; }
 }
 .tn-invita {
-  margin: 12px 0 0;
+  margin: 20px 0 0;
   font-size: var(--t-entrada);
   font-weight: var(--peso-fino);
   line-height: 1.45;
   letter-spacing: -0.018em;
   color: var(--tx-2);
   max-width: 22ch;
+  text-wrap: balance;
 }
 .tn-invita-nota {
-  margin-top: 8px;
+  margin-top: 10px;
   font-size: var(--t-nota);
   color: var(--tx-3);
 }
@@ -2243,56 +2372,15 @@ body[data-nav-claro='si'] .sello-color {
 
 /* La cuenta del ejemplo, paso a paso y en vertical. Cada renglón es un pliegue;
    el último, el resultado. */
-.tn-pasos {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.tn-paso {
-  font-size: clamp(19px, 2.1vw, 25px);
-  font-weight: var(--peso-fino);
-  letter-spacing: -0.028em;
-  line-height: 1.35;
-  font-variant-numeric: tabular-nums;
-  color: var(--tx-4);
-}
-.tn-paso-fin {
-  /* El dorado de texto, no el decorativo: el segundo sobre arena se queda en
-     2,8:1 y ni siquiera llega al mínimo de texto grande. */
-  color: var(--acento);
-  font-size: clamp(28px, 3vw, 38px);
-  margin-top: 2px;
-}
+/* El hueco de espera se centra en la tarjeta, igual que el resto de la tarjeta
+   cuando todavía no hay cuenta hecha. */
 .tn-espera {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
 }
-.tn-ejemplo {
-  font-size: clamp(22px, 2.6vw, 32px);
-  font-weight: var(--peso-fino);
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-  color: var(--tx-4);
-}
-.tn-ejemplo-fin {
-  /* El dorado de texto, no el decorativo: el segundo sobre arena se queda en
-     2,8:1 y ni siquiera llega al mínimo de texto grande. */
-  color: var(--acento);
-}
-.tn-flecha {
-  font-size: 17px;
-  color: var(--tx-4);
-  line-height: 1;
-}
-.tn-espera-pie {
-  margin: 12px 0 0;
-  font-size: var(--t-nota);
-  line-height: 1.55;
-  color: var(--tx-3);
-  max-width: 32ch;
-}
+
 
 /* ==================================================================
    EL BLOQUE ANCLADO

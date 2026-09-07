@@ -226,7 +226,12 @@ export default function Home() {
       {/* ── TU NÚMERO ────────────────────────────────────────
           Aquí la web da antes de pedir: la cuenta es de verdad, es la misma
           que hace Iris, y se ve sin registrarse ni dejar el correo. */}
-      <div id="prueba" className="claro banda" style={{ scrollMarginTop: 80 }}>
+      {/* Arena y no blanco. El relieve de esta pieza se hace con luz, no con
+          color: el fondo, las casillas y la tarjeta tienen que ser exactamente
+          del mismo tono para que lo único que las separe sean las sombras. Sobre
+          blanco, la tarjeta beige se leía como un rectángulo gris grande y medio
+          vacío en mitad de la página. */}
+      <div id="prueba" className="arena banda" style={{ scrollMarginTop: 80 }}>
         <div className="banda-dentro">
           <TuNumero />
         </div>

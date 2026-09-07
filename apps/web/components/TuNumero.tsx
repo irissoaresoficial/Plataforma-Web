@@ -79,8 +79,26 @@ export default function TuNumero() {
     );
   };
 
-  const campo = (k: keyof Fecha, etiqueta: string, largo: number, ph: string) => (
-    <label className="tn-campo">
+  /*
+   * LOS TRES HUECOS SE EXCAVAN UNO DETRÁS DE OTRO.
+   *
+   * No es adorno: es la única manera de que el relieve se lea como relieve. Si
+   * los tres aparecen a la vez ya hechos, son tres rectángulos; apareciendo con
+   * un pelo de retraso entre ellos, se entiende que están hundidos en la
+   * superficie y que ahí se escribe. El muelle —y no una curva suave— porque un
+   * muelle es lo que hace una cosa con peso al posarse.
+   *
+   * `viewport.once` para que ocurra una vez y no cada vez que se pasa por
+   * delante, que cansa a la segunda.
+   */
+  const campo = (k: keyof Fecha, etiqueta: string, largo: number, ph: string, orden: number) => (
+    <motion.label
+      className="tn-campo"
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ type: 'spring', stiffness: 220, damping: 24, delay: 0.06 * orden }}
+    >
       <span className="rotulo-dato">{etiqueta}</span>
       <input
         className="tn-input"
@@ -100,7 +118,7 @@ export default function TuNumero() {
           if (e.key === 'Enter') calcular();
         }}
       />
-    </label>
+    </motion.label>
   );
 
   return (
@@ -129,9 +147,9 @@ export default function TuNumero() {
         </p>
 
         <div className="tn-fila">
-          {campo('dia', 'Día', 2, '14')}
-          {campo('mes', 'Mes', 2, '3')}
-          {campo('anio', 'Año', 4, '1981')}
+          {campo('dia', 'Día', 2, '14', 0)}
+          {campo('mes', 'Mes', 2, '3', 1)}
+          {campo('anio', 'Año', 4, '1981', 2)}
         </div>
 
         <div className="tn-acciones">
@@ -159,10 +177,12 @@ export default function TuNumero() {
           {hecho ? (
             <motion.div
               key={`${hecho.d}-${hecho.m}-${hecho.a}`}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 14, scale: 0.985 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5, ease: CURVA }}
+              /* Muelle, no curva. La cuenta no «aparece»: se posa. Es medio
+                 segundo de diferencia que se nota entero. */
+              transition={{ type: 'spring', stiffness: 190, damping: 22 }}
               style={{ width: '100%' }}
             >
               <Reduccion dia={hecho.d} mes={hecho.m} anio={hecho.a} alAcabar={() => setAcabado(true)} />
@@ -244,7 +264,11 @@ export default function TuNumero() {
                   Ahora el hueco no dice nada de cuentas: señala hacia arriba, a
                   las casillas.
               */}
-              <span className="tn-flecha-arriba" aria-hidden>↑</span>
+              {/* El hueco es redondo y está excavado igual que las casillas de
+                  al lado: sin decirlo, es el mismo gesto, y señala justo ahí. */}
+              <div className="tn-hueco">
+                <span className="tn-flecha-arriba" aria-hidden>↑</span>
+              </div>
               <p className="tn-invita">
                 Escribe arriba tu fecha de nacimiento y tu número aparece aquí.
               </p>
