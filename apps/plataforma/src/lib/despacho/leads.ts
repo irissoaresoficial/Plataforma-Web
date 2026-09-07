@@ -19,7 +19,7 @@
  *     descartado y queda el rastro de que estuvo.
  */
 
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, type Timestamp } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, type Timestamp } from "firebase/firestore";
 import { nube } from "../firebase";
 
 /** Por dónde entró. Son los tres formularios de la web más el chat. */
@@ -249,6 +249,25 @@ export async function ponCanal(id: string, canal: CanalLead): Promise<void> {
 }
 
 /** Apuntar algo sobre un lead — lo que se dijo al llamarle, por ejemplo. */
+/**
+ * Borra un lead. Del todo y sin vuelta atrás: no hay papelera.
+ *
+ * NO ESTABA, Y ERA UN FALLO. La idea era que un correo que llegó se marca como
+ * «descartado» y así queda el rastro. Vale para un lead de verdad; no vale para
+ * las diez reservas de mentira que se hacen al montar la web con el propio
+ * correo, que se quedaban ahí para siempre. Descartado significa «esta persona
+ * no me interesa», y una prueba no es una persona.
+ *
+ * Y hace falta para algo más serio: si alguien pide que borren sus datos, la
+ * ley da veinte días. Sin esto, la única forma era entrar a mano en la consola
+ * de Firebase.
+ */
+export async function borraLead(id: string): Promise<void> {
+  const base = nube();
+  if (!base) throw new Error("sin_nube");
+  await deleteDoc(doc(base, "leads", id));
+}
+
 export async function anotaLead(id: string, nota: string): Promise<void> {
   const base = nube();
   if (!base) throw new Error("sin_nube");

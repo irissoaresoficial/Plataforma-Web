@@ -54,6 +54,7 @@ import {
   CANALES_LEAD,
   ESTADOS_LEAD,
   anotaLead,
+  borraLead,
   mueveLead,
   ponCanal,
   ultimosLeads,
@@ -64,6 +65,7 @@ import {
 import { APOYO, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, rotulo, tarjetaCon } from "@/lib/ui";
 import { Avatar, Cabecera } from "../despacho/Piezas";
 import HojaLateral from "../despacho/HojaLateral";
+import Confirmar from "../Confirmar";
 
 /**
  * EL MARCO DE LA PÁGINA ES EL MISMO QUE EL DE LAS OTRAS TRES.
@@ -193,6 +195,20 @@ export default function LeadsScreen() {
       .filter((c) => c.n > 0)
       .sort((a, b) => (a.k === "nose" ? 1 : b.k === "nose" ? -1 : b.n - a.n));
   }, [leads]);
+
+  const borra = async (id: string) => {
+    /* Se quita de la pantalla al momento y se cierra la ficha: dejar abierta la
+       ficha de algo que ya no existe es lo que hace que alguien pulse otra vez
+       y vea un error. Si Firestore lo rechaza, se recarga y vuelve a aparecer
+       — mejor que se deshaga solo a que la lista mienta. */
+    setAbierto(null);
+    setLeads((s) => s?.filter((l) => l.id !== id) ?? s);
+    try {
+      await borraLead(id);
+    } catch {
+      carga();
+    }
+  };
 
   const guardaNota = async () => {
     if (!activo) return;
@@ -498,6 +514,34 @@ export default function LeadsScreen() {
               <button onClick={guardaNota} disabled={guardando} style={css(BOTON_PLANO + "margin-top:10px;")}>
                 {guardando ? "Guardando…" : "Guardar la nota"}
               </button>
+            </div>
+
+            {/*
+                BORRAR, AL FINAL DEL TODO Y APARTADO.
+
+                Es lo único irreversible de esta ficha, así que va donde no se
+                pulsa por error: abajo, después de todo lo demás, y detrás de una
+                confirmación. Lo normal con alguien que no interesa es moverlo a
+                «Descartado» —eso se deshace— y por eso el borrado no compite con
+                las pastillas de arriba.
+
+                Para lo que sí sirve es para lo que no es una persona: las
+                pruebas del montaje. Y para cuando alguien pide que borren sus
+                datos, que es un derecho con veinte días de plazo.
+            */}
+            <div style={css(RAYA + "padding-top:var(--s4);")}>
+              <Confirmar
+                estilo={BOTON_PLANO + "color:var(--red);"}
+                pregunta="¿Borrar a esta persona? No se puede deshacer."
+                confirmar="Sí, borrarla"
+                alConfirmar={() => void borra(activo.id)}
+              >
+                Borrar de la lista
+              </Confirmar>
+              <p style={css(NOTA + "margin:8px 0 0;line-height:1.5;")}>
+                Si es alguien que no te interesa, muévelo a «Descartado»: eso se deshace. Borrar es para las
+                pruebas y para cuando alguien pide que quites sus datos.
+              </p>
             </div>
           </div>
         )}

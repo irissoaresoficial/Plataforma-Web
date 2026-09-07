@@ -139,18 +139,41 @@ service cloud.firestore {
       allow update: if dentro();
 
       /**
-       * Crear y borrar, NO. Y esto no es una omisión.
+       * CREAR, NO. Y esto no es una omisión.
        *
        * Un lead sólo puede nacer de que una persona real haya rellenado un
        * formulario en la web, y eso lo escribe el servidor. Si desde el
        * navegador se pudieran crear, la lista de Iris dejaría de ser un registro
        * de lo que ha pasado para pasar a ser una lista donde cabe cualquier
        * cosa.
-       *
-       * Y borrar tampoco: un correo que llegó, llegó. Si sobra, se marca como
-       * descartado —que es un `update`— y así queda el rastro de que estuvo.
        */
-      allow create, delete: if false;
+      allow create: if false;
+
+      /**
+       * BORRAR, SÍ. Y ANTES DECÍA QUE NO — ME EQUIVOQUÉ.
+       *
+       * El argumento era: «un correo que llegó, llegó; si sobra se marca como
+       * descartado y así queda el rastro de que estuvo». Suena bien y es la
+       * regla correcta para un lead de verdad.
+       *
+       * El problema es que no contempla el caso más frecuente de todos, que es
+       * el que estaba pasando mientras se escribía esa regla: las PRUEBAS. Al
+       * montar esto se hacen diez reservas de mentira con el propio correo, y
+       * todas caen aquí para siempre. «Descartado» no vale para eso: descartado
+       * significa «esta persona no me interesa», y una prueba no es una persona.
+       * Queda una columna con basura que no se puede limpiar, y una lista que no
+       * se puede limpiar se deja de mirar.
+       *
+       * Y hay algo peor que la basura: el derecho de supresión. Si alguien
+       * escribe pidiendo que borren sus datos, hay veinte días para hacerlo. Con
+       * esta regla en `false` la única forma era entrar a mano en la consola de
+       * Firebase. Una plataforma que obliga a eso para cumplir la ley está mal
+       * hecha.
+       *
+       * Se borra desde la ficha y con confirmación, que es donde vive el resto
+       * de lo irreversible.
+       */
+      allow delete: if dentro();
     }
 
     match /reservas/{id} {
