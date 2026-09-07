@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { css } from "@/lib/css";
 
 /**
@@ -26,6 +26,28 @@ import { css } from "@/lib/css";
  */
 export default function Particulas({ cantidad = 26, color }: { cantidad?: number; color?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  /*
+   * EL POLVO CAMBIA DE COLOR CUANDO CAMBIA EL TEMA.
+   *
+   * El color se leía de `data-tema` una sola vez, al montar, y el efecto no
+   * dependía de nada que cambiara: al darle al botón de la luna la página
+   * entera se daba la vuelta y las motas se quedaban del color de la cara
+   * anterior — polvo negro flotando sobre el granate del modo oscuro, donde
+   * sencillamente desaparecía.
+   *
+   * Aquí se vigila el atributo y se vuelve a montar el lienzo cuando cambia.
+   * Es lo mismo que hacen los tokens de CSS, sólo que un canvas no se entera
+   * solo: hay que decírselo.
+   */
+  const [tema, setTema] = useState(() =>
+    typeof document === "undefined" ? "claro" : document.documentElement.dataset.tema || "claro"
+  );
+
+  useEffect(() => {
+    const vigia = new MutationObserver(() => setTema(document.documentElement.dataset.tema || "claro"));
+    vigia.observe(document.documentElement, { attributes: true, attributeFilter: ["data-tema"] });
+    return () => vigia.disconnect();
+  }, []);
 
   useEffect(() => {
     const lienzo = ref.current;
@@ -35,10 +57,21 @@ export default function Particulas({ cantidad = 26, color }: { cantidad?: number
 
     const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Sobre fondo oscuro el dorado tostado desaparece: hay que subirlo de luz,
-    // igual que se hace con el token de color.
-    const oscuro = document.documentElement.dataset.tema === "oscuro";
-    const tinta = color || (oscuro ? "236,214,150" : "176,142,52");
+    /*
+     * EN CLARO, POLVO NEGRO. EN OSCURO, POLVO DORADO.
+     *
+     * Las motas eran doradas en las dos caras. Sobre el granate del modo oscuro
+     * eso funciona —el oro es lo único que se recorta contra ese fondo—, pero
+     * sobre la plataforma blanca un dorado claro sobre papel claro es casi el
+     * papel: había partículas y no se veían. Toda la atmósfera se perdía justo
+     * en la cara que se usa de día.
+     *
+     * En claro son tinta: el mismo marrón oscuro del texto, muy rebajado. Se
+     * ven, no distraen, y siguen siendo de esta casa — un negro puro sobre
+     * papel cálido se ve azulado y ajeno.
+     */
+    const oscuro = tema === "oscuro";
+    const tinta = color || (oscuro ? "236,214,150" : "34,29,31");
 
     let ancho = 0;
     let alto = 0;
@@ -61,7 +94,7 @@ export default function Particulas({ cantidad = 26, color }: { cantidad?: number
         vaiven: (0.004 + z * 0.014) * (Math.random() < 0.5 ? -1 : 1),
         ritmo: 0.12 + Math.random() * 0.22,
         fase: Math.random() * Math.PI * 2,
-        brillo: (oscuro ? 0.22 : 0.18) + z * (oscuro ? 0.5 : 0.42),
+        brillo: (oscuro ? 0.22 : 0.1) + z * (oscuro ? 0.5 : 0.26),
       };
     });
 
@@ -80,6 +113,38 @@ export default function Particulas({ cantidad = 26, color }: { cantidad?: number
 
     const enPantalla = new IntersectionObserver((e) => (visible = e[0].isIntersecting), { threshold: 0 });
     enPantalla.observe(lienzo);
+
+    /*
+     * EL RATÓN APARTA EL POLVO.
+     *
+     * Es lo que convierte un fondo bonito en un fondo que responde: al pasar
+     * por encima, las motas cercanas se separan un poco y vuelven solas a lo
+     * suyo. No es un efecto de partículas persiguiendo el cursor —eso llama la
+     * atención sobre sí mismo y estorba— sino aire desplazado: se nota, no se
+     * mira.
+     *
+     * El puntero se escucha en la ventana y no en el lienzo porque el lienzo no
+     * recibe pulsaciones (`pointer-events:none`, para no robárselas a lo que
+     * hay encima). Se guarda en coordenadas del propio lienzo.
+     *
+     * Sólo el ratón: en una pantalla táctil no hay puntero flotando, y hacerlo
+     * responder al dedo mientras se hace scroll sería ruido.
+     */
+    const puntero = { x: -999, y: -999, dentro: false };
+    const RADIO = 110;
+    const FUERZA = 26;
+    const mueveRaton = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      const c = lienzo.getBoundingClientRect();
+      puntero.x = e.clientX - c.left;
+      puntero.y = e.clientY - c.top;
+      puntero.dentro = puntero.x > -RADIO && puntero.x < c.width + RADIO && puntero.y > -RADIO && puntero.y < c.height + RADIO;
+    };
+    const salePuntero = () => (puntero.dentro = false);
+    if (!quieto) {
+      window.addEventListener("pointermove", mueveRaton, { passive: true });
+      window.addEventListener("pointerleave", salePuntero);
+    }
 
     /** Una mota, con su halo. Sin halo se ven como puntos duros de alfiler. */
     const mota = (x: number, y: number, radio: number, alfa: number) => {
@@ -119,8 +184,25 @@ export default function Particulas({ cantidad = 26, color }: { cantidad?: number
             m.x = Math.random();
           }
         }
-        const x = (m.x + Math.sin(t * m.ritmo + m.fase) * m.vaiven) * ancho;
-        const y = m.y * alto;
+        let x = (m.x + Math.sin(t * m.ritmo + m.fase) * m.vaiven) * ancho;
+        let y = m.y * alto;
+
+        /* El empuje del ratón. Cae con el cuadrado de la distancia y las motas
+           de delante —las grandes— se apartan más que las del fondo, que es lo
+           que hace que el desplazamiento se lea como profundidad y no como un
+           agujero recortado en el polvo. */
+        if (puntero.dentro) {
+          const dx = x - puntero.x;
+          const dy = y - puntero.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < RADIO * RADIO && d2 > 0.01) {
+            const d = Math.sqrt(d2);
+            const empuje = (1 - d / RADIO) ** 2 * FUERZA * (0.4 + m.z);
+            x += (dx / d) * empuje;
+            y += (dy / d) * empuje;
+          }
+        }
+
         const titileo = 0.78 + 0.22 * Math.sin(t * m.ritmo * 1.7 + m.fase);
         mota(x, y, m.r * 3.2, m.brillo * titileo * entrada);
       }
@@ -131,8 +213,10 @@ export default function Particulas({ cantidad = 26, color }: { cantidad?: number
       cancelAnimationFrame(cuadro);
       observador.disconnect();
       enPantalla.disconnect();
+      window.removeEventListener("pointermove", mueveRaton);
+      window.removeEventListener("pointerleave", salePuntero);
     };
-  }, [cantidad, color]);
+  }, [cantidad, color, tema]);
 
   return <canvas ref={ref} aria-hidden="true" style={css("position:absolute;inset:0;width:100%;height:100%;pointer-events:none;border-radius:inherit;")} />;
 }

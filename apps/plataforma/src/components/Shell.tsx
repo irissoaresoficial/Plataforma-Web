@@ -14,6 +14,7 @@ import Sidebar from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
 import Tema from "./Tema";
 import Cuenta from "./Cuenta";
+import Particulas from "./Particulas";
 
 export default function Shell() {
   const { view, setView, r, re, rehidratado } = useApp();
@@ -32,34 +33,47 @@ export default function Shell() {
     if (rehidratado && VISTAS_DE_ESTUDIO.includes(view) && !r && !re) setView("inicio");
   }, [view, r, re, rehidratado, setView]);
 
-  // Desde el estudio y la comparativa se vuelve al panel, que es de donde se
-  // sale; desde cualquier otra pantalla, a la consulta.
-  const volverA: View = view === "estudio" || view === "pareja" ? "panel" : "inicio";
-
   return (
     <div
       data-app-root=""
       style={css(
-        "min-height:100vh;color:var(--text);font-family:var(--font-ui);"
+        "position:relative;min-height:100vh;color:var(--text);font-family:var(--font-ui);"
       )}
     >
-      {/* La entrada no lleva cabecera: sólo el formulario, centrado. La marca,
-       * la navegación y el botón de volver no pintan nada mientras no haya un
-       * estudio abierto, y quitarlos deja la pantalla en lo único que hay que
-       * hacer ahí. El cambio de tema sí se queda, suelto en una esquina. */}
-      {/* En la consulta no hay cabecera, así que el tema y la cuenta van
-          sueltos en la esquina. Salir tiene que poder hacerse desde cualquier
-          pantalla, y ésta es la primera que se ve. Al despacho se va desde la
-          tarjeta de la propia consulta, no desde aquí: tres botones más en la
-          esquina de una pantalla sin cabecera es justo lo que se quitó. */}
-      {view === "inicio" && (
-        <div data-chrome="1" style={css("position:fixed;top:16px;right:clamp(14px,3vw,28px);z-index:40;display:flex;align-items:center;gap:10px;")}>
-          <Tema />
-          <Cuenta />
-        </div>
-      )}
+      {/*
+          EL POLVO, EN TODAS LAS PANTALLAS.
 
-      {view !== "inicio" && (
+          Estaba sólo en la consulta y en los carteles de «pendiente», así que
+          la atmósfera se apagaba justo al entrar a trabajar: la consulta
+          respiraba y el panel, la agenda y las facturas eran papel liso.
+
+          Va aquí, en la raíz, y no dentro de cada pantalla: así es UN solo
+          lienzo para toda la aplicación en vez de uno por vista, no se reinicia
+          al cambiar de sección —el polvo sigue subiendo mientras navegas, que
+          es la mitad del efecto— y las motas atraviesan la columna y la
+          cabecera por debajo del cristal.
+
+          Fijo a la ventana a propósito: es aire de la habitación, no del
+          documento, así que no se va con el scroll.
+      */}
+      <div aria-hidden="true" style={css("position:fixed;inset:0;z-index:0;pointer-events:none;")}>
+        <Particulas cantidad={34} />
+      </div>
+      {/*
+          UNA SOLA CABECERA, EN TODAS LAS PANTALLAS.
+
+          La consulta no llevaba: era una pantalla limpia, con el tema y la
+          cuenta sueltos en una esquina, y al despacho se iba por una tarjeta de
+          dentro. Tenía sentido cuando la consulta era la puerta de entrada al
+          estudio y poco más.
+
+          Ya no lo tiene. Ahora la columna de la izquierda ES la navegación, y
+          una pantalla sin ella es una pantalla desde la que no se puede ir a
+          ningún sitio — justo la primera que se ve al abrir por la mañana.
+          Misma cabecera y misma columna en las seis: no hay que aprenderse una
+          pantalla que funciona distinta de las demás.
+      */}
+      {(
       <header
         data-chrome="1"
         data-app-header=""
@@ -109,80 +123,40 @@ export default function Shell() {
           </div>
         </div>
         {/*
-            «VOLVER» DICE A DÓNDE.
+            Y «VOLVER» TAMBIÉN SE HA IDO.
 
-            El rótulo era siempre «Volver» y el destino cambiaba: desde el
-            Estudio subía al Panel, desde el Panel echaba al formulario vacío de
-            la consulta. Dos toques seguidos sin pensar y te plantabas fuera del
-            estudio que estabas mirando. El destino sólo se sabía por el `title`,
-            que en una tableta no existe.
-
-            Una palabra más y desaparece la duda entera. Y en el Panel el botón
-            ni sale: la pestaña «Consulta» está ahí al lado y hace lo mismo.
+            Era un rótulo con tres destinos: desde el Estudio subía al Panel,
+            desde el Panel echaba al formulario vacío de la consulta. Con la
+            columna siempre delante ya no hace falta ninguna flecha genérica —
+            cada sitio tiene su nombre y se pulsa directamente. Un botón menos
+            en la cabecera, y uno que además engañaba.
         */}
-        {view !== "panel" && (
-          <button
-            onClick={() => setView(volverA)}
-            style={css(
-              "display:inline-flex;align-items:center;gap:7px;flex:none;padding:8px 14px;border-radius:980px;cursor:pointer;border:1px solid var(--border-accent);background:color-mix(in srgb, var(--text) 4%, transparent);color:var(--gold);font-size:var(--t-body);font-weight:590;transition:all .2s;"
-            )}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M19 12H5" />
-              <path d="m12 19-7-7 7-7" />
-            </svg>
-            {volverA === "inicio" ? "A la consulta" : "Al panel"}
-          </button>
-        )}
-        {/* Control segmentado de iOS: una pista gris y una pastilla blanca
-         * elevada sobre la sección activa.
-         *
-         * Dentro van los dos grupos separados por una línea de un pelo: a la
-         * izquierda el estudio —los tres pasos de leer una carta—, a la derecha
-         * el despacho. Son una sola pista y no dos porque son seis sitios donde
-         * se puede estar, y sólo se está en uno; con dos pistas parecería que la
-         * pantalla puede tener a la vez una pestaña de cada. */}
-        <nav data-nav="" style={css("display:flex;align-items:center;gap:2px;margin-left:auto;background:color-mix(in srgb, var(--text) 8%, transparent);border-radius:980px;padding:3px;")}>
-          {PESTANAS.map((t, i) => {
-            const on = view === t.k || (t.k === "panel" && view === "pareja");
-            // El panel y el estudio necesitan una carta calculada; el despacho
-            // no, y por eso nunca se bloquea.
-            const bloqueado = VISTAS_DE_ESTUDIO.includes(t.k) && !r && !re;
-            const abreGrupo = i > 0 && PESTANAS[i - 1].grupo !== t.grupo;
-            return (
-              <span key={t.k} style={css("display:flex;align-items:center;gap:2px;")}>
-                {abreGrupo && <span aria-hidden="true" style={css("width:1px;height:18px;margin:0 6px;background:var(--border-strong);")} />}
-                <button
-                  onClick={() => {
-                    if (!bloqueado) setView(t.k);
-                  }}
-                  style={css(
-                    "padding:7px 16px;border-radius:980px;border:none;white-space:nowrap;cursor:" +
-                      (bloqueado ? "not-allowed" : "pointer") +
-                      ";font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;background:" +
-                      (on ? "var(--surface-solid)" : "transparent") +
-                      ";box-shadow:" +
-                      (on ? "0 3px 8px rgba(0,0,0,.1),0 1px 1px rgba(0,0,0,.06)" : "none") +
-                      ";color:" +
-                      (on ? "var(--text)" : bloqueado ? "var(--text-4)" : "var(--text-3)") +
-                      ";transition:all .22s;"
-                  )}
-                >
-                  {t.label}
-                </button>
-              </span>
-            );
-          })}
-        </nav>
+        {/*
+            LA TIRA DE PESTAÑAS SE HA IDO A LA COLUMNA.
+
+            Eran seis, y seis no caben: a partir de 1200 px se escondían enteras
+            en el cajón. Además duplicaban lo que la columna ya listaba, así que
+            para saber a dónde se podía ir había que mirar en dos sitios y
+            acordarse de cuál mandaba en cada ancho.
+
+            Aquí arriba se queda lo que no es navegación: quién eres, en qué
+            pantalla estás cuando la columna no cabe, y el tema.
+        */}
+        <span style={css("margin-left:auto;")} />
         <Tema />
         <Cuenta />
       </header>
       )}
 
-      {/* En el panel la barra lateral va pegada al contenido; el resto de
-       * pantallas ocupan el ancho completo. */}
-      <div style={css("display:flex;align-items:flex-start;")}>
-        {view === "panel" && <Sidebar />}
+      {/* Por encima del polvo. Sin `position` propia, este bloque va en el
+          flujo normal y el lienzo —que está posicionado— se le pintaría encima,
+          tapando la aplicación entera con un velo de motas. */}
+      <div style={css("position:relative;z-index:1;display:flex;align-items:flex-start;")}>
+        {/* La columna, en todas. Salía sólo en el panel, lo cual era coherente
+            cuando llevaba únicamente las partes de la carta; ahora que es toda
+            la navegación, esconderla en cinco de las seis pantallas dejaría
+            cinco pantallas sin salida. */}
+        <Sidebar />
         <div style={css("flex:1;min-width:0;")}>
           {view === "inicio" && <ConsultaScreen />}
           {view === "panel" && <PanelScreen />}

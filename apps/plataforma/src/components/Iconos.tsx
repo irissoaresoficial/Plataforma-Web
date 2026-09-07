@@ -173,3 +173,39 @@ export const IcoEditar = (p: P) => (
     <path d="M13.6 5.8 18.2 10.4" opacity=".55" />
   </Caja>
 );
+
+/**
+ * La consulta: la persona que se sienta delante y la fecha que trae.
+ * No es una casita ni una lupa — es el sitio donde se pregunta a quién
+ * estudiamos hoy, y lo que hay ahí es un nombre y una fecha.
+ */
+export const IcoConsulta = (p: P) => (
+  <Caja {...p}>
+    <circle cx="12" cy="7.6" r="3.4" />
+    <path d="M5.6 20.4a6.4 6.4 0 0 1 12.8 0" opacity=".7" />
+    <path d="M8.6 14.6h6.8" opacity=".4" />
+  </Caja>
+);
+
+/** El documento: las hojas del estudio, una encima de otra, listas para salir. */
+export const IcoDocumento = (p: P) => (
+  <Caja {...p}>
+    <path d="M7.4 2.8h6.4l4 4v11.4a1.6 1.6 0 0 1-1.6 1.6H7.4a1.6 1.6 0 0 1-1.6-1.6V4.4a1.6 1.6 0 0 1 1.6-1.6z" />
+    <path d="M13.4 3v4.2h4.2" opacity=".55" />
+    <path d="M8.8 11.4h6.4M8.8 14.2h6.4M8.8 17h4" opacity=".45" />
+    {/* La segunda hoja, asomando: el estudio nunca es una sola página. */}
+    <path d="M9.4 21.2h7.4a2 2 0 0 0 2-2" opacity=".45" />
+  </Caja>
+);
+
+/** La pareja: los dos árboles y lo que se activa en medio. */
+export const IcoPareja = (p: P) => (
+  <Caja {...p}>
+    <circle cx="7.6" cy="7" r="2.6" />
+    <circle cx="16.4" cy="7" r="2.6" />
+    <path d="M3.4 19.6a4.2 4.2 0 0 1 8.4 0" opacity=".7" />
+    <path d="M12.2 19.6a4.2 4.2 0 0 1 8.4 0" opacity=".7" />
+    {/* El hilo entre los dos: la sinergia es lo que pasa en medio. */}
+    <path d="M10.2 7h3.6" strokeDasharray="1.6 1.8" />
+  </Caja>
+);

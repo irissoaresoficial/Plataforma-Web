@@ -2,15 +2,21 @@
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { useApp, type Seccion, type Disciplina } from "@/lib/app-context";
+import { useApp, type Seccion, type Disciplina, type View } from "@/lib/app-context";
 import {
+  IcoAgenda,
   IcoAlma,
   IcoArbol,
   IcoCiclos,
+  IcoClientes,
+  IcoConsulta,
   IcoCuentas,
+  IcoDocumento,
   IcoEstructura,
+  IcoFacturas,
   IcoNumerologia,
   IcoNumeros,
+  IcoPareja,
   IcoPlegar,
   IcoResumen,
 } from "./Iconos";
@@ -19,8 +25,8 @@ type Ico = (p: { size?: number }) => React.JSX.Element;
 type Item = { k: Seccion; label: string; Ico: Ico };
 
 /* En la lateral los nombres van cortos: caben en un renglón y la columna
- * queda a plomo. El nombre largo sigue estando arriba, en la tira de
- * pestañas y en el encabezado de cada sección. */
+ * queda a plomo. El nombre largo sigue estando en el encabezado de cada
+ * sección. */
 const KABALA: Item[] = [
   { k: "resumen", label: "Resumen", Ico: IcoResumen },
   { k: "arbol", label: "Árbol", Ico: IcoArbol },
@@ -38,141 +44,204 @@ export const DISCIPLINAS: Array<{ k: Disciplina; label: string; Ico: Ico }> = [
   { k: "numerologia", label: "Numerología", Ico: IcoNumerologia },
 ];
 
+/** El despacho: lo que no es leer una carta. Nunca se bloquea — una factura no
+ *  depende de que haya un estudio abierto. */
+const DESPACHO: Array<{ k: View; label: string; Ico: Ico }> = [
+  { k: "agenda", label: "Agenda", Ico: IcoAgenda },
+  { k: "clientes", label: "Clientes", Ico: IcoClientes },
+  { k: "facturas", label: "Facturas", Ico: IcoFacturas },
+];
+
 /**
- * La navegación del estudio: un grupo por disciplina y, dentro de Kábala, sus
- * siete partes. Es la misma lista en los dos sitios donde aparece — la columna
- * de la izquierda en pantalla ancha y el cajón del menú en móvil y tableta —
- * para que no haya dos navegaciones que mantener y que puedan discrepar.
+ * TODA LA NAVEGACIÓN, EN UN SOLO SITIO.
  *
- * Aquí sólo va el estudio. La agenda, los clientes y las facturas no son partes
- * de una disciplina —una factura no cuelga de Kábala— así que viven arriba, en
- * la tira de pestañas, al mismo nivel que la consulta y el panel.
+ * Antes estaba repartida en dos: una tira de pestañas arriba —Consulta, Panel,
+ * Estudio y los tres del despacho— y esta columna, que sólo llevaba las partes
+ * del estudio. Seis pestañas arriba no caben en un portátil, así que a partir
+ * de 1200 px se iban al cajón y desaparecían; y tener dos navegaciones que hay
+ * que mirar por turnos para saber a dónde se puede ir es exactamente lo que
+ * hace que una herramienta se sienta grande y confusa.
  *
- * `alCambiar` lo usa el cajón para cerrarse en cuanto se elige algo.
+ * Ahora la columna es LA navegación, con dos grupos:
+ *
+ *   EL ESTUDIO   — la consulta, las partes de la carta y el documento.
+ *   EL DESPACHO  — la agenda, los clientes y las facturas.
+ *
+ * Dos grupos, un nivel de sangrado y un solo sitio donde mirar. Arriba se queda
+ * la marca, la cuenta y el tema, que no son navegación.
+ *
+ * Es la misma lista en los dos sitios donde aparece —esta columna en pantalla
+ * ancha y el cajón en móvil— para que no haya dos que mantener y que puedan
+ * discrepar. `alCambiar` lo usa el cajón para cerrarse al elegir.
  */
 export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void; compacta?: boolean }) {
-  const { r, re, seccion, setSeccion, disciplina, setDisciplina } = useApp();
+  const { r, re, view, setView, seccion, setSeccion, disciplina, setDisciplina } = useApp();
   const quieto = useReducedMotion();
   // Qué disciplinas están desplegadas. Se abre la que se está mirando, y
-  // pulsando su nombre se cierra: en cuanto haya partes en las tres, la
-  // columna entera abierta no cabría de una vez.
+  // pulsando su nombre se cierra.
   const [abiertas, setAbiertas] = useState<Disciplina[]>(["kabala"]);
-  if (!r && !re) return null;
+
+  const hayEstudio = Boolean(r || re);
   // El estudio de empresa cabe entero en una pantalla: no hay siete partes
   // que listar porque seis de ellas salen de la fecha, y no hay fecha.
   const partesKabala = re ? KABALA.slice(0, 1) : KABALA;
 
   const alterna = (d: Disciplina) => {
+    setView("panel");
     setDisciplina(d);
     setAbiertas((s) => (s.includes(d) ? s.filter((x) => x !== d) : [...s, d]));
   };
 
-  const fila = (activo: boolean, Ico: Ico, label: string, onClick: () => void, grande?: boolean, abierta?: boolean) => (
-    <button
-      key={label}
-      onClick={onClick}
-      title={compacta ? label : undefined}
-      aria-label={compacta ? label : undefined}
-      style={css(
-        "display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:9px 10px;white-space:nowrap;border:none;border-radius:var(--r-sm);cursor:pointer;letter-spacing:-.01em;line-height:1.25;transition:background .18s,color .18s;" +
-          (grande ? "font-size:var(--t-read);font-weight:600;" : "font-size:var(--t-body);font-weight:590;") +
-          /* Dónde estás, en granate. Es la misma regla que el botón: lo activo
-             y lo que se pulsa comparten color, y el oro se queda para adornar.
-             En oscuro `--accion` es el oro claro por sí solo. */
-          "background:" +
-          (activo ? "var(--accion-suave)" : "transparent") +
-          ";color:" +
-          (activo ? "var(--accion)" : grande ? "var(--text)" : "var(--text-3)") +
-          ";"
-      )}
-    >
-      <span
+  const fila = (
+    activo: boolean,
+    Ico: Ico,
+    label: string,
+    onClick: () => void,
+    opts?: { grande?: boolean; abierta?: boolean; apagado?: boolean }
+  ) => {
+    const { grande, abierta, apagado } = opts ?? {};
+    return (
+      <button
+        key={label}
+        onClick={apagado ? undefined : onClick}
+        disabled={apagado}
+        title={compacta ? label : apagado ? "Primero genera un estudio" : undefined}
+        aria-label={compacta ? label : undefined}
+        aria-current={activo ? "page" : undefined}
         style={css(
-          "flex:none;display:grid;place-items:center;" +
-            (grande ? "width:26px;height:26px;border-radius:var(--r);background:var(--gold-soft);" : "") +
-            "color:" +
-            (activo || grande ? "var(--gold)" : "var(--text-4)") +
+          "display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:9px 10px;white-space:nowrap;border:none;border-radius:var(--r-sm);letter-spacing:-.01em;line-height:1.25;transition:background .18s,color .18s;" +
+            (apagado ? "cursor:not-allowed;" : "cursor:pointer;") +
+            (grande ? "font-size:var(--t-read);font-weight:600;" : "font-size:var(--t-body);font-weight:590;") +
+            /* Dónde estás, en granate. Es la misma regla que el botón: lo activo
+               y lo que se pulsa comparten color, y el oro se queda para adornar.
+               En oscuro `--accion` es el oro claro por sí solo. */
+            "background:" +
+            (activo ? "var(--accion-suave)" : "transparent") +
+            ";color:" +
+            (activo ? "var(--accion)" : apagado ? "var(--text-4)" : grande ? "var(--text)" : "var(--text-3)") +
             ";"
         )}
       >
-        <Ico size={grande ? 16 : 19} />
-      </span>
-      {!compacta && label}
-      {/* La flecha dice si el grupo está abierto y sirve para cerrarlo. */}
-      {!compacta && abierta !== undefined && (
-        <motion.span
-          aria-hidden="true"
-          animate={{ rotate: abierta ? 0 : -90 }}
-          transition={quieto ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          style={css("margin-left:auto;display:grid;place-items:center;color:var(--text-4);")}
+        <span
+          style={css(
+            "flex:none;display:grid;place-items:center;" +
+              (grande ? "width:26px;height:26px;border-radius:var(--r);background:var(--gold-soft);" : "") +
+              "color:" +
+              (apagado ? "var(--text-4)" : activo || grande ? "var(--gold)" : "var(--text-4)") +
+              ";"
+          )}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m6 9 6 6 6-6" />
-          </svg>
-        </motion.span>
-      )}
-    </button>
-  );
+          <Ico size={grande ? 16 : 19} />
+        </span>
+        {!compacta && label}
+        {/* La flecha dice si el grupo está abierto y sirve para cerrarlo. */}
+        {!compacta && abierta !== undefined && (
+          <motion.span
+            aria-hidden="true"
+            animate={{ rotate: abierta ? 0 : -90 }}
+            transition={quieto ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            style={css("margin-left:auto;display:grid;place-items:center;color:var(--text-4);")}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </motion.span>
+        )}
+      </button>
+    );
+  };
+
+  /* El rótulo de un grupo. Se calla cuando la columna está plegada a iconos:
+     ahí no cabe y la separación ya la hace el aire entre grupos. */
+  const rotulo = (t: string) =>
+    !compacta && (
+      <div style={css("font-size:var(--t-micro);font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--text-4);padding:0 10px var(--s2);")}>
+        {t}
+      </div>
+    );
+
+  const ir = (v: View) => () => {
+    setView(v);
+    alCambiar?.();
+  };
 
   return (
-    <nav style={css("display:flex;flex-direction:column;gap:var(--s5);")}>
-      {DISCIPLINAS.map((d) => {
-        const dentro = disciplina === d.k;
-        // Sólo Kábala tiene partes por ahora; Numerología no lleva flecha
-        // porque no hay nada que desplegar todavía.
-        const partes = d.k === "kabala" ? partesKabala : [];
-        const abierta = partes.length > 0 && (compacta || abiertas.includes(d.k));
-        return (
-          <div key={d.k} style={css("display:flex;flex-direction:column;gap:2px;")}>
-            {/* La disciplina abierta no se resalta si es Kábala: ya se ve
-             * cuál está por la sección marcada de dentro. */}
-            {fila(
-              dentro && !partes.length,
-              d.Ico,
-              d.label,
-              () => {
-                if (partes.length) alterna(d.k);
-                else {
-                  setDisciplina(d.k);
-                  alCambiar?.();
-                }
-              },
-              true,
-              partes.length ? abierta : undefined
-            )}
-            <AnimatePresence initial={false}>
-              {abierta && (
-                <motion.div
-                  key="partes"
-                  initial={quieto ? false : { height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={quieto ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                  transition={{ height: { duration: 0.34, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.22 } }}
-                  style={css("overflow:hidden;")}
-                >
-                  {!compacta && <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-4);padding:var(--s2) 10px 2px;")}>El estudio</div>}
-                  {partes.map(({ k, label, Ico }, i) => (
-                    <motion.div
-                      key={k}
-                      initial={quieto ? false : { opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.05 + i * 0.035, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      {fila(seccion === k && dentro, Ico, label, () => {
-                        // Pulsar una parte de Kábala devuelve a Kábala, aunque
-                        // se estuviera mirando otra disciplina.
-                        setDisciplina("kabala");
-                        setSeccion(k);
-                        alCambiar?.();
-                      })}
-                    </motion.div>
-                  ))}
-                </motion.div>
+    <nav style={css("display:flex;flex-direction:column;gap:var(--s6);")}>
+      {/* ------------------------------------------------------- EL ESTUDIO */}
+      <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+        {rotulo("El estudio")}
+
+        {/* La consulta es donde se empieza y donde se cambia de persona, así
+            que no se bloquea nunca: es la salida de todas las demás. */}
+        {fila(view === "inicio", IcoConsulta, "Consulta", ir("inicio"))}
+
+        {DISCIPLINAS.map((d) => {
+          const dentro = view === "panel" && disciplina === d.k;
+          // Sólo Kábala tiene partes por ahora; Numerología no lleva flecha
+          // porque no hay nada que desplegar todavía.
+          const partes = d.k === "kabala" && hayEstudio ? partesKabala : [];
+          const abierta = partes.length > 0 && (compacta || abiertas.includes(d.k));
+          return (
+            <div key={d.k} style={css("display:flex;flex-direction:column;gap:2px;")}>
+              {/* La disciplina abierta no se resalta si tiene partes: ya se ve
+                  cuál está por la sección marcada de dentro. */}
+              {fila(
+                dentro && !partes.length,
+                d.Ico,
+                d.label,
+                () => {
+                  if (partes.length) alterna(d.k);
+                  else {
+                    setView("panel");
+                    setDisciplina(d.k);
+                    alCambiar?.();
+                  }
+                },
+                { grande: true, abierta: partes.length ? abierta : undefined, apagado: !hayEstudio }
               )}
-            </AnimatePresence>
-          </div>
-        );
-      })}
+              <AnimatePresence initial={false}>
+                {abierta && (
+                  <motion.div
+                    key="partes"
+                    initial={quieto ? false : { height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={quieto ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                    transition={{ height: { duration: 0.34, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.22 } }}
+                    style={css("overflow:hidden;")}
+                  >
+                    {partes.map(({ k, label, Ico }, i) => (
+                      <motion.div
+                        key={k}
+                        initial={quieto ? false : { opacity: 0, x: -6 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.05 + i * 0.035, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        {fila(seccion === k && dentro, Ico, label, () => {
+                          // Pulsar una parte de Kábala lleva al panel en Kábala,
+                          // aunque se estuviera en otra pantalla.
+                          setView("panel");
+                          setDisciplina("kabala");
+                          setSeccion(k);
+                          alCambiar?.();
+                        })}
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+
+        {fila(view === "estudio", IcoDocumento, "El documento", ir("estudio"), { apagado: !hayEstudio })}
+        {fila(view === "pareja", IcoPareja, "Comparar pareja", ir("pareja"), { apagado: !hayEstudio })}
+      </div>
+
+      {/* ------------------------------------------------------ EL DESPACHO */}
+      <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+        {rotulo("El despacho")}
+        {DESPACHO.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
+      </div>
     </nav>
   );
 }

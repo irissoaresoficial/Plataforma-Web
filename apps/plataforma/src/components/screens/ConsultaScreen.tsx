@@ -7,7 +7,6 @@ import Despacho from "../despacho/Despacho";
 import { botonPrincipal } from "@/lib/ui";
 import { useApp, valida } from "@/lib/app-context";
 import { analizaNombre, esCifra, esVocal } from "@/lib/engine";
-import Particulas from "../Particulas";
 
 function saludo(): string {
   const h = new Date().getHours();
@@ -63,14 +62,13 @@ export default function ConsultaScreen() {
   return (
     <main
       style={css(
-        "position:relative;min-height:100vh;display:flex;flex-direction:column;max-width:1140px;margin:0 auto;padding:clamp(28px,4vh,56px) var(--gutter);"
+        "position:relative;min-height:calc(100vh - 63px);display:flex;flex-direction:column;max-width:1140px;margin:0 auto;padding:clamp(28px,4vh,56px) var(--gutter);"
       )}
     >
-      {/* El polvo cubre la pantalla entera, no una tarjeta: es la puerta de
-       * entrada al estudio y se lee mejor como atmósfera que como adorno. */}
-      <div style={css("position:absolute;inset:0;z-index:0;pointer-events:none;")}>
-        <Particulas cantidad={42} />
-      </div>
+      {/* El polvo ya no se pinta aquí: hay un solo lienzo para toda la
+          aplicación, en `Shell`. Tener uno propio significaba dos lienzos
+          animándose a la vez en esta pantalla y que el polvo se reiniciara cada
+          vez que se entraba o se salía de ella. */}
 
       {/* margin:auto en vez de justify-content:center: si el contenido pasa
        * de la ventana, el centrado con flex recorta por arriba y se pierde la

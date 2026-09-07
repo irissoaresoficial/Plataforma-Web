@@ -81,51 +81,19 @@ export default function Menu({ abierto, cerrar }: { abierto: boolean; cerrar: ()
               </button>
             </div>
 
-            {/* Las pestañas de la cabecera también viven aquí: en la cabecera
-             * estrecha ocupaban una fila entera para ellas solas.
-             *
-             * Van en dos pistas y no en una como arriba porque en 300 px de
-             * ancho seis pestañas no caben en un renglón, y apiladas sin
-             * separar no se vería que son dos cosas distintas. El rótulo de
-             * cada grupo hace de separación. */}
-            {(["estudio", "despacho"] as const).map((grupo) => (
-              <div key={grupo} style={css("display:flex;flex-direction:column;gap:var(--s2);")}>
-                <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-4);padding:0 8px;")}>
-                  {grupo === "estudio" ? "El estudio" : "El despacho"}
-                </div>
-                <div style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 8%, transparent);border-radius:980px;padding:3px;")}>
-                  {PESTANAS.filter((v) => v.grupo === grupo).map((v) => {
-                    const on = view === v.k || (v.k === "panel" && view === "pareja");
-                    const bloqueado = VISTAS_DE_ESTUDIO.includes(v.k) && !r && !re;
-                    return (
-                      <button
-                        key={v.k}
-                        onClick={() => {
-                          if (bloqueado) return;
-                          setView(v.k);
-                          cerrar();
-                        }}
-                        style={css(
-                          "flex:1;padding:8px 6px;border-radius:980px;border:none;white-space:nowrap;font-size:var(--t-body);font-weight:590;cursor:" +
-                            (bloqueado ? "not-allowed" : "pointer") +
-                            ";background:" +
-                            (on ? "var(--surface-solid)" : "transparent") +
-                            ";box-shadow:" +
-                            (on ? "0 2px 6px rgba(0,0,0,.09)" : "none") +
-                            ";color:" +
-                            (on ? "var(--text)" : bloqueado ? "var(--text-4)" : "var(--text-3)") +
-                            ";"
-                        )}
-                      >
-                        {v.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+            {/*
+                LA MISMA NAVEGACIÓN QUE LA COLUMNA, Y SÓLO ESA.
 
-            {(r || re) && <NavDisciplinas alCambiar={cerrar} />}
+                Aquí había dos cosas: una copia de la tira de pestañas de la
+                cabecera y, debajo, las partes del estudio. Eran dos listas que
+                mantener, con dos formas distintas —pastillas arriba, filas
+                abajo— para lo mismo: elegir a dónde ir.
+
+                Ahora el cajón enseña exactamente la columna de la izquierda.
+                Quien use la plataforma en el móvil y en el ordenador ve la
+                misma lista, en el mismo orden, con los mismos nombres.
+            */}
+            <NavDisciplinas alCambiar={cerrar} />
           </motion.aside>
         </motion.div>
       )}
