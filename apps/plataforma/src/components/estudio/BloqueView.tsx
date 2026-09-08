@@ -2,6 +2,7 @@
 import { css } from "@/lib/css";
 import type { Bloque } from "@/lib/estudio";
 import type { Resultado } from "@/lib/engine";
+import { diccionario, type Idioma } from "@/lib/documento";
 import { DocArbol, DocEstructura, DocAlma, DocCuentas, DocCiclos } from "./DocDiagramas";
 import styles from "./Estudio.module.css";
 
@@ -10,6 +11,7 @@ export default function BloqueView({
   r,
   txt,
   guardaEdit,
+  idioma = "es",
 }: {
   b: Bloque;
   /** El estudio de empresa no trae ninguno de los bloques con dibujo —salen
@@ -17,7 +19,12 @@ export default function BloqueView({
   r?: Resultado | null;
   txt: (id: string, def: string) => string;
   guardaEdit: (id: string, texto: string) => void;
+  /** En qué idioma sale el documento. Los bloques de texto ya llegan
+   *  traducidos desde `lib/estudio`; lo que se decide aquí son los dos rótulos
+   *  de los polos y todo lo que va escrito dentro de los dibujos. */
+  idioma?: Idioma;
 }) {
+  const T = diccionario(idioma).estudio;
   const onBlur = (id: string) => (e: React.FocusEvent<HTMLParagraphElement>) => guardaEdit(id, (e.target.textContent || "").trim());
 
   // Todo párrafo del documento se puede reescribir, pero no había forma de
@@ -69,13 +76,13 @@ export default function BloqueView({
       return (
         <div className={styles.duo}>
           <div style={css("border-left:2px solid #C0574C;padding-left:12px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:#B0564C;margin-bottom:3px;")}>En negativo</div>
+            <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:#B0564C;margin-bottom:3px;")}>{T.digEnNegativo}</div>
             <p {...editable} onBlur={onBlur(b.editIdNeg)} style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-body);line-height:1.5;color:#413B4B;margin:0;")}>
               {txt(b.editIdNeg, b.negDef)}
             </p>
           </div>
           <div style={css("border-left:2px solid #4C8A5A;padding-left:12px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:#40794F;margin-bottom:3px;")}>En positivo</div>
+            <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:#40794F;margin-bottom:3px;")}>{T.digEnPositivo}</div>
             <p {...editable} onBlur={onBlur(b.editIdPos)} style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-body);line-height:1.5;color:#413B4B;margin:0;")}>
               {txt(b.editIdPos, b.posDef)}
             </p>
@@ -94,15 +101,15 @@ export default function BloqueView({
         </div>
       );
     case "arbol":
-      return r ? <div data-nocorte=""><DocArbol r={r} /></div> : null;
+      return r ? <div data-nocorte=""><DocArbol r={r} T={T} idioma={idioma} /></div> : null;
     case "estructura":
-      return r ? <div data-nocorte=""><DocEstructura r={r} /></div> : null;
+      return r ? <div data-nocorte=""><DocEstructura r={r} T={T} /></div> : null;
     case "alma":
-      return r ? <div data-nocorte=""><DocAlma r={r} /></div> : null;
+      return r ? <div data-nocorte=""><DocAlma r={r} T={T} /></div> : null;
     case "cuentas":
-      return r ? <div data-nocorte=""><DocCuentas r={r} /></div> : null;
+      return r ? <div data-nocorte=""><DocCuentas r={r} T={T} /></div> : null;
     case "ciclos":
-      return r ? <div data-nocorte=""><DocCiclos r={r} /></div> : null;
+      return r ? <div data-nocorte=""><DocCiclos r={r} T={T} idioma={idioma} /></div> : null;
     case "cifras":
       return (
         <div style={css("display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 26px;")}>

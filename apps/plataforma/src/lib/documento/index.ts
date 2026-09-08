@@ -16,9 +16,9 @@ import type { Ficha } from "../engine";
 import { ES } from "./es";
 import { PT } from "./pt";
 import { EN } from "./en";
-import type { Diccionario, Idioma } from "./tipos";
+import type { ConGenero, Diccionario, Idioma } from "./tipos";
 
-export type { Diccionario, Idioma, CopiaHoja } from "./tipos";
+export type { ConGenero, Diccionario, Idioma, CopiaEstudio, CopiaHoja } from "./tipos";
 export { ES } from "./es";
 
 /** Sin traducir: el idioma se elige por su nombre, no por el nuestro. Es lo
@@ -59,6 +59,7 @@ function mezcla(otro: Diccionario): Diccionario {
     codigo: otro.codigo,
     locale: otro.locale,
     hoja: { ...ES.hoja, ...conValor(otro.hoja) },
+    estudio: { ...ES.estudio, ...conValor(otro.estudio) },
     arcanos: funde(ES.arcanos, otro.arcanos),
     numerologia: funde(ES.numerologia, otro.numerologia),
     estructuras: { ...ES.estructuras, ...conValor(otro.estructuras) },
@@ -85,6 +86,20 @@ export function diccionario(idioma: Idioma | undefined | null): Diccionario {
  *  que no se le pase se queda como está, que canta y se ve. */
 export function rellena(plantilla: string, datos: Record<string, string | number>): string {
   return String(plantilla || "").replace(/\{(\w+)\}/g, (m, k: string) => (k in datos ? String(datos[k]) : m));
+}
+
+/**
+ * La frase que le toca a quien lee, según cómo quiera que se le hable.
+ *
+ * Un idioma sin género escribe una sola cadena y la recibe entera, sin tener
+ * que fingir tres formas iguales. El neutro no es una terminación más: es una
+ * vuelta a la frase que no la necesita, y si un idioma no la trae se usa el
+ * femenino —que es lo que hacía el estudio antes de que esto existiera—.
+ */
+export function segunGenero(v: ConGenero | undefined, genero: string | undefined): string {
+  if (typeof v === "string") return v;
+  if (!v) return "";
+  return genero === "m" ? v.m : genero === "n" ? v.n ?? v.f : v.f;
 }
 
 /**

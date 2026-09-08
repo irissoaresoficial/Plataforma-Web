@@ -1,6 +1,7 @@
 import { SEF, SENDEROS, COL, IZQ, ORDEN_CAMINOS, type SefKey } from "./tree";
 import type { Resultado } from "./engine";
 import { KDATA } from "./kdata";
+import { diccionario, type Idioma } from "./documento";
 import { titulo } from "./format";
 
 export type Rol = "origen" | "transformacion" | "destino";
@@ -65,8 +66,23 @@ function rotuloDe(a: { x: number; y: number }, b: { x: number; y: number }, apar
   return { x: mx + px * aparta, y: my + py * aparta, rot };
 }
 
-export function arbolGeometria(r: Resultado) {
+/**
+ * El árbol dibujado, en el idioma que se le pida.
+ *
+ * El panel de Iris no pasa idioma y lo sigue viendo en español, que es como
+ * trabaja ella. El documento sí lo pasa: dentro del dibujo van escritos los
+ * nombres de las diez sefirot y los de los arcanos de cada sendero, y sin esto
+ * el árbol de un estudio portugués decía «La Fuerza» y «Netsaj» en mitad de la
+ * página.
+ */
+export function arbolGeometria(r: Resultado, idioma: Idioma = "es") {
   const arcos = arcosDe(r);
+  const D = diccionario(idioma);
+  /* Los nombres de los arcanos salen del diccionario del documento y no de
+     `KDATA` a secas: en cada idioma la carta tiene el nombre que ya tiene en
+     esa tradición, no la traducción del español. */
+  const nombreArcano = (n: number | string) =>
+    titulo(D.arcanos[Number(n)]?.nombre || KDATA.arcanos?.[String(n)]?.nombre);
 
   const senderos: SenderoView[] = [];
   SENDEROS.forEach((s, i) => {
@@ -111,7 +127,7 @@ export function arbolGeometria(r: Resultado) {
       x: p.x,
       y: p.y,
       fill: p.c,
-      nombre: p.n,
+      nombre: D.estudio.sefirot[p.n] || p.n,
       tx: centro ? p.x : izq ? p.x - 26 : p.x + 26,
       ty: centro ? p.y - 26 : p.y + 4,
       anchor: centro ? "middle" : izq ? "end" : "start",
@@ -187,7 +203,7 @@ export function arbolGeometria(r: Resultado) {
       });
     });
 
-    const nombre = titulo(KDATA.arcanos?.[String(comp)]?.nombre);
+    const nombre = nombreArcano(comp);
     if (nombre) {
       rotulosComp.push({
         ...rotuloDe(a, b, ((colores.length - 1) / 2) * SEPARACION + 11),
@@ -203,7 +219,7 @@ export function arbolGeometria(r: Resultado) {
   Object.keys(arcos).forEach((clave, i) => {
     const idx = +clave;
     const s = SENDEROS[idx];
-    const nombre = titulo(KDATA.arcanos?.[clave]?.nombre);
+    const nombre = nombreArcano(clave);
     if (!s || !nombre) return;
     rotulos.push({
       ...rotuloDe(SEF[s[0]], SEF[s[1]], ((arcos[idx].length - 1) / 2) * SEPARACION + 12),

@@ -140,6 +140,330 @@ export const PT: Diccionario = {
     empPieLema: "O nome é a senha",
   },
 
+  /* ------------------------------------------------------- o estudo completo
+   * O documento longo, de vinte e tantos capítulos. Aqui estão os rótulos, as
+   * entradas de cada capítulo e as frases que ligam um dado ao seguinte — tudo
+   * o que o programa escreve à volta dos apontamentos.
+   *
+   * AS SECÇÕES têm um «·» que não é decoração: o que vai antes dele é a sessão,
+   * e o documento só começa página nova quando muda de sessão. Por isso «Sessão
+   * 2 · Aprendizagens» e «Sessão 2 · Somatizações» têm de partilhar o princípio
+   * exatamente, tal como «Os números do nome» e «Os números do nome · Essência».
+   *
+   * O GÉNERO: onde o espanhol muda a terminação, o português muda-a também, e
+   * por isso essas frases trazem as duas formas — e a neutra, que é uma volta à
+   * frase que não precisa de nenhuma. */
+  estudio: {
+    portadaPersonal: "Estudo de Kabbalah pessoal",
+    portadaEmpresa: "Estudo de Kabbalah empresarial",
+    portadaSinFecha: "Lido do nome",
+
+    secBienvenida: "Boas-vindas",
+    secArbol: "Árvore da Vida",
+    secCaminos: "Sessão 1 · Caminhos",
+    secNumeros: "Sessão 1 · Números",
+    secAprendizajes: "Sessão 2 · Aprendizagens",
+    secSomatizaciones: "Sessão 2 · Somatizações",
+    secAlma: "Sessão 3 · Imagem da alma",
+    secCierre: "Fecho",
+
+    bienvenidaKicker: "O teu mapa de luz",
+    bienvenidaTitulo: {
+      f: "Bem-vinda ao teu estudo",
+      m: "Bem-vindo ao teu estudo",
+      n: "Damos-te as boas-vindas ao teu estudo",
+    },
+    bienvenidaLead:
+      "Aceita este estudo não como um diagnóstico rígido, mas como um guia vivo. A Kabbalah ensina-nos que o dia e a hora em que nasceste, juntamente com o nome com que {nombrado}, constituem uma senha única de acesso ao teu potencial supremo.",
+    bienvenidaNombrado: { f: "foste nomeada", m: "foste nomeado", n: "te nomearam" },
+    bienvenidaHabla:
+      "Tudo o que vais ler nas páginas seguintes fala de ti: do que já conquistaste, do que ainda está por despertar e das aprendizagens que vieram para te impulsionar. Lê-o com abertura, com amor e com a certeza de que tens a força para transformar cada aspeto da tua vida.",
+    bienvenidaViaje: "Uma viagem de regresso à tua essência",
+    bienvenidaMapa:
+      "Este estudo é um roteiro para compreenderes a arquitetura do teu ser. Através da Kabbalah deciframos os códigos do teu nascimento para te dar clareza, sentido e direção: os teus dons, as virtudes e as ferramentas com que vieste habitar o mundo; os teus desafios de evolução, esses bloqueios ou padrões repetidos transformados na tua maior fonte de sabedoria; e o teu propósito, a direção para onde orientar a tua energia para viveres em plenitude.",
+    bienvenidaArbol:
+      "A árvore da vida, com as suas dez sefirot e os seus vinte e dois caminhos, é também o mapa evolutivo que percorrem os vinte e dois arcanos maiores do Tarot: cada caminho que a tua alma escolheu tem, além da sua leitura kabbalística, uma história arquetípica — a do Louco que começa a andar e, no fim do percurso, volta a atravessar o mesmo abismo, mas já transformado. Neste estudo vais encontrar as duas leituras entretecidas.",
+    bienvenidaCita:
+      "O estudo de Kabbalah não adivinha o teu destino; revela a luz que já habita em ti para que aprendas a guiar o teu próprio caminho com consciência, amor e liberdade.",
+
+    arbolKicker: "As tuas três energias",
+    arbolTitulo: "A tua Árvore da Vida",
+    arbolIntro:
+      "A tua alma escolhe três caminhos na árvore da vida: três energias que vieste aprender, gerir e compreender. O caminho de origem acompanha-te desde que nasces até à tua idade de mudança e é o que sabes de outras vidas. O caminho de transformação nasce e morre contigo: é a tua maneira de viver. O caminho de destino é para onde a tua alma te quer levar.",
+    arbolEdadLabel: "Idade de mudança",
+    arbolEdadTurbulencias:
+      "Aos {edad} anos começam dez anos de turbulências em {tipos}. Não tomarás o caminho de destino até aos {destino} anos.",
+    arbolEdadSinTurbulencias: "Aos {edad} anos dá-se a mudança que te leva a tomar o teu caminho de destino.",
+
+    caminosKicker: "Sessão 1 · Os teus caminhos",
+    origenTitulo: "O teu caminho de origem",
+    origenIntro:
+      "Fala-te dessa qualidade que trazes de série: o caminho de origem é o que vens recordar e partilhar com os outros nesta existência. No teu caso, desde o nascimento até aos {edad} anos, que é a tua idade de mudança.",
+    transformacionTitulo: "O teu caminho de transformação",
+    transformacionIntro:
+      "Nasce e morre contigo: é a tua maneira de viver. Deves viver com esta predisposição e agir como este caminho te indicar perante qualquer situação ou conflito que apareça na tua vida. Vai ser muito bom para alcançares o êxito.",
+    destinoTitulo: "O teu caminho de destino",
+    destinoIntroMismaCarta:
+      "Uma energia nova que a tua alma quer aprender. No teu caso, é a que continuas a partir do teu caminho de transformação.",
+    destinoIntro: "Uma energia nova que a tua alma quer aprender. Alcança-se quando chega o momento da mudança.",
+    caminoPareja: "Este caminho a dois",
+    caminoEvolutivo: "O caminho evolutivo de {nombre} · {sendero}",
+
+    corazonKicker: "O pin da tua alma",
+    corazonTitulo: "O teu número de coração: {n}",
+    corazonLead:
+      "É o número pin da tua alma, como vibras. Sabendo que os números são vibração, percebemos que nos dão a informação da energia que geramos e do tipo de aprendizagem com os outros.",
+    corazonCuenta:
+      "Sai do valor do teu nome ({nombre}) mais a tua idade de mudança ({edad}): {nombre} + {edad} = {total}.",
+    corazonNumero: "Número {n} · {titulo}",
+    corazonPartes: "Em Kabbalah os números de três algarismos dividem-se de dois em dois: {partes}",
+
+    valoresKicker: "Os teus valores e a tua expressão",
+    valoresTitulo: "Essência, ego e dias de força",
+    esenciaLabel: "Essência",
+    esenciaSinFicha: "Este número fala dos teus valores internos, dos mais profundos.",
+    egoLabel: "Ego",
+    egoSinFicha: "Fala da ligação que tens com as pessoas. Lê-se de dois em dois: {partes}",
+    fuerzaLabel: "Força",
+    fuerzaTexto:
+      "Saem do valor do teu nome, que é a essência mais o ego: {esencia} + {ego} = {valor}, e somando os seus algarismos, {base}. Vão do mais forte ao menos forte: aproveita o dia {primero} do mês para assinaturas e assuntos importantes da tua vida, e depois os restantes.",
+
+    aprendizajesKicker: "Sessão 2 · As tuas aprendizagens",
+    estructuraTitulo: "A tua estrutura energética: número {n}",
+
+    aprendizajesTituloVacio: "As tuas aprendizagens",
+    aprendizajesVacio: "A tua alma não marcou mais aprendizagens nesta encarnação.",
+    aprendizajeCabecera: "Aprendizagem {portal}{veces} · {nombre} — vem do número {numero}",
+    aprendizajeVeces: " (×{n})",
+    aprendizajesTitulo: "As tuas aprendizagens · {i} de {n}",
+    refHiloRojo: "Fio vermelho",
+    refNeurosis: "Neurose associada",
+    refSanador: "Princípio curador",
+
+    somatizacionesKicker: "Corpo e emoção",
+    somatizacionesTitulo: "Doenças e fragilidades",
+    somatizacionesLead:
+      "Se não levares a cabo estas aprendizagens, a energia não trabalhada somatiza-se. Saber onde se manifesta permite-te antecipar-te e trabalhá-la a partir da consciência.",
+    somatizacionesPunto: "Ponto {n} · {nombre}",
+    somatizacionesFicha: "Disfunções psicológicas: {psico} Órgãos: {organos} Disfunções físicas: {fisicas}",
+
+    almaKicker: "Sessão 3 · A imagem da alma",
+    almaTitulo: "Os teus bloqueios e as tuas ajudas",
+    almaLead:
+      "Dá-te informação de todos os processos kármicos que te impedem de crescer e de avançar. É uma mochila carregada de rotinas herdadas, padrões familiares e maneiras de agir de outras vidas que estás a repetir nesta. Ao conhecê-la, vais tirar-lhe peso.",
+    almaLabel: "Imagem da alma",
+    almaTexto:
+      "É o algarismo que abre a tabela: dele saem os números móveis de cada casa, e com eles os planos que trazes bloqueados e as ajudas com que contas.",
+    bloqueoTitulo: "Bloqueio {casilla} · {i} de {n}",
+    bloqueoCabecera: "{nombre}{veces} — forma-se com o número {numero}",
+    bloqueoVeces: " · ×{n}",
+
+    karmaKicker: "Contas abertas e karma",
+    karmaTitulo: "O teu karma",
+    karmaLead:
+      "As contas abertas são a base do sentimento de culpa, onde a tua alma sente que mais falhou: situações por resolver que continuas a carregar. Cada potencial arcaico ajuda-te a fechar a conta aberta da sua linha.",
+    karmicoLabel: "Kármico",
+    karmicoTexto: "Onde a tua alma falhou nas suas relações em vidas passadas e o que se repete nesta.",
+    lemaLabel: "Lema de vida",
+    lemaTexto: "O propósito da tua alma: a vibração que te permite levar a cabo o teu plano.",
+
+    numeroEnApuntes: "{n} · {titulo}",
+    numeroEnApuntesAclara: "{n} · {titulo} — {aclara}",
+    numeroSinApuntes: "{n} — não figura nos apontamentos: lê-se pelas suas partes, {partes}",
+    numeroSinApuntesAclara: "{n} · {aclara} — não figura nos apontamentos: lê-se pelas suas partes, {partes}",
+
+    afinidadTitulo: "Os teus números de afinidade: {a} e {b}",
+    afinidadLead:
+      "São a visão mais ampla da carta: o que vieste fazer nesta encarnação. Andam aos pares, e cada um olha para uma metade — o primeiro sai do dia e do mês de nascimento; o segundo, do mês e do ano.",
+    afinidadDiaMes: "dia {dia} + mês {mes}",
+    afinidadMesAnio: "mês {mes} + ano {anio}",
+
+    ciclosKicker: "Ciclos de vida",
+    ciclosTitulo: "Os teus ciclos de vida",
+    ciclosIntro:
+      "O teu propósito de vida vibra no {proposito}. Os três grandes ciclos — formação, evolução e colheita — e as quatro realizações marcam o ritmo da tua existência; os desafios são os atritos que te afinam em cada etapa. O teu ano pessoal atual ({anioUniversal}) é o {anioPersonal}.",
+    etapasTitulo: "As tuas etapas de nove anos",
+    etapasLead:
+      "A vida percorre-se também em etapas de nove anos, cada uma com a sua própria lição. Neste momento, com {edad} anos, estás na etapa {etapa}.",
+    etapaCabecera: "Etapa {n} · dos {desde} aos {hasta} anos{actual}",
+    etapaActual: " — a tua etapa atual",
+    anioTitulo: "O teu ano pessoal: {n}",
+    anioLabel: "Ano {n}",
+    anioSinTexto: "Calcula-se somando o teu dia e o teu mês de nascimento ao ano em curso.",
+
+    resumenKicker: "O teu estudo num relance",
+    resumenTitulo: "Os teus números, todos juntos",
+    resumenLead:
+      "Estes são os algarismos sobre os quais se construiu tudo o que acabaste de ler. Guarda-os: cada um abre uma porta diferente e nenhum se lê sozinho.",
+    cifCorazon: "Coração",
+    cifCorazonPie: "O número pin da alma, como vibra",
+    cifEsencia: "Essência",
+    cifEsenciaPie: "O que vieste ser",
+    cifEgo: "Ego",
+    cifEgoPie: "Como os outros te veem",
+    cifEdadCambio: "Idade de mudança",
+    cifEdadCambioPie: "Quando entras no teu caminho de destino",
+    cifEstructura: "Estrutura",
+    cifEstructuraPie: "A figura dos teus dez portais",
+    cifAlma: "Imagem da alma",
+    cifAlmaPie: "Os dez planos de consciência",
+    cifKarmico: "Kármico",
+    cifKarmicoPie: "O que trazes por fechar",
+    cifLema: "Lema de vida",
+    cifLemaPie: "A vibração que te permite levá-lo a cabo",
+    cifProposito: "Propósito",
+    cifPropositoPie: "O fio que atravessa toda a vida",
+    cifAnio: "Ano pessoal",
+    cifAnioPie: "Onde estás em {n}",
+    resumenCita: "Que este mapa te acompanhe. A luz que procuras já habita em ti.",
+
+    cierreKicker: "Antes de fechar",
+    cierreTitulo: "O importante que tens de ter em conta",
+    cierreLead:
+      "Se de todo o estudo só ficares com uma página, que seja esta. São os seis pontos que convém teres presentes no dia a dia.",
+    cHaciaDondeLabel: "Para onde",
+    cHaciaDondeTexto:
+      "O teu caminho de destino é {carta}. {lema} É a direção de fundo: quando uma decisão te afastar daí, vais senti-lo como desgaste.",
+    cQueTrabajarLabel: "O que trabalhar",
+    cQueTrabajarNada: "Não trazes portais com aprendizagem: a tua estrutura vem resolvida e o trabalho é sustentá-la.",
+    cQueTrabajarUno:
+      "Tens {n} aprendizagem aberta: {lista}. Não são defeitos: são as tarefas que vieste fazer, e trabalham-se uma de cada vez.",
+    cQueTrabajarVarios:
+      "Tens {n} aprendizagens abertas: {lista}. Não são defeitos: são as tarefas que vieste fazer, e trabalham-se uma de cada vez.",
+    cPortalSinNombre: "portal {n}",
+    cQueDesatascarLabel: "O que desbloquear",
+    cQueDesatascarNada: "Não há planos de consciência bloqueados: a imagem da alma vem limpa.",
+    cQueDesatascarTexto:
+      "Os planos bloqueados são {lista}. São os sítios onde a energia te fica parada; reconhecê-los já é meio caminho andado.",
+    cCasillaSinNombre: "casa {n}",
+    cQueCerrarLabel: "O que fechar",
+    cQueCerrarTexto:
+      "O número kármico {karmico} é a conta que trazes de trás. O teu lema de vida, o {lema}, é a vibração com que se salda.",
+    cDondeEstasLabel: "Onde estás",
+    cDondeEstasTexto:
+      "Em {anioUniversal} estás no ano pessoal {anioPersonal} de uma roda de nove, dentro do ciclo de {proposito} que marca o teu propósito. O que toca este ano não é o que tocará no próximo.",
+    cCuandoMoverLabel: "Quando mexer",
+    cCuandoMoverTexto:
+      "Os teus dias de força são o {dias}, do mais forte ao menos forte. Guarda-os para assinar, começar e decidir; o que arrancares nesses dias vem com o vento a favor.",
+    cierreCita: "Nada disto é um destino fechado. É o mapa; o caminho andas tu.",
+
+    digOrigen: "Origem",
+    digTransformacion: "Transformação",
+    digDestino: "Destino",
+    digOrigenRango: "0 – {edad} anos",
+    digTransformacionRango: "toda a vida",
+    digDestinoRango: "a partir dos {edad}",
+    digEje: "Eixo",
+    digPlano: "Plano",
+    digEnTension: "em tensão",
+    digLibre: "livre",
+    digEspiritu: "Espírito",
+    digAlma: "Alma",
+    digMateria: "Matéria",
+    digEvolucion: "Evolução",
+    digProyeccion: "O 0 cai na casa {n}: é isso o que projetas para os outros.",
+    digDia: "Dia",
+    digMes: "Mês",
+    digAnio: "Ano",
+    digCuenta: "Conta",
+    digKarmico: "N.º kármico das relações",
+    digLema: "N.º do lema de vida",
+    digSanador: "N.º de efeito curador",
+    digAfinidad: "N.º de afinidade",
+    digVibraciones: "Vibração corpo / alma / espírito",
+    digRango: "{desde} – {hasta} anos",
+    digRangoFinal: "a partir dos {desde} anos",
+    digRangoAbierto: "a partir dos {desde}",
+    digRealizacion: "Realização {n}",
+    digDesafios: {
+      "Primer desafío menor": "Primeiro desafio menor",
+      "Segundo desafío menor": "Segundo desafio menor",
+      "Desafío mayor": "Desafio maior",
+    },
+    digRangosDesafio: {
+      "hasta los 42 años aprox.": "até aos 42 anos aprox.",
+      "de los 42 años en adelante": "dos 42 anos em diante",
+      "toda la vida": "toda a vida",
+    },
+    sefirot: {
+      Keter: "Kether",
+      Hokmah: "Chokmah",
+      Binah: "Binah",
+      Jesed: "Chesed",
+      Gevurah: "Geburah",
+      Tiphereth: "Tiphereth",
+      Netsaj: "Netzach",
+      Hod: "Hod",
+      Yesod: "Yesod",
+      Malkut: "Malkuth",
+    },
+    digEnNegativo: "Em negativo",
+    digEnPositivo: "Em positivo",
+    refTensa: "O que te tensiona · {n}",
+    refLibera: "O que te liberta · {n}",
+    refSinFicha: "Lê-se dividindo-o de dois em dois.",
+
+    empSecNumeros: "Os números do nome",
+    empSecEsencia: "Os números do nome · Essência",
+    empSecEgo: "Os números do nome · Ego",
+    empSecOrigen: "O caminho de origem",
+    empNombreKicker: "O nome da empresa",
+    empNombreTitulo: "O que diz este nome",
+    empLead:
+      "A Kabbalah lê o nome como uma senha: cada letra tem um valor e a soma de todas diz como vibra aquilo que esse nome designa. {nombre} soma {n}.",
+    empSoloNombre:
+      "Este estudo faz-se só com o nome. De uma pessoa leem-se ainda a estrutura energética, os planos de consciência, as contas abertas e os ciclos de vida, mas tudo isso sai da data de nascimento; uma empresa não a tem, e o que não se pode calcular não se inventa. O que se segue é, por inteiro, o que o nome diz por si só.",
+    empCifValor: "Valor do nome",
+    empCifValorPie: "Como vibra a empresa inteira",
+    empCifEsencia: "Essência",
+    empCifEsenciaPie: "O que veio ser, nas vogais",
+    empCifEgo: "Ego",
+    empCifEgoPie: "Como a veem, nas consoantes",
+    empCifCifras: "Algarismos",
+    empCifCifrasPie: "Os números que o nome leva",
+    empCifOrigen: "Caminho de origem",
+    empComoSeCuenta: "Como se conta",
+    empCuenta:
+      "Soma-se o valor de cada letra: {palabras}{total}. As vogais à parte dão a essência, {esencia}; as consoantes, o ego, {ego}.{cifras}",
+    empCuentaPalabra: "{palabra} vale {n}",
+    empCuentaSeparador: "; ",
+    empCuentaTotal: ", e no total {n}",
+    empCuentaCifras:
+      " E se o nome levar números, contam pelo que valem: aqui somam {cifras}. Um número não é vogal nem consoante, por isso vai à parte, e o valor do nome é a soma dos três: {esencia} + {ego} + {cifras} = {valor}.",
+    empValorKicker: "Valor do nome",
+    empValorTitulo: "O {n}: como vibra",
+    empValorTexto:
+      "É o número da empresa inteira, a soma de todas as suas letras. Marca o tom de fundo do que faz e de como é percebida.",
+    empEsenciaKicker: "Essência",
+    empEsenciaTitulo: "O {n}: o que veio ser",
+    empEsenciaTexto: "Sai só das vogais. É o impulso interno do projeto: aquilo para que tende quando ninguém a olha.",
+    empEgoKicker: "Ego",
+    empEgoTitulo: "O {n}: como a veem",
+    empEgoTexto:
+      "Sai só das consoantes. É a cara que a empresa mostra cá para fora: o que clientes e fornecedores percebem antes de a tratarem.",
+    empArcanoKicker: "Arcano {n}",
+    empOrigenLabel: "Origem",
+    empOrigenCuenta:
+      "Tira-se do valor do nome: {valor} menos a soma dos seus algarismos ({sumaCifras}) dá {resta}, que a dividir por nove são {division}, mais um, {mas1}. Reduzido aos vinte e um arcanos, o {arcano}.",
+    empOrigenNota:
+      "Numa pessoa este é o primeiro de três caminhos — origem, transformação e destino —, mas os outros dois apoiam-se na idade de mudança, que sai da data de nascimento. Numa empresa só há este, e por isso pesa: é todo o arco da carta.",
+    empCierreKicker: "Antes de fechar",
+    empCierreTitulo: "O importante a ter em conta",
+    empCierreLead:
+      "Se de todo o estudo só se retiver uma página, que seja esta. São os quatro pontos que convém ter presentes.",
+    empCVibraLabel: "Como vibra",
+    empCVibraTexto: "O nome soma {n}. É o tom de fundo: o que a empresa transmite antes de dizer seja o que for.",
+    empCDentroFueraLabel: "Dentro e fora",
+    empCDentroFueraTexto:
+      "A essência é {esencia} e o ego {ego}. Quando os dois se parecem, a empresa mostra-se como é; quando se afastam muito, há distância entre o que quer ser e o que aparenta, e essa distância paga-se em confiança.",
+    empCHaciaDondeLabel: "Para onde",
+    empCHaciaDondeTexto: "O caminho de origem é {carta}. {lema} É a direção de fundo do projeto.",
+    empCCuandoMoverLabel: "Quando mexer",
+    empCCuandoMoverTexto:
+      "Os dias de força são o {dias}, do mais forte ao menos forte. Guarda-os para assinar contratos, abrir e apresentar.",
+    empCierreCita: "O nome é a senha: o que se nomeia bem, sustenta-se.",
+  },
+
   /* ------------------------------------------------------------- os arcanos
    * O nome é o da tradição portuguesa, não a tradução do espanhol. O texto é
    * a folha de apontamentos da escola tal como está: telegráfica, com os

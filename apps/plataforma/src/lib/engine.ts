@@ -2,7 +2,50 @@
 // Portado 1:1 desde engine.js (Claude Design). Todas las fórmulas provienen de
 // los manuales de Kábala aportados. Verificado contra los ejemplos: Roberto
 // López Castro (19/07/1951) y Lara María Soares Campos.
-import { KDATA, type NumeroFicha, type ArcanoData } from "./kdata";
+import { KDATA, type KData, type NumeroFicha, type ArcanoData } from "./kdata";
+
+/* ==========================================================================
+   DE QUÉ DICCIONARIO SALEN LOS TEXTOS
+   ==========================================================================
+
+   El motor calcula números —eso no cambia con el idioma— pero además mete
+   dentro del resultado los TEXTOS de cada número, cada arcano y cada tarea,
+   sacados de los apuntes. Por eso, para que el estudio salga en portugués no
+   basta con traducir la plantilla: hay que decirle al motor de qué apuntes
+   leer, o las cartas y las tareas salen en español dentro de un documento
+   portugués.
+
+   POR QUÉ UNA VARIABLE DE MÓDULO Y NO UN PARÁMETRO, que sería lo ortodoxo.
+   Los textos se leen desde ocho sitios distintos de este archivo, y tres de
+   ellos —`ficha`, `lectura`, `arcanoDesde`— son funciones exportadas que usan
+   diez componentes del panel de Iris. Pasarles el diccionario obligaría a
+   cambiar la firma de todas y a que cada pantalla decidiera un idioma que no
+   le importa, para acabar pasando siempre el mismo.
+
+   Y ES SEGURO PORQUE EL CAMBIO DURA LO QUE DURA UNA LLAMADA. `conApuntes` pone
+   el diccionario, ejecuta y lo devuelve a español en un `finally` — pase lo que
+   pase, incluso si algo revienta a mitad. Lo que se envuelve es siempre
+   síncrono de principio a fin, así que no hay forma de que dos idiomas se
+   crucen: no existe un punto donde el navegador pueda meter otra cosa.
+   ========================================================================== */
+
+let APUNTES: KData = KDATA;
+
+/**
+ * Ejecuta algo leyendo de otros apuntes, y los devuelve a su sitio al acabar.
+ * `finally` y no una línea después del `return`: si `fn` lanza, el diccionario
+ * tiene que volver al español igual — si no, la siguiente consulta de Iris
+ * saldría en portugués sin que nadie haya pedido nada.
+ */
+export function conApuntes<T>(kd: KData | null | undefined, fn: () => T): T {
+  const antes = APUNTES;
+  APUNTES = kd || KDATA;
+  try {
+    return fn();
+  } finally {
+    APUNTES = antes;
+  }
+}
 
 export type Fecha = { dia: number; mes: number; anio: number };
 /** Cómo se dirige el documento a la persona. No entra en ningún cálculo: sólo
@@ -52,7 +95,7 @@ const VOCALES = "AEIOUÁÉÍÓÚÄÖÜ";
 
 export type Letra = { g: string; v: number };
 function letrasDe(palabra: string): Letra[] {
-  const T = KDATA.letras;
+  const T = APUNTES.letras;
   const out: Letra[] = [];
   let i = 0;
   while (i < palabra.length) {
@@ -317,7 +360,7 @@ export type Ficha = {
 };
 export function ficha(n: number | null | undefined): Ficha | null {
   if (n === null || n === undefined || Number.isNaN(n)) return null;
-  const dict = KDATA.numeros || {};
+  const dict = APUNTES.numeros || {};
   const e = dict[n];
   if (e) {
     const refs = e.refs || {};
@@ -352,7 +395,7 @@ export function ficha(n: number | null | undefined): Ficha | null {
 }
 
 export function lectura(n: number): { positivo: string; negativo: string } {
-  const t = KDATA.numerologia || {};
+  const t = APUNTES.numerologia || {};
   const vistos: Record<number, boolean> = {};
   const pos: string[] = [],
     neg: string[] = [];
@@ -659,7 +702,7 @@ export function calculaEmpresa(entrada: { nombre: string; anioUniversal: number 
     esencia: { valor: nombre.esencia, ficha: ficha(nombre.esencia), lectura: lectura(nombre.esencia) },
     ego: { valor: nombre.ego, ficha: ficha(nombre.ego), lectura: lectura(nombre.ego) },
     diasFuerza: diasDeFuerza(valorNombre),
-    origen: { calculo: origen, arcano: origen.arcano, carta: (KDATA.arcanos || {})[origen.arcano] },
+    origen: { calculo: origen, arcano: origen.arcano, carta: (APUNTES.arcanos || {})[origen.arcano] },
   };
 }
 
@@ -693,8 +736,8 @@ export function calcula(entrada: Entrada): Resultado {
         veces: est.aprendizajes[portal],
         numero: num,
         ficha: ficha(num),
-        tarea: (KDATA.tareas || {})[portal],
-        enfermedades: (KDATA.enfermedades || {})[portal],
+        tarea: (APUNTES.tareas || {})[portal],
+        enfermedades: (APUNTES.enfermedades || {})[portal],
       };
     });
   const bloqueos: Bloqueo[] = Object.keys(ia.bloqueos)
@@ -707,13 +750,13 @@ export function calcula(entrada: Entrada): Resultado {
         veces: ia.bloqueos[casilla],
         numero: num,
         ficha: ficha(num),
-        plano: KDATA.planos_conciencia?.planos ? KDATA.planos_conciencia.planos[casilla] : null,
+        plano: APUNTES.planos_conciencia?.planos ? APUNTES.planos_conciencia.planos[casilla] : null,
       };
     });
 
   const conAprendizaje = (p: number) => !!est.aprendizajes[p];
-  const ejes = (KDATA.ejes || []).map((e) => ({ eje: e, activo: conAprendizaje(e.a) && conAprendizaje(e.b), parcial: conAprendizaje(e.a) !== conAprendizaje(e.b) }));
-  const planosT = (KDATA.planosTension || []).map((e) => ({ plano: e, activo: conAprendizaje(e.a) && conAprendizaje(e.b) }));
+  const ejes = (APUNTES.ejes || []).map((e) => ({ eje: e, activo: conAprendizaje(e.a) && conAprendizaje(e.b), parcial: conAprendizaje(e.a) !== conAprendizaje(e.b) }));
+  const planosT = (APUNTES.planosTension || []).map((e) => ({ plano: e, activo: conAprendizaje(e.a) && conAprendizaje(e.b) }));
 
   return {
     entrada,
@@ -725,14 +768,14 @@ export function calcula(entrada: Entrada): Resultado {
     ego: { valor: nombre.ego, ficha: ficha(nombre.ego), lectura: lectura(nombre.ego) },
     diasFuerza: diasDeFuerza(valorNombre),
     caminos: {
-      origen: { calculo: origen, arcano: origen.arcano, carta: (KDATA.arcanos || {})[origen.arcano] },
-      transformacion: { calculo: transformacion, arcano: transformacion.arcano, carta: (KDATA.arcanos || {})[transformacion.arcano] },
-      destino: { calculo: destino, arcano: destino.arcano, carta: (KDATA.arcanos || {})[destino.arcano] },
+      origen: { calculo: origen, arcano: origen.arcano, carta: (APUNTES.arcanos || {})[origen.arcano] },
+      transformacion: { calculo: transformacion, arcano: transformacion.arcano, carta: (APUNTES.arcanos || {})[transformacion.arcano] },
+      destino: { calculo: destino, arcano: destino.arcano, carta: (APUNTES.arcanos || {})[destino.arcano] },
       edadCambio,
     },
     turbulencias: turbulencias(f, edadCambio),
     estructura: est,
-    tipoEstructura: (KDATA.estructuras || {})[est.tipo],
+    tipoEstructura: (APUNTES.estructuras || {})[est.tipo],
     aprendizajes,
     ejes,
     planosTension: planosT,
@@ -773,7 +816,7 @@ export function comparaPareja(a: Resultado, b: Resultado): Comparativa {
   const coincidencias: Coincidencia[] = [];
   const ca = a.cuentas,
     cb = b.cuentas;
-  const P = KDATA.parejas;
+  const P = APUNTES.parejas;
   ca.cuentas.forEach((x) => {
     if (cb.cuentas.indexOf(x) >= 0) coincidencias.push({ tipo: "cuenta", valor: x, texto: P.cuentas.mismaCuenta });
   });
@@ -797,7 +840,7 @@ export function comparaPareja(a: Resultado, b: Resultado): Comparativa {
     caminoConjunto: conjunto,
     calcConjunto,
     sumaCorazones,
-    cartaConjunta: (KDATA.arcanos || {})[conjunto],
+    cartaConjunta: (APUNTES.arcanos || {})[conjunto],
     mismaEstructura: a.estructura.tipo === b.estructura.tipo,
     textoEstructura: a.estructura.tipo === b.estructura.tipo ? P.estructuras.iguales : P.estructuras.distintas,
     portalesComunes,

@@ -2,6 +2,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { arbolGeometria } from "@/lib/arbol";
+import type { Idioma } from "@/lib/documento";
 import type { Resultado } from "@/lib/engine";
 
 /**
@@ -31,6 +32,7 @@ export default function ArbolVida({
   borde = "rgba(0,0,0,.22)",
   colorNombre = "var(--text-3)",
   estilo = "width:100%;height:auto;display:block;",
+  idioma = "es",
 }: {
   r: Resultado;
   animado?: boolean;
@@ -44,10 +46,14 @@ export default function ArbolVida({
   borde?: string;
   colorNombre?: string;
   estilo?: string;
+  /** Dentro del árbol van escritos los nombres de las sefirot y de los arcanos
+   *  de cada sendero: en el documento salen en su idioma, y en el panel de
+   *  Iris siguen en español, que es donde no se pasa nada. */
+  idioma?: Idioma;
 }) {
   const quieto = useReducedMotion();
   const vivo = animado && !quieto;
-  const { senderos, sefirot, marcasCamino, complementarios, rotulos: rots, rotulosComp } = arbolGeometria(r);
+  const { senderos, sefirot, marcasCamino, complementarios, rotulos: rots, rotulosComp } = arbolGeometria(r, idioma);
 
   return (
     <svg viewBox="-54 -8 488 676" style={css(estilo)}>

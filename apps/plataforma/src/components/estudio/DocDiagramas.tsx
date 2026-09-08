@@ -1,7 +1,9 @@
 import type { CSSProperties } from "react";
 import { css } from "@/lib/css";
 import type { Resultado } from "@/lib/engine";
-import { KDATA } from "@/lib/kdata";
+import { KDATA, apuntesYaCargados } from "@/lib/kdata";
+import { diccionario, rellena, type Idioma } from "@/lib/documento";
+import type { CopiaEstudio } from "@/lib/documento/tipos";
 import { COL } from "@/lib/tree";
 import styles from "./Estudio.module.css";
 import CuerpoPortales from "../CuerpoPortales";
@@ -26,11 +28,16 @@ const col1 = (w: string) => ({ "--doc-col1": w }) as CSSProperties;
 
 /** Versiones "documento" (fondo claro, sin animación) de los diagramas del panel. */
 
-export function DocArbol({ r }: { r: Resultado }) {
+export function DocArbol({ r, T, idioma = "es" }: { r: Resultado; T: CopiaEstudio; idioma?: Idioma }) {
   const camDef = [
-    { k: "origen" as const, c: r.caminos.origen, etapa: "Origen", rango: "0 – " + r.caminos.edadCambio + " años" },
-    { k: "transformacion" as const, c: r.caminos.transformacion, etapa: "Transformación", rango: "toda la vida" },
-    { k: "destino" as const, c: r.caminos.destino, etapa: "Destino", rango: "desde los " + (r.turbulencias ? r.caminos.edadCambio + 10 : r.caminos.edadCambio) },
+    { k: "origen" as const, c: r.caminos.origen, etapa: T.digOrigen, rango: rellena(T.digOrigenRango, { edad: r.caminos.edadCambio }) },
+    { k: "transformacion" as const, c: r.caminos.transformacion, etapa: T.digTransformacion, rango: T.digTransformacionRango },
+    {
+      k: "destino" as const,
+      c: r.caminos.destino,
+      etapa: T.digDestino,
+      rango: rellena(T.digDestinoRango, { edad: r.turbulencias ? r.caminos.edadCambio + 10 : r.caminos.edadCambio }),
+    },
   ];
   return (
     <div className={styles.split} style={col1("210px")}>
@@ -38,6 +45,7 @@ export function DocArbol({ r }: { r: Resultado }) {
        * tipografía del estudio, pero completo: nombres y complementarios. */}
       <ArbolVida
         r={r}
+        idioma={idioma}
         animado={false}
         fuente="Cinzel, serif"
         tenue="#B9B2C4"
@@ -62,10 +70,13 @@ export function DocArbol({ r }: { r: Resultado }) {
   );
 }
 
-export function DocEstructura({ r }: { r: Resultado }) {
-  const tensiones = ([] as Array<{ nombre: string; a: number; b: number; activo: boolean; tipo: string }>)
-    .concat(r.ejes.map((e) => ({ nombre: e.eje.nombre, a: e.eje.a, b: e.eje.b, activo: e.activo, tipo: "Eje" })))
-    .concat(r.planosTension.map((p) => ({ nombre: p.plano.nombre, a: p.plano.a, b: p.plano.b, activo: p.activo, tipo: "Plano" })));
+export function DocEstructura({ r, T }: { r: Resultado; T: CopiaEstudio }) {
+  /* `esEje` va aparte del rótulo a propósito: la línea de puntos distingue un
+     plano de un eje, y colgar ese dibujo de la palabra «Eje» lo dejaba roto en
+     cuanto la palabra cambiaba de idioma. */
+  const tensiones = ([] as Array<{ nombre: string; a: number; b: number; activo: boolean; esEje: boolean; tipo: string }>)
+    .concat(r.ejes.map((e) => ({ nombre: e.eje.nombre, a: e.eje.a, b: e.eje.b, activo: e.activo, esEje: true, tipo: T.digEje })))
+    .concat(r.planosTension.map((p) => ({ nombre: p.plano.nombre, a: p.plano.a, b: p.plano.b, activo: p.activo, esEje: false, tipo: T.digPlano })));
 
   return (
     <div style={css("display:grid;grid-template-columns:186px 124px 1fr;gap:16px;align-items:center;")}>
@@ -83,7 +94,7 @@ export function DocEstructura({ r }: { r: Resultado }) {
             return (
               <line key={i} x1={A.x} y1={A.y} x2={B.x} y2={B.y}
                 stroke={l.activo ? "#B0564C" : "#C7C0D0"} strokeWidth={l.activo ? 2.2 : 1.1}
-                strokeDasharray={l.tipo === "Eje" ? undefined : "5 5"} strokeLinecap="round" />
+                strokeDasharray={l.esEje ? undefined : "5 5"} strokeLinecap="round" />
             );
           })}
           {Object.entries(SITIO_EM).map(([n, pt]) => {
@@ -110,7 +121,7 @@ export function DocEstructura({ r }: { r: Resultado }) {
                 ";"
             )}
           >
-            {t.tipo} {t.a}–{t.b} · {t.nombre} — {t.activo ? "en tensión" : "libre"}
+            {t.tipo} {t.a}–{t.b} · {t.nombre} — {t.activo ? T.digEnTension : T.digLibre}
           </div>
         ))}
       </div>
@@ -133,14 +144,14 @@ function celdaDoc(n: number, bloqueos: Record<number, number>, ayudas: Record<nu
       ";width:100%;",
   };
 }
-export function DocAlma({ r }: { r: Resultado }) {
+export function DocAlma({ r, T }: { r: Resultado; T: CopiaEstudio }) {
   const ia = r.imagenAlma;
   const c = (n: number) => celdaDoc(n, ia.bloqueos, ia.ayudas);
   // Mismo orden que el manual: el 1 arriba a la izquierda y el 10 abajo.
   const filas = [
-    { label: "Espíritu", celdas: [c(1), c(2), c(3)] },
-    { label: "Alma", celdas: [c(4), c(5), c(6)] },
-    { label: "Materia", celdas: [c(7), c(8), c(9)] },
+    { label: T.digEspiritu, celdas: [c(1), c(2), c(3)] },
+    { label: T.digAlma, celdas: [c(4), c(5), c(6)] },
+    { label: T.digMateria, celdas: [c(7), c(8), c(9)] },
   ];
   const celda10 = c(10);
   const ROT = "font-family:'Karla',sans-serif;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:#9B93A8;";
@@ -149,7 +160,7 @@ export function DocAlma({ r }: { r: Resultado }) {
       <div>
         <div style={css("display:grid;grid-template-columns:52px 1fr 1fr 1fr;gap:7px;margin-bottom:5px;")}>
           <span />
-          {["Espíritu", "Alma", "Materia"].map((h) => (
+          {[T.digEspiritu, T.digAlma, T.digMateria].map((h) => (
             <span key={h} style={css(ROT + "text-align:center;")}>{h}</span>
           ))}
         </div>
@@ -166,7 +177,7 @@ export function DocAlma({ r }: { r: Resultado }) {
           </div>
         ))}
         <div style={css("display:grid;grid-template-columns:52px 1fr;gap:7px;align-items:center;")}>
-          <span style={css(ROT)}>Evolución</span>
+          <span style={css(ROT)}>{T.digEvolucion}</span>
           <div style={css(celda10.style)}>
             <span style={css("font-family:'Cinzel',serif;font-size:14px;color:#9B93A8;")}>10 / 0</span>
             <span style={css("font-family:'Cinzel',serif;font-size:15px;color:#B0342A;")}>{celda10.bloqueo}</span>
@@ -175,7 +186,7 @@ export function DocAlma({ r }: { r: Resultado }) {
         </div>
       </div>
       <div style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.5;color:#4A4356;")}>
-        {ia.proyeccion ? "El 0 cae en la casilla " + ia.proyeccion + ": eso es lo que proyectas de cara a los demás." : ""}
+        {ia.proyeccion ? rellena(T.digProyeccion, { n: ia.proyeccion }) : ""}
       </div>
     </div>
   );
@@ -185,21 +196,21 @@ const DOC_TH = "font-size:9px;letter-spacing:.16em;text-transform:uppercase;colo
 const DOC_TD = "font-family:'Cinzel',serif;font-size:16px;color:#37323F;display:flex;align-items:center;justify-content:center;padding:8px 0;border:1px solid rgba(201,168,76,.22);border-radius:3px;background:#F3EFE6;";
 const DOC_TD_TOT = DOC_TD.replace("#37323F", "#2B1119").replace("#F3EFE6", "rgba(201,168,76,.22)");
 
-export function DocCuentas({ r }: { r: Resultado }) {
+export function DocCuentas({ r, T }: { r: Resultado; T: CopiaEstudio }) {
   const c = r.cuentas;
   const tabla: Array<{ v: string | number; style: string }> = [
-    { v: "", style: DOC_TH }, { v: "Día", style: DOC_TH }, { v: "Mes", style: DOC_TH }, { v: "Año", style: DOC_TH }, { v: "Cuenta", style: DOC_TH },
+    { v: "", style: DOC_TH }, { v: T.digDia, style: DOC_TH }, { v: T.digMes, style: DOC_TH }, { v: T.digAnio, style: DOC_TH }, { v: T.digCuenta, style: DOC_TH },
     { v: "E", style: DOC_TH }, { v: c.espiritu.dia, style: DOC_TD }, { v: c.espiritu.mes, style: DOC_TD }, { v: c.espiritu.anio, style: DOC_TD }, { v: c.espiritu.total, style: DOC_TD_TOT },
     { v: "A", style: DOC_TH }, { v: c.alma.dia, style: DOC_TD }, { v: c.alma.mes, style: DOC_TD }, { v: c.alma.anio, style: DOC_TD }, { v: c.alma.total, style: DOC_TD_TOT },
     { v: "C", style: DOC_TH }, { v: c.cuerpo.dia, style: DOC_TD }, { v: c.cuerpo.mes, style: DOC_TD }, { v: c.cuerpo.anio, style: DOC_TD }, { v: c.cuerpo.total, style: DOC_TD_TOT },
     { v: "", style: DOC_TH }, { v: c.potenciales[0], style: DOC_TD_TOT }, { v: c.potenciales[1], style: DOC_TD_TOT }, { v: c.potenciales[2], style: DOC_TD_TOT }, { v: c.karmico, style: DOC_TD_TOT },
   ];
   const karma = [
-    { label: "Nº kármico de las relaciones", valor: c.karmico },
-    { label: "Nº del lema de vida", valor: c.lemaDeVida },
-    { label: "Nº de efecto sanador", valor: r.vibraciones.efectoSanador },
-    { label: "Nº de afinidad", valor: r.afinidad.diaMes + " · " + r.afinidad.mesAnio },
-    { label: "Vibración cuerpo / alma / espíritu", valor: r.vibraciones.cuerpo + " · " + r.vibraciones.alma + " · " + r.vibraciones.espiritu },
+    { label: T.digKarmico, valor: c.karmico },
+    { label: T.digLema, valor: c.lemaDeVida },
+    { label: T.digSanador, valor: r.vibraciones.efectoSanador },
+    { label: T.digAfinidad, valor: r.afinidad.diaMes + " · " + r.afinidad.mesAnio },
+    { label: T.digVibraciones, valor: r.vibraciones.cuerpo + " · " + r.vibraciones.alma + " · " + r.vibraciones.espiritu },
   ];
   return (
     <div className={styles.duo}>
@@ -222,11 +233,32 @@ export function DocCuentas({ r }: { r: Resultado }) {
   );
 }
 
-export function DocCiclos({ r }: { r: Resultado }) {
-  const CI = KDATA.ciclos;
-  const ciclos = r.ciclos.ciclos.map((c) => ({ ...c, rango: c.hasta === null ? "desde los " + c.desde + " años" : c.desde + " – " + c.hasta + " años", texto: (CI.ciclos || {})[c.numero] || "" }));
-  const realizaciones = r.ciclos.realizaciones.map((x) => ({ ...x, rango: x.hasta === null ? "desde los " + x.desde : x.desde + " – " + x.hasta + " años", texto: (CI.realizaciones || {})[x.valor] || "" }));
-  const desafios = r.ciclos.desafios.map((x) => ({ ...x, texto: (CI.desafios || {})[x.valor] || "" }));
+export function DocCiclos({ r, T, idioma = "es" }: { r: Resultado; T: CopiaEstudio; idioma?: Idioma }) {
+  /* Los textos de los ciclos salen de los apuntes del idioma, no de los de
+     casa: `KDATA` a secas dejaba tres párrafos en español dentro del documento
+     portugués. Si aún no han llegado, se cae al español, que es la regla de
+     siempre. */
+  const CI = (apuntesYaCargados(idioma) ?? { kdata: KDATA }).kdata.ciclos;
+  /* El nombre del ciclo lo pone el motor en español —«Formación»— y es la
+     llave con la que el diccionario lo traduce. */
+  const D = diccionario(idioma);
+  const ciclos = r.ciclos.ciclos.map((c) => ({
+    ...c,
+    nombre: D.ciclos[c.nombre] || c.nombre,
+    rango: c.hasta === null ? rellena(T.digRangoFinal, { desde: c.desde }) : rellena(T.digRango, { desde: c.desde, hasta: c.hasta }),
+    texto: (CI.ciclos || {})[c.numero] || "",
+  }));
+  const realizaciones = r.ciclos.realizaciones.map((x) => ({
+    ...x,
+    rango: x.hasta === null ? rellena(T.digRangoAbierto, { desde: x.desde }) : rellena(T.digRango, { desde: x.desde, hasta: x.hasta }),
+    texto: (CI.realizaciones || {})[x.valor] || "",
+  }));
+  const desafios = r.ciclos.desafios.map((x) => ({
+    ...x,
+    etiqueta: T.digDesafios[x.etiqueta] || x.etiqueta,
+    rango: T.digRangosDesafio[x.rango] || x.rango,
+    texto: (CI.desafios || {})[x.valor] || "",
+  }));
   return (
     <div style={css("display:flex;flex-direction:column;gap:16px;")}>
       <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px;")}>
@@ -244,7 +276,7 @@ export function DocCiclos({ r }: { r: Resultado }) {
         {realizaciones.map((x, i) => (
           <div key={i} style={css("border-left:2px solid #C9A84C;padding-left:12px;")}>
             <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
-              Realización {x.n} · {x.rango}
+              {rellena(T.digRealizacion, { n: x.n })} · {x.rango}
             </div>
             <div style={css("font-family:'Cinzel',serif;font-size:22px;color:#2B1119;")}>{x.valor}</div>
             <p style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{x.texto}</p>

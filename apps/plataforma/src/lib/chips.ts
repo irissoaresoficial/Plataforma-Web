@@ -1,5 +1,7 @@
 import { chipStyle, sinClavesEscuela } from "./format";
 import { ficha, type Ficha } from "./engine";
+import { rellena } from "./documento";
+import type { CopiaEstudio } from "./documento/tipos";
 
 export type Chip = { label: string; style: string; onClick: () => void };
 
@@ -32,8 +34,13 @@ export type RefItem = { label: string; color: string; texto: string; style: stri
  * en origen. Antes se limpiaban fuera, en `estudio.ts`, y tres sitios que se
  * montaban el bloque a mano se saltaban el filtro: por ahí salían ochenta y
  * tres claves impresas en el documento del cliente.
+ *
+ * Los rótulos llegan de fuera, en `T`, porque el documento sale en tres
+ * idiomas: escritos aquí dentro, «Lo que te tensa» era una línea en español en
+ * mitad de una hoja portuguesa. El texto que va debajo sí sale de los apuntes
+ * del motor, que ya vienen en el idioma que toca.
  */
-export function refItems(F: Ficha | null | undefined): RefItem[] {
+export function refItems(F: Ficha | null | undefined, T: CopiaEstudio): RefItem[] {
   if (!F) return [];
   const items: RefItem[] = [];
   // El texto va entero. Antes se recortaba a 280 caracteres y el documento se
@@ -46,13 +53,13 @@ export function refItems(F: Ficha | null | undefined): RefItem[] {
         ? g.titulo + " " + g.texto
         : g.partes.length
           ? g.partes.map((p) => p.n + ". " + p.titulo + " " + p.texto).join(" — ")
-          : "Se lee dividiéndolo de dos en dos."
+          : T.refSinFicha
       : "";
   const add = (G: Ficha, pre: string) => {
     // El número va a secas: dice de dónde sale la lectura que viene debajo.
     // La letra de la escuela —la T de tensión, la L de liberación— no.
-    if (G.T) items.push({ label: pre + "Lo que te tensa · " + G.T, color: "#B0564C", texto: lee(ficha(G.T)), style: "border-left:2px solid #C0574C;padding-left:12px;" });
-    if (G.L) items.push({ label: pre + "Lo que te libera · " + G.L, color: "#40794F", texto: lee(ficha(G.L)), style: "border-left:2px solid #4C8A5A;padding-left:12px;" });
+    if (G.T) items.push({ label: pre + rellena(T.refTensa, { n: G.T }), color: "#B0564C", texto: lee(ficha(G.T)), style: "border-left:2px solid #C0574C;padding-left:12px;" });
+    if (G.L) items.push({ label: pre + rellena(T.refLibera, { n: G.L }), color: "#40794F", texto: lee(ficha(G.L)), style: "border-left:2px solid #4C8A5A;padding-left:12px;" });
   };
   if (F.enDiccionario) add(F, "");
   else (F.partes || []).forEach((p) => add(p, p.n + " · "));

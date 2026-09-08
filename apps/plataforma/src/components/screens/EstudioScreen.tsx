@@ -1,11 +1,12 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { css } from "@/lib/css";
 import { BOTON_NORMAL, botonPrincipal } from "@/lib/ui";
 import { useApp } from "@/lib/app-context";
-import { construyeCapitulos, construyeCapitulosEmpresa } from "@/lib/estudio";
+import { construyeCapitulos, construyeCapitulosEmpresa, resultadoEnIdioma } from "@/lib/estudio";
 import { imprimir, AYUDA_IMPRIMIR, AYUDA_SIN_CABECERAS } from "@/lib/imprimir";
-import { EN_ESPANOL, IDIOMAS } from "@/lib/documento";
+import { cargaApuntes } from "@/lib/kdata";
+import { EN_ESPANOL, IDIOMAS, diccionario, type Idioma } from "@/lib/documento";
 import { useIdiomaDocumento } from "@/lib/documento/idioma";
 import { fechaLarga, titulo } from "@/lib/format";
 import BloqueView from "../estudio/BloqueView";
@@ -16,7 +17,6 @@ import Confirmar from "../Confirmar";
 
 export default function EstudioScreen() {
   const { r, re, marca, txt, guardaEdit, restablecer, edits, id } = useApp();
-  const capitulos = useMemo(() => (r ? construyeCapitulos(r) : re ? construyeCapitulosEmpresa(re) : []), [r, re]);
   // Dos documentos distintos con el mismo botón de imprimir: el estudio
   // entero, que es la herramienta de Iris, y la hoja que se lleva el cliente.
   const [modo, setModo] = useState<"estudio" | "hoja">("estudio");
@@ -25,7 +25,55 @@ export default function EstudioScreen() {
      es el documento que se entrega. Se recuerda de una sesión a otra: quien
      atiende sobre todo a clientela portuguesa lo pone una vez. */
   const [idioma, setIdioma] = useIdiomaDocumento();
+
+  /*
+   * LOS APUNTES DEL IDIOMA SE PIDEN ANTES DE ARMAR EL ESTUDIO.
+   *
+   * Pesan 292 KB por idioma, así que no viajan en el paquete que descarga todo
+   * el mundo al abrir la plataforma: se traen la primera vez que alguien pide
+   * un documento en ese idioma (ver `cargaApuntes` en `lib/kdata.ts`). Mientras
+   * llegan, `listo` se queda atrás y el estudio se arma en español — que es
+   * exactamente lo que se quiere: el documento nunca está vacío, sólo tarda un
+   * momento en cambiar de idioma.
+   */
+  const [listo, setListo] = useState<Idioma>("es");
+  const cargando = listo !== idioma;
+  /* La misma excepción que en `documento/idioma`: volver al español no espera a
+     nadie —los apuntes de casa vienen en el paquete— así que aquí sí se pone el
+     estado dentro del efecto, y es una sola vez por cambio de idioma. */
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    let vivo = true;
+    if (idioma === "es") {
+      setListo("es");
+      return;
+    }
+    cargaApuntes(idioma).then(() => {
+      /* `vivo` porque alguien puede cambiar de idioma dos veces seguidas: sin
+         esto, la respuesta lenta del primero pisaría al segundo. */
+      if (vivo) setListo(idioma);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [idioma]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const capitulos = useMemo(
+    () => (r ? construyeCapitulos(r, listo) : re ? construyeCapitulosEmpresa(re, listo) : []),
+    [r, re, listo],
+  );
+  /* Los dibujos no reciben capítulos: pintan el resultado tal cual, con el
+     nombre de cada carta y de cada eje dentro. Así que necesitan el resultado
+     leído de los apuntes del idioma, no el del panel, que es el español. */
+  const rDoc = useMemo(() => (r ? resultadoEnIdioma(r, listo) : null), [r, listo]);
   if (!r && !re) return null;
+
+  /* La portada y los diagramas también hablan. Salen del mismo diccionario que
+     los capítulos, y con el idioma YA DESCARGADO (`listo`) y no con el pedido:
+     si la portada cambiara antes que el cuerpo, el documento se vería un
+     instante con la cubierta en inglés y las páginas en español. */
+  const D = diccionario(listo);
 
   const hoja = modo === "hoja";
   const empresa = !!re;
@@ -77,7 +125,7 @@ export default function EstudioScreen() {
         <span className={styles.hint} style={css("font-size:var(--t-body);color:var(--text-4);")}>
           {hoja
             ? `Una página, sin fórmulas ni claves: lo que se lleva la persona. Sale en ${EN_ESPANOL[idioma]}.`
-            : "Haz clic en cualquier párrafo para reescribirlo con tus palabras."}
+            : `Haz clic en cualquier párrafo para reescribirlo con tus palabras. Sale en ${EN_ESPANOL[idioma]}.`}
         </span>
         {/* Las acciones envuelven de verdad en el móvil.
             Con `margin-left:auto` los dos botones se pegaban al borde derecho y
@@ -96,12 +144,13 @@ export default function EstudioScreen() {
            * abre—. Puestas al lado del botón de exportar, se leen a la vez que
            * él: aquí se pulsa, y esto es lo que sale.
            *
-           * Sólo aparecen con la hoja del cliente delante. El estudio completo
-           * —veintitantos capítulos de apuntes de la escuela— sigue en español:
-           * es la herramienta de Iris, no lo que se entrega. Enseñar aquí el
-           * selector en ese modo prometería una traducción que no existe.
+           * Valen para los dos documentos. El estudio completo también sale en
+           * los tres idiomas —los apuntes de la escuela, y desde ahora también
+           * la portada, los rótulos y las frases de la casa—, así que el
+           * selector no promete nada que no exista. La PLATAFORMA sigue en
+           * español: lo que cambia de idioma es lo que se entrega.
            */}
-          {hoja && (
+          {(
             <div role="group" aria-label="Idioma del documento" style={css("display:flex;gap:4px;flex:none;")}>
               {IDIOMAS.map(({ codigo, etiqueta }) => {
                 const on = idioma === codigo;
@@ -162,12 +211,12 @@ export default function EstudioScreen() {
           {AYUDA_SIN_CABECERAS}
         </span>
         <span style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--text-4);")}>{AYUDA_IMPRIMIR}</span>
-        {/* Si el idioma se quedó en portugués de la última consulta, hay que
-            decirlo aquí: el estudio completo no lo sigue, y enterarse después
-            de mandarlo es tarde. */}
-        {!hoja && idioma !== "es" && (
+        {/* Mientras se descargan los apuntes del idioma. Son 292 KB y en una
+            conexión lenta se nota; sin decir nada, el documento se quedaría un
+            momento en español y parecería que el selector no funciona. */}
+        {cargando && (
           <span style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--text-4);")}>
-            La hoja del cliente está puesta en {EN_ESPANOL[idioma]}. El estudio completo sale siempre en español.
+            Trayendo los apuntes en {EN_ESPANOL[idioma]}…
           </span>
         )}
       </div>
@@ -180,11 +229,11 @@ export default function EstudioScreen() {
           <div style={css("font-weight:590;font-size:var(--t-mini);color:#9A7F32;")}>{marca}</div>
           <div style={css("width:78px;height:1px;background:var(--gold);margin:26px 0;")} />
           <div style={css("font-family:var(--font-ui);font-weight:600;font-size:var(--t-title);color:#6B6478;")}>
-            {empresa ? "Estudio de Kábala empresarial" : "Estudio de Kábala personal"}
+            {empresa ? D.estudio.portadaEmpresa : D.estudio.portadaPersonal}
           </div>
           <h1 style={css("font-family:var(--font-ui);font-weight:700;font-size:var(--t-hero);line-height:1.22;letter-spacing:-.022em;color:#2B1119;margin:30px 0 0;max-width:560px;")}>{titulo(nombreTexto)}</h1>
           <div style={css("font-family:var(--font-ui);font-size:var(--t-title);font-style:italic;color:#7A7288;margin-top:var(--s4);")}>
-            {r ? fechaLarga(r.fecha.dia, r.fecha.mes, r.fecha.anio) : "Leído del nombre"}
+            {r ? fechaLarga(r.fecha.dia, r.fecha.mes, r.fecha.anio, D.locale) : D.estudio.portadaSinFecha}
           </div>
         </section>}
 
@@ -212,7 +261,7 @@ export default function EstudioScreen() {
                 </div>
               )}
               {cap.bloques.map((b, bi) => (
-                <BloqueView key={bi} b={b} r={r} txt={txt} guardaEdit={guardaEdit} />
+                <BloqueView key={bi} b={b} r={rDoc} txt={txt} guardaEdit={guardaEdit} idioma={listo} />
               ))}
             </div>
             <footer className={styles.footer}>

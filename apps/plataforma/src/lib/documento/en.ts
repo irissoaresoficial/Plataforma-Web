@@ -134,6 +134,329 @@ export const EN: Diccionario = {
     empPieLema: "The name is the password",
   },
 
+  /* --------------------------------------------------------- the full study
+   * The long document, twenty-odd chapters of it. What lives here are the
+   * headings, the opening lines of each chapter and the sentences that tie one
+   * figure to the next — everything the program writes around the school's
+   * material.
+   *
+   * THE SECTION NAMES carry a «·» that is not decoration: what comes before it
+   * is the session, and the document only starts a fresh page when the session
+   * changes. So «Session 2 · Learnings» and «Session 2 · Somatisations» have to
+   * share their opening exactly, and so do «The numbers in the name» and «The
+   * numbers in the name · Essence».
+   *
+   * GENDER: Spanish and Portuguese change the ending depending on who is
+   * reading. English does not, so those lines are written once here — one form
+   * that fits everybody, which is what the language actually does. */
+  estudio: {
+    portadaPersonal: "Personal Kabbalah study",
+    portadaEmpresa: "Company Kabbalah study",
+    portadaSinFecha: "Read from the name",
+
+    secBienvenida: "Welcome",
+    secArbol: "Tree of Life",
+    secCaminos: "Session 1 · Paths",
+    secNumeros: "Session 1 · Numbers",
+    secAprendizajes: "Session 2 · Learnings",
+    secSomatizaciones: "Session 2 · Somatisations",
+    secAlma: "Session 3 · Image of the soul",
+    secCierre: "Closing",
+
+    bienvenidaKicker: "Your map of light",
+    bienvenidaTitulo: "Welcome to your study",
+    bienvenidaLead:
+      "Take this study not as a rigid diagnosis but as a living guide. Kabbalah teaches us that the day and the hour you were born, together with the name {nombrado}, make up a password of your own to your highest potential.",
+    bienvenidaNombrado: "you were given",
+    bienvenidaHabla:
+      "Everything you are about to read in the following pages is about you: about what you have already won, about what is still to wake up and about the learnings that have come to move you forward. Read it with openness, with love and with the certainty that you have the strength to transform every part of your life.",
+    bienvenidaViaje: "A journey back to your essence",
+    bienvenidaMapa:
+      "This study is a road map for understanding the architecture of your being. Through Kabbalah we decipher the codes of your birth to give you clarity, meaning and direction: your gifts, the virtues and tools you came into the world with; your challenges of evolution, those blockages or repeating patterns turned into your greatest source of wisdom; and your purpose, the direction to point your energy in so as to live fully.",
+    bienvenidaArbol:
+      "The tree of life, with its ten sefirot and its twenty-two paths, is also the map of evolution travelled by the twenty-two major arcana of the Tarot: every path your soul has chosen has, on top of its kabbalistic reading, an archetypal story — that of the Fool who sets off walking and, at the end of the journey, crosses the same abyss again, only transformed. In this study you will find the two readings woven together.",
+    bienvenidaCita:
+      "A Kabbalah study does not foretell your destiny; it uncovers the light already living in you so that you learn to guide your own path with awareness, love and freedom.",
+
+    arbolKicker: "Your three energies",
+    arbolTitulo: "Your Tree of Life",
+    arbolIntro:
+      "Your soul chooses three paths on the tree of life: three energies you came to learn, to handle and to understand. The path of origin is with you from birth until your age of change, and it is what you know from other lives. The path of transformation is born and dies with you: it is your way of living. The path of destiny is where your soul wants to take you.",
+    arbolEdadLabel: "Age of change",
+    arbolEdadTurbulencias:
+      "At {edad} ten turbulent years begin in {tipos}. You will not take the path of destiny until you are {destino}.",
+    arbolEdadSinTurbulencias: "At {edad} comes the change that takes you onto your path of destiny.",
+
+    caminosKicker: "Session 1 · Your paths",
+    origenTitulo: "Your path of origin",
+    origenIntro:
+      "It tells you about the quality you arrive with as standard: the path of origin is what you come to remember and to share with others in this life. In your case, from birth until you are {edad}, which is your age of change.",
+    transformacionTitulo: "Your path of transformation",
+    transformacionIntro:
+      "It is born and dies with you: it is your way of living. You should live with this leaning and act as this path tells you in any situation or conflict that comes up in your life. It will serve you well in reaching success.",
+    destinoTitulo: "Your path of destiny",
+    destinoIntroMismaCarta:
+      "A new energy your soul wants to learn. In your case you carry it on from your path of transformation.",
+    destinoIntro: "A new energy your soul wants to learn. You reach it when the moment of change arrives.",
+    caminoPareja: "This path in a relationship",
+    caminoEvolutivo: "The evolutionary path of {nombre} · {sendero}",
+
+    corazonKicker: "Your soul's PIN",
+    corazonTitulo: "Your heart number: {n}",
+    corazonLead:
+      "It is your soul's PIN number, how you vibrate. Knowing that numbers are vibration, we understand that they tell us about the energy we give off and the kind of learning we have with other people.",
+    corazonCuenta:
+      "It comes from the value of your name ({nombre}) plus your age of change ({edad}): {nombre} + {edad} = {total}.",
+    corazonNumero: "Number {n} · {titulo}",
+    corazonPartes: "In Kabbalah three-digit numbers are split two by two: {partes}",
+
+    valoresKicker: "Your values and how you show them",
+    valoresTitulo: "Essence, ego and days of strength",
+    esenciaLabel: "Essence",
+    esenciaSinFicha: "This number speaks of your inner values, the deepest ones.",
+    egoLabel: "Ego",
+    egoSinFicha: "It speaks of the connection you have with people. It is read two by two: {partes}",
+    fuerzaLabel: "Strength",
+    fuerzaTexto:
+      "They come from the value of your name, which is the essence plus the ego: {esencia} + {ego} = {valor}, and adding up its digits, {base}. They run from the strongest to the least strong: use day {primero} of the month for signings and for whatever matters in your life, and the rest after that.",
+
+    aprendizajesKicker: "Session 2 · Your learnings",
+    estructuraTitulo: "Your energy structure: number {n}",
+
+    aprendizajesTituloVacio: "Your learnings",
+    aprendizajesVacio: "Your soul has not marked any further learnings for this incarnation.",
+    aprendizajeCabecera: "Learning {portal}{veces} · {nombre} — it comes from the number {numero}",
+    aprendizajeVeces: " (×{n})",
+    aprendizajesTitulo: "Your learnings · {i} of {n}",
+    refHiloRojo: "Red thread",
+    refNeurosis: "Associated neurosis",
+    refSanador: "Healing principle",
+
+    somatizacionesKicker: "Body and emotion",
+    somatizacionesTitulo: "Illnesses and weak spots",
+    somatizacionesLead:
+      "If you do not carry these learnings out, the energy left unworked turns into symptoms. Knowing where it shows up lets you get ahead of it and work on it consciously.",
+    somatizacionesPunto: "Point {n} · {nombre}",
+    somatizacionesFicha: "Psychological dysfunctions: {psico} Organs: {organos} Physical dysfunctions: {fisicas}",
+
+    almaKicker: "Session 3 · The image of the soul",
+    almaTitulo: "Your blockages and your supports",
+    almaLead:
+      "It tells you about every karmic process that stops you growing and moving on. It is a rucksack loaded with inherited routines, family patterns and ways of acting from other lives that you are repeating in this one. Getting to know it takes weight off it.",
+    almaLabel: "Image of the soul",
+    almaTexto:
+      "It is the figure that opens the table: from it come the moving numbers of each square, and with them the planes you carry blocked and the supports you can count on.",
+    bloqueoTitulo: "Blockage {casilla} · {i} of {n}",
+    bloqueoCabecera: "{nombre}{veces} — it is formed with the number {numero}",
+    bloqueoVeces: " · ×{n}",
+
+    karmaKicker: "Open accounts and karma",
+    karmaTitulo: "Your karma",
+    karmaLead:
+      "The open accounts are the root of the sense of guilt, where your soul feels it failed most: unresolved situations you go on carrying. Each archaic potential helps you close the open account in its row.",
+    karmicoLabel: "Karmic",
+    karmicoTexto: "Where your soul failed in its relationships in past lives, and what repeats in this one.",
+    lemaLabel: "Life motto",
+    lemaTexto: "Your soul's purpose: the vibration that lets you carry out your plan.",
+
+    numeroEnApuntes: "{n} · {titulo}",
+    numeroEnApuntesAclara: "{n} · {titulo} — {aclara}",
+    numeroSinApuntes: "{n} — not in the school's notes: it is read through its parts, {partes}",
+    numeroSinApuntesAclara: "{n} · {aclara} — not in the school's notes: it is read through its parts, {partes}",
+
+    afinidadTitulo: "Your affinity numbers: {a} and {b}",
+    afinidadLead:
+      "They are the widest view of the chart: what you came to do in this incarnation. They go in pairs, and each one looks at half of it — the first comes from the day and the month of birth; the second, from the month and the year.",
+    afinidadDiaMes: "day {dia} + month {mes}",
+    afinidadMesAnio: "month {mes} + year {anio}",
+
+    ciclosKicker: "Life cycles",
+    ciclosTitulo: "Your life cycles",
+    ciclosIntro:
+      "Your life purpose vibrates in the {proposito}. The three great cycles — formation, evolution and harvest — and the four pinnacles set the rhythm of your life; the challenges are the frictions that fine-tune you at each stage. Your current personal year ({anioUniversal}) is the {anioPersonal}.",
+    etapasTitulo: "Your nine-year stages",
+    etapasLead:
+      "Life is also walked in stages of nine years, each with a lesson of its own. Right now, at {edad}, you are in stage {etapa}.",
+    etapaCabecera: "Stage {n} · from {desde} to {hasta} years old{actual}",
+    etapaActual: " — your current stage",
+    anioTitulo: "Your personal year: {n}",
+    anioLabel: "Year {n}",
+    anioSinTexto: "It is worked out by adding your day and month of birth to the current year.",
+
+    resumenKicker: "Your study at a glance",
+    resumenTitulo: "Your numbers, all together",
+    resumenLead:
+      "These are the figures everything you have just read was built on. Keep them: each one opens a different door and none of them is read on its own.",
+    cifCorazon: "Heart",
+    cifCorazonPie: "The soul's PIN, how it vibrates",
+    cifEsencia: "Essence",
+    cifEsenciaPie: "What you came here to be",
+    cifEgo: "Ego",
+    cifEgoPie: "How other people see you",
+    cifEdadCambio: "Age of change",
+    cifEdadCambioPie: "When you step onto your path of destiny",
+    cifEstructura: "Structure",
+    cifEstructuraPie: "The shape of your ten portals",
+    cifAlma: "Image of the soul",
+    cifAlmaPie: "The ten planes of consciousness",
+    cifKarmico: "Karmic",
+    cifKarmicoPie: "What you have left to close",
+    cifLema: "Life motto",
+    cifLemaPie: "The vibration that lets you carry it out",
+    cifProposito: "Purpose",
+    cifPropositoPie: "The thread running through your whole life",
+    cifAnio: "Personal year",
+    cifAnioPie: "Where you are in {n}",
+    resumenCita: "May this map go with you. The light you are looking for already lives in you.",
+
+    cierreKicker: "Before we close",
+    cierreTitulo: "What matters and you should keep in mind",
+    cierreLead:
+      "If you only keep one page out of the whole study, let it be this one. These are the six points worth keeping in mind day to day.",
+    cHaciaDondeLabel: "Which way",
+    cHaciaDondeTexto:
+      "Your path of destiny is {carta}. {lema} That is the underlying direction: when a decision takes you away from it, you will feel it as wear and tear.",
+    cQueTrabajarLabel: "What to work on",
+    cQueTrabajarNada: "You bring no portals with learning in them: your structure comes resolved and the work is to hold it.",
+    cQueTrabajarUno:
+      "You have {n} open learning: {lista}. They are not faults: they are the tasks you came here to do, and they are worked one at a time.",
+    cQueTrabajarVarios:
+      "You have {n} open learnings: {lista}. They are not faults: they are the tasks you came here to do, and they are worked one at a time.",
+    cPortalSinNombre: "portal {n}",
+    cQueDesatascarLabel: "What to unblock",
+    cQueDesatascarNada: "No planes of consciousness are blocked: the image of the soul comes clean.",
+    cQueDesatascarTexto:
+      "The blocked planes are {lista}. They are the places where your energy gets stuck; recognising them is already half the job.",
+    cCasillaSinNombre: "square {n}",
+    cQueCerrarLabel: "What to close",
+    cQueCerrarTexto:
+      "The karmic number {karmico} is the account you bring from before. Your life motto, the {lema}, is the vibration that settles it.",
+    cDondeEstasLabel: "Where you are",
+    cDondeEstasTexto:
+      "In {anioUniversal} you are in personal year {anioPersonal} of a wheel of nine, inside the cycle of {proposito} that sets your purpose. What this year asks of you is not what the next one will ask.",
+    cCuandoMoverLabel: "When to move",
+    cCuandoMoverTexto:
+      "Your days of strength are the {dias}, from strongest to least. Keep them for signing, starting and deciding; whatever you set going on those days has the wind behind it.",
+    cierreCita: "None of this is a closed destiny. It is the map; you are the one who walks it.",
+
+    digOrigen: "Origin",
+    digTransformacion: "Transformation",
+    digDestino: "Destiny",
+    digOrigenRango: "0 – {edad} years",
+    digTransformacionRango: "your whole life",
+    digDestinoRango: "from {edad} on",
+    digEje: "Axis",
+    digPlano: "Plane",
+    digEnTension: "under tension",
+    digLibre: "free",
+    digEspiritu: "Spirit",
+    digAlma: "Soul",
+    digMateria: "Matter",
+    digEvolucion: "Evolution",
+    digProyeccion: "The 0 falls in square {n}: that is what you project to other people.",
+    digDia: "Day",
+    digMes: "Month",
+    digAnio: "Year",
+    digCuenta: "Account",
+    digKarmico: "Karmic number of relationships",
+    digLema: "Life-motto number",
+    digSanador: "Healing-effect number",
+    digAfinidad: "Affinity number",
+    digVibraciones: "Body / soul / spirit vibration",
+    digRango: "{desde} – {hasta} years",
+    digRangoFinal: "from {desde} years on",
+    digRangoAbierto: "from {desde} on",
+    digRealizacion: "Pinnacle {n}",
+    digDesafios: {
+      "Primer desafío menor": "First minor challenge",
+      "Segundo desafío menor": "Second minor challenge",
+      "Desafío mayor": "Major challenge",
+    },
+    digRangosDesafio: {
+      "hasta los 42 años aprox.": "until about 42",
+      "de los 42 años en adelante": "from 42 onwards",
+      "toda la vida": "your whole life",
+    },
+    sefirot: {
+      Keter: "Kether",
+      Hokmah: "Chokmah",
+      Binah: "Binah",
+      Jesed: "Chesed",
+      Gevurah: "Geburah",
+      Tiphereth: "Tiphereth",
+      Netsaj: "Netzach",
+      Hod: "Hod",
+      Yesod: "Yesod",
+      Malkut: "Malkuth",
+    },
+    digEnNegativo: "In the negative",
+    digEnPositivo: "In the positive",
+    refTensa: "What tightens you · {n}",
+    refLibera: "What frees you · {n}",
+    refSinFicha: "It is read by splitting it two by two.",
+
+    empSecNumeros: "The numbers in the name",
+    empSecEsencia: "The numbers in the name · Essence",
+    empSecEgo: "The numbers in the name · Ego",
+    empSecOrigen: "The path of origin",
+    empNombreKicker: "The company's name",
+    empNombreTitulo: "What this name says",
+    empLead:
+      "Kabbalah reads a name as a password: each letter has a value, and the sum of them all says how whatever that name stands for vibrates. {nombre} adds up to {n}.",
+    empSoloNombre:
+      "This study is made from the name alone. For a person we also read the energy structure, the planes of consciousness, the open accounts and the life cycles, but all of that comes out of the date of birth; a company has none, and what cannot be worked out is not made up. What follows is, in full, what the name says on its own.",
+    empCifValor: "Value of the name",
+    empCifValorPie: "How the whole company vibrates",
+    empCifEsencia: "Essence",
+    empCifEsenciaPie: "What it came here to be, in the vowels",
+    empCifEgo: "Ego",
+    empCifEgoPie: "How it is seen, in the consonants",
+    empCifCifras: "Digits",
+    empCifCifrasPie: "The numbers the name carries",
+    empCifOrigen: "Path of origin",
+    empComoSeCuenta: "How it is counted",
+    empCuenta:
+      "The value of each letter is added up: {palabras}{total}. The vowels on their own give the essence, {esencia}; the consonants, the ego, {ego}.{cifras}",
+    empCuentaPalabra: "{palabra} is worth {n}",
+    empCuentaSeparador: "; ",
+    empCuentaTotal: ", and {n} in total",
+    empCuentaCifras:
+      " And if the name carries numbers, they count for what they are worth: here they add up to {cifras}. A number is neither a vowel nor a consonant, so it goes on its own, and the value of the name is the sum of the three: {esencia} + {ego} + {cifras} = {valor}.",
+    empValorKicker: "Value of the name",
+    empValorTitulo: "The {n}: how it vibrates",
+    empValorTexto:
+      "It is the number of the whole company, the sum of all its letters. It sets the background tone of what it does and of how it is seen.",
+    empEsenciaKicker: "Essence",
+    empEsenciaTitulo: "The {n}: what it came here to be",
+    empEsenciaTexto:
+      "It comes from the vowels alone. It is the project's inner drive: what it leans towards when nobody is looking.",
+    empEgoKicker: "Ego",
+    empEgoTitulo: "The {n}: how it is seen",
+    empEgoTexto:
+      "It comes from the consonants alone. It is the face the company turns outwards: what clients and suppliers pick up before dealing with it.",
+    empArcanoKicker: "Arcanum {n}",
+    empOrigenLabel: "Origin",
+    empOrigenCuenta:
+      "It is taken from the value of the name: {valor} minus the sum of its digits ({sumaCifras}) gives {resta}, which divided by nine is {division}, plus one, {mas1}. Reduced to the twenty-one arcana, the {arcano}.",
+    empOrigenNota:
+      "In a person this is the first of three paths — origin, transformation and destiny — but the other two rest on the age of change, which comes out of the date of birth. A company has only this one, and that is why it weighs so much: it is the whole arc of the chart.",
+    empCierreKicker: "Before we close",
+    empCierreTitulo: "What matters and should be kept in mind",
+    empCierreLead:
+      "If only one page of the whole study is kept, let it be this one. These are the four points worth keeping in mind.",
+    empCVibraLabel: "How it vibrates",
+    empCVibraTexto: "The name adds up to {n}. That is the background tone: what the company gives off before saying anything.",
+    empCDentroFueraLabel: "Inside and outside",
+    empCDentroFueraTexto:
+      "The essence is {esencia} and the ego {ego}. When the two are alike, the company shows itself as it is; when they pull far apart, there is distance between what it wants to be and what it looks like, and that distance is paid for in trust.",
+    empCHaciaDondeLabel: "Which way",
+    empCHaciaDondeTexto: "The path of origin is {carta}. {lema} That is the underlying direction of the project.",
+    empCCuandoMoverLabel: "When to move",
+    empCCuandoMoverTexto:
+      "The days of strength are the {dias}, from strongest to least. Keep them for signing contracts, opening and presenting.",
+    empCierreCita: "The name is the password: what is named well holds up.",
+  },
+
   /* ------------------------------------------------------------- the arcana
    * The name is the English one for that card, not a translation of the
    * Spanish. The text is the school's lecture notes as they stand: telegraphic,
