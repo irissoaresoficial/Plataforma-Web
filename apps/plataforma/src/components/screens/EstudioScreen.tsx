@@ -4,7 +4,7 @@ import { css } from "@/lib/css";
 import { BOTON_NORMAL, botonPrincipal } from "@/lib/ui";
 import { useApp } from "@/lib/app-context";
 import { construyeCapitulos, construyeCapitulosEmpresa, resultadoEnIdioma } from "@/lib/estudio";
-import { useExportar, AVISO_SIN_DIALOGO, AYUDA_SIN_CABECERAS } from "@/lib/imprimir";
+import { useExportar, AVISO_SIN_DIALOGO } from "@/lib/imprimir";
 import { cargaApuntes } from "@/lib/kdata";
 import { EN_ESPANOL, IDIOMAS, diccionario, type Idioma } from "@/lib/documento";
 import { useIdiomaDocumento } from "@/lib/documento/idioma";
@@ -14,6 +14,7 @@ import HojaCliente from "../estudio/HojaCliente";
 import HojaClienteEmpresa from "../estudio/HojaClienteEmpresa";
 import styles from "../estudio/Estudio.module.css";
 import Confirmar from "../Confirmar";
+import GuiaApple from "../GuiaApple";
 
 export default function EstudioScreen() {
   const { r, re, marca, txt, guardaEdit, restablecer, edits, id } = useApp();
@@ -29,7 +30,7 @@ export default function EstudioScreen() {
      que toca según el aparato. Los tres botones de exportar de la plataforma
      —estudio, pareja y factura— usan esta misma pieza, para que en la tablet
      los tres digan lo mismo en vez de quedarse callados dos de ellos. */
-  const { exporta, sinDialogo, trasPulsar, ayuda } = useExportar();
+  const { exporta, sinDialogo, trasPulsar, ayuda, ayudaCabeceras, guiaApple, cierraGuia } = useExportar();
 
   /*
    * LOS APUNTES DEL IDIOMA SE PIDEN ANTES DE ARMAR EL ESTUDIO.
@@ -218,7 +219,7 @@ export default function EstudioScreen() {
             <circle cx="12" cy="12" r="9" />
             <path d="M12 8h.01M11 12h1v4h1" />
           </svg>
-          {AYUDA_SIN_CABECERAS}
+          {ayudaCabeceras}
         </span>
         {/* En un aparato de Apple la ruta de Compartir no es el plan B: muchas
             veces es el único. Por eso la ayuda que se enseña depende de dónde
@@ -234,6 +235,7 @@ export default function EstudioScreen() {
             {trasPulsar}
           </span>
         )}
+        {guiaApple && <GuiaApple alCerrar={cierraGuia} />}
         {/* Mientras se descargan los apuntes del idioma. Son 292 KB y en una
             conexión lenta se nota; sin decir nada, el documento se quedaría un
             momento en español y parecería que el selector no funciona. */}

@@ -32,6 +32,7 @@ import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
 import { useExportar, AVISO_SIN_DIALOGO } from "@/lib/imprimir";
+import GuiaApple from "../GuiaApple";
 import {
   clientes as repoClientes,
   facturas as repoFacturas,
@@ -110,7 +111,7 @@ export default function FacturasScreen() {
 
   /* Descargar la factura es imprimir, igual que el estudio: misma pieza, mismo
      aviso si el navegador no abre el diálogo. */
-  const { exporta, sinDialogo, trasPulsar, ayuda } = useExportar();
+  const { exporta, sinDialogo, trasPulsar, ayuda, guiaApple, cierraGuia } = useExportar();
   const [lista, setLista] = useState<Factura[]>([]);
   const [gente, setGente] = useState<Cliente[]>([]);
   const [abierta, setAbierta] = useState<Factura | null>(null);
@@ -592,6 +593,7 @@ export default function FacturasScreen() {
                   {trasPulsar}
                 </p>
               )}
+              {guiaApple && <GuiaApple alCerrar={cierraGuia} />}
               {mensaje && (
                 <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-2);")}>
                   {mensaje}

@@ -114,17 +114,15 @@ export function enAplicacion(): boolean {
  */
 export const AYUDA_IMPRIMIR = "Si no se abre el diálogo, usa Compartir → Imprimir y elige «Guardar en Archivos» para tener el PDF.";
 
-/** La misma ruta, dicha como lo que es cuando quien lee está en un iPad. */
-export const AYUDA_IMPRIMIR_APPLE =
-  "En el iPad: pulsa Exportar y, si no sale el diálogo, usa Compartir → Imprimir → «Guardar en Archivos». Si abriste la plataforma desde el icono de la pantalla de inicio, ése es el único camino: ahí Safari no tiene diálogo de impresión.";
-
 /**
- * Cuando SABEMOS que no va a salir el diálogo, no se dice «si no sale»: se dice
- * el camino bueno y ya está. Hacer que alguien pruebe algo que no puede
- * funcionar, para luego darle el plan B, es hacerle perder el tiempo dos veces.
+ * En un iPad no se dice «si no sale el diálogo»: no va a salir. Una frase, y el
+ * resto lo cuenta la guía de pasos que abre el propio botón.
+ *
+ * Esto era antes un párrafo de tres renglones a once píxeles, con el camino
+ * bueno metido en medio. En el vídeo del iPad se ven esos renglones y no se lee
+ * ninguno.
  */
-export const AYUDA_IMPRIMIR_APP =
-  "Has abierto la plataforma desde el icono de la pantalla de inicio, y ahí no existe el diálogo de impresión. Pulsa Exportar y usa el botón de Compartir del sistema → Imprimir → «Guardar en Archivos». Si prefieres el diálogo de siempre, abre la plataforma desde Safari.";
+export const AYUDA_IMPRIMIR_APPLE = "En el iPad el PDF se guarda desde Compartir. Pulsa Exportar y te digo cómo.";
 
 /**
  * La dirección web y la hora que salen arriba y abajo del PDF no las pone el
@@ -169,9 +167,9 @@ export const AVISO_TRAS_PULSAR =
  */
 export function useExportar() {
   /* «listo» = aún no se ha pulsado; «pulsado» = el navegador aceptó imprimir;
-     «fallo» = el navegador dijo que no. Son tres cosas distintas y cada una se
-     cuenta de una manera. */
-  const [estado, setEstado] = useState<"listo" | "pulsado" | "fallo">("listo");
+     «fallo» = el navegador dijo que no; «guia» = estamos en un aparato de Apple
+     y lo que hay que enseñar son los pasos, no un aviso. */
+  const [estado, setEstado] = useState<"listo" | "pulsado" | "fallo" | "guia">("listo");
 
   /* `esApple()` y `enAplicacion()` miran el navegador, y en el servidor no hay
      navegador. Además el HTML se guarda en caché: si el consejo se decidiera al
@@ -184,7 +182,23 @@ export function useExportar() {
   const apple = useSyncExternalStore(sinCambios, esApple, () => false);
   const enApp = useSyncExternalStore(sinCambios, enAplicacion, () => false);
 
-  const exporta = useCallback(() => setEstado(imprimir() ? "pulsado" : "fallo"), []);
+  /*
+   * EN UN APARATO DE APPLE SE SIGUE LLAMANDO A `imprimir()`, aunque sepamos que
+   * lo más probable es que no haga nada.
+   *
+   * Dos motivos. Uno: no cuesta nada, y en el Mac de sobremesa —que también da
+   * `esApple()` cuando tiene pantalla táctil— el diálogo sí sale. Dos: si algún
+   * día iPadOS lo implementa, esto empieza a funcionar solo.
+   *
+   * Lo que cambia es lo que se enseña después. En Apple, los pasos de Compartir;
+   * en el resto, el aviso corto de siempre.
+   */
+  const exporta = useCallback(() => {
+    const ok = imprimir();
+    setEstado(apple ? "guia" : ok ? "pulsado" : "fallo");
+  }, [apple]);
+
+  const cierraGuia = useCallback(() => setEstado("listo"), []);
 
   return {
     exporta,
@@ -192,12 +206,17 @@ export function useExportar() {
     sinDialogo: estado === "fallo",
     /* Tono normal: se ha pulsado y dejamos la salida a la vista por si acaso. */
     trasPulsar: estado === "pulsado" ? AVISO_TRAS_PULSAR : null,
+    /* Los tres pasos de Compartir, en grande. Sólo en Apple. */
+    guiaApple: estado === "guia",
+    cierraGuia,
     apple,
     enApp,
-    /* Tres situaciones, tres frases. Abierta como aplicación en Apple, sabemos
-       que no habrá diálogo y se dice directamente. En un Apple dentro de Safari,
-       la ruta de Compartir es el plan B pero muy probable. En cualquier otro
-       sitio, es una nota al pie. */
-    ayuda: enApp && apple ? AYUDA_IMPRIMIR_APP : apple ? AYUDA_IMPRIMIR_APPLE : AYUDA_IMPRIMIR,
+    ayuda: apple ? AYUDA_IMPRIMIR_APPLE : AYUDA_IMPRIMIR,
+    /*
+     * El truco de quitar los encabezados vive DENTRO del diálogo de impresión, y
+     * en el iPad no hay diálogo. Enseñárselo allí es una instrucción que no se
+     * puede seguir, ocupando dos renglones encima de la que sí.
+     */
+    ayudaCabeceras: apple ? null : AYUDA_SIN_CABECERAS,
   };
 }
