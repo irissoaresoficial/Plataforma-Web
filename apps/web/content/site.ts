@@ -60,6 +60,22 @@ export const FOTOS = {
    * decía nada de lo que se estaba contando al lado.
    */
   generaciones: '/images/generaciones.png',
+
+  /*
+   * LA FRANJA DE TRES, SIN UNA PALABRA.
+   *
+   * Antes eran tres retratos de Iris —y uno de ellos, el hueco rojo de una foto
+   * que no existía—. Tres fotos de la misma persona, seguidas y sin texto, son
+   * adorno; y esta web tiene una regla que dice que nada es adorno.
+   *
+   * Ahora son las tres la PRUEBA DEL TRABAJO: el árbol dibujándose en la
+   * pizarra, la cuenta hecha a mano en un papel, y el sitio donde se hace.
+   * Quien pasa por delante no ve a alguien: ve lo que se hace. Que es
+   * exactamente lo que hay que demostrar antes de pedir 397 € por aprenderlo.
+   */
+  arbolPizarra: '/images/arbol-pizarra.jpg',
+  laCuenta: '/images/la-cuenta.jpg',
+  cristales: '/images/cristales.jpg',
   /** Cualquier otra: sala, público, detalle de trabajo. Horizontal. */
   sala: '/images/iris-sala.jpg',
 };

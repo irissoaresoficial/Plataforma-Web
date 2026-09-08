@@ -278,20 +278,37 @@ export default function Home() {
         <div className="banda-dentro franja">
           <Paralaje cantidad={54}>
             <Revelado className="franja-foto">
-              {/* Aquí estaba la MISMA foto que en «Quién soy», dos bloques más
-                  abajo. Repetida no aporta nada y hace pensar que sólo hay una.
-                  Esta se quedó libre al pasar la portada a ser el cartel. */}
-              <Foto src={FOTOS.portada} alt="Iris Soares" ratio="3/4" radius="var(--radio)" sizes="(max-width:900px) 100vw, 30vw" objectPosition="center 30%" />
+              <Foto
+                src={FOTOS.arbolPizarra}
+                alt="Unas manos dibujando con tiza, en una pizarra pequeña, el árbol de la vida con sus números"
+                ratio="3/4"
+                radius="var(--radio)"
+                sizes="(max-width:900px) 100vw, 30vw"
+              />
             </Revelado>
           </Paralaje>
           <Paralaje cantidad={-22}>
             <Revelado className="franja-foto" retraso={0.12}>
-              <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="3/4" radius="var(--radio)" sizes="(max-width:900px) 100vw, 30vw" />
+              {/* Cuadrada porque la foto es apaisada: en el 3/4 de las otras dos
+                  se le iría la mitad del papel, que es lo único que hay que ver. */}
+              <Foto
+                src={FOTOS.laCuenta}
+                alt="Una fecha escrita a mano en un papel, sumada cifra a cifra hasta un solo número, con el resultado rodeado"
+                ratio="1/1"
+                radius="var(--radio)"
+                sizes="(max-width:900px) 100vw, 30vw"
+              />
             </Revelado>
           </Paralaje>
           <Paralaje cantidad={78}>
             <Revelado className="franja-foto" retraso={0.24}>
-              <Foto src={FOTOS.sala} alt="Sala" ratio="1/1" radius="var(--radio)" sizes="(max-width:900px) 100vw, 30vw" />
+              <Foto
+                src={FOTOS.cristales}
+                alt="Cuarzos y velas encendidas sobre el agua, al amanecer"
+                ratio="3/4"
+                radius="var(--radio)"
+                sizes="(max-width:900px) 100vw, 30vw"
+              />
             </Revelado>
           </Paralaje>
         </div>
