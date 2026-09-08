@@ -116,6 +116,30 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
             )}
           </div>
 
+          {/* EL PRECIO, ANTES DEL TEMARIO Y NO METIDO EN LA REJILLA DE DATOS.
+              Era la cuarta celda de un cuadro de cuatro, del tamaño del
+              horario. Aquí manda, y con la misma cara que en la tarjeta de
+              fuera: quien entra desde ahí encuentra la misma cifra en el mismo
+              sitio, y no tiene que volver a buscarla. */}
+          {curso.precio === null ? (
+            <div className="curso-oferta" style={{ marginBottom: 24 }}>
+              <Pendiente>Precio por confirmar</Pendiente>
+            </div>
+          ) : (
+            <div className="curso-oferta" style={{ marginBottom: 24 }}>
+              {curso.precioAntes ? (
+                <span className="oferta-badge">−{Math.round(((curso.precioAntes - curso.precio) / curso.precioAntes) * 100)} %</span>
+              ) : null}
+              <div className="oferta-fila">
+                <b>{eur(curso.precio)}</b>
+                {curso.precioAntes ? <s>{eur(curso.precioAntes)}</s> : null}
+              </div>
+              {curso.precioAntes ? (
+                <span className="oferta-ahorro">Te ahorras {eur(curso.precioAntes - curso.precio)}</span>
+              ) : null}
+            </div>
+          )}
+
           <div className="modal-datos">
             {[
               ['Cuándo', curso.fechas],
@@ -127,24 +151,6 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
                 <strong>{v === null || falta(v as string) ? <Pendiente /> : (v as string)}</strong>
               </div>
             ))}
-            {/* El precio va aparte de los otros tres porque puede llevar dos
-                cifras. El número tachado tiene que estar PEGADO al que se paga
-                —en el mismo renglón— o deja de leerse como «antes costaba
-                esto» y se lee como dos precios distintos, que es la peor duda
-                que puedes dejarle a alguien delante de un botón de pago. */}
-            <div>
-              <span>Precio</span>
-              <strong>
-                {curso.precio === null ? (
-                  <Pendiente />
-                ) : (
-                  <>
-                    {eur(curso.precio)}
-                    {curso.precioAntes ? <s className="precio-antes">{eur(curso.precioAntes)}</s> : null}
-                  </>
-                )}
-              </strong>
-            </div>
           </div>
 
           <div className="modal-pestanas" role="tablist">

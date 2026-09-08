@@ -332,6 +332,19 @@ export type Curso = {
   paraQuien: string[];
   /** Lo que la persona se lleva puesto al terminar. */
   teLlevas: string[];
+  /**
+   * LO QUE INCLUYE, PARA LA TARJETA. Cinco líneas cortas, de un renglón.
+   *
+   * Es otra cosa que `teLlevas`, aunque hablen de lo mismo. `teLlevas` se lee
+   * dentro de la ficha, con tiempo, y explica; esto se lee de un vistazo
+   * mientras se mira el precio, y su trabajo es que ese precio parezca poco.
+   *
+   * Por eso no se saca cortando `teLlevas` — cortar textos es justamente lo que
+   * se acaba de quitar de toda la plataforma — sino escribiendo cada línea para
+   * el sitio donde va. Y sólo con lo confirmado: aquí no entra nada que no esté
+   * decidido, porque va pegado a un botón de pagar.
+   */
+  incluye: string[];
 };
 
 /*
@@ -433,6 +446,13 @@ export const CURSOS: Curso[] = [
          del temario, es una decisión de servicio que sólo Iris puede tomar, y
          prometérsela a alguien que ha pagado sin saber si va a existir es
          exactamente lo que esta web no hace. Si la hay, se añade aquí. */
+    ],
+    incluye: [
+      '16 horas en directo con Iris, en dos jornadas completas',
+      'Todo el material, puesto por ella',
+      'Certificado de Consultor de Numerología',
+      'Tu carta y tu árbol de tres generaciones, hechos por ti',
+      'Las tablas y las cuentas por escrito, para repetirlo en casa',
     ],
   },
 ];

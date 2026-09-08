@@ -55,9 +55,56 @@ function CursoBloque({ curso }: { curso: Curso }) {
           ) : (
             <p className="curso-claim">{curso.claim}</p>
           )}
+
+          {/* LO QUE INCLUYE, AL LADO DEL PRECIO Y NO ESCONDIDO EN LA FICHA.
+              Debajo del reclamo había medio metro de tarjeta vacía mientras el
+              precio estaba solo en la columna de al lado, sin nada que lo
+              sostuviera. Un número sin lista al lado se compara con cero; con
+              la lista al lado se compara con lo que cuesta. */}
+          {curso.incluye.length > 0 && (
+            <ul className="curso-incluye">
+              {curso.incluye.map((x) => (
+                <li key={x}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="m4 12 5.5 5.5L20 6" />
+                  </svg>
+                  <span>{x}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="curso-panel">
+          {/* EL PRECIO, FUERA DE LA LISTA DE DATOS.
+              Estaba en la tercera fila de un `dl`, del mismo tamaño que el
+              horario, y así el número por el que se decide la compra pesaba lo
+              mismo que un dato de agenda. Aquí manda: la cifra grande, el
+              precio de antes pegado a ella y, debajo, lo que se ahorra — que
+              es lo que de verdad se recuerda.
+
+              Las dos cuentas salen de los dos precios, no escritas a mano: el
+              día que cambie uno, el porcentaje y el ahorro cambian solos y no
+              hay forma de que la página anuncie un descuento que no existe. */}
+          {curso.precio === null ? (
+            <div className="curso-oferta">
+              <Pendiente>Precio por confirmar</Pendiente>
+            </div>
+          ) : (
+            <div className="curso-oferta">
+              {curso.precioAntes ? (
+                <span className="oferta-badge">−{Math.round(((curso.precioAntes - curso.precio) / curso.precioAntes) * 100)} %</span>
+              ) : null}
+              <div className="oferta-fila">
+                <b>{eur(curso.precio)}</b>
+                {curso.precioAntes ? <s>{eur(curso.precioAntes)}</s> : null}
+              </div>
+              {curso.precioAntes ? (
+                <span className="oferta-ahorro">Te ahorras {eur(curso.precioAntes - curso.precio)}</span>
+              ) : null}
+            </div>
+          )}
+
           <dl className="curso-datos">
             <div>
               <dt>Duración</dt>
@@ -66,19 +113,6 @@ function CursoBloque({ curso }: { curso: Curso }) {
             <div>
               <dt>Horario</dt>
               <dd><T v={curso.horario} /></dd>
-            </div>
-            <div>
-              <dt>Precio</dt>
-              <dd>
-                {curso.precio === null ? (
-                  <Pendiente>Por confirmar</Pendiente>
-                ) : (
-                  <>
-                    {eur(curso.precio)}
-                    {curso.precioAntes ? <s className="precio-antes">{eur(curso.precioAntes)}</s> : null}
-                  </>
-                )}
-              </dd>
             </div>
           </dl>
 
@@ -185,7 +219,7 @@ export default function Cursos() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <span className="espaciado" style={{ fontSize: 10, fontWeight: 700, color: 'var(--acento)' }}>La membresía</span>
                 <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em', lineHeight: 1.1, maxWidth: '26ch', textWrap: 'balance' }}>
-                  Un curso es una tarde. La comunidad es cada mes.
+                  Un curso son dos días. La comunidad es cada mes.
                 </span>
                 {/* El filtro: ¿esto lo querría alguien que acaba de llegar?
                     «Ver la membresía» no dice qué gana por mirarla, y el dato
