@@ -3966,3 +3966,242 @@ body[data-nav-claro='si'] .sello-color {
 .menu-pagina a:hover {
   color: var(--oro-tinta);
 }
+
+/* ===========================================================================
+   LA COMUNIDAD — LA PANTALLA ÚNICA
+
+   Todo lo de esta página vive en un solo bloque oscuro: el rótulo de obras, el
+   titular, el precio, el formulario y el pie. Por eso las medidas se miran una
+   contra otra y no contra el resto de la web — aquí no hay nada más con lo que
+   compararse.
+   =========================================================================== */
+.com-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--tx);
+  padding: clamp(104px, 14vh, 150px) clamp(16px, 4vw, 44px) clamp(24px, 4vh, 40px);
+  overflow: hidden;
+}
+
+.com-dentro {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.4vw, 26px);
+}
+
+/* --- el aviso de obras ---------------------------------------------------
+   Con punto que late, y no con un icono de casco o una cinta amarilla: esto no
+   es una web caída, es una comunidad abriéndose. El punto dice «esto está
+   pasando ahora», que es exactamente el mensaje. */
+.com-obras {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--oro-luz);
+  border: 1px solid rgba(226, 205, 162, 0.3);
+  border-radius: 100px;
+  padding: 7px 15px 7px 13px;
+}
+.com-obras i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--oro-luz);
+  flex: none;
+  animation: com-late 2.4s ease-in-out infinite;
+}
+@keyframes com-late {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.42; transform: scale(0.82); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .com-obras i { animation: none; }
+}
+
+.com-titular {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(34px, 5.4vw, 60px);
+  font-weight: var(--peso-fino);
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+.com-titular em {
+  font-style: italic;
+  color: var(--oro-luz);
+}
+
+.com-entrada {
+  margin: 0;
+  font-size: var(--t-entrada);
+  line-height: 1.62;
+  color: rgba(251, 246, 238, 0.8);
+  max-width: 54ch;
+}
+/* El segundo párrafo es el que dice que esto está a medio hacer. Va con un
+   filete dorado al lado: es la frase que no se puede saltar. */
+.com-entrada-2 {
+  border-left: 2px solid var(--oro-luz);
+  padding-left: 18px;
+  color: rgba(251, 246, 238, 0.92);
+}
+.com-entrada-2 b { color: #fff; font-weight: 600; }
+
+/* --- el precio ----------------------------------------------------------- */
+.com-precio {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: clamp(6px, 1vw, 12px);
+  scroll-margin-top: 90px;
+}
+.com-precio-rotulo {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--oro-luz);
+}
+.com-precio-fila {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.com-precio-fila b {
+  font-family: var(--serif);
+  font-size: clamp(46px, 7vw, 68px);
+  font-weight: var(--peso-fino);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.com-precio-fila s {
+  font-size: 21px;
+  color: rgba(251, 246, 238, 0.45);
+  text-decoration-thickness: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.com-precio-fila i {
+  font-style: normal;
+  font-size: 15px;
+  color: rgba(251, 246, 238, 0.6);
+}
+.com-precio-pie {
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(251, 246, 238, 0.62);
+  max-width: 46ch;
+}
+
+.com-form {
+  max-width: 440px;
+  width: 100%;
+}
+
+/* --- las tres reglas ------------------------------------------------------
+   Sin viñeta y con filete arriba: se leen como condiciones, no como ventajas.
+   Una lista con marcas de visto al lado del precio se lee como «lo que te
+   llevas», y esto es lo contrario: lo que se acuerda. */
+.com-reglas {
+  list-style: none;
+  margin: clamp(8px, 1.4vw, 16px) 0 0;
+  padding: clamp(16px, 2vw, 22px) 0 0;
+  border-top: 1px solid rgba(251, 246, 238, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 56ch;
+}
+.com-reglas li {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: rgba(251, 246, 238, 0.66);
+}
+
+/* --- el pie, dentro de la misma pantalla --------------------------------- */
+.com-pie {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 720px;
+  margin: clamp(40px, 7vh, 80px) auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  border-top: 1px solid rgba(251, 246, 238, 0.1);
+}
+.com-pie span {
+  display: flex;
+  gap: 18px;
+}
+.com-pie a {
+  font-size: 13px;
+  color: rgba(251, 246, 238, 0.55);
+}
+.com-pie a:hover {
+  color: var(--oro-luz);
+}
+
+/* ===========================================================================
+   UNA PÁGINA ENTERAMENTE OSCURA
+
+   La barra de arriba está pensada para páginas de papel: cristal blanco al 62 %
+   con desenfoque. Sobre el granate de la comunidad ese blanco se vuelve una
+   franja lavanda que no es de la casa y que además deja el nombre en tinta
+   oscura sobre un fondo que ya es oscuro.
+
+   Con `pagina-oscura` en la raíz, la barra y lo que lleva dentro se dan la
+   vuelta. Va en la página y no en un `prop` del Nav porque afecta también al
+   botón y a la hamburguesa, que son hijos suyos: una clase arriba y el CSS
+   reparte, en vez de tres props que hay que acordarse de pasar a la vez.
+   =========================================================================== */
+.pagina-oscura .barra {
+  background: rgba(41, 15, 22, 0.86);
+  border-bottom-color: rgba(251, 246, 238, 0.13);
+  color: #fbf6ee;
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .pagina-oscura .barra {
+    background: rgba(41, 15, 22, 0.62);
+  }
+}
+/* El botón era granate sobre papel; sobre granate desaparece. Aquí es el oro,
+   que es lo que la casa usa sobre vino en todos los demás sitios. */
+.pagina-oscura .barra-cta {
+  background: var(--oro-luz);
+  color: var(--vino);
+}
+.pagina-oscura .hamburguesa {
+  border-color: rgba(251, 246, 238, 0.28);
+}
+.pagina-oscura .hamburguesa:hover {
+  border-color: var(--oro-luz);
+}
+.pagina-oscura .hamburguesa span {
+  background: #fbf6ee;
+}
+/* El nombre lleva su propio color —`--tinta`, para las páginas de papel— así
+   que no basta con darle la vuelta a la barra: hay que dárselo también a él, o
+   se queda en tinta oscura sobre el granate, que es casi invisible. */
+.pagina-oscura .barra-marca {
+  color: #fbf6ee;
+}

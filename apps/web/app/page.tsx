@@ -439,7 +439,15 @@ export default function Home() {
           en noviembre, y después el botón. Antes el precio iba enterrado entre
           el párrafo y el botón, en un cuerpo más pequeño que el titular. */}
       <div id="lista-espera" className="vino lanz-bloque" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
-        <div className="lanz-rejilla" style={{ maxWidth: ANCHO, margin: '0 auto' }}>
+        {/* Las cifras flotando, aquí más marcadas que en la portada.
+            Son las mismas —11, 22, 33, 3, 7, 9— y del mismo dorado; lo que
+            cambia es que sobre el granate ese dorado aguanta el doble de
+            intensidad sin gritar, mientras que sobre el papel claro de arriba a
+            0,7 ya se lee como tinta. La densidad también baja: un bloque de
+            media pantalla con la misma cantidad de cifras que una portada
+            entera se llena de ruido. */}
+        <CampoNumeros intensidad={1.7} densidad={150_000} />
+        <div className="lanz-rejilla" style={{ position: 'relative', zIndex: 2, maxWidth: ANCHO, margin: '0 auto' }}>
           <Lanzamiento abreISO={MEMBRESIA.abreISO} desdeISO={MEMBRESIA.listaDesdeISO} />
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(16px,2vw,24px)' }}>
