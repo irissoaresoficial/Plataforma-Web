@@ -66,10 +66,18 @@ const DESPACHO: Array<{ k: View; label: string; Ico: Ico }> = [
  *
  * Ahora la columna es LA navegación, con dos grupos:
  *
- *   EL ESTUDIO   — la consulta, las partes de la carta y el documento.
- *   EL DESPACHO  — la agenda, los clientes y las facturas.
+ *   EL ESTUDIO      — la consulta y las disciplinas con sus partes.
+ *   PARA ENTREGAR   — lo que sale de ahí y se le da a la persona.
+ *   EL DESPACHO     — la agenda, los clientes y las facturas.
  *
- * Dos grupos, un nivel de sangrado y un solo sitio donde mirar. Arriba se queda
+ * SON TRES Y NO DOS desde que se sacaron de «El estudio» el documento y la
+ * comparativa de pareja. Estaban colgando debajo de las disciplinas, al mismo
+ * nivel que «Kábala» y «Numerología», y ahí mezclan dos cosas distintas: las
+ * disciplinas son DÓNDE SE TRABAJA y el documento es QUÉ SE ENTREGA. Puestos
+ * en la misma lista, hay que leerlos todos para saber cuál es cuál.
+ *
+ * Cada grupo contesta ahora a una pregunta: dónde miro, qué le doy, cómo llevo
+ * el negocio. Arriba se queda
  * la marca, la cuenta y el tema, que no son navegación.
  *
  * Es la misma lista en los dos sitios donde aparece —esta columna en pantalla
@@ -235,6 +243,14 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
           );
         })}
 
+      </div>
+
+      {/* ---------------------------------------------------- PARA ENTREGAR */}
+      {/* Lo que se imprime y se le da a la persona. Los dos salen del estudio
+          que esté abierto, así que se apagan igual que las disciplinas cuando
+          todavía no hay ninguno. */}
+      <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+        {rotulo("Para entregar")}
         {fila(view === "estudio", IcoDocumento, "El documento", ir("estudio"), { apagado: !hayEstudio })}
         {fila(view === "pareja", IcoPareja, "Comparar pareja", ir("pareja"), { apagado: !hayEstudio })}
       </div>
