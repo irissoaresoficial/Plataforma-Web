@@ -389,7 +389,10 @@ export const CURSOS: Curso[] = [
     precioAntes: 697,
     plazas: null,
     videoUrl: '',
-    stripeUrl: '',
+    /* Enlace de pago de Stripe, dado por Gerson el 8 de septiembre de 2026.
+       Es un enlace público de cobro: está hecho para publicarlo, no es un
+       secreto que se filtre por estar aquí. */
+    stripeUrl: 'https://buy.stripe.com/cNi28r2mc2xL72la8K1ZS00',
     descripcion:
       'La numerología no adivina nada. Coge dos datos que ya tienes —la fecha en que naciste y el nombre con el que te ' +
       'inscribieron— y los convierte en cifras con las que se puede trabajar. En estos dos días aprendes a hacer esa ' +

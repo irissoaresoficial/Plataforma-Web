@@ -198,21 +198,53 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
               ))}
           </div>
 
-          {!curso.stripeUrl && (
-            <div className="modal-reserva">
-              <strong>Las plazas todavía no están abiertas.</strong>
-              <p>Déjame tu correo y te aviso en cuanto pueda reservarse. No se cobra nada ahora.</p>
-              <LeadForm
-                origen="curso"
-                detalle={falta(curso.titulo) ? `Curso ${curso.fechas}` : curso.titulo}
-                cta="Avísame para reservar"
-                variant="light"
-                successTitle="Anotado"
-                successText="Te aviso en cuanto se abran las plazas de este curso."
-                privacidad="Solo guardo tu correo para avisarte de este curso."
-              />
-            </div>
-          )}
+          {/*
+            EL FORMULARIO SIGUE ESTANDO AUNQUE YA SE PUEDA PAGAR.
+
+            Antes desaparecía en cuanto había enlace de Stripe, y ese es un
+            agujero caro: de cada diez que abren esta ficha, la mayoría no paga
+            hoy. Sin formulario, esos se van sin dejar nada — Stripe no cuenta
+            nada de quien no compra— y no se les puede volver a escribir nunca.
+            Un curso de 397 € rara vez se paga en la primera visita.
+
+            Lo que NO se hace es meter el formulario delante del pago: quien
+            viene decidido pulsa el botón de arriba y se va a pagar. Esto es
+            para el otro, y por eso está debajo del temario y con otro tono.
+          */}
+          <div className="modal-reserva">
+            {curso.stripeUrl ? (
+              <>
+                <strong>¿Todavía te lo estás pensando?</strong>
+                <p>
+                  Déjame tu correo y te escribo con las dudas que suele tener todo el mundo antes de apuntarse. Sin
+                  compromiso: reservar se hace ahí arriba.
+                </p>
+                <LeadForm
+                  origen="curso"
+                  detalle={falta(curso.titulo) ? `Curso ${curso.fechas}` : curso.titulo}
+                  cta="Escríbeme sobre el curso"
+                  variant="light"
+                  successTitle="Anotado"
+                  successText="Te escribo con lo que suele preguntarse antes de apuntarse a este curso."
+                  privacidad="Solo guardo tu correo para escribirte de este curso."
+                />
+              </>
+            ) : (
+              <>
+                <strong>Las plazas todavía no están abiertas.</strong>
+                <p>Déjame tu correo y te aviso en cuanto pueda reservarse. No se cobra nada ahora.</p>
+                <LeadForm
+                  origen="curso"
+                  detalle={falta(curso.titulo) ? `Curso ${curso.fechas}` : curso.titulo}
+                  cta="Avísame para reservar"
+                  variant="light"
+                  successTitle="Anotado"
+                  successText="Te aviso en cuanto se abran las plazas de este curso."
+                  privacidad="Solo guardo tu correo para avisarte de este curso."
+                />
+              </>
+            )}
+          </div>
         </div>
 
         {/* Con pago abierto, el botón se queda pegado abajo: se decide sin
