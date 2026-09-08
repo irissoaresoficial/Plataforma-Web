@@ -320,6 +320,21 @@ export type Curso = {
    */
   videoUrl: string;
   /**
+   * EL CARTEL DEL CURSO. La imagen que lo anuncia, en vertical.
+   *
+   * Va aquí, colgando del curso, y no en la lista general de fotos de la web.
+   * El motivo: la portada enseña el cartel del PRÓXIMO curso, así que el día
+   * que haya otro con otra imagen, la portada cambia sola con sólo añadir el
+   * curso — sin tocar la portada ni acordarse de cambiar dos sitios.
+   *
+   * Vacío = la portada vuelve al retrato de Iris, que es lo que había antes.
+   * No se rompe nada por no tener cartel.
+   *
+   * Que sea VERTICAL, cerca de 4:5. El marco de la portada tiene esa forma y
+   * una imagen apaisada saldría recortada por los lados.
+   */
+  cartel?: string;
+  /**
    * Enlace de pago de Stripe: el que sale en Stripe → Enlaces de pago → Crear.
    * Vacío = el botón capta el dato y avisa de que aún no se cobra.
    */
@@ -389,6 +404,7 @@ export const CURSOS: Curso[] = [
     precioAntes: 697,
     plazas: null,
     videoUrl: '',
+    cartel: '/images/curso-cartel.png',
     /* Enlace de pago de Stripe, dado por Gerson el 8 de septiembre de 2026.
        Es un enlace público de cobro: está hecho para publicarlo, no es un
        secreto que se filtre por estar aquí. */

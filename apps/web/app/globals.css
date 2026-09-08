@@ -3717,3 +3717,121 @@ body[data-nav-claro='si'] .sello-color {
   margin-top: 3px;
   color: var(--acento);
 }
+
+/* ===========================================================================
+   LA CARTELERA DEL PRÓXIMO CURSO
+
+   El mismo marco que tenía el retrato —misma forma, mismo radio, misma sombra,
+   así la portada no cambia de arquitectura— pero por dentro es un cartel: la
+   imagen entera y, sobre ella, el nombre y las fechas.
+   =========================================================================== */
+.cartel {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radio);
+  overflow: hidden;
+  background: #140b0e;
+  box-shadow: 0 2px 4px rgba(34, 29, 31, 0.05), 0 30px 70px -28px rgba(69, 26, 37, 0.34);
+  color: #fff;
+  text-decoration: none;
+  isolation: isolate;
+}
+
+/* Acercarse encoge un pelo la imagen, no la agranda: el cartel se queda quieto
+   —está flotando ya— y lo que se mueve es lo de dentro. Al revés, la imagen se
+   sale por las esquinas redondeadas en cuanto el navegador redondea mal. */
+.cartel img {
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cartel:hover img {
+  transform: scale(1.03);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cartel img {
+    transition: none;
+  }
+  .cartel:hover img {
+    transform: none;
+  }
+}
+
+.cartel-pie {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  /*
+   * EL VELO VA EN EL PROPIO PIE, Y NO EN UNA CAPA APARTE SOBRE TODA LA IMAGEN.
+   *
+   * Primero era una capa con el degradado empezando al 46 % del alto. En el
+   * ordenador quedaba bien y en el móvil no: ahí el cartel mide 390 px, el
+   * nombre del curso ocupa tres renglones y el rótulo dos, así que el texto
+   * empezaba MUY por encima del 46 % — encima del rojo del cuadro, ilegible.
+   *
+   * Puesto en el pie, el degradado mide siempre lo que mida el texto más el
+   * relleno de arriba. Crezca lo que crezca el título, el velo crece con él y
+   * no hay una medida mágica que se pueda quedar corta.
+   */
+  padding: clamp(56px, 10vw, 96px) clamp(18px, 2.4vw, 28px) clamp(18px, 2.4vw, 28px);
+  background: linear-gradient(to top, rgba(10, 5, 7, 0.96) 0%, rgba(10, 5, 7, 0.88) 46%, rgba(10, 5, 7, 0) 100%);
+}
+
+.cartel-rotulo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--oro-luz, #e2c48a);
+}
+/* La fecha, separada del rótulo por un filete y no por un punto: es el dato que
+   corre, y tiene que poder leerse sola de un vistazo. */
+.cartel-rotulo i {
+  font-style: normal;
+  padding-left: 9px;
+  border-left: 1px solid rgba(226, 196, 138, 0.45);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cartel-titulo {
+  font-family: var(--serif);
+  font-size: clamp(21px, 2.5vw, 32px);
+  font-weight: var(--peso-fino);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+  color: #fff;
+}
+
+.cartel-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.86);
+}
+.cartel-accion i {
+  font-style: normal;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cartel:hover .cartel-accion i {
+  transform: translateX(5px);
+}
+
+/* El foco del teclado tiene que verse SOBRE una imagen oscura, así que no vale
+   el contorno de la casa: un halo claro por fuera y otro oscuro por dentro,
+   que se recorta contra cualquier cosa que haya debajo. */
+.cartel:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(10, 5, 7, 0.6);
+}

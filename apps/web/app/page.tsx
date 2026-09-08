@@ -164,32 +164,58 @@ export default function Home() {
                   en la caja de fuera, y dos animaciones sobre la misma
                   propiedad se pisan. */}
               <div className="hero-flota">
-                <div className="hero-marco">
-                  <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 80vw, 44vw" objectPosition="center 38%" />
-                </div>
+                {/*
+                  ================================================================
+                  LA CARTELERA DEL PRÓXIMO CURSO
+                  ================================================================
 
-                {/* UNA ficha, no dos.
-                    Había otra encima —«Escuela de Sabiduría 33 · Numerología
-                    transgeneracional»— y estaba mal por dos motivos. Dice lo
-                    mismo que el sello del encabezado, que se ve a la vez y no
-                    se va nunca. Y se apoyaba a media altura de la foto: en el
-                    móvil tapaba los ojos de Iris, que es exactamente lo que se
-                    mira primero en una web de una persona. Dos cristales
-                    flotando sobre un retrato son, además, la firma de las
-                    plantillas de las que queremos alejarnos.
-                    Ésta se queda porque no es adorno: lleva una fecha de verdad
-                    y se puede pinchar. Y se apoya abajo del todo, donde hay
-                    hombro y no cara. */}
-                {proximo && (
-                  <Link href={`/cursos#${proximo.id}`} className="hero-ficha hero-ficha-baja" data-mag data-cur-label="Ver">
-                    <span className="hero-ficha-txt">
-                      <b>Próximo curso</b>
-                      <span>{proximo.fechas}</span>
+                  Aquí había un retrato de Iris con una fichita de cristal
+                  apoyada en el borde que decía «Próximo curso · 26 y 27 de
+                  septiembre». Ahora es un cartel: la imagen del curso ocupando
+                  el marco entero, y encima —dentro, no flotando al lado— el
+                  nombre y las fechas, como el cartel de una película en la
+                  puerta del cine.
+
+                  POR QUÉ TODO EL CARTEL ES UN ENLACE Y NO SÓLO LA FICHA. Un
+                  cartel se mira entero y se toca donde caiga; obligar a acertar
+                  en un rectangulito de 200 px es perder a la mitad, y en un
+                  móvil a bastante más.
+
+                  Y SI ALGÚN DÍA NO HAY CARTEL, vuelve el retrato de Iris tal y
+                  como estaba. Una portada nunca se queda en blanco por faltar
+                  una imagen.
+                */}
+                {proximo?.cartel ? (
+                  <Link
+                    href={`/cursos#${proximo.id}`}
+                    className="cartel"
+                    data-mag
+                    data-cur-label="Ver"
+                    aria-label={`${proximo.titulo} — ${proximo.fechas}`}
+                  >
+                    <Foto
+                      src={proximo.cartel}
+                      alt={`Cartel de ${proximo.titulo}`}
+                      llenar
+                      radius={0}
+                      priority
+                      sizes="(max-width:900px) 80vw, 44vw"
+                    />
+                    <span className="cartel-pie">
+                      <span className="cartel-rotulo">
+                        Próximo curso
+                        <i>{proximo.fechas}</i>
+                      </span>
+                      <strong className="cartel-titulo">{proximo.titulo}</strong>
+                      <span className="cartel-accion">
+                        Ver el curso <i aria-hidden>→</i>
+                      </span>
                     </span>
-                    {/* El dorado de texto, no el decorativo: sobre blanco el segundo
-                          se queda en 3,3:1 y no llega al mínimo para un glifo. */}
-                      <span aria-hidden style={{ marginLeft: 'auto', color: 'var(--acento)', fontSize: 15 }}>→</span>
                   </Link>
+                ) : (
+                  <div className="hero-marco">
+                    <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 80vw, 44vw" objectPosition="center 38%" />
+                  </div>
                 )}
               </div>
             </Reveal>
