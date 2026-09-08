@@ -52,7 +52,27 @@ export function frase(t: string | undefined | null): string {
 }
 
 const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-export function fechaLarga(dia: number, mes: number, anio: number): string {
+/**
+ * La fecha de nacimiento escrita entera.
+ *
+ * El español sigue saliendo de la lista de arriba y no de `Intl`, aunque las
+ * dos digan lo mismo: es la fecha que lleva años imprimiéndose y no hay ningún
+ * motivo para dejarla en manos de la versión de ICU que traiga el navegador de
+ * turno. Los otros dos idiomas sí van por `toLocaleDateString` —«19 de julho de
+ * 1951», «19 July 1951»— porque escribir a mano los meses de cada idioma es
+ * mantener tres listas para lo que el navegador ya sabe hacer.
+ *
+ * Si el navegador no supiera formatear con ese locale, se cae al español antes
+ * que devolver nada.
+ */
+export function fechaLarga(dia: number, mes: number, anio: number, locale?: string): string {
+  if (locale && !locale.startsWith("es")) {
+    try {
+      return new Date(anio, mes - 1, dia).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
+    } catch {
+      /* sigue en español */
+    }
+  }
   return `${dia} de ${MESES[mes - 1]} de ${anio}`;
 }
 

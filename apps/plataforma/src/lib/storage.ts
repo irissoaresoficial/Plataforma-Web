@@ -3,6 +3,7 @@ import type { Entrada } from "./engine";
 const LS_HIST = "es33.historial.v1";
 const LS_EDITS = "es33.edits.v1";
 const LS_ACTUAL = "es33.actual.v1";
+const LS_IDIOMA = "es33.idioma-documento.v1";
 
 export type HistItem = {
   id: string;
@@ -47,6 +48,29 @@ export function guardaActual(id: string | null) {
   try {
     if (id) localStorage.setItem(LS_ACTUAL, id);
     else localStorage.removeItem(LS_ACTUAL);
+  } catch {
+    /* almacenamiento no disponible */
+  }
+}
+
+/**
+ * En qué idioma sale el documento que se entrega.
+ *
+ * Se recuerda entre sesiones porque no es una elección de cada vez: quien
+ * atiende sobre todo a clientela portuguesa lo pone en portugués y ya no lo
+ * vuelve a tocar. Si el disco no está disponible o guarda cualquier cosa, se
+ * lee español, que es el idioma de casa y el 90% de los estudios.
+ */
+export function cargaIdioma(): string | null {
+  try {
+    return localStorage.getItem(LS_IDIOMA);
+  } catch {
+    return null;
+  }
+}
+export function guardaIdioma(idioma: string) {
+  try {
+    localStorage.setItem(LS_IDIOMA, idioma);
   } catch {
     /* almacenamiento no disponible */
   }

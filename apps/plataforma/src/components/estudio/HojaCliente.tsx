@@ -1,6 +1,7 @@
 "use client";
 import { css } from "@/lib/css";
-import { lectura, type Resultado } from "@/lib/engine";
+import type { Resultado } from "@/lib/engine";
+import { diccionario, lecturaDe, rellena, textoDeNumero, type Idioma } from "@/lib/documento";
 import { fechaLarga, frase, primerasFrases, sinPunto, titulo } from "@/lib/format";
 import { COL } from "@/lib/tree";
 import styles from "./Estudio.module.css";
@@ -19,45 +20,46 @@ const RAYA = "border-top:1px solid rgba(154,127,50,.28);";
  *
  * Los textos se cortan por frases enteras (`primerasFrases`), nunca a mitad:
  * en una hoja que se entrega, un párrafo acabado en «…» parece un error.
+ *
+ * SALE EN TRES IDIOMAS. Ni una frase está escrita aquí: todas vienen de
+ * `lib/documento`, que es donde Iris puede corregirlas sin tocar código. La
+ * maqueta es la misma en los tres —los mismos apartados en el mismo sitio— y
+ * lo único que cambia es el texto. Si al portugués o al inglés le faltara algo,
+ * esa línea sale en español; la hoja nunca sale con un hueco.
  */
-export default function HojaCliente({ r, marca }: { r: Resultado; marca: string }) {
+export default function HojaCliente({ r, marca, idioma = "es" }: { r: Resultado; marca: string; idioma?: Idioma }) {
+  const D = diccionario(idioma);
+  const T = D.hoja;
   const c = r.ciclos;
   const cicloActual = c.ciclos.find((x) => c.edad >= x.desde && (x.hasta === null || c.edad <= x.hasta)) || c.ciclos[c.ciclos.length - 1];
   const entraDestino = r.turbulencias ? r.caminos.edadCambio + 10 : r.caminos.edadCambio;
+  const carta = (n: number | undefined) => (n === undefined ? undefined : D.arcanos[n]);
 
   // Los tres caminos, dichos como se los explicarías a alguien en una mesa, y
   // con el lema de cada carta debajo para que el nombre signifique algo.
   const caminos = [
     {
       k: "origen" as const,
-      titulo: "De dónde vienes",
-      cuando: `hasta los ${r.caminos.edadCambio}`,
-      carta: r.caminos.origen.carta,
-      que: "Lo que ya sabías hacer al llegar",
+      titulo: T.origenTitulo,
+      cuando: rellena(T.origenCuando, { edad: r.caminos.edadCambio }),
+      carta: carta(r.caminos.origen.arcano),
+      que: T.origenQue,
     },
     {
       k: "transformacion" as const,
-      titulo: "Cómo atraviesas la vida",
-      cuando: "siempre",
-      carta: r.caminos.transformacion.carta,
-      que: "Tu manera de estar en el mundo",
+      titulo: T.transformacionTitulo,
+      cuando: T.transformacionCuando,
+      carta: carta(r.caminos.transformacion.arcano),
+      que: T.transformacionQue,
     },
     {
       k: "destino" as const,
-      titulo: "Hacia dónde vas",
-      cuando: `desde los ${entraDestino}`,
-      carta: r.caminos.destino.carta,
-      que: "El sitio al que te lleva la vida",
+      titulo: T.destinoTitulo,
+      cuando: rellena(T.destinoCuando, { edad: entraDestino }),
+      carta: carta(r.caminos.destino.arcano),
+      que: T.destinoQue,
     },
   ];
-
-  // Los apuntes escriben el remedio de cada tarea empezando por repetir su
-  // nombre —«Amar en lugar de querer tener la razón – Desarrollar los
-  // atributos…»—. Lo que sirve es lo que va detrás del guion.
-  const trasElGuion = (t: string | undefined) => {
-    const partes = String(t || "").split(/\s[–—-]\s/);
-    return partes.length > 1 && partes[0].length < 80 ? partes.slice(1).join(" — ") : String(t || "");
-  };
 
   /**
    * El hueco de la hoja es fijo y lo que trae cada carta no: hay quien tiene
@@ -67,22 +69,31 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
    * texto que va a salir: se arma con presupuesto generoso, se calcula lo que
    * costaría en líneas y, si se pasa, se rehace más corto. Dos o tres vueltas
    * bastan para que quepa sin dejar la hoja medio vacía.
+   *
+   * Se mide el texto YA TRADUCIDO, así que la hoja se ajusta sola aunque el
+   * inglés diga en ochenta caracteres lo que el español decía en cien.
    */
   const TOPE = 830;
   const arma = (mult: number) => {
     const presAprend = Math.max(45, Math.round((580 / Math.max(1, r.aprendizajes.length)) * mult));
     const presBloq = Math.max(45, Math.round((500 / Math.max(1, r.bloqueos.length)) * mult));
-    const aprend = r.aprendizajes.map((a) => ({
-      portal: a.portal === 10 ? "0" : String(a.portal),
-      nombre: sinPunto(frase(a.tarea?.nombre)) || `Portal ${a.portal}`,
-      comoSeTrabaja: primerasFrases(trasElGuion(a.tarea?.sanador || a.tarea?.texto), Math.min(presAprend, 250)),
-    }));
-    const bloq = r.bloqueos.map((b) => ({
-      nombre: sinPunto(frase(b.plano?.nombre)).replace(/^Consciencia (?:de la|del|de) /i, ""),
-      que: primerasFrases(b.plano?.texto, Math.min(presBloq, 240)),
-    }));
-    const karmico = primerasFrases(r.cuentasFichas.karmico?.texto || r.cuentasFichas.karmico?.partes?.[0]?.texto, Math.round(140 * mult));
-    const lema = primerasFrases(r.cuentasFichas.lema?.texto || r.cuentasFichas.lema?.partes?.[0]?.texto, Math.round(120 * mult));
+    const aprend = r.aprendizajes.map((a) => {
+      const tarea = D.tareas[a.portal];
+      return {
+        portal: a.portal === 10 ? "0" : String(a.portal),
+        nombre: sinPunto(frase(tarea?.nombre)) || `Portal ${a.portal}`,
+        comoSeTrabaja: primerasFrases(tarea?.comoSeTrabaja, Math.min(presAprend, 250)),
+      };
+    });
+    const bloq = r.bloqueos.map((b) => {
+      const plano = D.planos[b.casilla];
+      return {
+        nombre: sinPunto(frase(plano?.nombre)),
+        que: primerasFrases(plano?.texto, Math.min(presBloq, 240)),
+      };
+    });
+    const karmico = primerasFrases(textoDeNumero(D, r.cuentasFichas.karmico), Math.round(140 * mult));
+    const lema = primerasFrases(textoDeNumero(D, r.cuentasFichas.lema), Math.round(120 * mult));
     // Cada item arranca renglón aunque su texto sea corto, así que pesa por sí
     // mismo además de por lo que dice.
     const coste =
@@ -113,7 +124,8 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
   const aprendizajes = armado.aprend;
   const bloqueos = armado.bloq;
   const maestrias = r.estructura.maestrias.map((m) => (m === 10 ? "0" : m));
-  const lista = (xs: Array<string | number>) => (xs.length < 2 ? String(xs[0] ?? "") : `${xs.slice(0, -1).join(", ")} y ${xs[xs.length - 1]}`);
+  const lista = (xs: Array<string | number>) =>
+    xs.length < 2 ? String(xs[0] ?? "") : `${xs.slice(0, -1).join(", ")} ${T.y} ${xs[xs.length - 1]}`;
 
   // La cuenta que se trae de atrás y con qué se salda. Estaba sólo como dos
   // cifras al pie, y es de lo que más se pregunta en una lectura.
@@ -123,7 +135,8 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
   // El propósito es una cifra sola y no tiene ficha propia en los apuntes,
   // pero sí lectura: es lo único que acompaña a la persona de principio a fin,
   // así que cierra la hoja mejor que ningún otro número.
-  const proposito = lectura(c.proposito);
+  const proposito = lecturaDe(D, c.proposito);
+  const ciclo = D.ciclos[cicloActual.nombre] || cicloActual.nombre;
 
   return (
     <section className={`${styles.page} ${styles.interior} ${styles.abreSeccion} ${styles.hoja}`} style={css(`display:flex;flex-direction:column;gap:${(13 * esc).toFixed(1)}px;`)}>
@@ -137,23 +150,23 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
           </h1>
         </div>
         <div style={css("margin-left:auto;text-align:right;flex:none;")}>
-          <div style={css("font-size:9.5px;color:#7A7288;white-space:nowrap;")}>{fechaLarga(r.fecha.dia, r.fecha.mes, r.fecha.anio)}</div>
-          <div style={css(ROTULO + "margin-top:2px;")}>Tu estudio en una hoja</div>
+          <div style={css("font-size:9.5px;color:#7A7288;white-space:nowrap;")}>{fechaLarga(r.fecha.dia, r.fecha.mes, r.fecha.anio, D.locale)}</div>
+          <div style={css(ROTULO + "margin-top:2px;")}>{T.subtitulo}</div>
         </div>
       </header>
 
       {/* ─────────────────────────────────────────────── quién eres */}
       <div>
-        <div style={css(ROTULO + "margin-bottom:4px;")}>Cómo eres</div>
-        <p style={css(CUERPO)}>{primerasFrases(r.tipoEstructura?.texto, 190)}</p>
+        <div style={css(ROTULO + "margin-bottom:4px;")}>{T.comoEres}</div>
+        <p style={css(CUERPO)}>{primerasFrases(D.estructuras[r.estructura.tipo], 190)}</p>
         <div style={css("display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:7px;")}>
           <div style={css("border-left:2px solid #C9A84C;padding-left:9px;")}>
-            <div style={css(`font-size:${fs(10.5)};font-weight:700;color:#2B1119;`)}>Por dentro</div>
-            <p style={css(APUNTE)}>Lo que has venido a ser, lo veas o no. {primerasFrases(r.esencia.lectura.positivo, 95)}</p>
+            <div style={css(`font-size:${fs(10.5)};font-weight:700;color:#2B1119;`)}>{T.porDentro}</div>
+            <p style={css(APUNTE)}>{T.porDentroPie} {primerasFrases(lecturaDe(D, r.esencia.valor).positivo, 95)}</p>
           </div>
           <div style={css("border-left:2px solid #9B93A8;padding-left:9px;")}>
-            <div style={css(`font-size:${fs(10.5)};font-weight:700;color:#2B1119;`)}>Por fuera</div>
-            <p style={css(APUNTE)}>Lo que la gente ve de ti. {primerasFrases(r.ego.lectura.positivo, 95)}</p>
+            <div style={css(`font-size:${fs(10.5)};font-weight:700;color:#2B1119;`)}>{T.porFuera}</div>
+            <p style={css(APUNTE)}>{T.porFueraPie} {primerasFrases(lecturaDe(D, r.ego.valor).positivo, 95)}</p>
           </div>
         </div>
       </div>
@@ -161,8 +174,8 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
       {/* ─────────────────────────────────────────────── los tres caminos */}
       <div style={css(RAYA + "padding-top:9px;")}>
         <div style={css("display:flex;align-items:baseline;gap:8px;margin-bottom:5px;")}>
-          <span style={css(ROTULO)}>Tu camino</span>
-          <span style={css(APUNTE)}>Tres tramos que van a la vez; lo que cambia es cuánto pesa cada uno.</span>
+          <span style={css(ROTULO)}>{T.tuCamino}</span>
+          <span style={css(APUNTE)}>{T.tuCaminoPie}</span>
         </div>
         <div style={css("display:flex;flex-direction:column;gap:6px;")}>
           {caminos.map((x) => (
@@ -184,11 +197,11 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
       {/* ─────────────────────────────────────────────── trabajo y frenos */}
       <div style={css(RAYA + "padding-top:9px;")}>
         <div style={css("display:flex;align-items:baseline;gap:8px;margin-bottom:5px;")}>
-          <span style={css(ROTULO)}>Lo que has venido a trabajar</span>
-          <span style={css(APUNTE)}>No son defectos: son las tareas de esta vida, y se hacen de una en una.</span>
+          <span style={css(ROTULO)}>{T.loQueTrabajas}</span>
+          <span style={css(APUNTE)}>{T.loQueTrabajasPie}</span>
         </div>
         {aprendizajes.length === 0 ? (
-          <p style={css(CUERPO)}>Ninguna pendiente: tu trabajo es sostener lo que ya traes hecho.</p>
+          <p style={css(CUERPO)}>{T.sinTareas}</p>
         ) : (
           <div style={css("display:flex;flex-direction:column;gap:5px;")}>
             {aprendizajes.map((a, i) => (
@@ -206,10 +219,10 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
 
       <div style={css("display:grid;grid-template-columns:1.1fr 1fr;gap:15px;" + RAYA + "padding-top:9px;")}>
         <div>
-          <div style={css(ROTULO + "margin-bottom:2px;")}>Lo que te frena</div>
-          <p style={css(APUNTE + "margin-bottom:4px;")}>Los sitios donde se te queda la energía parada. Verlos ya es media parte.</p>
+          <div style={css(ROTULO + "margin-bottom:2px;")}>{T.loQueTeFrena}</div>
+          <p style={css(APUNTE + "margin-bottom:4px;")}>{T.loQueTeFrenaPie}</p>
           {bloqueos.length === 0 ? (
-            <p style={css(APUNTE)}>Nada se te queda parado: la energía te circula limpia.</p>
+            <p style={css(APUNTE)}>{T.sinFrenos}</p>
           ) : (
             <div style={css("display:flex;flex-direction:column;gap:4px;")}>
               {bloqueos.map((b, i) => (
@@ -223,19 +236,17 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
 
         <div style={css("display:flex;flex-direction:column;gap:8px;")}>
           <div>
-            <div style={css(ROTULO + "margin-bottom:2px;")}>Lo que ya traes hecho</div>
+            <div style={css(ROTULO + "margin-bottom:2px;")}>{T.yaHecho}</div>
             <p style={css(APUNTE)}>
-              {maestrias.length === 0
-                ? "Todo está por trabajar en esta vida."
-                : `${maestrias.length} de los diez puntos de tu carta vienen resueltos de antes: el ${lista(maestrias)}. Es tu suelo firme, en lo que te puedes apoyar cuando lo demás cuesta.`}
+              {maestrias.length === 0 ? T.yaHechoNada : rellena(T.yaHechoTexto, { n: maestrias.length, lista: lista(maestrias) })}
             </p>
           </div>
           <div>
-            <div style={css(ROTULO + "margin-bottom:2px;")}>Lo que traes por cerrar</div>
+            <div style={css(ROTULO + "margin-bottom:2px;")}>{T.porCerrar}</div>
             <p style={css(APUNTE)}>
-              La cuenta que vienes a saldar es el {r.cuentas.karmico}
-              {diceKarmico ? `: ${diceKarmico}` : "."} Se salda con el {r.cuentas.lemaDeVida}
-              {diceLema ? `: ${diceLema}` : ", que es la vibración que te lo permite."}
+              {rellena(T.porCerrarKarmico, { n: r.cuentas.karmico })}
+              {diceKarmico ? `: ${diceKarmico}` : "."} {rellena(T.porCerrarLema, { n: r.cuentas.lemaDeVida })}
+              {diceLema ? `: ${diceLema}` : T.porCerrarLemaSinTexto}
             </p>
           </div>
         </div>
@@ -244,24 +255,27 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
       {/* ─────────────────────────────────────────────── ahora mismo */}
       <div style={css("display:grid;grid-template-columns:1.05fr 1fr;gap:15px;" + RAYA + "padding-top:9px;")}>
         <div>
-          <div style={css(ROTULO + "margin-bottom:2px;")}>Dónde estás ahora</div>
+          <div style={css(ROTULO + "margin-bottom:2px;")}>{T.dondeEstas}</div>
+          {/* El último ciclo no tiene final y tiene su propia frase. Con una
+              sola plantilla salía «de los 54 a los el final», que es lo que
+              leía cualquiera pasados los cincuenta y tantos. */}
           <p style={css(CUERPO)}>
-            {c.edad} años: etapa de {frase(cicloActual.nombre).toLocaleLowerCase("es")}, de los {cicloActual.desde} a los{" "}
-            {cicloActual.hasta === null ? "el final" : cicloActual.hasta}.
+            {cicloActual.hasta === null
+              ? rellena(T.etapaFinal, { edad: c.edad, ciclo, desde: cicloActual.desde })
+              : rellena(T.etapa, { edad: c.edad, ciclo, desde: cicloActual.desde, hasta: cicloActual.hasta })}
           </p>
-          <p style={css(APUNTE + "margin-top:2px;")}>
-            Dentro de ella vas por el año {c.anioPersonal} de una rueda que se repite cada nueve. Lo que toca este año no es lo que
-            tocará el siguiente: por eso la carta se mira de vez en cuando, no una sola vez.
-          </p>
+          <p style={css(APUNTE + "margin-top:2px;")}>{rellena(T.anioPersonal, { n: c.anioPersonal })}</p>
           {r.turbulencias && (
             <p style={css(APUNTE + "margin-top:2px;")}>
-              A los {r.caminos.edadCambio} empiezan diez años movidos en {r.turbulencias.lista.map((t) => t.tipo.toLocaleLowerCase("es")).join(" y ")}: el
-              cambio de camino no es de golpe, se cuece durante esa década.
+              {rellena(T.turbulencias, {
+                edad: r.caminos.edadCambio,
+                tipos: r.turbulencias.lista.map((t) => D.turbulencias[t.tipo] || t.tipo.toLocaleLowerCase("es")).join(` ${T.y} `),
+              })}
             </p>
           )}
         </div>
         <div>
-          <div style={css(ROTULO + "margin-bottom:4px;")}>Tus días de fuerza</div>
+          <div style={css(ROTULO + "margin-bottom:4px;")}>{T.diasFuerza}</div>
           <div style={css("display:flex;gap:5px;flex-wrap:wrap;")}>
             {r.diasFuerza.dias.map((d, i) => (
               <span
@@ -276,25 +290,23 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
               </span>
             ))}
           </div>
-          <p style={css(APUNTE + "margin-top:4px;")}>
-            Los días del mes que te acompañan, empezando por el más fuerte. Son los buenos para firmar, empezar algo o decidir.
-          </p>
+          <p style={css(APUNTE + "margin-top:4px;")}>{T.diasFuerzaPie}</p>
         </div>
       </div>
 
       {/* ─────────────────────────────────────────────── el hilo de fondo */}
       <div style={css(RAYA + "padding-top:9px;")}>
         <div style={css("display:flex;align-items:baseline;gap:8px;margin-bottom:4px;")}>
-          <span style={css(ROTULO)}>El hilo de toda tu vida</span>
-          <span style={css(APUNTE)}>Tu propósito es el {c.proposito}, y no cambia de etapa: es el fondo sobre el que pasa todo lo demás.</span>
+          <span style={css(ROTULO)}>{T.hilo}</span>
+          <span style={css(APUNTE)}>{rellena(T.hiloPie, { n: c.proposito })}</span>
         </div>
         <div style={css("display:grid;grid-template-columns:1fr 1fr;gap:14px;")}>
           <div style={css("border-left:2px solid #4C8A5A;padding-left:9px;")}>
-            <div style={css("font-size:10.5px;font-weight:700;color:#3D7A48;")}>Cuando lo vives bien</div>
+            <div style={css("font-size:10.5px;font-weight:700;color:#3D7A48;")}>{T.viveBien}</div>
             <p style={css(APUNTE)}>{primerasFrases(proposito.positivo, 130)}</p>
           </div>
           <div style={css("border-left:2px solid #C0574C;padding-left:9px;")}>
-            <div style={css("font-size:10.5px;font-weight:700;color:#B0564C;")}>Cuando se tuerce</div>
+            <div style={css("font-size:10.5px;font-weight:700;color:#B0564C;")}>{T.seTuerce}</div>
             <p style={css(APUNTE)}>{primerasFrases(proposito.negativo, 130)}</p>
           </div>
         </div>
@@ -302,29 +314,31 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
 
       {/* ─────────────────────────────────────────────── el cierre */}
       <div style={css(RAYA + "padding-top:9px;")}>
-        <div style={css(ROTULO + "margin-bottom:3px;")}>Si sólo te quedas con una cosa</div>
+        <div style={css(ROTULO + "margin-bottom:3px;")}>{T.cierre}</div>
         <p style={css(CUERPO)}>
-          Que vas hacia {sinPunto(titulo(r.caminos.destino.carta?.nombre))}
+          {rellena(T.cierreVas, { carta: sinPunto(titulo(carta(r.caminos.destino.arcano)?.nombre)) })}
           {aprendizajes.length > 0
-            ? `, y que el camino pasa por ${aprendizajes.length === 1 ? "la tarea" : "las " + aprendizajes.length + " tareas"} de aquí arriba, de una en una y sin prisa`
-            : ", y que tu trabajo es sostener lo que ya traes hecho"}
-          . Nada de esto está cerrado ni decidido de antemano: es el mapa, y el camino lo andas tú.
+            ? aprendizajes.length === 1
+              ? T.cierreTareaUna
+              : rellena(T.cierreTareasVarias, { n: aprendizajes.length })
+            : T.cierreSinTareas}
+          {T.cierreFinal}
         </p>
       </div>
 
       {/* Los números, al pie y en pequeño: son la ficha de la lectura, no lo
        * que hay que entender para llevarse algo de la hoja. */}
       <div style={css("padding-top:9px;" + RAYA)}>
-        <div style={css(ROTULO + "margin-bottom:4px;")}>Tus números, para el archivo</div>
+        <div style={css(ROTULO + "margin-bottom:4px;")}>{T.paraElArchivo}</div>
         <div style={css("display:flex;flex-wrap:wrap;gap:4px 16px;")}>
           {[
-            { l: "Tu número", v: r.corazon.valor },
-            { l: "Por dentro", v: r.esencia.valor },
-            { l: "Por fuera", v: r.ego.valor },
-            { l: "Tu consciencia", v: r.imagenAlma.numero },
-            { l: "Lo que traes por cerrar", v: r.cuentas.karmico },
-            { l: "Con qué se salda", v: r.cuentas.lemaDeVida },
-            { l: "El hilo de toda tu vida", v: c.proposito },
+            { l: T.numTuNumero, v: r.corazon.valor },
+            { l: T.numPorDentro, v: r.esencia.valor },
+            { l: T.numPorFuera, v: r.ego.valor },
+            { l: T.numConsciencia, v: r.imagenAlma.numero },
+            { l: T.numPorCerrar, v: r.cuentas.karmico },
+            { l: T.numConQueSalda, v: r.cuentas.lemaDeVida },
+            { l: T.numHilo, v: c.proposito },
           ].map((x) => (
             <span key={x.l} style={css("font-size:9.5px;color:#7A7288;white-space:nowrap;")}>
               {x.l} <span style={css("font-family:var(--font-display);font-size:12px;color:#2B1119;")}>{x.v}</span>
@@ -335,7 +349,7 @@ export default function HojaCliente({ r, marca }: { r: Resultado; marca: string 
 
       <div style={css("margin-top:auto;padding-top:8px;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:baseline;gap:10px;")}>
         <span style={css(`font-size:${fs(9.5)};color:#8A8296;`)}>{marca}</span>
-        <span style={css("margin-left:auto;font-size:9.5px;color:#8A8296;font-style:italic;")}>El nombre es la contraseña del alma</span>
+        <span style={css("margin-left:auto;font-size:9.5px;color:#8A8296;font-style:italic;")}>{T.pieLema}</span>
       </div>
     </section>
   );

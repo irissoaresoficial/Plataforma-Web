@@ -5,6 +5,8 @@ import { BOTON_NORMAL, botonPrincipal } from "@/lib/ui";
 import { useApp } from "@/lib/app-context";
 import { construyeCapitulos, construyeCapitulosEmpresa } from "@/lib/estudio";
 import { imprimir, AYUDA_IMPRIMIR, AYUDA_SIN_CABECERAS } from "@/lib/imprimir";
+import { EN_ESPANOL, IDIOMAS } from "@/lib/documento";
+import { useIdiomaDocumento } from "@/lib/documento/idioma";
 import { fechaLarga, titulo } from "@/lib/format";
 import BloqueView from "../estudio/BloqueView";
 import HojaCliente from "../estudio/HojaCliente";
@@ -18,6 +20,11 @@ export default function EstudioScreen() {
   // Dos documentos distintos con el mismo botón de imprimir: el estudio
   // entero, que es la herramienta de Iris, y la hoja que se lleva el cliente.
   const [modo, setModo] = useState<"estudio" | "hoja">("estudio");
+  /* En qué idioma sale la hoja que se le manda a la persona. La plataforma
+     sigue en español —Iris trabaja en español— y lo único que cambia de idioma
+     es el documento que se entrega. Se recuerda de una sesión a otra: quien
+     atiende sobre todo a clientela portuguesa lo pone una vez. */
+  const [idioma, setIdioma] = useIdiomaDocumento();
   if (!r && !re) return null;
 
   const hoja = modo === "hoja";
@@ -68,7 +75,9 @@ export default function EstudioScreen() {
           })}
         </div>
         <span className={styles.hint} style={css("font-size:var(--t-body);color:var(--text-4);")}>
-          {hoja ? "Una página, sin fórmulas ni claves: lo que se lleva la persona." : "Haz clic en cualquier párrafo para reescribirlo con tus palabras."}
+          {hoja
+            ? `Una página, sin fórmulas ni claves: lo que se lleva la persona. Sale en ${EN_ESPANOL[idioma]}.`
+            : "Haz clic en cualquier párrafo para reescribirlo con tus palabras."}
         </span>
         {/* Las acciones envuelven de verdad en el móvil.
             Con `margin-left:auto` los dos botones se pegaban al borde derecho y
@@ -77,6 +86,46 @@ export default function EstudioScreen() {
             derecha cuando hay sitio, pero por debajo de 700 px los dos botones
             pasan a ocupar el renglón entero, uno al lado del otro. */}
         <div className={styles.acciones}>
+          {/* EN QUÉ IDIOMA SALE EL DOCUMENTO.
+           *
+           * Tres pastillas y no un desplegable: el idioma en el que va a salir
+           * la hoja tiene que verse sin abrir nada y sin pulsar nada. Un
+           * desplegable enseña el elegido pero esconde que hay otros dos, y
+           * este es justo el ajuste que se olvida —se manda un estudio en
+           * portugués a una clienta de Madrid y no se ve hasta que ella lo
+           * abre—. Puestas al lado del botón de exportar, se leen a la vez que
+           * él: aquí se pulsa, y esto es lo que sale.
+           *
+           * Sólo aparecen con la hoja del cliente delante. El estudio completo
+           * —veintitantos capítulos de apuntes de la escuela— sigue en español:
+           * es la herramienta de Iris, no lo que se entrega. Enseñar aquí el
+           * selector en ese modo prometería una traducción que no existe.
+           */}
+          {hoja && (
+            <div role="group" aria-label="Idioma del documento" style={css("display:flex;gap:4px;flex:none;")}>
+              {IDIOMAS.map(({ codigo, etiqueta }) => {
+                const on = idioma === codigo;
+                return (
+                  <button
+                    key={codigo}
+                    onClick={() => setIdioma(codigo)}
+                    aria-pressed={on}
+                    style={css(
+                      "padding:9px 14px;border-radius:980px;cursor:pointer;white-space:nowrap;font-family:var(--font-ui);font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;transition:background .18s,border-color .18s,color .18s;" +
+                        /* El granate de la casa es el color de lo que se pulsa y
+                           de lo que está elegido; las otras dos, papel con
+                           borde, que se siguen leyendo bien. */
+                        (on
+                          ? "border:1px solid var(--accion);background:var(--accion);color:var(--sobre-accion);"
+                          : "border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);")
+                    )}
+                  >
+                    {etiqueta}
+                  </button>
+                );
+              })}
+            </div>
+          )}
           {/* El botón sólo existe si hay algo que descartar, y dice de quién es
               lo que se pierde. Decía «Restablecer textos», que suena a devolver
               algo a su sitio; lo que hace es tirar el trabajo de Iris. */}
@@ -113,10 +162,18 @@ export default function EstudioScreen() {
           {AYUDA_SIN_CABECERAS}
         </span>
         <span style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--text-4);")}>{AYUDA_IMPRIMIR}</span>
+        {/* Si el idioma se quedó en portugués de la última consulta, hay que
+            decirlo aquí: el estudio completo no lo sigue, y enterarse después
+            de mandarlo es tarde. */}
+        {!hoja && idioma !== "es" && (
+          <span style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--text-4);")}>
+            La hoja del cliente está puesta en {EN_ESPANOL[idioma]}. El estudio completo sale siempre en español.
+          </span>
+        )}
       </div>
 
       <div className={styles.desk}>
-        {hoja && (r ? <HojaCliente r={r} marca={marca} /> : <HojaClienteEmpresa re={re!} marca={marca} />)}
+        {hoja && (r ? <HojaCliente r={r} marca={marca} idioma={idioma} /> : <HojaClienteEmpresa re={re!} marca={marca} idioma={idioma} />)}
         {!hoja && <section className={`${styles.page} ${styles.portada}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.jpeg" alt="" style={css("width:210px;height:210px;border-radius:50%;object-fit:cover;margin-bottom:34px;")} />
