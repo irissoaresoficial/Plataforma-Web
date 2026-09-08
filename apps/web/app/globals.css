@@ -3835,3 +3835,79 @@ body[data-nav-claro='si'] .sello-color {
   outline-offset: 3px;
   box-shadow: 0 0 0 5px rgba(10, 5, 7, 0.6);
 }
+
+/* ---------------------------------------------------------------------------
+   EL CARTEL DENTRO DE LA TARJETA DEL CURSO
+
+   La tarjeta era de dos columnas —texto y panel de compra— y con la lista de
+   lo que incluye seguía quedando una banda de blanco debajo. Aquí entra el
+   cartel: no es relleno, es la imagen con la que se anuncia el curso.
+
+   Tres columnas sólo a partir de 1100 px. Por debajo el cartel se pone
+   ARRIBA, a lo ancho y recortado a una franja: apilado en vertical y entero
+   mediría media pantalla de alto y empujaría el precio fuera de vista, que es
+   exactamente lo que no puede pasar en la página que vende.
+   --------------------------------------------------------------------------- */
+.curso-cartel {
+  position: relative;
+  display: block;
+  width: 100%;
+  /*
+   * A LO ANCHO DE LA TARJETA MIENTRAS NO TENGA COLUMNA PROPIA.
+   *
+   * Sin esto, entre 900 y 1100 px la tarjeta se partía: ahí la rejilla es de
+   * DOS columnas y los tres hijos —cartel, texto y panel— caían en las celdas
+   * 1, 2 y 3, o sea cartel arriba-izquierda, texto arriba-derecha y el panel
+   * de compra abajo a la izquierda, con un agujero enorme al lado. El precio
+   * acababa en el sitio donde nadie mira.
+   *
+   * Ocupando la fila entera, el cartel es una franja y debajo quedan las dos
+   * columnas de siempre. A partir de 1100 px recupera su columna (más abajo).
+   */
+  grid-column: 1 / -1;
+  /* Franja apaisada en pantallas estrechas. `object-position` alto porque lo
+     que hay que ver de este cuadro son las caras, y están en la mitad de
+     arriba: centrado, la franja enseñaría manos y suelo. */
+  aspect-ratio: 16 / 9;
+  border: 0;
+  padding: 0;
+  border-radius: var(--radio-chico);
+  overflow: hidden;
+  background: #140b0e;
+  cursor: pointer;
+  box-shadow: 0 1px 2px var(--sombra), 0 18px 44px -26px var(--sombra);
+}
+.curso-cartel img {
+  object-position: center 28%;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.curso-cartel:hover img {
+  transform: scale(1.03);
+}
+@media (prefers-reduced-motion: reduce) {
+  .curso-cartel img {
+    transition: none;
+  }
+  .curso-cartel:hover img {
+    transform: none;
+  }
+}
+.curso-cartel:focus-visible {
+  outline: 2px solid var(--tx);
+  outline-offset: 3px;
+}
+
+@media (min-width: 1100px) {
+  /* El cartel recupera su forma vertical y su columna. El texto se queda con
+     el hueco de en medio, que es el que puede encoger sin romperse. */
+  .curso-card-cartel {
+    grid-template-columns: minmax(190px, 0.62fr) minmax(0, 1.05fr) minmax(290px, 0.86fr);
+  }
+  .curso-cartel {
+    grid-column: auto;
+    aspect-ratio: 4 / 5;
+  }
+  .curso-cartel img {
+    object-position: center center;
+  }
+}

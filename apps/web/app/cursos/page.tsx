@@ -13,6 +13,7 @@ import LeadForm from '@/components/LeadForm';
 import Pendiente, { Hueco } from '@/components/Pendiente';
 import CursoDetalle from '@/components/CursoDetalle';
 import CuentaAtras from '@/components/CuentaAtras';
+import Foto from '@/components/Foto';
 import { CURSOS, MEMBRESIA, PENDIENTE, eur, falta, type Curso } from '@/content/site';
 
 /** Texto real, o etiqueta roja si todavía está sin rellenar. */
@@ -36,7 +37,32 @@ function CursoBloque({ curso }: { curso: Curso }) {
 
   return (
     <>
-      <article id={curso.id} className="curso-card" style={{ scrollMarginTop: 96 }}>
+      <article
+        id={curso.id}
+        className={`curso-card${curso.cartel ? ' curso-card-cartel' : ''}`}
+        style={{ scrollMarginTop: 96 }}
+      >
+        {/* EL CARTEL, TAMBIÉN AQUÍ.
+            En la portada ya se ve, pero quien llega directo a esta página
+            —desde un enlace de Instagram, por ejemplo— no ha pasado por la
+            portada y se encontraba la tarjeta con medio metro de blanco al
+            lado de la lista. Un curso que se anuncia con un cartel tiene que
+            enseñarlo donde se vende.
+
+            Es un botón y no una imagen quieta: abre la misma ficha que «Ver el
+            curso». Nadie mira un cartel y espera que no pase nada al tocarlo. */}
+        {curso.cartel && (
+          <button
+            type="button"
+            onClick={() => setDetalle(true)}
+            className="curso-cartel"
+            data-mag
+            data-cur-label="Ver"
+            aria-label={`Ver ${falta(curso.titulo) ? 'el curso' : curso.titulo}`}
+          >
+            <Foto src={curso.cartel} alt={`Cartel de ${curso.titulo}`} llenar radius={0} sizes="(max-width:1099px) 90vw, 240px" />
+          </button>
+        )}
         <div className="curso-texto">
           <div className="curso-cab">
             <span className="curso-eyebrow">Próximo curso</span>
