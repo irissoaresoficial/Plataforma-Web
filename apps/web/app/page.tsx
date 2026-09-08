@@ -278,7 +278,10 @@ export default function Home() {
         <div className="banda-dentro franja">
           <Paralaje cantidad={54}>
             <Revelado className="franja-foto">
-              <Foto src={FOTOS.hablando} alt="Iris en directo" ratio="3/4" radius="var(--radio)" sizes="(max-width:900px) 100vw, 30vw" />
+              {/* Aquí estaba la MISMA foto que en «Quién soy», dos bloques más
+                  abajo. Repetida no aporta nada y hace pensar que sólo hay una.
+                  Esta se quedó libre al pasar la portada a ser el cartel. */}
+              <Foto src={FOTOS.portada} alt="Iris Soares" ratio="3/4" radius="var(--radio)" sizes="(max-width:900px) 100vw, 30vw" objectPosition="center 30%" />
             </Revelado>
           </Paralaje>
           <Paralaje cantidad={-22}>
@@ -371,9 +374,36 @@ export default function Home() {
               </div>
             </Reveal>
           </div>
-          <Reveal delay={110} style={{ justifySelf: 'end', width: '100%' }}>
-            <Foto src={FOTOS.hablando} alt="Iris Soares dando una formación" ratio="1/1" radius="var(--radio)" sizes="(max-width:900px) 100vw, 42vw" objectPosition="center 22%" />
-          </Reveal>
+          {/*
+            LA FOTO DE «QUIÉN SOY», MÁS PEQUEÑA Y CON AIRE ALREDEDOR.
+
+            Estaba a 1/1 y al ancho entero de su columna. En un móvil eso son
+            390 px de cara: un primerísimo plano recortado por arriba y por
+            abajo que, tan cerca, no da cercanía — da apuro. Y el cuadrado se
+            comía la sala del fondo, que es justo lo que dice que está
+            trabajando.
+
+            Ahora es un retrato 4/5, más chico que su columna, y se ve la sala
+            llena detrás. Se lee como «aquí está ella, dando una formación» y no
+            como una foto de carné gigante.
+
+            Y se mueve al pasar: se destapa de abajo arriba mientras va más
+            despacio que la página. Es la misma pareja de gestos que la franja
+            de fotos de más arriba — se usa lo que ya existe en la casa en vez
+            de inventar otra animación distinta para esta foto sola.
+          */}
+          <Paralaje cantidad={30} className="quien-foto">
+            <Revelado>
+              <Foto
+                src={FOTOS.hablando}
+                alt="Iris dando una formación, con la sala llena detrás"
+                ratio="4/5"
+                radius="var(--radio)"
+                sizes="(max-width:900px) 66vw, 340px"
+                objectPosition="center 26%"
+              />
+            </Revelado>
+          </Paralaje>
         </div>
       </div>
 

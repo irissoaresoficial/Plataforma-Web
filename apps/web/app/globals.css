@@ -3911,3 +3911,25 @@ body[data-nav-claro='si'] .sello-color {
     object-position: center center;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   LA FOTO DE «QUIÉN SOY»
+
+   Más pequeña que su columna, a propósito. Al ancho completo era un plano tan
+   cerrado de la cara que tapaba la sala del fondo — y esa sala es la mitad de
+   lo que la foto viene a contar.
+
+   En el escritorio se apoya en el borde derecho, donde acaba la rejilla; en el
+   móvil se centra, porque una foto pequeña pegada a un lado en una sola columna
+   parece descolocada, no compuesta.
+   --------------------------------------------------------------------------- */
+.quien-foto {
+  width: min(340px, 100%);
+  justify-self: end;
+}
+@media (max-width: 900px) {
+  .quien-foto {
+    width: min(260px, 66vw);
+    justify-self: center;
+  }
+}
