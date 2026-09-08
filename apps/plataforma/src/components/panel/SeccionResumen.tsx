@@ -3,7 +3,7 @@ import { css } from "@/lib/css";
 import { BOTON_NORMAL, tarjetaCon } from "@/lib/ui";
 import { useApp } from "@/lib/app-context";
 import { COL, COL_TX } from "@/lib/tree";
-import { frase, recorta, titulo } from "@/lib/format";
+import { frase, titulo } from "@/lib/format";
 import Cifra from "../Cifra";
 import ArbolVida from "../ArbolVida";
 
@@ -116,7 +116,7 @@ export default function SeccionResumen() {
                   >
                     <div style={css("font-size:var(--t-mini);font-weight:590;color:" + COL_TX[x.k] + ";")}>{x.etapa}</div>
                     <div style={css("font-family:var(--font-display);font-size:var(--t-title);font-weight:500;letter-spacing:-.01em;color:var(--text);line-height:1.1;margin-top:3px;")}>{x.d.arcano}</div>
-                    <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-top:2px;line-height:1.25;")}>{recorta(titulo(x.d.carta?.nombre), 18)}</div>
+                    <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-top:2px;line-height:1.25;")}>{titulo(x.d.carta?.nombre)}</div>
                   </button>
                 ))}
               </div>

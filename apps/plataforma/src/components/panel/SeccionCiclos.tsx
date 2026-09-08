@@ -1,33 +1,51 @@
 "use client";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { chipStyle } from "@/lib/format";
 import Carrusel from "../Carrusel";
 import { KDATA } from "@/lib/kdata";
-import { recorta } from "@/lib/format";
+import Parrafo from "./Parrafo";
 import Desglose, { type Paso } from "../Desglose";
 
 export default function SeccionCiclos() {
-  const { r, verTexto } = useApp();
+  const { r } = useApp();
   if (!r) return null;
   const CI = KDATA.ciclos || ({} as typeof KDATA.ciclos);
 
-  const ciclos = r.ciclos.ciclos.map((cv) => ({
-    ...cv,
-    rango: cv.hasta === null ? "desde los " + cv.desde + " años" : cv.desde + " – " + cv.hasta + " años",
-    texto: recorta((CI.ciclos || {})[cv.numero] || "", 330),
-  }));
+  /*
+   * CUANDO DOS CICLOS CAEN EN EL MISMO NÚMERO.
+   *
+   * Pasa a menudo — la Formación sale del mes y la Cosecha del año, y coinciden
+   * en cuanto los dos reducen a la misma cifra — y el manual tiene UNA lectura
+   * por número, no una por posición. Así que las dos tarjetas enseñan, con toda
+   * la razón, el mismo párrafo.
+   *
+   * Visto sin saber eso, parece que el programa se ha equivocado o que ha
+   * copiado el texto de al lado. Es la queja literal que llegó: «hay cosas que
+   * estás inventando». No estaba inventando nada, pero tampoco estaba
+   * explicando nada, y en una consulta, delante de un cliente, eso es peor.
+   *
+   * Ahora la segunda tarjeta lo dice en una línea.
+   */
+  const ciclos = r.ciclos.ciclos.map((cv, i, todos) => {
+    const antes = todos.findIndex((o) => o.numero === cv.numero);
+    return {
+      ...cv,
+      rango: cv.hasta === null ? "desde los " + cv.desde + " años" : cv.desde + " – " + cv.hasta + " años",
+      texto: (CI.ciclos || {})[cv.numero] || "",
+      repiteDe: antes < i ? todos[antes].nombre : null,
+    };
+  });
   const realizaciones = r.ciclos.realizaciones.map((x) => ({
     ...x,
     rango: x.hasta === null ? "desde los " + x.desde : x.desde + " – " + x.hasta + " años",
-    texto: recorta((CI.realizaciones || {})[x.valor] || "", 230),
+    texto: (CI.realizaciones || {})[x.valor] || "",
   }));
-  const desafios = r.ciclos.desafios.map((x) => ({ ...x, texto: recorta((CI.desafios || {})[x.valor] || "", 230) }));
+  const desafios = r.ciclos.desafios.map((x) => ({ ...x, texto: (CI.desafios || {})[x.valor] || "" }));
   const textoAnioPersonal = (CI.anioPersonal || {})[r.ciclos.anioPersonal] || "";
   const etapas = r.ciclos.etapas.map((e) => ({
     ...e,
     actual: e.n === r.ciclos.etapaActual,
-    texto: recorta((CI.etapas9 || {})[e.n] || "", 260),
+    texto: (CI.etapas9 || {})[e.n] || "",
   }));
 
   // De dónde sale cada número de esta pantalla.
@@ -73,7 +91,18 @@ export default function SeccionCiclos() {
               <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>{c.nombre}</div>
               <div style={css("font-family:var(--font-ui);font-weight:600;font-size:var(--t-hero);color:var(--text);line-height:1.1;margin:4px 0;")}>{c.numero}</div>
               <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);margin-bottom:var(--s2);")}>{c.rango}</div>
-              <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.5;color:var(--text-2);margin:0;text-wrap:pretty;")}>{c.texto}</p>
+              {c.repiteDe && (
+                <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-bottom:var(--s2);line-height:1.4;")}>
+                  El mismo {c.numero} que en {c.repiteDe.toLowerCase()}: el manual da una sola lectura por número, así que el
+                  texto es el mismo en las dos etapas.
+                </div>
+              )}
+              <Parrafo
+                texto={c.texto}
+                etiqueta={"Ciclo de " + c.nombre.toLowerCase()}
+                titulo={String(c.numero)}
+                sub={c.rango}
+              />
             </div>
           ))}
         </div>
@@ -86,17 +115,16 @@ export default function SeccionCiclos() {
           <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>Tu año personal {r.ciclos.anioUniversal}</span>
           <span style={css("font-family:var(--font-ui);font-weight:600;font-size:var(--t-hero);color:var(--gold);line-height:1;")}>{r.ciclos.anioPersonal}</span>
         </div>
-        {/* Era un muro de veinte renglones a todo lo ancho. Se corta a una
-         * medida de lectura y el texto entero sigue estando, a un clic. */}
-        <p style={css("font-size:var(--t-read);line-height:1.62;color:var(--text-2);margin:0;max-width:70ch;text-wrap:pretty;")}>{recorta(textoAnioPersonal, 520)}</p>
-        {textoAnioPersonal.length > 520 && (
-          <button
-            onClick={() => verTexto("Año personal " + r.ciclos.anioUniversal, String(r.ciclos.anioPersonal), "Dónde estás dentro de la rueda de nueve años", textoAnioPersonal)}
-            style={css(chipStyle("var(--gold)") + "margin-top:var(--s4);")}
-          >
-            Texto completo
-          </button>
-        )}
+        {/* Era un muro de veinte renglones a todo lo ancho, y se cortaba a
+         * 520 caracteres: cinco de los nueve años personales se quedaban a
+         * medias. A anchura de lectura caben enteros. */}
+        <Parrafo
+          texto={textoAnioPersonal}
+          estilo="font-size:var(--t-read);line-height:1.62;max-width:70ch;"
+          etiqueta={"Año personal " + r.ciclos.anioUniversal}
+          titulo={String(r.ciclos.anioPersonal)}
+          sub="Dónde estás dentro de la rueda de nueve años"
+        />
       </div>
 
       <div style={css("background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:var(--pad-card-sm);")}>
@@ -129,7 +157,13 @@ export default function SeccionCiclos() {
                 </span>
                 {e.actual && <span style={css("margin-left:auto;font-size:var(--t-mini);font-weight:590;color:var(--gold);")}>ahora</span>}
               </div>
-              <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.5;color:var(--text-2);margin:7px 0 0;")}>{e.texto}</p>
+              <Parrafo
+                texto={e.texto}
+                estilo="margin:7px 0 0;"
+                etiqueta={"Etapa " + e.n}
+                titulo={e.desde + " – " + e.hasta + " años"}
+                sub="Etapas de nueve años"
+              />
             </div>
           ))}
         </Carrusel>
@@ -145,7 +179,7 @@ export default function SeccionCiclos() {
                 <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);margin-bottom:3px;")}>
                   Realización {r2.n} · {r2.rango}
                 </div>
-                <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.5;color:var(--text-2);margin:0;text-wrap:pretty;")}>{r2.texto}</p>
+                <Parrafo texto={r2.texto} etiqueta={"Realización " + r2.n} titulo={String(r2.valor)} sub={r2.rango} />
               </div>
             </div>
           ))}
@@ -159,7 +193,7 @@ export default function SeccionCiclos() {
                 <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);margin-bottom:3px;")}>
                   {d.etiqueta} · {d.rango}
                 </div>
-                <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.5;color:var(--text-2);margin:0;text-wrap:pretty;")}>{d.texto}</p>
+                <Parrafo texto={d.texto} etiqueta={d.etiqueta} titulo={String(d.valor)} sub={d.rango} />
               </div>
             </div>
           ))}

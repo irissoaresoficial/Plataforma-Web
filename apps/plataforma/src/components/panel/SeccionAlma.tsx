@@ -2,12 +2,13 @@
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { chipsDeFicha } from "@/lib/chips";
-import { chipStyle, recorta } from "@/lib/format";
+import { chipStyle } from "@/lib/format";
 import { tarjetaCon, PAD_SM } from "@/lib/ui";
 import TablaAlma from "./TablaAlma";
+import Parrafo from "./Parrafo";
 
 export default function SeccionAlma() {
-  const { r, verNumero, verTexto } = useApp();
+  const { r, verNumero } = useApp();
   if (!r) return null;
   // El dibujo de la tabla — orden del manual (5.1 TABLA IMAGEN DEL ALMA), con
   // la notación a mano de la ficha — vive entero en <TablaAlma />.
@@ -15,10 +16,14 @@ export default function SeccionAlma() {
 
   const bloqueos = r.bloqueos.map((b) => ({
     b,
-    extracto: recorta(b.plano?.texto || "", 440),
+    /* El texto viaja entero. Antes se cortaba a 440 caracteres —de unos
+       planos que llegan a 2.682— y el chip de «Plano completo» iba al final,
+       entre los de los números, donde no se leía como la continuación de lo
+       que se acababa de cortar. Ahora corta y ofrece la puerta el mismo
+       componente, y el chip sobra. */
+    plano: b.plano?.texto || "",
     chips: [{ label: "Número " + b.numero, style: chipStyle("var(--gold)"), onClick: () => verNumero(b.numero) }]
-      .concat(chipsDeFicha(b.ficha, verNumero))
-      .concat([{ label: "Plano completo", style: chipStyle("var(--text-3)"), onClick: () => verTexto("Bloqueo " + b.casilla, b.plano?.nombre || "", "Plano de consciencia " + b.casilla, b.plano?.texto || "") }]),
+      .concat(chipsDeFicha(b.ficha, verNumero)),
   }));
 
   return (
@@ -51,7 +56,7 @@ export default function SeccionAlma() {
         </div>
       </div>
       <div data-cascada="" style={css("display:flex;flex-direction:column;gap:var(--gap);")}>
-        {bloqueos.map(({ b, extracto, chips }, i) => (
+        {bloqueos.map(({ b, plano, chips }, i) => (
           <article
             key={i}
             style={css(
@@ -68,7 +73,14 @@ export default function SeccionAlma() {
               <span style={css("font-family:var(--font-ui);font-weight:600;font-size:var(--t-title);color:var(--text);")}>{b.plano?.nombre || ""}</span>
               <span style={css("margin-left:auto;font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>se forma con el número {b.numero}</span>
             </div>
-            <p style={css("font-family:var(--font-ui);font-size:var(--t-read);line-height:1.6;color:var(--text-2);margin:12px 0 0;text-wrap:pretty;")}>{extracto}</p>
+            <Parrafo
+              texto={plano}
+              estilo="font-size:var(--t-read);line-height:1.6;margin:12px 0 0;"
+              etiqueta={"Bloqueo " + b.casilla}
+              titulo={b.plano?.nombre || ""}
+              sub={"Plano de consciencia " + b.casilla}
+              textoBoton="Plano completo"
+            />
             <div style={css("display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s4);")}>
               {chips.map((cc, ci) => (
                 <button key={ci} onClick={cc.onClick} style={css(cc.style)}>

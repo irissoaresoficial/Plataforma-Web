@@ -3,9 +3,10 @@ import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { arbolGeometria } from "@/lib/arbol";
 import { COL, COL_TX } from "@/lib/tree";
-import { frase, recorta, titulo } from "@/lib/format";
+import { frase, titulo } from "@/lib/format";
 import Particulas from "../Particulas";
-import { tarjetaCon, PAD_SM, BOTON_PLANO } from "@/lib/ui";
+import Parrafo from "./Parrafo";
+import { tarjetaCon, PAD_SM } from "@/lib/ui";
 import Lienzo from "../Lienzo";
 import ArbolVida from "../ArbolVida";
 
@@ -23,7 +24,11 @@ export default function SeccionArbol() {
 
   const caminos = camDef.map((d) => {
     const carta = d.c.carta || ({} as NonNullable<typeof d.c.carta>);
-    return { ...d, nombre: titulo(carta.nombre), lema: frase(carta.lema), extracto: recorta((carta.texto || "").replace(/^[“"][^”"]*[”"]\.?\s*/, ""), 420) };
+    /* Entero. Se cortaba a 420 caracteres de unos textos que llegan a 4.815:
+       se veía el 9 % de la carta. Ahora corta el componente —a 1.000— y el
+       botón de siempre sigue abriendo la ficha completa del arcano, que
+       además del texto trae el lema y el dibujo. */
+    return { ...d, nombre: titulo(carta.nombre), lema: frase(carta.lema), texto: (carta.texto || "").replace(/^[“"][^”"]*[”"]\.?\s*/, "") };
   });
 
   return (
@@ -70,13 +75,14 @@ export default function SeccionArbol() {
               <span style={css("margin-left:auto;font-size:var(--t-mini);color:var(--text-4);")}>{c.rango}</span>
             </div>
             <div style={css("font-size:var(--t-read);color:var(--gold);margin-top:var(--s2);line-height:1.4;")}>{c.lema}</div>
-            <p style={css("font-size:var(--t-read);line-height:1.62;color:var(--text-2);margin:var(--s3) 0 0;text-wrap:pretty;")}>{c.extracto}</p>
-            <button
-              onClick={() => verArcano(c.c.arcano)}
-              style={css(BOTON_PLANO + "margin-top:var(--s3);")}
-            >
-              Texto completo
-            </button>
+            <Parrafo
+              texto={c.texto}
+              estilo="font-size:var(--t-read);line-height:1.62;margin:var(--s3) 0 0;"
+              etiqueta={"Arcano " + c.c.arcano}
+              titulo={c.nombre}
+              sub={c.etapa}
+              alPulsar={() => verArcano(c.c.arcano)}
+            />
           </article>
         ))}
 

@@ -3,15 +3,16 @@ import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { chipsDeFicha } from "@/lib/chips";
 import { ficha } from "@/lib/engine";
-import { frase, recorta, chipStyle } from "@/lib/format";
+import { frase } from "@/lib/format";
 import Desglose, { type Paso } from "../Desglose";
+import Parrafo from "./Parrafo";
 
 const TH = "font-size:var(--t-mini);font-weight:590;color:var(--text-4);display:flex;align-items:center;justify-content:center;padding:6px 0;";
 const TD = "font-family:var(--font-ui);font-weight:600;font-size:var(--t-title);color:var(--text-2);display:flex;align-items:center;justify-content:center;padding:11px 0;border:1px solid var(--gold-soft);border-radius:var(--r-sm);background:color-mix(in srgb, var(--text) 4%, transparent);";
 const TD_TOT = TD.replace("var(--text-2)", "var(--text)").replace("color-mix(in srgb, var(--text) 4%, transparent)", "var(--border)");
 
 export default function SeccionCuentas() {
-  const { r, verNumero, verTexto } = useApp();
+  const { r, verNumero } = useApp();
   if (!r) return null;
   const c = r.cuentas;
 
@@ -64,8 +65,7 @@ export default function SeccionCuentas() {
         n: x.n,
         aclara: i === 0 ? (aclara ? aclara + " · " : "") + `el ${n} no está en los apuntes: se lee por sus partes, ${dice}` : undefined,
         titulo: frase(x.titulo || ""),
-        texto: recorta(x.texto || "", 300),
-        completo: x.texto || "",
+        texto: x.texto || "",
         f: x,
         parte: true,
       }));
@@ -75,8 +75,7 @@ export default function SeccionCuentas() {
         n,
         aclara,
         titulo: frase(F?.titulo || ""),
-        texto: recorta(F?.texto || "", 320),
-        completo: F?.texto || "",
+        texto: F?.texto || "",
         f: F,
         parte: false,
       },
@@ -172,21 +171,22 @@ export default function SeccionCuentas() {
                     <span style={css("font-family:var(--font-display);font-size:var(--t-title);font-weight:500;letter-spacing:-.012em;line-height:1.2;color:var(--text);")}>{l.titulo}</span>
                   </div>
                   {l.aclara && <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-top:3px;")}>{l.aclara}</div>}
-                  <p style={css("font-size:var(--t-read);line-height:1.62;color:var(--text-2);margin:var(--s3) 0 0;text-wrap:pretty;")}>{l.texto}</p>
+                  {/* Los textos de los números llegan a 719 caracteres y se
+                      cortaban a 300 y 320: dos de cada tres salían a medias.
+                      Enteros caben. */}
+                  <Parrafo
+                    texto={l.texto}
+                    estilo="font-size:var(--t-read);line-height:1.62;margin:var(--s3) 0 0;"
+                    etiqueta={"Número " + l.n}
+                    titulo={l.titulo}
+                    sub={k.label}
+                  />
                   <div style={css("display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s3);")}>
                     {chipsDeFicha(l.f, verNumero).map((cc, ci) => (
                       <button key={ci} onClick={cc.onClick} style={css(cc.style)}>
                         {cc.label}
                       </button>
                     ))}
-                    {l.completo.length > 320 && (
-                      <button
-                        onClick={() => verTexto("Número " + l.n, l.titulo, k.label, l.completo)}
-                        style={css(chipStyle("var(--text-3)"))}
-                      >
-                        Texto completo
-                      </button>
-                    )}
                   </div>
                 </div>
               ))}

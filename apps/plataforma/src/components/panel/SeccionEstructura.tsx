@@ -4,10 +4,11 @@ import { useApp } from "@/lib/app-context";
 import { chipsDeFicha } from "@/lib/chips";
 import { tarjetaCon, PAD_SM } from "@/lib/ui";
 import EjesTension from "./EjesTension";
-import { chipStyle, recorta } from "@/lib/format";
+import { chipStyle } from "@/lib/format";
 import CuerpoPortales from "../CuerpoPortales";
 import Desglose, { type Paso } from "../Desglose";
 import Carrusel from "../Carrusel";
+import Parrafo from "./Parrafo";
 import { PORTALES_CUERPO } from "@/lib/cuerpo";
 import { KDATA, TENSIONES, type TensionEntry } from "@/lib/kdata";
 
@@ -251,7 +252,7 @@ export default function SeccionEstructura() {
                 </div>
                 {t.info && (
                   <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.55;color:var(--text-2);margin:7px 0 0;text-wrap:pretty;")}>
-                    {recorta(t.info.texto, 300)}
+                    {t.info.texto}
                   </p>
                 )}
                 {t.info?.tension && (
@@ -289,7 +290,13 @@ export default function SeccionEstructura() {
               <span style={css("font-family:var(--font-ui);font-weight:600;font-size:var(--t-title);color:var(--text);")}>{a.tarea?.nombre || ""}</span>
               <span style={css("margin-left:auto;font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>viene del número {a.numero}</span>
             </div>
-            <p style={css("font-family:var(--font-ui);font-size:var(--t-read);line-height:1.6;color:var(--text-2);margin:12px 0 0;text-wrap:pretty;")}>{recorta(a.tarea?.texto || "", 460)}</p>
+            <Parrafo
+              texto={a.tarea?.texto || ""}
+              estilo="font-size:var(--t-read);line-height:1.6;margin:12px 0 0;"
+              etiqueta={"Aprendizaje " + a.portal}
+              titulo={a.tarea?.nombre || ""}
+              sub={"Viene del número " + a.numero}
+            />
             <div style={css("display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s4);")}>
               {chips.map((c, ci) => (
                 <button key={ci} onClick={c.onClick} style={css(c.style)}>
@@ -300,11 +307,11 @@ export default function SeccionEstructura() {
             <div style={css("margin-top:var(--s4);border-top:1px solid var(--border);padding-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:var(--s3);")}>
               <div>
                 <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);margin-bottom:3px;")}>Hilo rojo</div>
-                <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.5;color:var(--text-2);margin:0;text-wrap:pretty;")}>{recorta(a.tarea?.hiloRojo || "", 210)}</p>
+                <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.5;color:var(--text-2);margin:0;text-wrap:pretty;")}>{a.tarea?.hiloRojo || ""}</p>
               </div>
               <div>
                 <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);margin-bottom:3px;")}>Principio sanador</div>
-                <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.5;color:var(--text-2);margin:0;text-wrap:pretty;")}>{recorta(a.tarea?.sanador || "", 210)}</p>
+                <p style={css("font-family:var(--font-ui);font-size:var(--t-body);line-height:1.5;color:var(--text-2);margin:0;text-wrap:pretty;")}>{a.tarea?.sanador || ""}</p>
               </div>
             </div>
           </article>
