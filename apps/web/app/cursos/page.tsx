@@ -69,7 +69,16 @@ function CursoBloque({ curso }: { curso: Curso }) {
             </div>
             <div>
               <dt>Precio</dt>
-              <dd>{curso.precio === null ? <Pendiente>Por confirmar</Pendiente> : eur(curso.precio)}</dd>
+              <dd>
+                {curso.precio === null ? (
+                  <Pendiente>Por confirmar</Pendiente>
+                ) : (
+                  <>
+                    {eur(curso.precio)}
+                    {curso.precioAntes ? <s className="precio-antes">{eur(curso.precioAntes)}</s> : null}
+                  </>
+                )}
+              </dd>
             </div>
           </dl>
 
@@ -122,11 +131,11 @@ export default function Cursos() {
             <div className="espaciado" style={{ fontSize: 11, fontWeight: 700, color: 'var(--acento)' }}>Cursos y talleres en directo</div>
           </Reveal>
           <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'var(--t-portada)', fontWeight: 'var(--peso-fino)', lineHeight: 1.0, letterSpacing: '-.03em', maxWidth: '15ch', textWrap: 'balance' }}>
-            Unas tardes que cambian la conversación en tu casa.
+            Dos días que cambian la conversación en tu casa.
           </Reveal>
           <Reveal delay={140}>
             <p style={{ margin: 0, fontSize: 'var(--t-entrada)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '44ch' }}>
-              Formatos cortos, en directo y con caso propio: sales con tu historia mirada, no con apuntes.
+              En directo y con tu caso encima de la mesa: sales sabiendo hacer las cuentas tú, no con apuntes.
             </p>
           </Reveal>
           <Reveal delay={200}>

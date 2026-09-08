@@ -121,13 +121,30 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
               ['Cuándo', curso.fechas],
               ['Horario', curso.horario],
               ['Duración', curso.duracion],
-              ['Precio', curso.precio === null ? null : eur(curso.precio)],
             ].map(([k, v]) => (
               <div key={k as string}>
                 <span>{k}</span>
                 <strong>{v === null || falta(v as string) ? <Pendiente /> : (v as string)}</strong>
               </div>
             ))}
+            {/* El precio va aparte de los otros tres porque puede llevar dos
+                cifras. El número tachado tiene que estar PEGADO al que se paga
+                —en el mismo renglón— o deja de leerse como «antes costaba
+                esto» y se lee como dos precios distintos, que es la peor duda
+                que puedes dejarle a alguien delante de un botón de pago. */}
+            <div>
+              <span>Precio</span>
+              <strong>
+                {curso.precio === null ? (
+                  <Pendiente />
+                ) : (
+                  <>
+                    {eur(curso.precio)}
+                    {curso.precioAntes ? <s className="precio-antes">{eur(curso.precioAntes)}</s> : null}
+                  </>
+                )}
+              </strong>
+            </div>
           </div>
 
           <div className="modal-pestanas" role="tablist">
@@ -198,7 +215,16 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
         {curso.stripeUrl && (
           <div className="modal-pie">
             <div>
-              <strong>{curso.precio === null ? 'Precio por confirmar' : eur(curso.precio)}</strong>
+              <strong>
+                {curso.precio === null ? (
+                  'Precio por confirmar'
+                ) : (
+                  <>
+                    {eur(curso.precio)}
+                    {curso.precioAntes ? <s className="precio-antes">{eur(curso.precioAntes)}</s> : null}
+                  </>
+                )}
+              </strong>
               <span>Pago seguro con Stripe</span>
             </div>
             <a href={curso.stripeUrl} target="_blank" rel="noopener noreferrer" className="pill pill-cream" data-mag>

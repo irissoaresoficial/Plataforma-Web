@@ -3593,3 +3593,24 @@ body[data-nav-claro='si'] .sello-color {
   outline: 2px solid var(--acento-2);
   outline-offset: 3px;
 }
+
+/* ---------------------------------------------------------------------------
+   EL PRECIO TACHADO DEL CURSO
+
+   Va pegado al precio que se paga, en el mismo renglón y más pequeño. Suelto o
+   del mismo tamaño se lee como un segundo precio, no como el de antes — y dos
+   cifras que compiten delante de un botón de pago son una duda, no un
+   descuento.
+
+   `text-decoration-thickness` a mano porque el navegador raya con el grosor de
+   la letra y, a este cuerpo, la línea se come el número.
+   --------------------------------------------------------------------------- */
+.precio-antes {
+  margin-left: 9px;
+  font-size: 0.72em;
+  font-weight: var(--peso-fino);
+  color: var(--tx-3);
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--tx-4, var(--tx-3));
+  white-space: nowrap;
+}

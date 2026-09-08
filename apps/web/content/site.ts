@@ -294,6 +294,23 @@ export type Curso = {
   duracion: string;
   /** En euros. null = todavía sin precio. */
   precio: number | null;
+  /**
+   * EL PRECIO TACHADO. En euros, o null si no hay promoción.
+   *
+   * OJO CON ESTE NÚMERO, PORQUE ES EL ÚNICO DE LA WEB QUE PUEDE COSTAR UNA
+   * MULTA. En España, tachar un precio al que nunca se ha vendido es publicidad
+   * engañosa: desde la directiva Ómnibus (Ley 7/1996, art. 20), el precio
+   * tachado tiene que ser el más bajo que se haya aplicado en los treinta días
+   * anteriores.
+   *
+   * Gerson confirmó el 8 de septiembre de 2026 que los 697 € son el precio
+   * normal del curso fuera de promoción, no un «valor equivalente» inventado
+   * para que el descuento parezca mayor. Con eso, tacharlo es correcto.
+   *
+   * Si algún día el precio de fuera de promoción cambia, se cambia aquí; y si
+   * deja de haber promoción, se pone a null y el tachado desaparece solo.
+   */
+  precioAntes?: number | null;
   /** Plazas totales. null = no se muestra contador. */
   plazas: number | null;
   /**
@@ -337,19 +354,22 @@ export const CURSOS: Curso[] = [
   {
     id: 'septiembre',
     titulo: 'Tu fecha, tu nombre y tu línea',
-    claim: 'Dos tardes para salir sabiendo calcular tus números y los de tu familia, y ver qué se repite.',
+    claim: 'Dos días completos para salir sabiendo calcular tus números y los de tu familia, y ver qué se repite.',
     fechas: '26 y 27 de septiembre',
     fechaISO: '2026-09-26',
     inscripcionDesdeISO: '2026-09-01',
-    horario: PENDIENTE,
-    duracion: '2 tardes en directo',
-    precio: null,
+    /* Confirmado por Gerson el 8 de septiembre de 2026: los dos días de
+       10:00 a 19:00, con una hora para comer. */
+    horario: '10:00 → 19:00 (hora española), con una hora para comer',
+    duracion: '2 jornadas completas · 16 h en directo',
+    precio: 397,
+    precioAntes: 697,
     plazas: null,
     videoUrl: '',
     stripeUrl: '',
     descripcion:
       'La numerología no adivina nada. Coge dos datos que ya tienes —la fecha en que naciste y el nombre con el que te ' +
-      'inscribieron— y los convierte en cifras con las que se puede trabajar. En estas dos tardes aprendes a hacer esa ' +
+      'inscribieron— y los convierte en cifras con las que se puede trabajar. En estos dos días aprendes a hacer esa ' +
       'cuenta tú, a mano, sin depender de ninguna aplicación: de dónde sale cada número, por qué el 11, el 22 y el 33 no ' +
       'se reducen, y qué se está mirando exactamente cuando se mira un camino de vida.\n\n' +
       'Y después damos el paso que la mayoría de los cursos no da: sacamos las fechas de tus padres y de tus abuelos y las ' +
@@ -392,6 +412,13 @@ export const CURSOS: Curso[] = [
       'Tu carta hecha por ti: camino de vida, expresión, alma, personalidad y año personal.',
       'El árbol de tres generaciones empezado, con las repeticiones que hayan salido señaladas.',
       'Las tablas y las cuentas por escrito, para poder hacérselo a otra persona al día siguiente.',
+      'Todo el material lo pone Iris: no hace falta traer nada ni comprar nada aparte.',
+      /* El certificado, con las palabras exactas que se acordaron. Dice lo que
+         de verdad acredita —haber superado un curso teórico-práctico— y no
+         insinúa una titulación oficial, que no la hay: la numerología no es
+         una profesión regulada y prometer un título en un sitio donde se
+         cobran 397 € es justo lo que no se puede hacer. */
+      'Certificado de Consultor de Numerología, que acredita haber superado el curso teórico-práctico.',
       /* Aquí iba «la grabación de las dos tardes». Lo he quitado: eso no sale
          del temario, es una decisión de servicio que sólo Iris puede tomar, y
          prometérsela a alguien que ha pagado sin saber si va a existir es
