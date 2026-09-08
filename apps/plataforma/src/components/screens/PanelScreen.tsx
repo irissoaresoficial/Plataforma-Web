@@ -11,6 +11,7 @@ import SeccionEstructura from "../panel/SeccionEstructura";
 import SeccionAlma from "../panel/SeccionAlma";
 import SeccionCuentas from "../panel/SeccionCuentas";
 import SeccionCiclos from "../panel/SeccionCiclos";
+import SeccionNumerologia from "../panel/SeccionNumerologia";
 import SeccionEmpresa from "../panel/SeccionEmpresa";
 import Pendiente from "../panel/Pendiente";
 import { DISCIPLINAS } from "../Sidebar";
@@ -171,12 +172,7 @@ export default function PanelScreen() {
        * así la animación de entrada se reproduce en cada salto y no sólo la
        * primera vez. */}
       <div key={disciplina + seccion} style={css("animation:es33-alza .5s cubic-bezier(.22,1,.36,1) both;")}>
-        {disciplina === "numerologia" && (
-          <Pendiente
-            titulo="Numerología"
-            pie="La lectura numerológica, aparte de la kabalística: la vibración de cada cifra por sí misma. Todavía no está desarrollada."
-          />
-        )}
+        {disciplina === "numerologia" && <SeccionNumerologia />}
         {disciplina === "kabala" && empresa && <SeccionEmpresa />}
         {disciplina === "kabala" && !empresa && (
           <>
