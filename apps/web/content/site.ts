@@ -353,7 +353,17 @@ export type Curso = {
 export const CURSOS: Curso[] = [
   {
     id: 'septiembre',
-    titulo: 'Tu fecha, tu nombre y tu línea',
+    /*
+     * EL NOMBRE DE VERDAD DEL CURSO, puesto por Iris. Antes era «Tu fecha, tu
+     * nombre y tu línea», que dice bien lo que se hace dentro pero no es un
+     * nombre: es un reclamo. Y en una web donde el mismo curso entrega un
+     * certificado de Consultor de Numerología, el título que se anuncia y el
+     * que se certifica tienen que sonar a lo mismo — si no, quien paga se
+     * queda con la duda de si le van a certificar otra cosa.
+     *
+     * El reclamo no se pierde: sigue justo debajo, en `claim`.
+     */
+    titulo: 'Formación en Numerología Transgeneracional',
     claim: 'Dos días completos para salir sabiendo calcular tus números y los de tu familia, y ver qué se repite.',
     fechas: '26 y 27 de septiembre',
     fechaISO: '2026-09-26',
