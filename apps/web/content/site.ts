@@ -36,6 +36,17 @@ export const FOTOS = {
   hablando: '/images/iris-hablando.jpg',
   /** Un plano cercano, para el bloque de quién es. Vertical. */
   cerca: '/images/iris-cerca.jpg',
+  /**
+   * LA FILA DE GENERACIONES. No es una foto de Iris: es la única imagen de la
+   * web que no enseña a nadie de la casa, y por eso está aquí abajo y aparte.
+   *
+   * Va en el bloque de «Por qué pasa», que dice «No es tu carácter. Es una
+   * historia que nadie cerró». Un hombre detrás de otro, en la misma postura y
+   * con las mismas manos, perdiéndose hacia el fondo: es esa frase, sin tener
+   * que explicarla. Antes ahí había un retrato de Iris en un coche, que no
+   * decía nada de lo que se estaba contando al lado.
+   */
+  generaciones: '/images/generaciones.png',
   /** Cualquier otra: sala, público, detalle de trabajo. Horizontal. */
   sala: '/images/iris-sala.jpg',
 };

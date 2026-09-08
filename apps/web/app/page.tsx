@@ -304,7 +304,13 @@ export default function Home() {
         <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(32px,5vw,84px)', alignItems: 'center' }}>
           <Reveal>
             <div data-par="-.04">
-              <Foto src={FOTOS.cerca} alt="Iris Soares" ratio="4/5" radius="var(--radio)" sizes="(max-width:900px) 100vw, 42vw" />
+              <Foto
+                src={FOTOS.generaciones}
+                alt="Una fila de hombres de distintas edades, uno detrás de otro, en la misma postura y con las mismas manos sobre la mesa, repitiéndose hacia el fondo"
+                ratio="4/5"
+                radius="var(--radio)"
+                sizes="(max-width:900px) 100vw, 42vw"
+              />
             </div>
           </Reveal>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(20px,2.4vw,28px)' }}>
