@@ -19,12 +19,19 @@
  * la herramienta de clase, no un adorno.
  *
  * ---------------------------------------------------------------------------
- * LAS POSICIONES QUE TODAVÍA NO CALCULAN SE DIBUJAN IGUAL, Y SE NOTA.
+ * TRES ESTADOS, TRES DIBUJOS DISTINTOS.
  * ---------------------------------------------------------------------------
- * Círculo de trazo discontinuo y un signo de interrogación en vez del número.
- * No se esconden: la tabla completa tiene diecinueve casillas y quien la estudia
- * tiene que ver las diecinueve. Lo que no puede pasar es que una casilla sin
- * fórmula enseñe un número que nadie ha calculado.
+ * CONFIRMADA    círculo de aro dorado. La fórmula cuadra con la tabla de Iris
+ *               y además hay fuente escrita publicada.
+ * RECONSTRUIDA  igual, con un punto pequeño arriba a la derecha. Cuadra con la
+ *               tabla, pero ninguna fuente accesible enuncia la fórmula: son
+ *               las seis casillas del Espejo. El punto no es un adorno, es la
+ *               diferencia entre «esto lo dice el libro» y «esto lo hemos
+ *               deducido nosotros», y quien estudia aquí tiene derecho a verla.
+ * PENDIENTE     círculo de trazo discontinuo y un interrogante en vez del
+ *               número. Ahora mismo no hay ninguna, pero el dibujo lo soporta:
+ *               si algún día se añade una casilla sin fórmula, saldrá marcada
+ *               en rojo en vez de enseñar un número que nadie ha calculado.
  */
 
 import { useEffect, useMemo, useState } from "react";
@@ -53,11 +60,13 @@ const punto = (p: { fila: number; col: number }) => ({ x: COL_X[p.col] ?? 350, y
  */
 const ORDEN = [
   ["madre", "yo", "padre"],
-  ["persProfunda", "nudoEmocional"],
-  ["busqEmocional", "resistencia", "nudoDolor"],
-  ["comportIntSocial", "comportExtSocial", "persExtSocial"],
-  ["emersor", "busqArmonia", "busqEspiritual"],
-  ["comportIntDefensa", "persExtDefensa", "comportExtDefensa"],
+  ["persProfunda", "nudoEmocional", "resistencia"],
+  ["busqEmocional", "busqEspiritual"],
+  ["comportIntSocial", "comportExtSocial"],
+  ["persExtSocial"],
+  ["emersor", "busqArmonia"],
+  ["nudoDolor", "comportIntDefensa", "comportExtDefensa"],
+  ["persExtDefensa"],
   ["busqSalida", "huida"],
 ];
 
@@ -89,6 +98,12 @@ export default function RejillaBase22(props: Props) {
         <span style={css("font-size:var(--t-mini);color:var(--text-4);")}>
           Cada casilla se puede pulsar para ver de dónde sale su número.
         </span>
+        <span style={css("display:inline-flex;align-items:center;gap:6px;font-size:var(--t-mini);color:var(--text-4);")}>
+          <svg width="10" height="10" aria-hidden style={{ display: "block" }}>
+            <circle cx="5" cy="5" r="3.4" fill="var(--gold)" />
+          </svg>
+          Casilla deducida: cuadra con la tabla de Iris, pero no hay fuente escrita.
+        </span>
       </div>
     </div>
   );
@@ -105,7 +120,7 @@ function Dibujo({ base, alElegir }: Props) {
 
   useEffect(() => {
     if (quieto) return;
-    const relojes = ORDEN.map((_, i) => setTimeout(() => setPaso(i + 1), 340 + i * 520));
+    const relojes = ORDEN.map((_, i) => setTimeout(() => setPaso(i + 1), 280 + i * 400));
     return () => relojes.forEach(clearTimeout);
   }, [quieto]);
 
@@ -200,6 +215,11 @@ function Dibujo({ base, alElegir }: Props) {
                 >
                   {falta ? "?" : p.valor}
                 </text>
+                {/* El punto de «reconstruida». Arriba a la derecha del aro, del
+                    tamaño justo para verse y no para gritar. */}
+                {p.certeza === "reconstruido" && (
+                  <circle cx={x + RADIO * 0.72} cy={y - RADIO * 0.72} r={3.4} fill="var(--gold)" />
+                )}
                 {/* El nombre debajo, partido en dos renglones cuando es largo:
                     a esta escala, «Personalidad externa social-profesional» en
                     una sola línea se sale por encima de los círculos vecinos. */}

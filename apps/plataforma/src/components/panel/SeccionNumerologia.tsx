@@ -15,11 +15,11 @@
  * ver de dónde sale su número. Quien la usa no viene sólo a leer un resultado:
  * viene a aprender a sacarlo.
  *
- * LO QUE FALTA SE VE. De las diecinueve posiciones, seis calculan —y están
- * comprobadas contra la tabla que Iris tiene hecha a mano— y trece están a la
- * espera del material de la escuela. Salen dibujadas con el círculo de trazo
- * discontinuo y un interrogante. No se esconden y no se rellenan a ojo: ver el
- * hueco es lo que hace que se rellene.
+ * Y POR ESO SE DICE DE DÓNDE VIENE CADA COSA. Trece casillas tienen fuente
+ * escrita publicada; las seis del Espejo cuadran con la tabla de Iris pero
+ * ninguna fuente accesible enuncia su fórmula, así que salen marcadas con un
+ * punto y lo dicen cuando se abren. Esa distinción es lo que separa a una
+ * escuela de alguien que se lo inventa: no cuesta nada decirla y lo cambia todo.
  */
 
 import { useState } from "react";
@@ -46,15 +46,20 @@ export default function SeccionNumerologia() {
   }
   if (!r) return null;
 
-  const { listas, total } = cuantasCalculan();
+  const { total, confirmadas, reconstruidas } = cuantasCalculan();
 
   return (
     <div style={css("display:flex;flex-direction:column;gap:var(--gap-lg);")}>
       <div>
         <h2 style={css(TITULO + "margin:0 0 var(--s2);")}>Rejilla de base 22</h2>
-        <p style={css(APOYO + "margin:0;max-width:64ch;")}>
+        <p style={css(APOYO + "margin:0 0 var(--s2);max-width:64ch;")}>
           Del día, el mes y el año salen diecinueve números que se colocan siempre en el mismo sitio. Arriba, lo que la
           persona enseña fuera; abajo, lo que monta para defenderse; en el centro, la familia de la que sale todo.
+        </p>
+        <p style={css(APOYO + "margin:0;max-width:64ch;")}>
+          La tabla es un espejo: la mitad de arriba <b style={css("color:var(--text);")}>suma</b> los pares de la fecha y
+          la de abajo <b style={css("color:var(--text);")}>resta</b> exactamente los mismos, el mayor menos el menor. El
+          nudo de dolor es el nudo emocional restado; la huida es el emersor restado.
         </p>
       </div>
 
@@ -71,6 +76,11 @@ export default function SeccionNumerologia() {
             <span style={css("font-family:var(--font-ui);font-weight:600;font-size:var(--t-title);color:var(--text);")}>
               {abierta.nombre}
             </span>
+            {abierta.sigla && (
+              <span style={css("font-size:var(--t-mini);color:var(--text-4);letter-spacing:.04em;")}>
+                {abierta.sigla}
+              </span>
+            )}
             {abierta.valor !== null && (
               <span style={css("margin-left:auto;font-family:var(--font-ui);font-weight:600;font-size:var(--t-hero);color:var(--gold);line-height:1;")}>
                 {abierta.valor}
@@ -92,6 +102,19 @@ export default function SeccionNumerologia() {
 
           {abierta.significado && <p style={css(APOYO + "margin:0;")}>{abierta.significado}</p>}
 
+          {/* De dónde viene la fórmula. Sólo se dice cuando hay algo que decir:
+              en las trece con fuente no hace falta ninguna coletilla. */}
+          {abierta.certeza === "reconstruido" && (
+            <p style={css(NOTA + "margin:0;border-left:2px solid var(--gold);padding-left:var(--s3);")}>
+              <b style={css("color:var(--text-2);")}>Casilla deducida.</b> Esta fórmula da exactamente el número que
+              tiene la tabla de Iris hecha a mano, y sigue la regla del Espejo —restar, el mayor menos el menor, y un
+              cero se lee como 22—, pero ninguna fuente publicada la enuncia con estas palabras. Se enseña como
+              deducción, no como cita.
+            </p>
+          )}
+
+          {abierta.aviso && <p style={css(NOTA + "margin:0;")}>{abierta.aviso}</p>}
+
           <button
             onClick={() => setAbierta(null)}
             style={css(
@@ -103,12 +126,14 @@ export default function SeccionNumerologia() {
         </section>
       )}
 
-      {/* El estado, dicho con el número exacto. «En construcción» no dice nada;
-          «seis de diecinueve» dice cuánto falta y se puede comprobar. */}
+      {/* El estado, dicho con los números exactos. «Comprobado» a secas no dice
+          nada; decir cuántas tienen fuente y cuántas son deducción se puede
+          comprobar, y es lo que hace creíble el resto. */}
       <p style={css(NOTA + "margin:0;max-width:64ch;")}>
-        Calculan {listas} de las {total} casillas, y esas {listas} están comprobadas contra la tabla que Iris tiene hecha
-        a mano: dan sus mismos números. Las {total - listas} restantes esperan el material de la escuela y salen marcadas
-        en el dibujo.
+        Las {total} casillas calculan, y las {total} dan los mismos números que la tabla que Iris tiene hecha a mano.
+        De ellas, {confirmadas} tienen además fuente escrita publicada —el sistema es de Kris Hadar,{" "}
+        <i>La numérologie à 22 nombres</i>, 1990— y {reconstruidas}, las del Espejo, cuadran con la tabla pero no
+        aparecen enunciadas en ninguna fuente accesible: van marcadas con un punto.
       </p>
     </div>
   );
