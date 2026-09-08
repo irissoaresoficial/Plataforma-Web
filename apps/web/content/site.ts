@@ -249,6 +249,24 @@ export const MEMBRESIA = {
    * marcada en rojo. Añade o quita las que quieras.
    */
   incluye: [PENDIENTE, PENDIENTE, PENDIENTE],
+  /**
+   * QUÉ PASA SI ALGUIEN PAGA Y LUEGO SE ECHA ATRÁS.
+   *
+   * Hace falta decidirlo antes de encender los cobros, y no lo puede decidir la
+   * web. Quien reserva paga el primer mes hoy y no recibe nada hasta el día que
+   * abre: entre esas dos fechas hay semanas, y en esas semanas la gente cambia
+   * de opinión. Sin una frase clara aquí, cada uno de esos casos acaba en una
+   * discusión por WhatsApp o en una devolución peleada con el banco, que sale
+   * mucho más cara que devolver el dinero.
+   *
+   * Escríbelo como se lo dirías a la persona. Por ejemplo: «Si antes de que
+   * abramos decides que no, me escribes y te devuelvo el mes.» O lo contrario,
+   * si la plaza no se devuelve — pero entonces que esté escrito, no supuesto.
+   *
+   * Mientras sea PENDIENTE sale marcado en rojo en la página, a propósito: es
+   * lo último que debería quedar sin decidir el día que se abran los cobros.
+   */
+  devoluciones: PENDIENTE,
 };
 
 /* ------------------------------------------------------------------ */

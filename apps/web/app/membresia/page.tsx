@@ -9,9 +9,36 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
-import Pendiente from '@/components/Pendiente';
+import Pendiente, { Texto } from '@/components/Pendiente';
 import { MEMBRESIA, PENDIENTE, eur } from '@/content/site';
 import Lanzamiento from '@/components/Lanzamiento';
+
+/*
+ * ============================================================================
+ * RESERVAR YA NO ES GRATIS
+ * ============================================================================
+ *
+ * Esta página nació como lista de espera: dejabas el correo, no se te cobraba
+ * nada y ya se te avisaría. Gerson lo cambió, y con el mismo motivo que en las
+ * sesiones: una reserva que no cuesta nada no la respeta nadie, y el día que
+ * abre te encuentras diez plazas apalabradas y tres personas.
+ *
+ * Ahora reservar es PAGAR EL PRIMER MES por adelantado. Con eso se guarda la
+ * plaza y se guarda el precio de lanzamiento; la comunidad sigue abriendo en la
+ * fecha de `MEMBRESIA.abreISO`, y ese primer mes pagado es el primer mes dentro.
+ *
+ * TODO ESTO ESTÁ APAGADO MIENTRAS NO HAYA ENLACE DE STRIPE. No es prudencia
+ * excesiva: sin enlace, la página estaría diciendo «paga hoy» y ofreciendo un
+ * formulario que no cobra. Con `NEXT_PUBLIC_PAGO_MEMBRESIA` puesto en Vercel se
+ * enciende entera —textos, cuentas y botón— y sin ella se queda como estaba,
+ * que es una lista de espera honesta.
+ *
+ * Y una cosa que hay que mirar de frente: quien pague hoy no recibe nada hasta
+ * que abra. Cuanto más lejos quede esa fecha, más devoluciones. Por eso el
+ * texto dice sin rodeos qué se paga, qué se recibe y cuándo, en vez de esconder
+ * la espera en letra pequeña.
+ */
+const PAGO = process.env.NEXT_PUBLIC_PAGO_MEMBRESIA || '';
 
 export default function Membresia() {
   useSiteScroll();
@@ -22,7 +49,11 @@ export default function Membresia() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta="Entrar en la lista" ctaHref="#reservar" extra={[{ href: '#reservar', label: 'Entrar en la lista' }]} />
+      <Nav
+        cta={PAGO ? 'Reservar mi plaza' : 'Entrar en la lista'}
+        ctaHref="#reservar"
+        extra={[{ href: '#reservar', label: PAGO ? 'Reservar mi plaza' : 'Entrar en la lista' }]}
+      />
 
       {/* HERO */}
       <div id="top" className="claro" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(88px,12vh,130px) clamp(14px,3vw,36px) clamp(30px,5vh,56px)', overflow: 'hidden' }}>
@@ -40,7 +71,7 @@ export default function Membresia() {
             <Reveal>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--acento)' }} />
-                Aún no ha abierto · lista de espera
+                {PAGO ? 'Reserva abierta · plazas de lanzamiento' : 'Aún no ha abierto · lista de espera'}
               </div>
             </Reveal>
             <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,5.8vw,78px),15vh)', fontFamily: 'var(--serif)', lineHeight: 0.99, letterSpacing: '-.026em', maxWidth: '15ch', textWrap: 'pretty' }}>
@@ -145,7 +176,7 @@ export default function Membresia() {
                   Solo las <b>{MEMBRESIA.plazasLanzamiento} primeras</b> personas
                 </span>
               ) : (
-                <span className="pv-cinta">Precio de lista de espera</span>
+                <span className="pv-cinta">{PAGO ? 'Precio de lanzamiento' : 'Precio de lista de espera'}</span>
               )}
 
               <div className="pv-cifra">
@@ -158,10 +189,13 @@ export default function Membresia() {
                 <span className="pv-badge">−{Math.round((ahorro / MEMBRESIA.precio) * 100)}%</span>
               </div>
 
+              {/* La primera cifra dice lo que sale de la cuenta HOY, y por eso
+                  cambia: con pago es el primer mes por adelantado, sin pago es
+                  cero. Es el número que más se mira de los tres. */}
               <div className="pv-cuentas">
                 <div>
-                  <b>0 €</b>
-                  <span>hoy</span>
+                  <b>{PAGO ? eur(MEMBRESIA.precioReserva) : '0 €'}</b>
+                  <span>{PAGO ? 'hoy, tu primer mes' : 'hoy'}</span>
                 </div>
                 <div>
                   <b>{eur(ahorro)}</b>
@@ -174,9 +208,21 @@ export default function Membresia() {
               </div>
 
               <p className="pv-cierre">
-                Hoy <strong>no se te cobra nada</strong>. Cuando abra, entras por {eur(MEMBRESIA.precioReserva)} en vez
-                de {eur(MEMBRESIA.precio)} — y sigues pagando {eur(MEMBRESIA.precioReserva)} el mes doce, y el
-                veinticuatro. <strong>El precio se queda contigo</strong>, no con la fecha.
+                {PAGO ? (
+                  <>
+                    Hoy pagas <strong>{eur(MEMBRESIA.precioReserva)}</strong>, que es tu primer mes dentro: con eso
+                    quedan guardadas tu plaza y tu precio. La comunidad{' '}
+                    <strong>abre el día de la cuenta atrás</strong> y ése es el mes que estás pagando. A partir de ahí,
+                    {' '}{eur(MEMBRESIA.precioReserva)} al mes en vez de {eur(MEMBRESIA.precio)} — y los sigues pagando
+                    el mes doce, y el veinticuatro. <strong>El precio se queda contigo</strong>, no con la fecha.
+                  </>
+                ) : (
+                  <>
+                    Hoy <strong>no se te cobra nada</strong>. Cuando abra, entras por {eur(MEMBRESIA.precioReserva)} en
+                    vez de {eur(MEMBRESIA.precio)} — y sigues pagando {eur(MEMBRESIA.precioReserva)} el mes doce, y el
+                    veinticuatro. <strong>El precio se queda contigo</strong>, no con la fecha.
+                  </>
+                )}
                 {MEMBRESIA.plazasLanzamiento ? (
                   <>
                     {' '}El grupo abre con <strong>{MEMBRESIA.plazasLanzamiento} personas</strong> porque cada mes
@@ -189,13 +235,28 @@ export default function Membresia() {
 
             <div style={{ height: 1, background: 'var(--linea)' }} />
 
+            {/* Con pago el formulario no cambia de forma: sigue pidiendo lo
+                mismo y guardando el correo ANTES de mandar a Stripe. Lo que
+                cambia son las palabras y que al terminar aparece el botón de
+                pagar. Ver el comentario de `pagoUrl` en LeadForm: quien se va a
+                pagar y no termina no puede desaparecer sin dejar rastro. */}
             <LeadForm
               origen="membresia"
               detalle={`Reserva a ${eur(MEMBRESIA.precioReserva)} (precio normal ${eur(MEMBRESIA.precio)})`}
-              cta={`Guardar mi precio de ${eur(MEMBRESIA.precioReserva)}`}
-              successTitle="Plaza reservada."
-              successText={`Te escribo en cuanto abra, con tu precio de ${eur(MEMBRESIA.precioReserva)} guardado. Si me dejaste el WhatsApp, te aviso también por ahí.`}
-              privacidad="No se cobra nada ahora. Te aviso cuando abra y nada más."
+              cta={PAGO ? 'Continuar' : `Guardar mi precio de ${eur(MEMBRESIA.precioReserva)}`}
+              successTitle={PAGO ? 'Ya te tengo. Falta el pago.' : 'Plaza reservada.'}
+              successText={
+                PAGO
+                  ? `Tu plaza queda guardada en cuanto pagues el primer mes. Son ${eur(MEMBRESIA.precioReserva)} y es el mes con el que entras el día que abrimos.`
+                  : `Te escribo en cuanto abra, con tu precio de ${eur(MEMBRESIA.precioReserva)} guardado. Si me dejaste el WhatsApp, te aviso también por ahí.`
+              }
+              privacidad={
+                PAGO
+                  ? 'El pago va por Stripe: esta web no ve ni guarda los datos de tu tarjeta.'
+                  : 'No se cobra nada ahora. Te aviso cuando abra y nada más.'
+              }
+              pagoUrl={PAGO}
+              pagoCta={`Pagar ${eur(MEMBRESIA.precioReserva)} y reservar mi plaza`}
               pedirNombre
               pedirWhatsapp
             />
@@ -288,7 +349,17 @@ export default function Membresia() {
           </div>
           <Reveal>
             <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '52ch' }}>
-              El contenido exacto se cierra antes de abrir. Quien esté en la lista lo recibe el primero, y decide entonces si entra o no.
+              {PAGO ? (
+                <>
+                  El contenido exacto se cierra antes de abrir, y quien tenga plaza lo recibe el primero.{' '}
+                  {/* Lo que pasa si alguien paga y se echa atrás. Ver el comentario
+                      de `devoluciones` en content/site.ts: mientras no esté
+                      decidido sale marcado en rojo, y tiene que verse. */}
+                  <Texto valor={MEMBRESIA.devoluciones} />
+                </>
+              ) : (
+                'El contenido exacto se cierra antes de abrir. Quien esté en la lista lo recibe el primero, y decide entonces si entra o no.'
+              )}
             </p>
           </Reveal>
         </div>
@@ -331,7 +402,7 @@ export default function Membresia() {
         <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 20 }}>
           <Reveal>
             <div style={{ fontSize: 'var(--t-seccion)', fontFamily: 'var(--serif)', lineHeight: 1.04, letterSpacing: '-.022em', maxWidth: '18ch', textWrap: 'pretty' }}>
-              Cuando abra, los de la lista entran primero.
+              {PAGO ? 'Diez plazas con este precio. Después, el normal.' : 'Cuando abra, los de la lista entran primero.'}
             </div>
           </Reveal>
           <Reveal delay={80}>
@@ -341,7 +412,11 @@ export default function Membresia() {
             </a>
           </Reveal>
           <Reveal delay={140}>
-            <span style={{ fontSize: 13, color: 'var(--tx-3)' }}>No se cobra nada hoy.</span>
+            <span style={{ fontSize: 13, color: 'var(--tx-3)' }}>
+              {PAGO
+                ? `Hoy pagas ${eur(MEMBRESIA.precioReserva)}: tu primer mes dentro.`
+                : 'No se cobra nada hoy.'}
+            </span>
           </Reveal>
         </div>
       </div>

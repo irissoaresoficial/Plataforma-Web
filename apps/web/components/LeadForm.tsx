@@ -35,6 +35,8 @@ export default function LeadForm({
   pedirNombre = true,
   pedirWhatsapp = false,
   variant = 'dark',
+  pagoUrl = '',
+  pagoCta = 'Pagar y reservar mi plaza',
 }: {
   origen: string;
   detalle?: string;
@@ -45,6 +47,19 @@ export default function LeadForm({
   pedirNombre?: boolean;
   pedirWhatsapp?: boolean;
   variant?: 'dark' | 'light';
+  /**
+   * Enlace de pago de Stripe. Si viene, después de guardar el correo el
+   * formulario no termina: enseña el botón de pagar.
+   *
+   * POR QUÉ EL FORMULARIO SIGUE ESTANDO, Y NO SE MANDA A STRIPE DIRECTAMENTE.
+   * Quien se va a Stripe y no termina de pagar —que es la mitad de la gente—
+   * desaparece: Stripe no nos cuenta nada de quien no paga, así que ese correo
+   * no llega a la plataforma de Iris y no se le puede escribir nunca más.
+   * Guardando primero, el correo está a salvo pase lo que pase después, y si
+   * alguien se queda a medio pago se le puede recordar.
+   */
+  pagoUrl?: string;
+  pagoCta?: string;
 }) {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -92,6 +107,21 @@ export default function LeadForm({
       >
         <span style={{ fontSize: 16, fontWeight: 600, color: dark ? '#7CC48A' : '#2F5D50' }}>{successTitle}</span>
         <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tx-2)' }}>{successText}</span>
+        {/* El correo va con el enlace para que Stripe no lo vuelva a pedir. Y
+            sobre todo para poder casar el pago con la persona: sin esto hay una
+            lista de correos por un lado y una lista de cobros por otro, y
+            cuadrarlas a mano es media hora cada semana. */}
+        {pagoUrl && (
+          <a
+            href={`${pagoUrl}${pagoUrl.includes('?') ? '&' : '?'}prefilled_email=${encodeURIComponent(email)}`}
+            data-mag
+            className={`pill ${dark ? 'pill-gold' : 'pill-dark'}`}
+            style={{ justifyContent: 'center', padding: '15px 20px', marginTop: 6 }}
+          >
+            <span>{pagoCta}</span>
+            <span className="pill-arrow">→</span>
+          </a>
+        )}
       </div>
     );
   }

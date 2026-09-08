@@ -23,6 +23,12 @@ import Pendiente from '@/components/Pendiente';
 const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
 const ANCHO = 1320;
 
+/* La portada enseña el precio de la membresía y tiene que decir lo mismo que la
+   página de la membresía: si allí reservar es pagar, aquí no puede seguir
+   poniendo «no cobra nada». Es la misma variable, así que no pueden separarse.
+   Ver el bloque grande de app/membresia/page.tsx. */
+const PAGO_MEMBRESIA = !!process.env.NEXT_PUBLIC_PAGO_MEMBRESIA;
+
 /** Rótulo de sección: línea fina + palabra pequeña. */
 function Rotulo({ children, claro = false }: { children: React.ReactNode; claro?: boolean }) {
   return (
@@ -392,20 +398,21 @@ export default function Home() {
                 condición, que es lo que de verdad es. */}
             <Reveal delay={180}>
               <div className="lanz-precio">
-                <span className="rotulo-dato">Precio de la lista</span>
+                <span className="rotulo-dato">{PAGO_MEMBRESIA ? 'Precio de lanzamiento' : 'Precio de la lista'}</span>
                 <span className="lanz-precio-fila">
                   <b>{eur(MEMBRESIA.precioReserva)}</b>
                   <s>{eur(MEMBRESIA.precio)}</s>
                   <i>al mes</i>
                 </span>
                 <span className="lanz-precio-nota">
-                  Lo mantienes mientras sigas dentro. Reservar ahora no cobra nada.
+                  Lo mantienes mientras sigas dentro.{' '}
+                  {PAGO_MEMBRESIA ? 'Reservar es pagar el primer mes.' : 'Reservar ahora no cobra nada.'}
                 </span>
               </div>
             </Reveal>
 
             <Reveal delay={230}>
-              <PillCTA href="/membresia" variant="dark" label={t.wl_cta.replace('{p}', eur(MEMBRESIA.precioReserva))} curLabel={t.csee} />
+              <PillCTA href="/membresia" variant="dark" label={(PAGO_MEMBRESIA ? t.wl_cta_pago : t.wl_cta).replace('{p}', eur(MEMBRESIA.precioReserva))} curLabel={t.csee} />
             </Reveal>
           </div>
         </div>
