@@ -26,7 +26,7 @@ export default function SeccionResumen() {
   const caminos = [
     { k: "origen" as const, etapa: "Origen", d: r.caminos.origen, rango: `0 – ${r.caminos.edadCambio} años` },
     { k: "transformacion" as const, etapa: "Transformación", d: r.caminos.transformacion, rango: "toda la vida" },
-    { k: "destino" as const, etapa: "Destino", d: r.caminos.destino, rango: `desde los ${r.turbulencias ? r.caminos.edadCambio + 10 : r.caminos.edadCambio} años` },
+    { k: "destino" as const, etapa: "Destino", d: r.caminos.destino, rango: `desde los ${r.turbulencias ? r.turbulencias.hasta : r.caminos.edadCambio} años` },
   ];
 
   // Los números que resumen la lectura. El primero va destacado, como la cifra

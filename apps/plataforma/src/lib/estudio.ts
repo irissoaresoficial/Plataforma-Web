@@ -14,7 +14,7 @@ import type { Resultado, ResultadoEmpresa } from "./engine";
 import { calcula, calculaEmpresa, conApuntes, ficha } from "./engine";
 import { refItems, type RefItem } from "./chips";
 import { CAMINO_EVOLUTIVO, KDATA, apuntesYaCargados, type Apuntes } from "./kdata";
-import { diccionario, rellena, segunGenero } from "./documento";
+import { diccionario, enumera, rellena, segunGenero } from "./documento";
 import type { CopiaEstudio, Diccionario, Idioma } from "./documento/tipos";
 import { COL } from "./tree";
 import { cierraFrase, frase, punto, sinClavesEscuela, sinPunto, titulo } from "./format";
@@ -195,8 +195,9 @@ function capitulosDe(r: Resultado, AP: Apuntes, lang: string): Capitulo[] {
         r.turbulencias
           ? rellena(T.arbolEdadTurbulencias, {
               edad: r.caminos.edadCambio,
-              tipos: r.turbulencias.lista.map((t) => D.turbulencias[t.tipo] || t.tipo.toLocaleLowerCase("es")).join(` ${D.hoja.y} `),
-              destino: r.caminos.edadCambio + 10,
+              anios: r.turbulencias.anios,
+              tipos: enumera(r.turbulencias.lista.map((t) => D.turbulencias[t.tipo] || t.tipo.toLocaleLowerCase("es")), D.hoja.y),
+              destino: r.turbulencias.hasta,
             })
           : rellena(T.arbolEdadSinTurbulencias, { edad: r.caminos.edadCambio })
       ),

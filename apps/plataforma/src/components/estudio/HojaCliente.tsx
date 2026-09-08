@@ -1,7 +1,7 @@
 "use client";
 import { css } from "@/lib/css";
 import type { Resultado } from "@/lib/engine";
-import { diccionario, lecturaDe, rellena, textoDeNumero, type Idioma } from "@/lib/documento";
+import { diccionario, enumera, lecturaDe, rellena, textoDeNumero, type Idioma } from "@/lib/documento";
 import { fechaLarga, frase, primerasFrases, sinPunto, titulo } from "@/lib/format";
 import { COL } from "@/lib/tree";
 import styles from "./Estudio.module.css";
@@ -32,7 +32,7 @@ export default function HojaCliente({ r, marca, idioma = "es" }: { r: Resultado;
   const T = D.hoja;
   const c = r.ciclos;
   const cicloActual = c.ciclos.find((x) => c.edad >= x.desde && (x.hasta === null || c.edad <= x.hasta)) || c.ciclos[c.ciclos.length - 1];
-  const entraDestino = r.turbulencias ? r.caminos.edadCambio + 10 : r.caminos.edadCambio;
+  const entraDestino = r.turbulencias ? r.turbulencias.hasta : r.caminos.edadCambio;
   const carta = (n: number | undefined) => (n === undefined ? undefined : D.arcanos[n]);
 
   // Los tres caminos, dichos como se los explicarías a alguien en una mesa, y
@@ -269,7 +269,8 @@ export default function HojaCliente({ r, marca, idioma = "es" }: { r: Resultado;
             <p style={css(APUNTE + "margin-top:2px;")}>
               {rellena(T.turbulencias, {
                 edad: r.caminos.edadCambio,
-                tipos: r.turbulencias.lista.map((t) => D.turbulencias[t.tipo] || t.tipo.toLocaleLowerCase("es")).join(` ${T.y} `),
+                anios: r.turbulencias.anios,
+                tipos: enumera(r.turbulencias.lista.map((t) => D.turbulencias[t.tipo] || t.tipo.toLocaleLowerCase("es")), T.y),
               })}
             </p>
           )}

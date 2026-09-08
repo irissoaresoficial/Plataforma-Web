@@ -36,7 +36,7 @@ export function DocArbol({ r, T, idioma = "es" }: { r: Resultado; T: CopiaEstudi
       k: "destino" as const,
       c: r.caminos.destino,
       etapa: T.digDestino,
-      rango: rellena(T.digDestinoRango, { edad: r.turbulencias ? r.caminos.edadCambio + 10 : r.caminos.edadCambio }),
+      rango: rellena(T.digDestinoRango, { edad: r.turbulencias ? r.turbulencias.hasta : r.caminos.edadCambio }),
     },
   ];
   return (

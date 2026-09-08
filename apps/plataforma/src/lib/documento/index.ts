@@ -82,6 +82,22 @@ export function diccionario(idioma: Idioma | undefined | null): Diccionario {
   return (idioma && DICCIONARIOS[idioma]) || ES;
 }
 
+/**
+ * Enumerar en cristiano: «espíritu, alma y materia».
+ *
+ * Se hacía con un `join(" y ")` y salía «espíritu y alma y materia», que en el
+ * documento que se le entrega a alguien se lee como un fallo de programa — y lo
+ * era. Con dos elementos no cambia nada; con tres o más, la coma hace el
+ * trabajo y la conjunción se queda sólo para el último.
+ *
+ * La conjunción se pasa desde fuera porque en inglés es «and» y en portugués
+ * «e»: aquí no puede haber una «y» escrita a mano.
+ */
+export function enumera(lista: string[], y: string): string {
+  if (lista.length <= 1) return lista[0] ?? "";
+  return lista.slice(0, -1).join(", ") + " " + y + " " + lista[lista.length - 1];
+}
+
 /** Mete los datos en los huecos de una frase: `{edad}`, `{n}`, `{lista}`. Lo
  *  que no se le pase se queda como está, que canta y se ve. */
 export function rellena(plantilla: string, datos: Record<string, string | number>): string {

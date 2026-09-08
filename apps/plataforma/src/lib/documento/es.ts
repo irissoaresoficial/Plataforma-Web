@@ -94,7 +94,7 @@ const HOJA: CopiaHoja = {
   anioPersonal:
     "Dentro de ella vas por el año {n} de una rueda que se repite cada nueve. Lo que toca este año no es lo que tocará el siguiente: por eso la carta se mira de vez en cuando, no una sola vez.",
   turbulencias:
-    "A los {edad} empiezan diez años movidos en {tipos}: el cambio de camino no es de golpe, se cuece durante esa década.",
+    "A los {edad} empiezan {anios} años movidos en {tipos}: el cambio de camino no es de golpe, se cuece durante ese tiempo.",
 
   diasFuerza: "Tus días de fuerza",
   diasFuerzaPie:
@@ -204,7 +204,7 @@ const ESTUDIO: CopiaEstudio = {
     "Tu alma elige tres caminos en el árbol de la vida: tres energías que has venido a aprender, a manejar y a comprender. El camino de origen te acompaña desde que naces hasta tu edad de cambio y es lo que sabes de otras vidas. El camino de transformación nace y muere contigo: es tu manera de vivir. El camino de destino es hacia dónde quiere llevarte tu alma.",
   arbolEdadLabel: "Edad de cambio",
   arbolEdadTurbulencias:
-    "A los {edad} años comienzan diez años de turbulencias en {tipos}. No tomarás el camino de destino hasta los {destino} años.",
+    "A los {edad} años comienzan {anios} años de turbulencias en {tipos}. No tomarás el camino de destino hasta los {destino} años.",
   arbolEdadSinTurbulencias: "A los {edad} años se produce el cambio que te lleva a tomar tu camino de destino.",
 
   caminosKicker: "Sesión 1 · Tus caminos",

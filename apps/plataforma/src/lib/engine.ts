@@ -545,7 +545,32 @@ function ciclosVitales(f: Fecha, anioUniversal?: number): CiclosVitales {
   };
 }
 
-export type Turbulencias = { lista: Array<{ tipo: string; causa: string; texto: string }>; desde: number; hasta: number } | null;
+export type Turbulencias = {
+  lista: Array<{ tipo: string; causa: string; texto: string }>;
+  desde: number;
+  hasta: number;
+  /** Cuántos años duran en total. Diez por cada turbulencia. */
+  anios: number;
+} | null;
+
+/**
+ * LOS AÑOS DE TURBULENCIAS.
+ *
+ * Regla de Iris, con sus palabras (8 de septiembre de 2026): «cuando una
+ * persona tiene 0 en su fecha atraviesa 10 años de turbulencias», y son
+ * ACUMULATIVOS — «en la fecha 10-10-1970 son 10+10+10, o sea que hasta los 49
+ * no saldría de las turbulencias».
+ *
+ * AQUÍ HABÍA UN FALLO Y ERA GORDO. Se sumaban diez años fijos hubiera una
+ * turbulencia o tres, así que a alguien nacido el 10/10/1970 la plataforma le
+ * decía que salía de la tormenta a los 29 cuando sale a los 49: veinte años de
+ * diferencia, en el dato que decide a qué edad toma su camino de destino. Y no
+ * se notaba, porque el número que salía era perfectamente creíble.
+ *
+ * Empiezan en la edad de cambio, no en el nacimiento: «empezarán a partir de su
+ * edad de cambio». Con su ejemplo, cambio a los 19 y 30 años de turbulencias →
+ * hasta los 49, que es exactamente lo que ella dice.
+ */
 function turbulencias(f: Fecha, edadCambio: number): Turbulencias {
   const t: Array<{ tipo: string; causa: string; texto: string }> = [];
   const dia = Number(f.dia),
@@ -570,7 +595,8 @@ function turbulencias(f: Fecha, edadCambio: number): Turbulencias {
       texto: "En la vida pasada hubo atrapamiento en los miedos de la materia: la seguridad económica como fin en sí mismo. Diez años para revisar el enfoque racional y pragmático de la materia.",
     });
   if (!t.length) return null;
-  return { lista: t, desde: edadCambio, hasta: edadCambio + 10 };
+  const anios = 10 * t.length;
+  return { lista: t, desde: edadCambio, hasta: edadCambio + anios, anios };
 }
 
 /**

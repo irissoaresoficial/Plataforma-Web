@@ -78,7 +78,7 @@ export const PT: Diccionario = {
     anioPersonal:
       "Dentro dela vais no ano {n} de uma roda que se repete de nove em nove. O que toca este ano não é o que tocará no seguinte: é por isso que a carta se vê de vez em quando, e não uma só vez.",
     turbulencias:
-      "Aos {edad} começam dez anos mexidos em {tipos}: a mudança de caminho não é de repente, coze-se durante essa década.",
+      "Aos {edad} começam {anios} anos mexidos em {tipos}: a mudança de caminho não é de repente, coze-se durante esse tempo.",
 
     diasFuerza: "Os teus dias de força",
     diasFuerzaPie:
@@ -192,7 +192,7 @@ export const PT: Diccionario = {
       "A tua alma escolhe três caminhos na árvore da vida: três energias que vieste aprender, gerir e compreender. O caminho de origem acompanha-te desde que nasces até à tua idade de mudança e é o que sabes de outras vidas. O caminho de transformação nasce e morre contigo: é a tua maneira de viver. O caminho de destino é para onde a tua alma te quer levar.",
     arbolEdadLabel: "Idade de mudança",
     arbolEdadTurbulencias:
-      "Aos {edad} anos começam dez anos de turbulências em {tipos}. Não tomarás o caminho de destino até aos {destino} anos.",
+      "Aos {edad} anos começam {anios} anos de turbulências em {tipos}. Não tomarás o caminho de destino até aos {destino} anos.",
     arbolEdadSinTurbulencias: "Aos {edad} anos dá-se a mudança que te leva a tomar o teu caminho de destino.",
 
     caminosKicker: "Sessão 1 · Os teus caminhos",

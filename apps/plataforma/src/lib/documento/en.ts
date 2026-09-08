@@ -75,7 +75,7 @@ export const EN: Diccionario = {
     anioPersonal:
       "Inside it you are in year {n} of a wheel that comes round every nine. What this year asks of you is not what the next one will ask: that is why the chart gets looked at every so often, not just once.",
     turbulencias:
-      "At {edad} ten choppy years begin in {tipos}: the change of path is not sudden, it brews over that decade.",
+      "At {edad}, {anios} choppy years begin in {tipos}: the change of path is not sudden, it brews over that time.",
 
     diasFuerza: "Your days of strength",
     diasFuerzaPie:
@@ -184,7 +184,7 @@ export const EN: Diccionario = {
       "Your soul chooses three paths on the tree of life: three energies you came to learn, to handle and to understand. The path of origin is with you from birth until your age of change, and it is what you know from other lives. The path of transformation is born and dies with you: it is your way of living. The path of destiny is where your soul wants to take you.",
     arbolEdadLabel: "Age of change",
     arbolEdadTurbulencias:
-      "At {edad} ten turbulent years begin in {tipos}. You will not take the path of destiny until you are {destino}.",
+      "At {edad}, {anios} turbulent years begin in {tipos}. You will not take the path of destiny until you are {destino}.",
     arbolEdadSinTurbulencias: "At {edad} comes the change that takes you onto your path of destiny.",
 
     caminosKicker: "Session 1 · Your paths",
