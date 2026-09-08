@@ -52,14 +52,27 @@ export default function Legal() {
 
       <h2>Reservas, pagos y cancelaciones</h2>
       <ul>
-        <li>Una reserva queda hecha cuando recibes el correo de confirmación con el enlace de la sesión.</li>
+        {/* Mientras no haya enlace de pago, esta condición no se puede aplicar y
+            por tanto no se escribe: unas condiciones que la propia web no cumple
+            valen menos que no tenerlas. Se enciende sola con la variable
+            NEXT_PUBLIC_PAGO_SESION, la misma que usa el agente del chat. */}
+        {process.env.NEXT_PUBLIC_PAGO_SESION ? (
+          <li>
+            <strong>La sesión se paga al reservar.</strong> El enlace de pago te llega junto con la
+            invitación, y la reserva queda cerrada cuando el pago está hecho: hasta entonces esa hora
+            sigue disponible para otra persona.
+          </li>
+        ) : (
+          <li>Una reserva queda hecha cuando recibes el correo de confirmación con el enlace de la sesión.</li>
+        )}
         <li>
-          Los cobros de cursos se hacen a través de Stripe. Esta web no guarda ni ve los datos de tu
-          tarjeta en ningún momento.
+          Los cobros se hacen a través de Stripe. Esta web no guarda ni ve los datos de tu tarjeta en
+          ningún momento.
         </li>
         <li>
-          Puedes cambiar o cancelar una sesión avisando con al menos <strong>24 horas</strong> de
-          antelación, escribiendo a {CONTACTO.email}.
+          Puedes <strong>cambiar el día de tu sesión</strong> avisando con al menos{' '}
+          <strong>24 horas</strong> de antelación, escribiendo a {CONTACTO.email}. Con menos de 24
+          horas de aviso, la hora se da por dada.
         </li>
         <li>
           Si tienes derecho de desistimiento como consumidor, dispones de 14 días naturales desde la

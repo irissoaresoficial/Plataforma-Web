@@ -60,6 +60,21 @@ export function leerFecha(texto: string): string | null {
   return a > 31 ? arma(c, b, a) : arma(a, b, c);
 }
 
+/**
+ * ¿Hay ya un enlace de pago de Stripe puesto?
+ *
+ * De esto depende UNA SOLA FRASE del agente, la que dice que la sesión se paga
+ * al reservar. Y depende porque esa frase promete un enlace: si todavía no
+ * existe, la persona se queda esperando un correo que no va a llegar y lo que
+ * parecía una condición seria se convierte en la primera cosa que no cumplimos.
+ *
+ * En cuanto se ponga `NEXT_PUBLIC_PAGO_SESION` en Vercel (y el mismo enlace en
+ * `PAGO_URL` del script de reservas, que es quien manda el correo), la frase
+ * aparece sola. Hasta entonces el agente sólo cuenta la regla de las 24 horas,
+ * que sí se puede cumplir hoy.
+ */
+const PAGO_ACTIVO = !!process.env.NEXT_PUBLIC_PAGO_SESION;
+
 /** Lo que dice el agente al ver la fecha. Numerología de verdad, no relleno. */
 export function lecturaDe(fechaISO: string): string | null {
   const c = caminoDeVida(fechaISO);
@@ -409,6 +424,29 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
         bot([lectura, next.ask], 820);
         return;
       }
+    }
+
+    /*
+     * LAS CONDICIONES, ANTES DE DAR EL CORREO.
+     *
+     * Van aquí y no sólo en el aviso legal por un motivo de Iris: «si no
+     * hacemos unas condiciones de cancelación, se la pasan por el forro». Y
+     * tiene razón — nadie abre el aviso legal antes de pedir cita. El único
+     * sitio por el que hay que pasar sí o sí es esta conversación.
+     *
+     * Y van DESPUÉS de elegir día y hora, no antes: quien todavía no ha visto
+     * un hueco no tiene nada que aceptar, y abrir con «se paga y si no avisas
+     * la pierdes» espanta antes de haber ofrecido nada. Aquí ya hay una hora
+     * concreta encima de la mesa y la persona la quiere.
+     *
+     * Dos mensajes seguidos: la cola se encarga de que el segundo no pise al
+     * primero. El número es sólo lo que el agente «piensa» antes de empezar, y
+     * aquí es más largo a propósito: son condiciones, y soltarlas al instante
+     * se lee como letra pequeña metida de tapadillo.
+     */
+    if (cur.key === 'hora') {
+      bot([PAGO_ACTIVO ? t.ch_cond_pago : t.ch_cond, next.ask], 1200);
+      return;
     }
 
     bot(next.ask.replace('{n}', next.first ? val.split(' ')[0] : val), 740);

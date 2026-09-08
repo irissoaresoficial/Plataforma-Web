@@ -121,6 +121,21 @@ var CONFIG = {
   // Enlace fijo de la videollamada (Meet, Zoom…). Déjalo vacío si lo mandas a mano.
   MEETING_URL: '',
 
+  /*
+   * ENLACE DE PAGO DE LA SESIÓN (el «payment link» de Stripe).
+   *
+   * Iris lo pidió así: «cuando hagan la reserva ya tienen que hacer el pago»,
+   * porque sin pago por delante la gente falla a última hora y esa hora ya no
+   * se le puede dar a nadie.
+   *
+   * MIENTRAS ESTÉ VACÍO, el correo de confirmación no habla de pagar. Es a
+   * propósito: prometer un enlace que no llega es peor que no prometer nada —
+   * quien lo lea se pondrá a buscar un correo que no existe. En cuanto se pegue
+   * aquí el enlace de Stripe, el bloque de pago sale solo en todas las
+   * confirmaciones, sin tocar nada más.
+   */
+  PAGO_URL: '',
+
   // Huecos que se ofrecen cada día laborable, en hora española.
   HOURS: ['10:00', '12:30', '16:00', '18:30'],
 
@@ -337,7 +352,28 @@ function notifyClient(b, start) {
     (CONFIG.MEETING_URL ? '<br><b>Enlace:</b> <a href="' + CONFIG.MEETING_URL + '">' + CONFIG.MEETING_URL + '</a>' : '') +
     '</p>' +
     '<p>Te ha llegado también la invitación del calendario: acéptala y la cita se te guarda sola.</p>' +
-    '<p>Si te surge algo y necesitas cambiar el día, respóndeme a este correo.</p>' +
+    /*
+     * EL PAGO, EN UN RECUADRO Y CON SU BOTÓN.
+     *
+     * En medio de un párrafo se pasa por alto. Y si no hay enlace todavía, no
+     * se dice nada de pagar: ver «PAGO_URL» arriba.
+     */
+    (CONFIG.PAGO_URL
+      ? '<div style="border:1px solid #e6e0d6;border-radius:14px;padding:18px 20px;margin:22px 0">' +
+        '<p style="margin:0 0 10px"><b>Falta un paso: el pago de la sesión.</b> Tu hora queda cerrada en cuanto lo hagas; hasta entonces sigue disponible para otra persona.</p>' +
+        '<p style="margin:0"><a href="' + CONFIG.PAGO_URL + '" style="display:inline-block;background:#6b1f2e;color:#fff;text-decoration:none;border-radius:999px;padding:11px 24px;font-weight:600">Pagar mi sesión</a></p>' +
+        '</div>'
+      : '') +
+    /*
+     * LA REGLA DE LAS 24 HORAS, DICHA AQUÍ Y NO SÓLO EN EL AVISO LEGAL.
+     *
+     * Es de Iris, con estas palabras: «si no hacemos unas condiciones de
+     * cancelación, se la pasan por el forro». Este correo es lo que la persona
+     * tiene guardado el día que le surge algo, así que es donde tiene que
+     * estar escrito. Se dice ofreciendo el cambio primero y la condición
+     * después: es la misma información y no suena a amenaza.
+     */
+    '<p><b>¿Te surge algo?</b> Puedes cambiar el día respondiendo a este correo, siempre que me avises con <b>24 horas de antelación</b>. Con menos de 24 horas ya no puedo darle esa hora a nadie, así que se da por dada.</p>' +
     '<p style="font-size:12px;color:#8a8a92;margin-top:24px">Las sesiones no son un tratamiento médico ni psicológico y no sustituyen a ninguno.</p>' +
     '</div>';
 
