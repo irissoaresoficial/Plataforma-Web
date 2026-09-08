@@ -3933,3 +3933,36 @@ body[data-nav-claro='si'] .sello-color {
     justify-self: center;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   LOS ENLACES DE LA PÁGINA, EN EL PIE DEL MENÚ
+
+   Mismo sitio y mismo tono que el idioma y el aviso legal: son cosas de apoyo,
+   no destinos. Arriba, en la lista numerada, sólo van los cuatro sitios a los
+   que se puede ir.
+   --------------------------------------------------------------------------- */
+.menu-pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.menu-pagina > span {
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+.menu-pagina div {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.menu-pagina a {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--tx-2);
+}
+.menu-pagina a:hover {
+  color: var(--oro-tinta);
+}

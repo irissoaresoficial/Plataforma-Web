@@ -68,7 +68,24 @@ export default function Nav({
     { href: '/cursos', label: 'Cursos y talleres' },
     { href: '/membresia', label: 'La comunidad' },
   ];
-  const enlaces = [...extra, ...fijos];
+  /*
+   * LA LISTA GRANDE SON CUATRO. SIEMPRE CUATRO.
+   *
+   * Antes se le pegaban delante los enlaces sueltos de cada página —«Cómo
+   * funciona», «Dudas»— y el menú salía con seis, numerados del 01 al 06. Con
+   * seis pasan dos cosas: el número deja de ayudar (nadie cuenta hasta seis en
+   * un menú) y, sobre todo, los cuatro sitios a los que se puede IR quedan
+   * mezclados con dos saltos dentro de la página en la que ya estás. No es lo
+   * mismo «llévame a los cursos» que «bájame a las dudas», y una lista que los
+   * pone al mismo nivel obliga a leerlos todos para distinguirlos.
+   *
+   * Ahora arriba van los cuatro destinos y nada más. Los de la página bajan al
+   * pie del menú, con su rótulo, donde se entiende de un vistazo que son otra
+   * cosa. Y el tope no depende de que nadie se pase: la lista grande es
+   * `fijos`, así que aunque una página mande cinco enlaces sueltos, arriba
+   * siguen saliendo cuatro.
+   */
+  const enlaces = fijos;
 
   return (
     <>
@@ -130,6 +147,31 @@ export default function Nav({
           </ul>
 
           <div className="menu-pie">
+            {extra.length > 0 && (
+              <div className="menu-pagina">
+                <span>En esta página</span>
+                <div>
+                  {extra.map((l) =>
+                    l.href.startsWith('#') ? (
+                      <a
+                        key={l.href + l.label}
+                        href={l.href}
+                        onClick={() => {
+                          setAbierto(false);
+                          l.onClick?.();
+                        }}
+                      >
+                        {l.label}
+                      </a>
+                    ) : (
+                      <Link key={l.href + l.label} href={l.href} onClick={() => setAbierto(false)}>
+                        {l.label}
+                      </Link>
+                    ),
+                  )}
+                </div>
+              </div>
+            )}
             {conIdiomas && (
               <div className="menu-idiomas">
                 <span>Idioma</span>

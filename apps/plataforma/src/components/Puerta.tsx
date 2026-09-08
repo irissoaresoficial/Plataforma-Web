@@ -74,7 +74,7 @@ export default function Puerta() {
         transition={{ duration: 0.7, ease: CURVA }}
       >
         <div className="puerta-sello">
-          <Image src="/logo-33-blanco.png" alt="" width={62} height={62} priority />
+          <Image src="/flor-de-lis.png" alt="" width={62} height={62} priority />
           <span className="puerta-marca">Escuela de Sabiduría 33</span>
         </div>
 

@@ -15,8 +15,21 @@ export const PENDIENTE = 'PENDIENTE';
  * LOGO_COLOR va sobre el papel blanco del informe: conserva los colores.
  * Si falta el archivo, la página y el informe salen igual, solo que sin símbolo.
  */
-export const LOGO = '/images/logo-33-blanco.png';
-export const LOGO_COLOR = '/images/logo-33.png';
+/*
+ * LA FLOR DE LIS DORADA es el icono oficial de Iris, y va sola en los dos
+ * sitios: sobre el papel y sobre el granate.
+ *
+ * Antes eran dos archivos —uno en color y otro en blanco— porque el sello
+ * antiguo se perdía sobre el granate del pie. El dorado no tiene ese problema:
+ * es EL color que la casa usa sobre granate (los botones del bloque de la
+ * membresía son exactamente eso), así que se lee igual de bien en los dos
+ * fondos y no hay dos versiones que puedan acabar diciendo cosas distintas.
+ *
+ * Las dos constantes se quedan porque `Marca` sabe pedir una u otra según el
+ * fondo, y el día que haya una versión de una tinta se cambia sólo aquí.
+ */
+export const LOGO = '/images/flor-de-lis.png';
+export const LOGO_COLOR = '/images/flor-de-lis.png';
 
 /**
  * FOTOS DE IRIS

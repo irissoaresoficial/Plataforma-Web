@@ -181,9 +181,11 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
           LA BANDA. Es lo que da el peso de arriba y lo que hace que se sepa qué
           papel es éste antes de leer nada.
 
-          El logo va en blanco sobre el granate —`logo-33-blanco.png`, que existe
-          justamente para esto— y no el redondo de color: sobre vino oscuro, la
-          foto recortada en círculo se lee como una pegatina pegada encima.
+          El icono es la flor de lis dorada, que es el oficial de Iris. Sobre el
+          granate se lee sin necesitar una versión aparte en blanco: el dorado
+          ES el color que la casa usa sobre vino. Antes había un sello redondo
+          de color que, sobre vino oscuro, se leía como una pegatina pegada
+          encima.
       */}
       <div
         style={css(
@@ -196,7 +198,7 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
       >
         <div style={css("display:flex;align-items:center;gap:13px;flex:1 1 220px;min-width:0;")}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-33-blanco.png" alt="" style={css("width:44px;height:44px;flex:none;object-fit:contain;opacity:.95;")} />
+          <img src="/flor-de-lis.png" alt="" style={css("width:44px;height:44px;flex:none;object-fit:contain;opacity:.95;")} />
           <div style={css("min-width:0;")}>
             <div style={css("font-family:var(--font-display);font-size:17px;font-weight:500;line-height:1.2;letter-spacing:-.01em;")}>
               {marca}
