@@ -4,7 +4,7 @@ import { css } from "@/lib/css";
 import { BOTON_NORMAL, botonPrincipal } from "@/lib/ui";
 import { useApp } from "@/lib/app-context";
 import { construyeCapitulos, construyeCapitulosEmpresa, resultadoEnIdioma } from "@/lib/estudio";
-import { imprimir, AYUDA_IMPRIMIR, AYUDA_SIN_CABECERAS } from "@/lib/imprimir";
+import { useExportar, AVISO_SIN_DIALOGO, AYUDA_SIN_CABECERAS } from "@/lib/imprimir";
 import { cargaApuntes } from "@/lib/kdata";
 import { EN_ESPANOL, IDIOMAS, diccionario, type Idioma } from "@/lib/documento";
 import { useIdiomaDocumento } from "@/lib/documento/idioma";
@@ -25,6 +25,11 @@ export default function EstudioScreen() {
      es el documento que se entrega. Se recuerda de una sesión a otra: quien
      atiende sobre todo a clientela portuguesa lo pone una vez. */
   const [idioma, setIdioma] = useIdiomaDocumento();
+  /* Exportar: el botón, el aviso de que el diálogo no ha salido y el consejo
+     que toca según el aparato. Los tres botones de exportar de la plataforma
+     —estudio, pareja y factura— usan esta misma pieza, para que en la tablet
+     los tres digan lo mismo en vez de quedarse callados dos de ellos. */
+  const { exporta, sinDialogo, trasPulsar, ayuda } = useExportar();
 
   /*
    * LOS APUNTES DEL IDIOMA SE PIDEN ANTES DE ARMAR EL ESTUDIO.
@@ -189,7 +194,12 @@ export default function EstudioScreen() {
             </Confirmar>
           )}
           <button
-            onClick={() => imprimir()}
+            /* Si el navegador no ha podido abrir el diálogo, hay que DECIRLO.
+               Antes se ignoraba lo que devuelve `imprimir()` y el botón se
+               quedaba mudo — que es exactamente lo que pasaba en la tablet: se
+               pulsaba, no ocurría nada, y no había forma de saber si el fallo
+               era del botón, del documento o del aparato. */
+            onClick={exporta}
             style={css(botonPrincipal())}
           >
             {hoja ? "Exportar la hoja" : "Exportar PDF"}
@@ -210,7 +220,20 @@ export default function EstudioScreen() {
           </svg>
           {AYUDA_SIN_CABECERAS}
         </span>
-        <span style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--text-4);")}>{AYUDA_IMPRIMIR}</span>
+        {/* En un aparato de Apple la ruta de Compartir no es el plan B: muchas
+            veces es el único. Por eso la ayuda que se enseña depende de dónde
+            se está, en vez de ser la misma frase para todos. */}
+        <span style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--text-4);")}>{ayuda}</span>
+        {sinDialogo && (
+          <span role="alert" style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--red);")}>
+            {AVISO_SIN_DIALOGO}
+          </span>
+        )}
+        {trasPulsar && (
+          <span role="status" style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--text-3);")}>
+            {trasPulsar}
+          </span>
+        )}
         {/* Mientras se descargan los apuntes del idioma. Son 292 KB y en una
             conexión lenta se nota; sin decir nada, el documento se quedaría un
             momento en español y parecería que el selector no funciona. */}

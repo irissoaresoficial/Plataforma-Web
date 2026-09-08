@@ -2,7 +2,7 @@
 import { css } from "@/lib/css";
 import { botonPrincipal } from "@/lib/ui";
 import { titulo } from "@/lib/format";
-import { imprimir, AYUDA_IMPRIMIR } from "@/lib/imprimir";
+import { useExportar, AVISO_SIN_DIALOGO } from "@/lib/imprimir";
 import { useApp, valida } from "@/lib/app-context";
 import { KDATA } from "@/lib/kdata";
 import Particulas from "../Particulas";
@@ -10,6 +10,9 @@ import Pendiente from "../panel/Pendiente";
 
 export default function ParejaScreen() {
   const { r, re, p, setP, comparar, pr, comp } = useApp();
+  /* Va aquí arriba, antes del `return` de más abajo: un hook no puede quedarse
+     sin llamar según lo que haya en pantalla. */
+  const { exporta, sinDialogo, trasPulsar, ayuda } = useExportar();
   // La comparativa cruza estructuras, planos y cuentas, y todo eso sale de la
   // fecha de nacimiento. Una empresa no la tiene, así que no hay nada que
   // cruzar: mejor decirlo que dejar la pantalla en blanco.
@@ -135,9 +138,9 @@ botonPrincipal(listo) + "margin-top:20px;"
           {/* La comparativa también se entrega: se imprime como el estudio, y
            * al imprimir desaparecen el formulario y la navegación. */}
           <div data-chrome="1" style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;")}>
-            <span style={css("font-size:var(--t-mini);color:var(--text-4);")}>{AYUDA_IMPRIMIR}</span>
+            <span style={css("font-size:var(--t-mini);color:var(--text-4);")}>{ayuda}</span>
             <button
-              onClick={() => imprimir()}
+              onClick={exporta}
               style={css(
                 /* Granate: es EL botón de esta pantalla, y en una pantalla
                    blanca sólo hay uno. Levantado del papel como las tarjetas. */
@@ -146,6 +149,18 @@ botonPrincipal(listo) + "margin-top:20px;"
             >
               Exportar PDF
             </button>
+            {/* Después del botón y en su propia línea: si sale, es porque se ha
+                pulsado y no ha pasado nada, y ahí hace falta leerlo entero. */}
+            {sinDialogo && (
+              <span role="alert" style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--red);")}>
+                {AVISO_SIN_DIALOGO}
+              </span>
+            )}
+            {trasPulsar && (
+              <span role="status" style={css("flex-basis:100%;font-size:var(--t-mini);color:var(--text-3);")}>
+                {trasPulsar}
+              </span>
+            )}
           </div>
           <div
             style={css(

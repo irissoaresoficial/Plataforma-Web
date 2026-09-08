@@ -31,7 +31,7 @@ import { useCallback, useEffect, useState } from "react";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
-import { imprimir, AYUDA_IMPRIMIR } from "@/lib/imprimir";
+import { useExportar, AVISO_SIN_DIALOGO } from "@/lib/imprimir";
 import {
   clientes as repoClientes,
   facturas as repoFacturas,
@@ -108,6 +108,9 @@ const COLOR_ESTADO: Record<Factura["estado"], string> = {
 export default function FacturasScreen() {
   const { marca, setView, setClienteAbierto, facturaAbierta, setFacturaAbierta, recado, setRecado } = useApp();
 
+  /* Descargar la factura es imprimir, igual que el estudio: misma pieza, mismo
+     aviso si el navegador no abre el diálogo. */
+  const { exporta, sinDialogo, trasPulsar, ayuda } = useExportar();
   const [lista, setLista] = useState<Factura[]>([]);
   const [gente, setGente] = useState<Cliente[]>([]);
   const [abierta, setAbierta] = useState<Factura | null>(null);
@@ -534,7 +537,7 @@ export default function FacturasScreen() {
               <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;")}>
                 {/* La única mancha de granate: descargarla es a lo que se
                     viene aquí una vez emitida. */}
-                <button onClick={() => imprimir()} style={css(botonPrincipal())}>
+                <button onClick={exporta} style={css(botonPrincipal())}>
                   Descargar la factura
                 </button>
                 {abierta.estado === "emitida" && !anulando && (
@@ -578,7 +581,17 @@ export default function FacturasScreen() {
                 </div>
               )}
 
-              <p style={css(NOTA + "margin:var(--s4) 0 0;line-height:1.5;")}>{AYUDA_IMPRIMIR}</p>
+              <p style={css(NOTA + "margin:var(--s4) 0 0;line-height:1.5;")}>{ayuda}</p>
+              {sinDialogo && (
+                <p role="alert" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--red);")}>
+                  {AVISO_SIN_DIALOGO}
+                </p>
+              )}
+              {trasPulsar && (
+                <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-3);")}>
+                  {trasPulsar}
+                </p>
+              )}
               {mensaje && (
                 <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-2);")}>
                   {mensaje}
