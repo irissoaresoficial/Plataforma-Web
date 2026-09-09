@@ -49,9 +49,17 @@ import LeadForm from '@/components/LeadForm';
  * caja donde dejar el correo. Todo lo demás se cuenta el día que abra, que es
  * cuando la persona sí está dispuesta a leer.
  *
- * LA HONESTIDAD NO SE PIERDE, SE CONDENSA. «Todavía no existe» y «hoy no se
- * paga nada» siguen estando, en dos líneas de siete palabras, arriba y a la
- * vista. Antes ocupaban cuatro párrafos y decían exactamente lo mismo.
+ * Y LO QUE QUEDA ESCRITO ES AFIRMATIVO. La primera versión corta decía
+ * «Todavía no existe. Hoy no se paga nada», que suena honesto y es un error:
+ * lo primero ya lo dice la chapa de «Próximamente», y lo segundo contesta a una
+ * objeción que nadie se había planteado — nadie llega a un cartel de
+ * próximamente temiendo que le cobren, y al decirlo se le mete la idea del pago
+ * donde no estaba.
+ *
+ * En su sitio va lo que gana quien deje el correo hoy: que la comunidad abre
+ * pequeña y las primeras deciden qué se trabaja dentro. Eso sí es un motivo, y
+ * además es verdad — el grupo abre con diez personas porque cada mes se revisa
+ * un caso en voz alta.
  *
  * ---------------------------------------------------------------------------
  * SI ALGÚN DÍA VUELVE EL PRECIO
@@ -94,8 +102,18 @@ export default function Membresia() {
           </Reveal>
 
           {/* La página entera, en dos líneas. La primera dice de qué va; la
-              segunda es la condición, y va marcada porque es la que hace que
-              esto sea honesto y no un cartel de humo. */}
+              segunda es el motivo para dejar el correo HOY y no en noviembre.
+
+              AQUÍ PONÍA «Todavía no existe. Hoy no se paga nada.» y estaba mal
+              por dos razones. Una: lo de que no existe ya lo dice la chapa de
+              «Próximamente» que está tres centímetros más arriba, así que era
+              repetirse. Y dos, la importante: «hoy no se paga nada» contesta a
+              una objeción que nadie se ha planteado. Nadie llega a un cartel de
+              próximamente temiendo que le cobren — y al decirlo, se le mete la
+              idea del pago en la cabeza justo donde no estaba.
+
+              Lo que sí hay que decir es qué gana quien entre primero. Eso no es
+              defenderse: es dar un motivo. */}
           <Reveal delay={140}>
             <p className="com-linea">
               Un grupo pequeño. Cada mes, una parte de tu historia familiar.
@@ -103,7 +121,7 @@ export default function Membresia() {
           </Reveal>
 
           <Reveal delay={190}>
-            <p className="com-condicion">Todavía no existe. Hoy no se paga nada.</p>
+            <p className="com-condicion">Las primeras deciden conmigo qué se trabaja dentro.</p>
           </Reveal>
 
           {/* --------------------------------------------------- LA CAJA
@@ -113,14 +131,14 @@ export default function Membresia() {
               que se vea sin leer nada. */}
           <Reveal delay={240}>
             <div id="avisar" className="com-caja">
-              <p className="com-caja-titulo">Te aviso el día que abra</p>
+              <p className="com-caja-titulo">Te aviso antes que a nadie</p>
               <LeadForm
                 origen="membresia"
                 detalle="Aviso de apertura de la comunidad"
                 cta="Avisadme"
                 variant="dark"
                 successTitle="Hecho. Te aviso yo."
-                successText="Cuando abra te escribo, y serás de las primeras en saber qué hay dentro."
+                successText="Te escribo yo antes de abrir, y te pregunto qué quieres trabajar dentro."
                 privacidad="Sólo lo guardo para avisarte de esto. Te sales cuando quieras."
                 pedirNombre={false}
                 pedirWhatsapp

@@ -253,7 +253,7 @@ export default function Cursos() {
                     que te avisan a ti antes que a nadie. Prometer un precio que
                     ya no existe sería lo peor que puede hacer esta línea. */}
                 <span style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '40ch' }}>
-                  Abre el {abre}. Todavía no se cobra nada: deja tu correo y te aviso yo el día que la abra.
+                  Abre el {abre}, y abre pequeña. Deja tu correo y te aviso antes que a nadie.
                 </span>
               </div>
               <Link href="/membresia" data-mag data-cur-label="Ver" className="pill pill-cream">

@@ -490,10 +490,10 @@ export default function Home() {
                 historial y `MEMBRESIA.precioReserva` lo enciende otra vez. */}
             <Reveal delay={180}>
               <div className="lanz-aviso">
-                <span className="rotulo-dato">Todavía no abre</span>
+                <span className="rotulo-dato">Las primeras</span>
                 <span className="lanz-aviso-txt">
-                  Hoy no se paga nada. Déjame tu correo y te escribo yo el día que la abra, con lo que hay dentro y lo
-                  que cuesta.
+                  Abre pequeña, y las primeras deciden conmigo qué se trabaja cada mes. Déjame tu correo y te escribo yo
+                  antes que a nadie.
                 </span>
               </div>
             </Reveal>
