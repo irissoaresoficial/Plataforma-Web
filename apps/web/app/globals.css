@@ -2855,38 +2855,22 @@ body[data-nav-claro='si'] .sello-color {
   color: var(--tx-2);
 }
 
-/* El precio, con su condición al lado. */
-.lanz-precio {
+/* EL AVISO DE LA PORTADA — lo que ha sustituido al precio.
+   Un filete dorado al lado en vez de una caja: una caja con fondo propio, en
+   mitad del granate, se lee como un anuncio pegado encima. El filete dice
+   «esto es una condición» sin montar otro bloque. */
+.lanz-aviso {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
+  border-left: 2px solid var(--acento);
+  padding-left: 16px;
 }
-.lanz-precio-fila {
-  display: flex;
-  align-items: baseline;
-  gap: 11px;
-}
-.lanz-precio-fila b {
-  font-size: clamp(34px, 3.6vw, 46px);
-  font-weight: var(--peso-fino);
-  line-height: 1;
-  letter-spacing: -0.03em;
-  color: var(--acento);
-}
-.lanz-precio-fila s {
-  font-size: 17px;
-  color: var(--tx-3);
-}
-.lanz-precio-fila i {
-  font-style: normal;
-  font-size: var(--t-nota);
-  color: var(--tx-3);
-}
-.lanz-precio-nota {
-  font-size: var(--t-nota);
+.lanz-aviso-txt {
+  font-size: var(--t-cuerpo);
   line-height: 1.6;
-  color: var(--tx-3);
-  max-width: 34ch;
+  color: var(--tx-2);
+  max-width: 40ch;
 }
 
 /* La entrada de la landing. En una página de venta la gente barre: las palabras
@@ -4062,56 +4046,28 @@ body[data-nav-claro='si'] .sello-color {
 }
 .com-entrada-2 b { color: #fff; font-weight: 600; }
 
-/* --- el precio ----------------------------------------------------------- */
-.com-precio {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: clamp(6px, 1vw, 12px);
-  scroll-margin-top: 90px;
-}
-.com-precio-rotulo {
-  font-size: var(--rotulo-tam);
-  font-weight: var(--rotulo-peso);
-  letter-spacing: var(--rotulo-esp);
-  text-transform: uppercase;
-  color: var(--oro-luz);
-}
-.com-precio-fila {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.com-precio-fila b {
+/* --- lo que pide la página ------------------------------------------------
+   Aquí estaba el precio en grande: 33 €, el 67 € tachado y el pie de «lo
+   mantienes mientras sigas dentro». La membresía ya no cobra, así que el sitio
+   de honor lo ocupa la única frase que queda en pie — la que dice para qué se
+   deja el correo. Un titular pequeño, no un panel: lo que tiene que pesar aquí
+   son los dos campos, no su rótulo. */
+.com-form-titulo {
+  margin: 0 0 14px;
   font-family: var(--serif);
-  font-size: clamp(46px, 7vw, 68px);
+  font-size: clamp(21px, 2.4vw, 27px);
   font-weight: var(--peso-fino);
-  line-height: 1;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-}
-.com-precio-fila s {
-  font-size: 21px;
-  color: rgba(251, 246, 238, 0.45);
-  text-decoration-thickness: 1px;
-  font-variant-numeric: tabular-nums;
-}
-.com-precio-fila i {
-  font-style: normal;
-  font-size: 15px;
-  color: rgba(251, 246, 238, 0.6);
-}
-.com-precio-pie {
-  font-size: 14px;
-  line-height: 1.55;
-  color: rgba(251, 246, 238, 0.62);
-  max-width: 46ch;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-wrap: balance;
 }
 
 .com-form {
   max-width: 440px;
   width: 100%;
+  margin-top: clamp(6px, 1.4vw, 16px);
+  scroll-margin-top: 90px;
 }
 
 /* --- las tres reglas ------------------------------------------------------
@@ -4204,4 +4160,118 @@ body[data-nav-claro='si'] .sello-color {
    se queda en tinta oscura sobre el granate, que es casi invisible. */
 .pagina-oscura .barra-marca {
   color: #fbf6ee;
+}
+
+/* ==================================================================
+   LA PORTADA EN UN MÓVIL — QUE QUEPA, Y QUE LLAME
+   ==================================================================
+   Medido, no calculado a ojo. En un iPhone de 390×844 la portada medía 887 px:
+   se salía por abajo, y el cartel del próximo curso —que es el gancho— quedaba
+   cortado y encima medio tapado por el botón del chat. En uno de 360×740 medía
+   893 sobre 740.
+
+   El alto se recorta de donde no se nota y NO del titular, que es lo que llama:
+
+     · el aire de arriba, de 96 a 84 (la barra mide 65, así que quedan 19);
+     · el de abajo, de 50 a 28;
+     · los huecos entre bloques, de 24 a 18 — tres huecos, 18 px;
+     · el rótulo, de dos renglones a uno, quitándole la rayita — 17 px;
+     · y el cartel, que deja de medirse por el ancho y pasa a medirse por el
+       ALTO QUE QUEDA, así que en un móvil bajo se encoge él solo en vez de
+       empujar la pantalla.
+
+   Suman unos 130 px. En 390×844 la portada entera cabe con holgura; en 360×740
+   el cartel asoma por abajo, que es lo que se quiere — un borde a medias invita
+   a bajar mejor que cualquier flecha.
+   ================================================================== */
+@media (max-width: 600px) {
+  /* El rótulo en versal, un punto más pequeño y con menos aire entre letras.
+     Es el elemento que peor lleva el móvil: a 10 px con 0,17 em de espaciado,
+     «Numerología transgeneracional · online desde 2010» mide 370 px y la
+     pantalla da 358. No es un capricho de milímetros — partido en dos
+     renglones se lee como un párrafo suelto encima del titular. */
+  :root {
+    --rotulo-tam: 9.5px;
+    --rotulo-esp: 0.12em;
+  }
+
+  .hero-lleno {
+    padding-top: 84px;
+    padding-bottom: 28px;
+  }
+
+  /* Y en la portada, además, sin la rayita: es un adorno de escritorio que
+     aquí cuesta 36 px de línea, justo los que faltan. */
+  .rotulo-hero .rotulo-linea {
+    display: none;
+  }
+
+  /* Los dos botones, uno debajo de otro y a todo el ancho. Apilados a su ancho
+     natural quedaban dos pastillas cortas y descolgadas a la izquierda; a todo
+     el ancho son dos barras que se ven desde lejos y se aciertan sin mirar,
+     que es lo que tiene que hacer el botón principal de la web. */
+  .hero-botones {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .hero-botones .pill {
+    justify-content: space-between;
+    padding-left: 24px;
+  }
+  .hero-botones .btn-outline {
+    justify-content: center;
+  }
+  /* Y sin el salto del ratón: en una pantalla táctil no hay «pasar por
+     encima», así que ese movimiento sólo se dispara al tocar, cuando la vista
+     ya está en otro sitio. */
+  .hero-botones .pill:hover {
+    transform: none;
+    gap: 12px;
+  }
+
+  /*
+   * EL CARTEL SE MIDE POR EL ALTO QUE QUEDA, NO POR EL ANCHO.
+   *
+   * Con `width: min(300px, 66vw)` el alto salía del ancho —es 4:5— y daba 322 px
+   * en cualquier teléfono, tuviera 844 de pantalla o 740. En el pequeño, esos
+   * 322 son los que se salían.
+   *
+   * Pidiendo el alto y dejando que el ancho salga de la proporción, el cartel se
+   * encoge solo en las pantallas cortas y se queda grande en las largas. Nunca
+   * recorta la imagen: la proporción no se toca.
+   */
+  .hero-marco-caja {
+    width: auto;
+    height: min(322px, 36svh);
+    align-self: center;
+  }
+  .hero-flota {
+    height: 100%;
+  }
+  .hero-flota .cartel {
+    height: 100%;
+    width: auto;
+    margin: 0 auto;
+  }
+}
+
+/* Teléfonos estrechos. Ahí el titular se iba a cuatro renglones y se comía
+   solo 146 px; a este cuerpo sigue siendo el elemento más grande de la
+   pantalla —que es lo que tiene que ser— y ocupa tres. */
+@media (max-width: 380px) {
+  :root {
+    --t-portada: clamp(27px, 7.4vw, 54px);
+    --rotulo-tam: 9px;
+    --rotulo-esp: 0.1em;
+  }
+}
+
+/* El botón del chat, en el móvil: la foto, «Reservar» y la flecha. El
+   subtítulo se cae — ver el comentario en ChatWidget.tsx. */
+@media (max-width: 600px) {
+  .chat-sub {
+    display: none;
+  }
 }

@@ -166,7 +166,11 @@ export default function LeadForm({
     >
       {pedirNombre && campo('nombre', 'Tu nombre', 'text', nombre, setNombre, 'Iris', 'name')}
       {campo('email', 'Tu correo', 'email', email, setEmail, 'tucorreo@ejemplo.com', 'email')}
-      {pedirWhatsapp && campo('whatsapp', 'WhatsApp (opcional)', 'tel', whatsapp, setWhatsapp, '+34 600 00 00 00', 'tel')}
+      {/* «(opcional)» a secas es una invitación a saltárselo, y el WhatsApp es
+          por donde Iris avisa de verdad. Decir PARA QUÉ sirve sube el relleno
+          sin mentir sobre si hace falta — que es lo que haría quitar la
+          palabra y luego no exigirlo. */}
+      {pedirWhatsapp && campo('whatsapp', 'WhatsApp · si prefieres que te avise por ahí', 'tel', whatsapp, setWhatsapp, '+34 600 00 00 00', 'tel')}
 
       <button
         type="submit"

@@ -9,37 +9,51 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
-import { MEMBRESIA, eur } from '@/content/site';
+import { MEMBRESIA } from '@/content/site';
 
 /*
  * ============================================================================
- * LA COMUNIDAD — UNA SOLA PANTALLA, Y DICIENDO LA VERDAD
+ * LA COMUNIDAD — UN PRÓXIMAMENTE, Y NADA MÁS
  * ============================================================================
  *
- * Esta página era larga: cuenta atrás, qué incluye, cómo es un mes por dentro,
- * para quién es, cierre. Y todo eso describía con mucho detalle una comunidad
- * QUE TODAVÍA NO EXISTE. Tres de las líneas de «qué incluye» estaban en blanco,
- * marcadas en rojo, porque nadie ha decidido aún qué hay dentro.
+ * Esta página ha pasado por tres versiones y conviene saber por qué acabó
+ * siendo la más corta de las tres.
  *
- * Ahora es una sola pantalla oscura y dice exactamente eso: está en
- * construcción, y quien entra hoy entra a construirla. No es un giro de
- * marketing ni una forma suave de decir «todavía no está»: es literalmente lo
- * que se está vendiendo, y venderlo así es lo único que lo hace honesto.
+ * Primero era una landing larga: cuenta atrás, qué incluye, cómo es un mes por
+ * dentro, para quién es. Todo eso describía con mucho detalle una comunidad que
+ * no existe, y tres de las líneas de «qué incluye» estaban literalmente en
+ * blanco, marcadas en rojo.
  *
- * POR QUÉ ADEMÁS VENDE MÁS. Una página larga que promete mucho y no puede
- * enseñar nada se lee como humo — y las tres líneas en rojo lo cantaban. Una
- * página corta que dice «esto lo estoy montando, entra y decides tú lo que hay
- * dentro» tiene algo que la larga no tenía: un motivo real para entrar HOY y no
- * en noviembre.
+ * Después fue una pantalla honesta CON PRECIO: 33 € de fundadora, 67 € tachado,
+ * diez plazas. Y ahí seguía habiendo un problema, aunque más fino: se estaba
+ * cobrando la entrada a una sala que todavía no se ha construido. Quien pagaba
+ * en septiembre no recibía nada hasta noviembre, y en esas semanas la gente
+ * cambia de opinión — con lo cual el cobro no traía dinero, traía devoluciones.
  *
- * Lo que se ha quitado —el qué incluye, el mes por dentro, el para quién— vuelve
- * el día que exista de verdad. Está en el historial; no hay que reescribirlo.
+ * AHORA ES UN PRÓXIMAMENTE. Decisión de Gerson, 13 de septiembre de 2026. No se
+ * cobra, no se promete un precio, no se tacha nada. Se dice que la comunidad
+ * viene, se dice con qué idea, y se pide lo único que hace falta para avisar el
+ * día que abra: el correo y el WhatsApp.
  *
- * SIGUE EN PIE LA REGLA DEL PAGO: con `NEXT_PUBLIC_PAGO_MEMBRESIA` puesto, entrar
- * es pagar; sin ella, se guarda el correo y se avisa. La página no dice «paga»
- * si no hay forma de cobrar.
+ * ---------------------------------------------------------------------------
+ * POR QUÉ ESTO CONVIERTE MÁS, Y NO MENOS
+ * ---------------------------------------------------------------------------
+ * Un precio te obliga a decidir si vale la pena. Un «te aviso» no obliga a
+ * nada, y por eso lo deja mucha más gente. La lista es el activo: cuando la
+ * comunidad exista de verdad y haya algo que enseñar, se le escribe a esa gente
+ * — y entonces sí, con el precio delante y con algo detrás del precio.
+ *
+ * Ni siquiera se pide el nombre. Cada campo de un formulario cuesta gente, y el
+ * nombre no hace falta para avisar: se pregunta el día que se hable.
+ *
+ * ---------------------------------------------------------------------------
+ * SI ALGÚN DÍA VUELVE EL PRECIO
+ * ---------------------------------------------------------------------------
+ * Se rellenan `MEMBRESIA.precio` y `MEMBRESIA.precioReserva` en content/site.ts
+ * y se vuelve a escribir el bloque, que está en el historial. Lo que NO se hace
+ * es dejar aquí un precio comentado «por si acaso»: un número muerto en el
+ * código acaba encendido por accidente.
  */
-const PAGO = process.env.NEXT_PUBLIC_PAGO_MEMBRESIA || '';
 
 export default function Membresia() {
   useSiteScroll();
@@ -49,7 +63,7 @@ export default function Membresia() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta="Quiero entrar" ctaHref="#entrar" />
+      <Nav cta="Avisadme" ctaHref="#avisar" />
 
       {/* ═══════════════════════════════════════════════ LA ÚNICA PANTALLA */}
       <div className="vino com-hero">
@@ -59,7 +73,7 @@ export default function Membresia() {
         <CampoNumeros intensidad={1.7} densidad={130_000} />
 
         <div className="com-dentro">
-          {/* --------------------------------------------- EN CONSTRUCCIÓN
+          {/* ------------------------------------------------- PRÓXIMAMENTE
               Lo primero, antes que el titular. Es la condición de todo lo que
               viene después: si alguien sólo lee una línea de esta página, que
               sea ésta. Ponerla abajo en letra pequeña sería decirlo de una
@@ -67,7 +81,7 @@ export default function Membresia() {
           <Reveal>
             <span className="com-obras">
               <i aria-hidden />
-              En construcción · buscando a las primeras
+              Próximamente · la comunidad de Iris
             </span>
           </Reveal>
 
@@ -86,53 +100,28 @@ export default function Membresia() {
 
           <Reveal delay={190}>
             <p className="com-entrada com-entrada-2">
-              Y lo digo tal cual: <b>esto está a medio hacer.</b> No te voy a enseñar un temario cerrado que no existe.
-              Lo que hay es el método, que uso todos los días, y la idea de llevarlo a un grupo. Quien entre ahora entra
-              a decidir conmigo qué se trabaja cada mes.
+              Y lo digo tal cual: <b>esto está a medio hacer.</b> No te voy a enseñar un temario cerrado que no existe,
+              ni te voy a cobrar por algo que todavía no puedes usar. Lo que hay es el método, que uso todos los días, y
+              la idea de llevarlo a un grupo.
             </p>
           </Reveal>
 
-          {/* ---------------------------------------------------- EL PRECIO
-              En grande, porque es lo que hace que esto sea una prueba de
-              verdad y no una encuesta. Una lista de espera gratis la firma
-              cualquiera; treinta y tres euros los pone quien lo quiere. */}
+          {/* ------------------------------------------------------ AVISAR
+              Aquí iba el precio en grande. Ya no hay precio, así que tampoco
+              hay panel: el sitio de honor de la página lo ocupa lo único que se
+              pide, que son dos campos. */}
           <Reveal delay={240}>
-            <div id="entrar" className="com-precio">
-              <span className="com-precio-rotulo">Precio de fundadora</span>
-              <span className="com-precio-fila">
-                <b>{eur(MEMBRESIA.precioReserva)}</b>
-                <s>{eur(MEMBRESIA.precio)}</s>
-                <i>al mes</i>
-              </span>
-              <span className="com-precio-pie">
-                Lo mantienes mientras sigas dentro, no sólo el primer año.
-                {MEMBRESIA.plazasLanzamiento ? <> Sólo para las {MEMBRESIA.plazasLanzamiento} primeras.</> : null}
-              </span>
-            </div>
-          </Reveal>
-
-          {/* ------------------------------------------------------- ENTRAR */}
-          <Reveal delay={290}>
-            <div className="com-form">
+            <div id="avisar" className="com-form">
+              <p className="com-form-titulo">Dime por dónde avisarte y te escribo el día que abra.</p>
               <LeadForm
                 origen="membresia"
-                detalle={`Fundadora a ${eur(MEMBRESIA.precioReserva)} (precio normal ${eur(MEMBRESIA.precio)})`}
-                cta={PAGO ? 'Continuar' : 'Quiero ser de las primeras'}
+                detalle="Aviso de apertura de la comunidad"
+                cta="Avisadme cuando abra"
                 variant="dark"
-                successTitle={PAGO ? 'Ya te tengo. Falta el pago.' : 'Anotada.'}
-                successText={
-                  PAGO
-                    ? `Tu sitio queda guardado en cuanto pagues el primer mes: ${eur(MEMBRESIA.precioReserva)}.`
-                    : 'Te escribo yo, en persona, para contarte cómo va y preguntarte qué necesitas dentro.'
-                }
-                privacidad={
-                  PAGO
-                    ? 'El pago va por Stripe: esta web no ve ni guarda los datos de tu tarjeta.'
-                    : 'Sólo guardo tu correo para escribirte de esto. Nada más.'
-                }
-                pagoUrl={PAGO}
-                pagoCta={`Entrar por ${eur(MEMBRESIA.precioReserva)} al mes`}
-                pedirNombre
+                successTitle="Hecho. Te aviso yo."
+                successText="Cuando la comunidad abra te escribo, y serás de las primeras en saber qué hay dentro y cuánto cuesta."
+                privacidad="Sólo guardo tu correo y tu WhatsApp para avisarte de esto. Nada más, y te sales cuando quieras."
+                pedirNombre={false}
                 pedirWhatsapp
               />
             </div>
@@ -145,9 +134,16 @@ export default function Membresia() {
               entendido de qué va esto. */}
           <Reveal delay={340}>
             <ul className="com-reglas">
-              <li>Te escribo yo y te pregunto qué quieres trabajar. Eso es lo que entra en el primer mes.</li>
-              <li>Si en algún momento no es lo tuyo, lo dices y sales. No hay permanencia ni letra pequeña.</li>
-              <li>El precio se te queda mientras sigas dentro. Cuando abra del todo, será de {eur(MEMBRESIA.precio)}.</li>
+              <li>Hoy no se paga nada. Cuando haya precio lo sabrás por correo, antes que nadie.</li>
+              <li>
+                Te escribo yo y te pregunto qué quieres trabajar. Eso es lo que entra
+                {MEMBRESIA.plazasLanzamiento ? (
+                  <> — el grupo abre con {MEMBRESIA.plazasLanzamiento} personas, así que da tiempo a mirar cada caso.</>
+                ) : (
+                  '.'
+                )}
+              </li>
+              <li>Si cuando abra no es lo tuyo, no entras y ya está. Estar en la lista no te compromete a nada.</li>
             </ul>
           </Reveal>
         </div>

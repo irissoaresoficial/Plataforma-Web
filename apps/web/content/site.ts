@@ -251,37 +251,38 @@ export const MEMBRESIA = {
   /** Desde cuándo está abierta la lista. Es lo que llena el anillo. */
   listaDesdeISO: '2026-09-05T00:00:00',
   /**
-   * LOS DOS PRECIOS — CONFIRMADOS por Gerson el 7 de septiembre de 2026.
+   * LOS PRECIOS ESTÁN APAGADOS. Decisión de Gerson, 13 de septiembre de 2026.
    *
-   * Se anota porque venían del diseño de partida sin que nadie los hubiera
-   * dicho, y estuvieron publicados en cuatro sitios sin confirmar. Ya no hace
-   * falta volver a preguntarlo.
+   * Estuvieron en 67 € y 33 €, confirmados el 7 de septiembre y publicados en
+   * tres sitios. Se apagan porque la membresía ha pasado a ser otra cosa: no es
+   * una lista de espera con precio reservado, es un PRÓXIMAMENTE. Lo único que
+   * se pide es el correo y el WhatsApp para avisar el día que abra.
    *
-   * De estos dos números salen solos el −51 %, los 34 € menos al mes y los
-   * 408 € menos al año de la landing. Si algún día cambian, se cambian aquí y
-   * las tres cuentas se recalculan solas.
+   * Y esto es lo importante: no se apaga sólo el número, se apaga TODA la
+   * promesa. Con estos dos en `null`, la portada, la página de la comunidad y
+   * la de cursos dejan de enseñar precio, dejan de tachar nada y dejan de decir
+   * «lo mantienes mientras sigas dentro» — porque no hay un precio que
+   * mantener. Un precio tachado que ya no existe es publicidad engañosa, no un
+   * descuido de maquetación.
+   *
+   * El día que haya precio de verdad se rellenan aquí los dos y vuelve solo.
    */
-  /** Lo que costará cuando abra. */
-  precio: 67,
-  /** Lo que pagan los que reservan ahora desde la lista de espera. */
-  precioReserva: 33,
+  /** Lo que costará cuando abra. `null` = todavía no se dice. */
+  precio: null as number | null,
+  /** Lo que pagarían quienes entren primero. `null` = no se cobra nada aún. */
+  precioReserva: null as number | null,
   /**
-   * CUÁNTAS PERSONAS SE QUEDAN CON ESE PRECIO.
+   * CON CUÁNTA GENTE ABRE EL GRUPO.
    *
-   * Es el dato que faltaba, y es el que hace que el precio signifique algo. Los
-   * 33 € no son un descuento abierto: la comunidad abre con diez personas
-   * porque cada mes se revisa un caso en voz alta, y con cuarenta eso no se
-   * puede hacer. Las diez primeras se quedan con ese precio mientras sigan
-   * dentro; la undécima paga los 67 €.
+   * Nació como «cuántas se quedan con el precio de fundadora». Ese precio ya no
+   * existe, pero el número sí sigue significando algo, y es lo que de verdad
+   * importaba: la comunidad abre con diez personas porque cada mes se revisa un
+   * caso en voz alta, y con cuarenta eso no se puede hacer.
    *
-   * La web no lo decía en ninguna parte —sólo lo decía el cuarto correo de la
-   * secuencia, al que llega poca gente— así que quien miraba la página veía un
-   * descuento sin motivo. Un descuento sin motivo no acelera a nadie: parece
-   * que mañana seguirá ahí.
-   *
-   * Es una escasez REAL, y por eso se puede decir en grande. El día que deje de
-   * serlo, se cambia este número o se pone a null y desaparece de la página —
-   * no se deja puesto mintiendo.
+   * Es una escasez REAL —sale de cómo funciona la sesión, no de una táctica de
+   * venta— y por eso se puede decir. El día que deje de serlo, se cambia este
+   * número o se pone a null y desaparece de la página; no se deja puesto
+   * mintiendo.
    */
   plazasLanzamiento: 10 as number | null,
   /**

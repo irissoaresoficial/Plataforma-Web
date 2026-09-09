@@ -113,6 +113,30 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   const [data, setData] = useState<Data>({});
   const [done, setDone] = useState(false);
   const [calOffset, setCalOffset] = useState(0);
+  /*
+   * EL BOTÓN DEL CHAT SE CALLA MIENTRAS SE VE LA PORTADA.
+   *
+   * En un móvil caía justo encima del cartel del próximo curso —de su pie, que
+   * es donde está el título y la fecha— y lo tapaba. Se podía haber hecho más
+   * pequeño y correrlo un poco, pero el problema de fondo era otro: en la
+   * portada este botón SOBRA. El botón grande «Reservar una sesión» abre este
+   * mismo chat, así que había dos veces la misma acción en la misma pantalla, y
+   * la de menos peso tapando el cartel.
+   *
+   * Así que mientras la portada esté a la vista, se esconde. En cuanto se baja
+   * —y en todas las demás páginas, que no tienen portada de pantalla completa—
+   * aparece, que es cuando ya no hay ningún botón de reservar a mano.
+   */
+  const [tapado, setTapado] = useState(false);
+  useEffect(() => {
+    const portada = document.querySelector('.hero-lleno');
+    if (!portada) return;
+    const ojo = new IntersectionObserver(([e]) => setTapado(e.intersectionRatio > 0.45), {
+      threshold: [0, 0.45, 1],
+    });
+    ojo.observe(portada);
+    return () => ojo.disconnect();
+  }, []);
   /* Los tres trozos de la fecha de nacimiento, cada uno por su lado: hasta que
      no están los tres no hay fecha que validar ni número que calcular. */
   const [nacDia, setNacDia] = useState('');
@@ -537,7 +561,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           position: 'fixed',
           zIndex: 139,
           right: 'clamp(10px,2vw,24px)',
-          bottom: 'clamp(10px,2vw,24px)',
+          /* Con el área segura sumada: en un iPhone la barra del navegador se
+             come los últimos 34 px, y ahí es donde estaba medio botón. */
+          bottom: 'calc(clamp(10px,2vw,24px) + env(safe-area-inset-bottom))',
           display: 'flex',
           alignItems: 'center',
           gap: 12,
@@ -549,9 +575,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           cursor: 'pointer',
           boxShadow: '0 14px 34px rgba(34,29,31,.28)',
           transition: 'opacity .35s ease,transform .45s cubic-bezier(.16,1,.3,1),border-color .4s ease',
-          opacity: open ? 0 : 1,
-          pointerEvents: open ? 'none' : 'auto',
-          transform: `translateY(${open ? 10 : 0}px)`,
+          opacity: open || tapado ? 0 : 1,
+          pointerEvents: open || tapado ? 'none' : 'auto',
+          transform: `translateY(${open || tapado ? 10 : 0}px)`,
         }}
       >
         <div style={{ position: 'relative', width: 38, height: 38, flexShrink: 0 }}>
@@ -571,7 +597,11 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
           <span style={{ fontSize: 14, fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
+          {/* «Agente de IA · agenda en directo» explica qué es esto, y en el
+              escritorio vale la pena. En el móvil es lo que hacía la pastilla de
+              276 px de ancho —siete de cada diez de la pantalla— así que ahí se
+              cae y queda la foto, la palabra y la flecha. */}
+          <span className="chat-sub" style={{ fontSize: 11, fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
         </div>
         <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 'var(--peso-medio)', flexShrink: 0 }}>
           →
@@ -592,7 +622,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           position: 'fixed',
           zIndex: 140,
           right: 'clamp(10px,2vw,24px)',
-          bottom: 'clamp(10px,2vw,24px)',
+          bottom: 'calc(clamp(10px,2vw,24px) + env(safe-area-inset-bottom))',
           width: 'min(calc(100vw - 20px),376px)',
           height: 'min(calc(100vh - 20px),560px)',
           display: 'flex',

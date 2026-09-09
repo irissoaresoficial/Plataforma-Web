@@ -247,18 +247,17 @@ export default function Cursos() {
                 <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em', lineHeight: 1.1, maxWidth: '26ch', textWrap: 'balance' }}>
                   Un curso son dos días. La comunidad es cada mes.
                 </span>
-                {/* El filtro: ¿esto lo querría alguien que acaba de llegar?
-                    «Ver la membresía» no dice qué gana por mirarla, y el dato
-                    que sí convence —que hoy entra por la mitad y ese precio se
-                    le queda— estaba escondido en un párrafo gris. Ahora el
-                    botón lleva el precio y el párrafo dice hasta cuándo. */}
+                {/* Aquí iba el precio de la lista. La membresía ya no cobra
+                    nada —es un próximamente— así que el argumento deja de ser
+                    «entra por la mitad» y pasa a ser el único que queda en pie:
+                    que te avisan a ti antes que a nadie. Prometer un precio que
+                    ya no existe sería lo peor que puede hacer esta línea. */}
                 <span style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '40ch' }}>
-                  Abre el {abre}. Quien entra en la lista ahora paga {eur(MEMBRESIA.precioReserva)} en vez de{' '}
-                  {eur(MEMBRESIA.precio)} — y lo mantiene mientras siga dentro.
+                  Abre el {abre}. Todavía no se cobra nada: deja tu correo y te aviso yo el día que la abra.
                 </span>
               </div>
               <Link href="/membresia" data-mag data-cur-label="Ver" className="pill pill-cream">
-                <span>Guardar mi precio de {eur(MEMBRESIA.precioReserva)}</span>
+                <span>Avisadme cuando abra</span>
                 <span className="pill-arrow">→</span>
               </Link>
             </div>
