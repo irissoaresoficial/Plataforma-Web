@@ -252,8 +252,14 @@ function Hoja({ contenido, alCerrar, alAnterior, alSiguiente, posicion }: Props 
                 "display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:var(--s3) var(--s3);border-radius:var(--r);background:var(--surface-2);box-shadow:var(--nm-hondo);"
               )}
             >
+              {/* El signo viaja PEGADO a su sumando, no suelto entre dos.
+                  Con `display:contents` el «+» era un hijo más de la caja y en
+                  el móvil se quedaba colgado al final de un renglón, lejos de lo
+                  que sumaba: se leía «Personalidad profunda 9 +» y en la línea
+                  siguiente «Nudo emocional 6». Agrupados, si algo se parte se
+                  parte por donde debe. */}
               {contenido.cuenta.pasos.map((p, i) => (
-                <span key={i} style={css("display:contents;")}>
+                <span key={i} style={css("display:inline-flex;align-items:baseline;gap:8px;white-space:nowrap;")}>
                   {i > 0 && contenido.cuenta!.op && (
                     <span style={css("font-size:var(--t-title);color:var(--text-4);font-weight:400;")}>
                       {contenido.cuenta!.op}
@@ -261,7 +267,7 @@ function Hoja({ contenido, alCerrar, alAnterior, alSiguiente, posicion }: Props 
                   )}
                   <span
                     style={css(
-                      "display:inline-flex;align-items:baseline;gap:6px;padding:5px 11px;border-radius:980px;background:var(--surface);border:1px solid var(--border);white-space:nowrap;"
+                      "display:inline-flex;align-items:baseline;gap:6px;padding:5px 11px;border-radius:980px;background:var(--surface);border:1px solid var(--border);"
                     )}
                   >
                     <span style={css("font-size:var(--t-mini);color:var(--text-3);")}>{p.label}</span>

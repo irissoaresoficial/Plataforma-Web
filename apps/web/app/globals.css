@@ -3971,15 +3971,20 @@ body[data-nav-claro='si'] .sello-color {
   overflow: hidden;
 }
 
+/* Centrado, y estrecho. Un «próximamente» no es una página de venta: es un
+   cartel. Alineado a la izquierda y a 720 px de ancho se leía como el principio
+   de un artículo que se ha quedado a medias — y era literalmente eso. */
 .com-dentro {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 720px;
+  max-width: 560px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: clamp(18px, 2.4vw, 26px);
+  align-items: center;
+  text-align: center;
+  gap: clamp(16px, 2.2vw, 22px);
 }
 
 /* --- el aviso de obras ---------------------------------------------------
@@ -3987,7 +3992,7 @@ body[data-nav-claro='si'] .sello-color {
    es una web caída, es una comunidad abriéndose. El punto dice «esto está
    pasando ahora», que es exactamente el mensaje. */
 .com-obras {
-  align-self: flex-start;
+  align-self: center;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -4030,64 +4035,60 @@ body[data-nav-claro='si'] .sello-color {
   color: var(--oro-luz);
 }
 
-.com-entrada {
+/* --- las dos líneas que quedan --------------------------------------------
+   Aquí había cuatro párrafos: la explicación del método, la de por qué está a
+   medio hacer, la del formulario y tres reglas. Todo eso decía, en unas ciento
+   veinte palabras, lo que estas dos líneas dicen en veinte. En un cartel de
+   «próximamente» el texto no convence: sólo retrasa el único gesto que hay que
+   hacer, que es dejar el correo. */
+.com-linea {
   margin: 0;
   font-size: var(--t-entrada);
-  line-height: 1.62;
-  color: rgba(251, 246, 238, 0.8);
-  max-width: 54ch;
+  line-height: 1.55;
+  color: rgba(251, 246, 238, 0.78);
+  max-width: 34ch;
 }
-/* El segundo párrafo es el que dice que esto está a medio hacer. Va con un
-   filete dorado al lado: es la frase que no se puede saltar. */
-.com-entrada-2 {
-  border-left: 2px solid var(--oro-luz);
-  padding-left: 18px;
-  color: rgba(251, 246, 238, 0.92);
-}
-.com-entrada-2 b { color: #fff; font-weight: 600; }
 
-/* --- lo que pide la página ------------------------------------------------
-   Aquí estaba el precio en grande: 33 €, el 67 € tachado y el pie de «lo
-   mantienes mientras sigas dentro». La membresía ya no cobra, así que el sitio
-   de honor lo ocupa la única frase que queda en pie — la que dice para qué se
-   deja el correo. Un titular pequeño, no un panel: lo que tiene que pesar aquí
-   son los dos campos, no su rótulo. */
-.com-form-titulo {
-  margin: 0 0 14px;
+/* La condición, en dorado. No es un adorno: «todavía no existe» y «hoy no se
+   paga nada» son las dos cosas que esta página tiene la obligación de decir, y
+   en dos líneas de siete palabras se leen sí o sí. Enterradas en un párrafo se
+   las salta cualquiera. */
+.com-condicion {
+  margin: 0;
   font-family: var(--serif);
-  font-size: clamp(21px, 2.4vw, 27px);
-  font-weight: var(--peso-fino);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: #fff;
-  text-wrap: balance;
+  font-style: italic;
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.5;
+  color: var(--oro-luz);
 }
 
-.com-form {
-  max-width: 440px;
+/* --- la caja del correo ---------------------------------------------------
+   Cristal sobre el granate, y la única cosa que se puede hacer en la página.
+   Cuando sólo hay una acción, meterla en su propia caja no es decoración: es lo
+   que hace que se vea sin haber leído nada. */
+.com-caja {
   width: 100%;
-  margin-top: clamp(6px, 1.4vw, 16px);
+  max-width: 420px;
+  margin-top: clamp(10px, 2vw, 20px);
+  padding: clamp(20px, 3vw, 28px) clamp(18px, 2.6vw, 26px) clamp(22px, 3vw, 28px);
+  border-radius: 22px;
+  background: rgba(251, 246, 238, 0.05);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(251, 246, 238, 0.13);
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(251, 246, 238, 0.08);
+  text-align: left;
   scroll-margin-top: 90px;
 }
-
-/* --- las tres reglas ------------------------------------------------------
-   Sin viñeta y con filete arriba: se leen como condiciones, no como ventajas.
-   Una lista con marcas de visto al lado del precio se lee como «lo que te
-   llevas», y esto es lo contrario: lo que se acuerda. */
-.com-reglas {
-  list-style: none;
-  margin: clamp(8px, 1.4vw, 16px) 0 0;
-  padding: clamp(16px, 2vw, 22px) 0 0;
-  border-top: 1px solid rgba(251, 246, 238, 0.14);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 56ch;
-}
-.com-reglas li {
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: rgba(251, 246, 238, 0.66);
+.com-caja-titulo {
+  margin: 0 0 14px;
+  font-family: var(--serif);
+  font-size: clamp(18px, 1.9vw, 22px);
+  font-weight: var(--peso-fino);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: #fff;
+  text-align: center;
 }
 
 /* --- el pie, dentro de la misma pantalla --------------------------------- */

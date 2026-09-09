@@ -9,42 +9,49 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
-import { MEMBRESIA } from '@/content/site';
 
 /*
  * ============================================================================
- * LA COMUNIDAD — UN PRÓXIMAMENTE, Y NADA MÁS
+ * LA COMUNIDAD — UN «PRÓXIMAMENTE», Y NADA MÁS
  * ============================================================================
  *
- * Esta página ha pasado por tres versiones y conviene saber por qué acabó
- * siendo la más corta de las tres.
+ * Esta página ha adelgazado tres veces, y conviene saber por qué acabó siendo
+ * una sola pantalla con veinte palabras.
  *
- * Primero era una landing larga: cuenta atrás, qué incluye, cómo es un mes por
- * dentro, para quién es. Todo eso describía con mucho detalle una comunidad que
- * no existe, y tres de las líneas de «qué incluye» estaban literalmente en
- * blanco, marcadas en rojo.
+ *   1. Era una landing larga: cuenta atrás, qué incluye, cómo es un mes por
+ *      dentro, para quién es. Todo eso describía con mucho detalle una
+ *      comunidad que no existe, y tres de las líneas de «qué incluye» estaban
+ *      literalmente en blanco, marcadas en rojo.
+ *   2. Después fue una pantalla honesta CON PRECIO: 33 € de fundadora, 67 €
+ *      tachado, diez plazas. Se estaba cobrando la entrada a una sala sin
+ *      construir: quien pagaba en septiembre no recibía nada hasta noviembre, y
+ *      en esas semanas la gente cambia de opinión. Eso no trae dinero, trae
+ *      devoluciones.
+ *   3. Y era una pantalla sin precio pero con cuatro párrafos explicando por
+ *      qué no hay precio.
  *
- * Después fue una pantalla honesta CON PRECIO: 33 € de fundadora, 67 € tachado,
- * diez plazas. Y ahí seguía habiendo un problema, aunque más fino: se estaba
- * cobrando la entrada a una sala que todavía no se ha construido. Quien pagaba
- * en septiembre no recibía nada hasta noviembre, y en esas semanas la gente
- * cambia de opinión — con lo cual el cobro no traía dinero, traía devoluciones.
- *
- * AHORA ES UN PRÓXIMAMENTE. Decisión de Gerson, 13 de septiembre de 2026. No se
- * cobra, no se promete un precio, no se tacha nada. Se dice que la comunidad
- * viene, se dice con qué idea, y se pide lo único que hace falta para avisar el
- * día que abra: el correo y el WhatsApp.
+ * AHORA ES UN «PRÓXIMAMENTE» DE VERDAD. Decisión de Gerson, 13 de septiembre de
+ * 2026, y la razón es la que menos me esperaba: el problema del paso 3 no era
+ * lo que decía, era CUÁNTO decía.
  *
  * ---------------------------------------------------------------------------
- * POR QUÉ ESTO CONVIERTE MÁS, Y NO MENOS
+ * POR QUÉ UN «PRÓXIMAMENTE» LLEVA POCO TEXTO — Y NO ES PEREZA
  * ---------------------------------------------------------------------------
- * Un precio te obliga a decidir si vale la pena. Un «te aviso» no obliga a
- * nada, y por eso lo deja mucha más gente. La lista es el activo: cuando la
- * comunidad exista de verdad y haya algo que enseñar, se le escribe a esa gente
- * — y entonces sí, con el precio delante y con algo detrás del precio.
+ * Un texto largo pide una decisión: hay que leerlo para saber si te interesa.
+ * Un «próximamente» no pide ninguna decisión — sólo pide un correo — así que
+ * cada párrafo que se añade es trabajo cobrado por algo que no se va a comprar
+ * hoy. Cuatro párrafos justificando por qué todavía no hay nada consiguen justo
+ * lo contrario de lo que buscan: convencen a la persona de que aquí todavía no
+ * hay nada.
  *
- * Ni siquiera se pide el nombre. Cada campo de un formulario cuesta gente, y el
- * nombre no hace falta para avisar: se pregunta el día que se hable.
+ * Lo que sostiene la página es lo mismo que sostiene cualquier cartel de
+ * «próximamente» que funciona: el nombre, una frase que diga de qué va, y una
+ * caja donde dejar el correo. Todo lo demás se cuenta el día que abra, que es
+ * cuando la persona sí está dispuesta a leer.
+ *
+ * LA HONESTIDAD NO SE PIERDE, SE CONDENSA. «Todavía no existe» y «hoy no se
+ * paga nada» siguen estando, en dos líneas de siete palabras, arriba y a la
+ * vista. Antes ocupaban cuatro párrafos y decían exactamente lo mismo.
  *
  * ---------------------------------------------------------------------------
  * SI ALGÚN DÍA VUELVE EL PRECIO
@@ -73,78 +80,52 @@ export default function Membresia() {
         <CampoNumeros intensidad={1.7} densidad={130_000} />
 
         <div className="com-dentro">
-          {/* ------------------------------------------------- PRÓXIMAMENTE
-              Lo primero, antes que el titular. Es la condición de todo lo que
-              viene después: si alguien sólo lee una línea de esta página, que
-              sea ésta. Ponerla abajo en letra pequeña sería decirlo de una
-              forma que técnicamente lo dice y en la práctica lo esconde. */}
           <Reveal>
             <span className="com-obras">
               <i aria-hidden />
-              Próximamente · la comunidad de Iris
+              Próximamente
             </span>
           </Reveal>
 
           <Reveal as="h1" delay={70} className="com-titular">
-            La comunidad todavía no existe.
+            La comunidad
             <br />
-            <em>Se hace con las primeras que entren.</em>
+            <em>de Iris Soares</em>
           </Reveal>
 
+          {/* La página entera, en dos líneas. La primera dice de qué va; la
+              segunda es la condición, y va marcada porque es la que hace que
+              esto sea honesto y no un cartel de humo. */}
           <Reveal delay={140}>
-            <p className="com-entrada">
-              Un patrón que lleva tres generaciones funcionando no se desmonta en una tarde. Por eso quiero abrir un
-              grupo pequeño y mirar cada mes una parte de tu historia familiar.
+            <p className="com-linea">
+              Un grupo pequeño. Cada mes, una parte de tu historia familiar.
             </p>
           </Reveal>
 
           <Reveal delay={190}>
-            <p className="com-entrada com-entrada-2">
-              Y lo digo tal cual: <b>esto está a medio hacer.</b> No te voy a enseñar un temario cerrado que no existe,
-              ni te voy a cobrar por algo que todavía no puedes usar. Lo que hay es el método, que uso todos los días, y
-              la idea de llevarlo a un grupo.
-            </p>
+            <p className="com-condicion">Todavía no existe. Hoy no se paga nada.</p>
           </Reveal>
 
-          {/* ------------------------------------------------------ AVISAR
-              Aquí iba el precio en grande. Ya no hay precio, así que tampoco
-              hay panel: el sitio de honor de la página lo ocupa lo único que se
-              pide, que son dos campos. */}
+          {/* --------------------------------------------------- LA CAJA
+              El formulario va dentro de una caja de cristal, centrada, y es lo
+              único que se puede hacer en esta página. Cuando sólo hay una
+              acción, ponerla en una caja aparte no es adorno: es lo que hace
+              que se vea sin leer nada. */}
           <Reveal delay={240}>
-            <div id="avisar" className="com-form">
-              <p className="com-form-titulo">Dime por dónde avisarte y te escribo el día que abra.</p>
+            <div id="avisar" className="com-caja">
+              <p className="com-caja-titulo">Te aviso el día que abra</p>
               <LeadForm
                 origen="membresia"
                 detalle="Aviso de apertura de la comunidad"
-                cta="Avisadme cuando abra"
+                cta="Avisadme"
                 variant="dark"
                 successTitle="Hecho. Te aviso yo."
-                successText="Cuando la comunidad abra te escribo, y serás de las primeras en saber qué hay dentro y cuánto cuesta."
-                privacidad="Sólo guardo tu correo y tu WhatsApp para avisarte de esto. Nada más, y te sales cuando quieras."
+                successText="Cuando abra te escribo, y serás de las primeras en saber qué hay dentro."
+                privacidad="Sólo lo guardo para avisarte de esto. Te sales cuando quieras."
                 pedirNombre={false}
                 pedirWhatsapp
               />
             </div>
-          </Reveal>
-
-          {/* ----------------------------------------------------- LAS REGLAS
-              Tres líneas, y las tres son condiciones de verdad. Van DESPUÉS del
-              formulario a propósito: quien ya ha decidido las lee como lo que
-              son, y quien está dudando no se topa con ellas antes de haber
-              entendido de qué va esto. */}
-          <Reveal delay={340}>
-            <ul className="com-reglas">
-              <li>Hoy no se paga nada. Cuando haya precio lo sabrás por correo, antes que nadie.</li>
-              <li>
-                Te escribo yo y te pregunto qué quieres trabajar. Eso es lo que entra
-                {MEMBRESIA.plazasLanzamiento ? (
-                  <> — el grupo abre con {MEMBRESIA.plazasLanzamiento} personas, así que da tiempo a mirar cada caso.</>
-                ) : (
-                  '.'
-                )}
-              </li>
-              <li>Si cuando abra no es lo tuyo, no entras y ya está. Estar en la lista no te compromete a nada.</li>
-            </ul>
           </Reveal>
         </div>
 
