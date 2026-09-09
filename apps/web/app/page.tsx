@@ -599,9 +599,28 @@ export default function Home() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_start}</span>
-              <div onClick={openChat} data-mag style={{ fontSize: 14, color: 'var(--tx-2)', cursor: 'pointer' }}>
+              {/* Un <button>, no un <div>. Era un `div` con `onClick`: no lo
+                  alcanzaba el tabulador, no lo activaba Intro y un lector de
+                  pantalla lo leía como texto suelto — o sea, la primera línea
+                  de «Empieza por aquí» no existía para quien no usa ratón. Y es
+                  la que abre la reserva. */}
+              <button
+                type="button"
+                onClick={openChat}
+                data-mag
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  font: 'inherit',
+                  textAlign: 'left',
+                  fontSize: 14,
+                  color: 'var(--tx-2)',
+                  cursor: 'pointer',
+                }}
+              >
                 {t.ft_1}
-              </div>
+              </button>
               <Link href="/sinergia" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
                 {t.ft_2}
               </Link>

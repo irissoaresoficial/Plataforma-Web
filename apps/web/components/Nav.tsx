@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Marca from './Marca';
+import useCapa from './useCapa';
 import { useLang, type Lang } from '@/lib/i18n';
 import { CONTACTO } from '@/content/site';
 
@@ -44,17 +45,51 @@ export default function Nav({
   conIdiomas?: boolean;
 }) {
   const [abierto, setAbierto] = useState(false);
+  const cerrar = useCallback(() => setAbierto(false), []);
   const { lang, setLang } = useLang();
   const ruta = usePathname();
 
   // Al cambiar de página el menú se cierra solo.
   useEffect(() => setAbierto(false), [ruta]);
 
+  // Y el botón de atrás lo cierra en vez de sacar de la web. Ver useCapa.
+  useCapa(abierto, cerrar);
+
+  /*
+   * CON EL MENÚ ABIERTO, EL TABULADOR NO SE SALE DE ÉL.
+   *
+   * Sin esto, tabulando dentro del menú se pasaba por sus doce paradas y a la
+   * decimotercera el foco saltaba a los botones de la portada — que están
+   * DETRÁS del menú y no se ven, porque la caja es opaca. Quien navega con
+   * teclado se quedaba pulsando Intro sobre cosas invisibles.
+   *
+   * El chat ya lo tenía resuelto así desde el principio; al menú se le había
+   * olvidado, y es el mismo problema con la misma solución.
+   */
+  const cajaRef = useRef<HTMLElement>(null);
   useEffect(() => {
     if (!abierto) return;
     const previo = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const alPulsar = (e: KeyboardEvent) => e.key === 'Escape' && setAbierto(false);
+    const alPulsar = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') return setAbierto(false);
+      if (e.key !== 'Tab') return;
+      const caja = cajaRef.current;
+      if (!caja) return;
+      const focos = caja.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focos.length) return;
+      const primero = focos[0];
+      const ultimo = focos[focos.length - 1];
+      if (e.shiftKey && document.activeElement === primero) {
+        e.preventDefault();
+        ultimo.focus();
+      } else if (!e.shiftKey && document.activeElement === ultimo) {
+        e.preventDefault();
+        primero.focus();
+      }
+    };
     window.addEventListener('keydown', alPulsar);
     return () => {
       document.body.style.overflow = previo;
@@ -122,7 +157,7 @@ export default function Nav({
       </header>
 
       <div id="menu-principal" className={`menu${abierto ? ' abierto' : ''}`} onClick={() => setAbierto(false)}>
-        <nav className="menu-caja" onClick={(e) => e.stopPropagation()}>
+        <nav ref={cajaRef} className="menu-caja" onClick={(e) => e.stopPropagation()}>
           <ul className="menu-lista">
             {enlaces.map((l, i) => (
               <li key={l.href + l.label} style={{ transitionDelay: `${abierto ? 90 + i * 55 : 0}ms` }}>

@@ -1,12 +1,27 @@
 'use client';
 
-import Link from 'next/link';
-import Marca from './Marca';
+import Nav from './Nav';
 import { CONTACTO } from '@/content/site';
 
 /**
  * El molde de las páginas de texto legal. Una columna, mucho aire y nada que
  * distraiga: son páginas que se leen, no que se recorren.
+ *
+ * ---------------------------------------------------------------------------
+ * PERO CON LA BARRA DE SIEMPRE, QUE ANTES NO TENÍA
+ * ---------------------------------------------------------------------------
+ * Llevaban una cabecera propia con un «← IRIS SOARES» y nada más. Contadas en
+ * el navegador: dos enlaces en toda la página —ése y el `mailto` del final— y
+ * cero botones. Sin menú, sin pie y sin chat.
+ *
+ * Eso convierte la política de privacidad en un callejón. Quien llega desde
+ * Google, o desde el pie de la portada para resolver una duda antes de dejar su
+ * correo, no tiene forma de seguir a los cursos, a la prueba gratis ni a la
+ * comunidad: sólo puede volver al principio y empezar de cero.
+ *
+ * Con el `<Nav>` normal recuperan las cuatro salidas de la casa y el botón de
+ * reservar, que es lo que hacen las otras cuatro páginas. No hace falta nada
+ * especial: `Nav` ya sabe funcionar sin enlaces propios de página.
  */
 export default function PaginaTexto({
   titulo,
@@ -21,16 +36,9 @@ export default function PaginaTexto({
 }) {
   return (
     <div className="claro" style={{ minHeight: '100vh' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 20, background: 'var(--bg)', borderBottom: '1px solid var(--linea)' }}>
-        <div style={{ maxWidth: 820, margin: '0 auto', padding: '15px clamp(16px,4vw,32px)', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--tx)' }}>
-            <span aria-hidden>←</span>
-            <Marca tam={26} />
-          </Link>
-        </div>
-      </div>
+      <Nav cta="Reservar" ctaHref="/#cita" />
 
-      <div style={{ maxWidth: 820, margin: '0 auto', padding: 'clamp(48px,8vw,96px) clamp(16px,4vw,32px) clamp(64px,9vw,120px)' }}>
+      <div style={{ maxWidth: 820, margin: '0 auto', padding: 'clamp(104px,12vw,140px) clamp(16px,4vw,32px) clamp(64px,9vw,120px)' }}>
         <p style={{ margin: '0 0 14px', fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
           Actualizado el {actualizado}
         </p>

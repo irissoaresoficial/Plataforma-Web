@@ -1,11 +1,12 @@
 'use client';
 
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useLang } from '@/lib/i18n';
 import { DEFAULT_HOURS } from '@/lib/booking';
 import { LOGO_COLOR } from '@/content/site';
 import { caminoDeVida, SENTIDO, SENTIDO_DEUDA } from '@/lib/numerologia';
+import useCapa from './useCapa';
 
 /*
  * EL AGENTE HACE NUMEROLOGÍA, NO RELLENA UN FORMULARIO
@@ -213,6 +214,19 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
    * encima: mientras esté abierta, el tabulador da vueltas dentro.
    */
   const panelRef = useRef<HTMLDivElement>(null);
+
+  /*
+   * Y EL BOTÓN DE ATRÁS CIERRA EL CHAT EN VEZ DE SACAR DE LA WEB.
+   *
+   * Éste era el peor de los tres casos, porque el chat es la única forma de
+   * reservar una sesión en toda la web. Alguien que iba por el cuarto paso —ya
+   * había dado nombre, fecha, motivo y día— hacía el gesto con el que cierra
+   * todo lo demás en su teléfono y aterrizaba en la política de privacidad, con
+   * los cuatro pasos perdidos y sin un aviso. Ver useCapa.
+   */
+  const cerrarChat = useCallback(() => setOpen(false), []);
+  useCapa(open, cerrarChat);
+
   useEffect(() => {
     if (!open) return;
     const alPulsar = (e: KeyboardEvent) => {

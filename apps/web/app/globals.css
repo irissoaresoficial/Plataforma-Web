@@ -1660,13 +1660,28 @@ body[data-nav-claro='si'] .sello-color {
   }
 }
 
-/* En el móvil el menú ocupa la pantalla entera y va opaco. El cristal está muy
-   bien en una barra fina, pero detrás de una lista de enlaces deja que el
-   contenido de la página se cuele entre ellos y cuesta leerlos. */
+/* En el móvil el menú es casi la pantalla entera y va opaco. El cristal está
+   muy bien en una barra fina, pero detrás de una lista de enlaces deja que el
+   contenido de la página se cuele entre ellos y cuesta leerlos.
+
+   CASI, Y NO ENTERA — ESOS 72 PÍXELES SON LA SALIDA.
+
+   Iba de `top: 0` a `bottom: 0`, o sea 390×844: la pantalla completa. El velo
+   que cierra al tocar fuera existía y funcionaba, pero no quedaba ni un píxel
+   de velo al que llegar. Medido: `elementFromPoint` devolvía la caja del menú
+   en el centro, abajo a la izquierda y abajo a la derecha.
+
+   Y las otras dos salidas tampoco estaban: Escape no existe en un teléfono, y
+   el botón de atrás sacaba de la página. Quedaba una sola forma de cerrar un
+   menú a pantalla completa: acertar en una × de 42 px en la esquina de arriba.
+
+   Dejando el menú despegado del suelo, el gesto que todo el mundo prueba
+   primero —tocar fuera— vuelve a funcionar. Y de paso se ve un trozo de la
+   página de debajo, que es lo que dice «esto está ENCIMA de algo». */
 @media (max-width: 759px) {
   .menu-caja {
     top: 0;
-    bottom: 0;
+    bottom: 72px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -4275,4 +4290,20 @@ body[data-nav-claro='si'] .sello-color {
   .chat-sub {
     display: none;
   }
+}
+
+/* Los dos botones de un paso de la sinergia: «← Atrás» y el que avanza. El de
+   avanzar manda —se lleva el ancho que sobre— y el de volver ocupa lo justo. Es
+   la jerarquía de siempre en un embudo: volver tiene que estar, pero no tiene
+   que competir. */
+.sin-acciones {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.sin-atras {
+  flex: none;
+  padding-left: 18px;
+  padding-right: 18px;
+  white-space: nowrap;
 }

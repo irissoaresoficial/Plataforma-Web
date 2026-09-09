@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { falta, eur, type Curso } from '@/content/site';
 import Pendiente, { Hueco } from './Pendiente';
 import LeadForm from './LeadForm';
+import useCapa from './useCapa';
 
 /**
  * La ficha completa de un curso, en una ventana sobre la página.
@@ -16,6 +17,9 @@ import LeadForm from './LeadForm';
 export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curso; abierto: boolean; onCerrar: () => void }) {
   const [pestana, setPestana] = useState<'programa' | 'quien' | 'llevas'>('programa');
   const cajaRef = useRef<HTMLDivElement>(null);
+
+  // Y el botón de atrás la cierra en vez de sacar de la web. Ver useCapa.
+  useCapa(abierto, onCerrar);
 
   // Con la ventana abierta, la página de detrás no se mueve y Escape cierra.
   useEffect(() => {

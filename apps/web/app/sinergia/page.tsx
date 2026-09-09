@@ -110,6 +110,29 @@ export default function Sinergia() {
     }
   };
 
+  /*
+   * VOLVER UN PASO. NO EXISTÍA, Y ERA UN AGUJERO GRANDE.
+   *
+   * Los tres pasos avanzaban y nunca retrocedían. Si te equivocabas de año en
+   * el paso 1, la única forma de arreglarlo era recargar la página y volver a
+   * escribirlo todo — y el botón de atrás del navegador tampoco valía: como los
+   * pasos no estaban en el historial, sacaba de la página y se perdía lo
+   * escrito.
+   *
+   * Esto es el embudo de captación principal de la web. Un embudo del que sólo
+   * se sale hacia adelante o recargando pierde a todo el que se equivoque en
+   * una tecla.
+   *
+   * No borra nada: se vuelve y lo escrito sigue ahí, que es lo que se espera de
+   * un «atrás». Lo que sí se limpia es el error, porque el error era del paso
+   * que se acaba de dejar.
+   */
+  const atras = () => {
+    if (step === 0) return;
+    setErr('');
+    setStep((n) => (n - 1) as typeof step);
+  };
+
   const reset = () => {
     setStep(0);
     setBName('');
@@ -272,10 +295,17 @@ export default function Sinergia() {
                       <span className="sin-heredada">Ya la tenía de la portada. Cámbiala si no es ésta.</span>
                     )}
                   </div>
-                  <button type="submit" data-mag className="pill pill-dark" style={{ justifyContent: 'center' }}>
-                    <span>{step === 0 ? 'Siguiente' : 'Calcular'}</span>
-                    <span className="pill-arrow">→</span>
-                  </button>
+                  <div className="sin-acciones">
+                    {step === 1 && (
+                      <button type="button" onClick={atras} data-mag className="btn-outline sin-atras">
+                        ← Atrás
+                      </button>
+                    )}
+                    <button type="submit" data-mag className="pill pill-dark" style={{ justifyContent: 'center', flex: 1 }}>
+                      <span>{step === 0 ? 'Siguiente' : 'Calcular'}</span>
+                      <span className="pill-arrow">→</span>
+                    </button>
+                  </div>
                   <div role="alert" className="sin-error" style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>
                 </form>
               )}
@@ -317,10 +347,15 @@ export default function Sinergia() {
                       className="field-input"
                     />
                   </div>
-                  <button type="submit" data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center' }}>
-                    <span>Ver mi resultado</span>
-                    <span className="pill-arrow">→</span>
-                  </button>
+                  <div className="sin-acciones">
+                    <button type="button" onClick={atras} data-mag className="btn-outline sin-atras">
+                      ← Atrás
+                    </button>
+                    <button type="submit" data-mag data-cur-label="Ver" className="pill pill-gold" style={{ justifyContent: 'center', flex: 1 }}>
+                      <span>Ver mi resultado</span>
+                      <span className="pill-arrow">→</span>
+                    </button>
+                  </div>
                   <div role="alert" className="sin-error" style={{ fontSize: 13, color: '#A33B3B' }}>{err}</div>
                   <span style={{ fontSize: 11, lineHeight: 1.6, color: 'var(--tx-3)' }}>
                     Te mando el resultado y, durante unos días, lo que significa y de dónde viene. Te borras en un clic cuando quieras.

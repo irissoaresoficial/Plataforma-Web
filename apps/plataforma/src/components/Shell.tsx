@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { css } from "@/lib/css";
-import { useApp, PESTANAS, VISTAS_DE_ESTUDIO, type View } from "@/lib/app-context";
+import { useApp, PESTANAS, VISTAS_DE_ESTUDIO } from "@/lib/app-context";
 import ConsultaScreen from "./screens/ConsultaScreen";
 import PanelScreen from "./screens/PanelScreen";
 import EstudioScreen from "./screens/EstudioScreen";
@@ -18,23 +18,36 @@ import Cuenta from "./Cuenta";
 import Avisos from "./despacho/Avisos";
 import Novedades from "./despacho/Novedades";
 import Particulas from "./Particulas";
+import SinEstudio from "./SinEstudio";
 
 export default function Shell() {
-  const { view, setView, r, re, rehidratado } = useApp();
+  const { view, r, re, rehidratado } = useApp();
   const [menu, setMenu] = useState(false);
 
-  // Ahora que cada pantalla tiene su dirección, se puede llegar a /panel con
-  // el enlace guardado. Si el estudio que estaba abierto sigue en este equipo
-  // se recupera solo; si no hay ninguno se vuelve a la consulta, que es donde
-  // se empieza. Se espera a que se haya intentado recuperarlo: antes de eso
-  // no hay estudio todavía y se saldría siempre.
-  //
-  // Sólo se echa de las pantallas DEL ESTUDIO. La agenda, los clientes y las
-  // facturas no dependen de que haya una carta calculada — son el trabajo de
-  // despacho — y antes esta línea las habría devuelto a la consulta sin más.
-  useEffect(() => {
-    if (rehidratado && VISTAS_DE_ESTUDIO.includes(view) && !r && !re) setView("inicio");
-  }, [view, r, re, rehidratado, setView]);
+  /*
+   * SIN ESTUDIO NO HAY PANEL, PERO TAMPOCO SE MUEVE A NADIE DE SITIO.
+   *
+   * Aquí había un `setView("inicio")`: si se llegaba a /panel sin ningún
+   * estudio abierto, la dirección cambiaba sola a la raíz y aparecía el
+   * formulario en blanco. Sin un cartel, sin una línea, sin nada.
+   *
+   * La decisión de fondo era correcta —esta pantalla lee una carta y sin carta
+   * no hay nada que enseñar— pero la forma perdía a la persona. Iris abre su
+   * enlace guardado en un ordenador donde no ha trabajado antes, ve otra
+   * dirección y una pantalla vacía, y concluye que el enlace está roto.
+   *
+   * Ahora la dirección se queda donde está y en su sitio sale <SinEstudio />,
+   * que dice qué falta y lleva a la consulta. Así el enlace guardado sigue
+   * siendo válido: en cuanto se genera el estudio, /panel enseña el panel.
+   *
+   * Sólo afecta a las pantallas DEL ESTUDIO. La agenda, los clientes y las
+   * facturas no dependen de ninguna carta — son el trabajo de despacho.
+   *
+   * Se espera a `rehidratado`: antes de eso todavía no se ha intentado
+   * recuperar el estudio guardado y el cartel saldría siempre, incluso cuando
+   * sí lo hay.
+   */
+  const faltaEstudio = rehidratado && VISTAS_DE_ESTUDIO.includes(view) && !r && !re;
 
   return (
     <div
@@ -172,9 +185,10 @@ export default function Shell() {
             El porqué de que haya animación está en globals.css. */}
         <div key={view} data-vista="" style={css("flex:1;min-width:0;")}>
           {view === "inicio" && <ConsultaScreen />}
-          {view === "panel" && <PanelScreen />}
-          {view === "estudio" && <EstudioScreen />}
-          {view === "pareja" && <ParejaScreen />}
+          {faltaEstudio && <SinEstudio vista={view} />}
+          {view === "panel" && !faltaEstudio && <PanelScreen />}
+          {view === "estudio" && !faltaEstudio && <EstudioScreen />}
+          {view === "pareja" && !faltaEstudio && <ParejaScreen />}
           {view === "leads" && <LeadsScreen />}
           {view === "agenda" && <AgendaScreen />}
           {view === "clientes" && <ClientesScreen />}
