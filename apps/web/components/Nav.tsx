@@ -53,7 +53,7 @@ export default function Nav({
   useEffect(() => setAbierto(false), [ruta]);
 
   // Y el botón de atrás lo cierra en vez de sacar de la web. Ver useCapa.
-  useCapa(abierto, cerrar);
+  const cerrarCapa = useCapa(abierto, cerrar);
 
   /*
    * CON EL MENÚ ABIERTO, EL TABULADOR NO SE SALE DE ÉL.
@@ -72,7 +72,7 @@ export default function Nav({
     const previo = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const alPulsar = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') return setAbierto(false);
+      if (e.key === 'Escape') return cerrarCapa();
       if (e.key !== 'Tab') return;
       const caja = cajaRef.current;
       if (!caja) return;
@@ -95,7 +95,7 @@ export default function Nav({
       document.body.style.overflow = previo;
       window.removeEventListener('keydown', alPulsar);
     };
-  }, [abierto]);
+  }, [abierto, cerrarCapa]);
 
   const fijos: Enlace[] = [
     { href: '/', label: 'Inicio' },
@@ -143,7 +143,7 @@ export default function Nav({
           <button
             type="button"
             className={`hamburguesa${abierto ? ' abierta' : ''}`}
-            onClick={() => setAbierto((v) => !v)}
+            onClick={() => (abierto ? cerrarCapa() : setAbierto(true))}
             aria-expanded={abierto}
             aria-controls="menu-principal"
             aria-label={abierto ? 'Cerrar el menú' : 'Abrir el menú'}
@@ -156,7 +156,7 @@ export default function Nav({
         </div>
       </header>
 
-      <div id="menu-principal" className={`menu${abierto ? ' abierto' : ''}`} onClick={() => setAbierto(false)}>
+      <div id="menu-principal" className={`menu${abierto ? ' abierto' : ''}`} onClick={cerrarCapa}>
         <nav ref={cajaRef} className="menu-caja" onClick={(e) => e.stopPropagation()}>
           <ul className="menu-lista">
             {enlaces.map((l, i) => (
@@ -173,7 +173,13 @@ export default function Nav({
                     {l.label}
                   </a>
                 ) : (
-                  <Link href={l.href} onClick={() => setAbierto(false)}>
+                  /* `replace` y no una entrada nueva. Con el menú abierto hay
+                     una entrada de más en el historial —la que hace que el
+                     botón de atrás cierre el menú en vez de sacarte de la web—
+                     y navegar encima de ella la sustituye en vez de apilarse.
+                     Sin esto, atrás desde el destino te devolvería a la misma
+                     página dos veces seguidas. */
+                  <Link href={l.href} replace onClick={() => setAbierto(false)}>
                     {l.label}
                   </Link>
                 )}
@@ -199,7 +205,7 @@ export default function Nav({
                         {l.label}
                       </a>
                     ) : (
-                      <Link key={l.href + l.label} href={l.href} onClick={() => setAbierto(false)}>
+                      <Link key={l.href + l.label} href={l.href} replace onClick={() => setAbierto(false)}>
                         {l.label}
                       </Link>
                     ),

@@ -7,6 +7,7 @@ import CampoNumeros from '@/components/CampoNumeros';
 import Reveal from '@/components/Reveal';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
+import ChatWidget from '@/components/ChatWidget';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 
@@ -160,6 +161,12 @@ export default function Membresia() {
           </span>
         </div>
       </div>
+      {/* EL CHAT, TAMBIÉN AQUÍ.
+          Estaba sólo en la portada, y es la única forma de reservar una sesión
+          en toda la web: quien entra directo a esta página desde una búsqueda o
+          desde un enlace compartido no tenía dónde reservar sin volver al
+          principio. */}
+      <ChatWidget />
     </div>
   );
 }

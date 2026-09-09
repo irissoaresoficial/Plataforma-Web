@@ -1,6 +1,7 @@
 'use client';
 
 import Nav from './Nav';
+import ChatWidget from './ChatWidget';
 import { CONTACTO } from '@/content/site';
 
 /**
@@ -53,6 +54,11 @@ export default function PaginaTexto({
           <a href={`mailto:${CONTACTO.email}`} style={{ color: 'var(--acento)' }}>{CONTACTO.email}</a>.
         </div>
       </div>
+
+      {/* El chat, también aquí. Era la única página desde la que no se podía
+          reservar sin volver al principio, y a la política de privacidad se
+          llega justo cuando alguien está decidiendo si deja su correo. */}
+      <ChatWidget />
     </div>
   );
 }

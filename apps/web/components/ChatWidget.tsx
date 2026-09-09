@@ -225,13 +225,13 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
    * los cuatro pasos perdidos y sin un aviso. Ver useCapa.
    */
   const cerrarChat = useCallback(() => setOpen(false), []);
-  useCapa(open, cerrarChat);
+  const cerrarCapa = useCapa(open, cerrarChat);
 
   useEffect(() => {
     if (!open) return;
     const alPulsar = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setOpen(false);
+        cerrarCapa();
         return;
       }
       if (e.key !== 'Tab') return;
@@ -667,7 +667,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           </span>
           <button
             type="button"
-            onClick={() => setOpen(false)}
+            onClick={cerrarCapa}
             aria-label="Cerrar"
             className="chat-cerrar"
           >

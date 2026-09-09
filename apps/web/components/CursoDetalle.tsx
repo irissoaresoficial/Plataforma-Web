@@ -19,21 +19,21 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
   const cajaRef = useRef<HTMLDivElement>(null);
 
   // Y el botón de atrás la cierra en vez de sacar de la web. Ver useCapa.
-  useCapa(abierto, onCerrar);
+  const cerrarCapa = useCapa(abierto, onCerrar);
 
   // Con la ventana abierta, la página de detrás no se mueve y Escape cierra.
   useEffect(() => {
     if (!abierto) return;
     const previo = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const alPulsar = (e: KeyboardEvent) => e.key === 'Escape' && onCerrar();
+    const alPulsar = (e: KeyboardEvent) => e.key === 'Escape' && cerrarCapa();
     window.addEventListener('keydown', alPulsar);
     cajaRef.current?.focus();
     return () => {
       document.body.style.overflow = previo;
       window.removeEventListener('keydown', alPulsar);
     };
-  }, [abierto, onCerrar]);
+  }, [abierto, cerrarCapa]);
 
   const pestanas = [
     ['programa', 'Qué vemos', curso.bloques.length],
@@ -44,7 +44,7 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
   return (
     <div
       className={`modal-fondo${abierto ? ' abierto' : ''}`}
-      onClick={onCerrar}
+      onClick={cerrarCapa}
       aria-hidden={!abierto}
     >
       <div
@@ -56,7 +56,7 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
         className="modal-caja claro"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-cerrar" onClick={onCerrar} aria-label="Cerrar">
+        <button className="modal-cerrar" onClick={cerrarCapa} aria-label="Cerrar">
           ×
         </button>
 
