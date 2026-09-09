@@ -94,6 +94,9 @@ export type Posicion = {
   k: string;
   /** Como lo llama la tabla. */
   nombre: string;
+  /** El nombre de una palabra, para cuando la pantalla es estrecha y el largo
+   *  no cabe. En el móvil es lo único que se escribe debajo del círculo. */
+  corto?: string;
   /** La sigla francesa, que es la que se usa en clase. */
   sigla?: string;
   /** Dónde cae en la rejilla. Leído del diagrama de Iris. */
@@ -170,6 +173,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "madre",
     nombre: "Mensaje de la madre",
+    corto: "Madre",
     fila: 2,
     col: 1,
     mitad: "familia",
@@ -183,6 +187,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "yo",
     nombre: "El Yo",
+    corto: "Yo",
     fila: 2,
     col: 2,
     mitad: "familia",
@@ -196,6 +201,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "padre",
     nombre: "Mensaje del padre",
+    corto: "Padre",
     fila: 2,
     col: 3,
     mitad: "familia",
@@ -212,6 +218,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "persProfunda",
     nombre: "Personalidad profunda",
+    corto: "PP",
     sigla: "PP",
     fila: 2,
     col: 4,
@@ -226,6 +233,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "nudoEmocional",
     nombre: "Nudo emocional",
+    corto: "NE",
     sigla: "NE",
     fila: 1,
     col: 2,
@@ -240,6 +248,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "busqEmocional",
     nombre: "Búsqueda emocional",
+    corto: "QE",
     sigla: "QE",
     fila: 1,
     col: 4,
@@ -254,6 +263,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "comportIntSocial",
     nombre: "Comportamiento interno social",
+    corto: "CIS",
     sigla: "CIS",
     fila: 1,
     col: 1,
@@ -268,6 +278,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "comportExtSocial",
     nombre: "Comportamiento externo social",
+    corto: "CES",
     sigla: "CES",
     fila: 1,
     col: 3,
@@ -282,6 +293,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "persExtSocial",
     nombre: "Personalidad externa social-profesional",
+    corto: "PES",
     sigla: "PES",
     fila: 0,
     col: 2,
@@ -296,6 +308,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "busqArmonia",
     nombre: "Búsqueda de armonía",
+    corto: "RH",
     sigla: "RH",
     fila: 0,
     col: 4,
@@ -310,6 +323,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "busqEspiritual",
     nombre: "Búsqueda espiritual",
+    corto: "QS",
     sigla: "QS",
     fila: 2,
     col: 5,
@@ -324,6 +338,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "resistencia",
     nombre: "Número de resistencia",
+    corto: "NR",
     sigla: "NR",
     fila: 2,
     col: 0,
@@ -338,6 +353,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "emersor",
     nombre: "Emersor",
+    corto: "Emersor",
     sigla: "NE·",
     fila: 0,
     col: 0,
@@ -362,6 +378,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "nudoDolor",
     nombre: "Nudo de dolor",
+    corto: "Dolor",
     fila: 3,
     col: 2,
     mitad: "espejo",
@@ -377,6 +394,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "comportIntDefensa",
     nombre: "Comportamiento interior de defensa",
+    corto: "CID",
     sigla: "CID",
     fila: 4,
     col: 1,
@@ -391,6 +409,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "comportExtDefensa",
     nombre: "Comportamiento exterior de defensa",
+    corto: "CED",
     sigla: "CED",
     fila: 4,
     col: 3,
@@ -405,6 +424,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "persExtDefensa",
     nombre: "Personalidad exterior de defensa",
+    corto: "PED",
     sigla: "PED",
     fila: 4,
     col: 2,
@@ -421,6 +441,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "busqSalida",
     nombre: "Búsqueda de salida exterior",
+    corto: "Salida",
     fila: 4,
     col: 4,
     mitad: "espejo",
@@ -435,6 +456,7 @@ export const POSICIONES: Posicion[] = [
   {
     k: "huida",
     nombre: "Número de huida",
+    corto: "Huida",
     sigla: "NF",
     fila: 5,
     col: 1,
@@ -447,6 +469,91 @@ export const POSICIONES: Posicion[] = [
     une: ["comportIntDefensa", "resistencia"],
   },
 ];
+
+/*
+ * ============================================================================
+ * LA CUENTA, PARA PODER ENSEÑARLA
+ * ============================================================================
+ *
+ * Cada casilla sabe hacer su número, pero para una escuela eso no basta: hay
+ * que poder ENSEÑAR la cuenta, con sus sumandos, su resultado bruto y su
+ * reducción. «19 + 20 = 39 → 12» explica en una línea lo que tres párrafos no.
+ *
+ * Por eso aquí se declara de qué sale cada casilla y con qué operación. Es
+ * información de presentación —la cuenta de verdad la hace `calcula`— y por
+ * eso está aparte: repetirla dentro de cada posición invita a que las dos se
+ * separen sin que nadie se entere.
+ *
+ * Y PARA QUE NO SE SEPAREN, HAY UNA COMPROBACIÓN. El script de verificación
+ * rehace cada casilla a partir de este mapa y exige que dé lo mismo que
+ * `calcula`. Si alguien toca una fórmula y se olvida de este mapa, salta.
+ */
+type Desglose = { de: string[]; op: "+" | "−" | "" };
+
+const CUENTA: Record<string, Desglose> = {
+  madre: { de: ["dia"], op: "" },
+  yo: { de: ["mes"], op: "" },
+  padre: { de: ["anio"], op: "" },
+  persProfunda: { de: ["dia", "mes", "anio"], op: "+" },
+  nudoEmocional: { de: ["dia", "anio"], op: "+" },
+  busqEmocional: { de: ["persProfunda", "nudoEmocional"], op: "+" },
+  comportIntSocial: { de: ["dia", "mes"], op: "+" },
+  comportExtSocial: { de: ["mes", "anio"], op: "+" },
+  persExtSocial: { de: ["comportIntSocial", "comportExtSocial"], op: "+" },
+  busqArmonia: { de: ["persExtSocial", "persProfunda"], op: "+" },
+  busqEspiritual: { de: ["mes", "persProfunda"], op: "+" },
+  resistencia: { de: ["dia", "mes", "anio"], op: "−" },
+  emersor: { de: ["resistencia", "persExtSocial"], op: "+" },
+  nudoDolor: { de: ["dia", "anio"], op: "−" },
+  comportIntDefensa: { de: ["dia", "mes"], op: "−" },
+  comportExtDefensa: { de: ["mes", "anio"], op: "−" },
+  persExtDefensa: { de: ["comportIntDefensa", "comportExtDefensa"], op: "−" },
+  busqSalida: { de: ["persProfunda", "persExtDefensa"], op: "−" },
+  huida: { de: ["resistencia", "persExtDefensa"], op: "−" },
+};
+
+/** Cómo se llama cada pieza de la cuenta cuando se escribe en pantalla. */
+const NOMBRE_PIEZA: Record<string, string> = { dia: "día", mes: "mes", anio: "año" };
+
+export type Paso = { k: string; label: string; valor: number };
+/** La cuenta de una casilla, lista para pintar: piezas, signo, bruto y final. */
+export type Cuenta = { pasos: Paso[]; op: "+" | "−" | ""; bruto: number; valor: number; redujo: boolean };
+
+/**
+ * Rehacer la cuenta de una casilla a partir del mapa de arriba.
+ *
+ * Con la resta se ordena de mayor a menor y se encadena, que es la regla del
+ * sistema. `bruto` es lo que da antes de reducir: es justo lo que hay que
+ * enseñar, porque la reducción («39 → 12») es la parte que la gente falla.
+ */
+export function cuentaDe(k: string, tabla: Calculada[], base: BaseNacimiento): Cuenta | null {
+  const d = CUENTA[k];
+  if (!d) return null;
+  const valorDe = (pieza: string): number | null => {
+    if (pieza === "dia") return base.dia;
+    if (pieza === "mes") return base.mes;
+    if (pieza === "anio") return base.anio;
+    return tabla.find((p) => p.k === pieza)?.valor ?? null;
+  };
+  const pasos: Paso[] = [];
+  for (const pieza of d.de) {
+    const v = valorDe(pieza);
+    if (v === null) return null;
+    pasos.push({ k: pieza, label: NOMBRE_PIEZA[pieza] ?? tabla.find((p) => p.k === pieza)?.nombre ?? pieza, valor: v });
+  }
+  let bruto: number;
+  if (d.op === "+") bruto = pasos.reduce((s, p) => s + p.valor, 0);
+  else if (d.op === "−") {
+    const orden = [...pasos].sort((a, b) => b.valor - a.valor);
+    bruto = orden.reduce((acc, p, i) => (i === 0 ? p.valor : Math.abs(acc - p.valor)), 0);
+    /* La resta se enseña en el orden en que se hace, que no es el orden en que
+       están escritas las piezas: primero la mayor. */
+    pasos.length = 0;
+    pasos.push(...orden);
+  } else bruto = pasos[0].valor;
+  const valor = b22(bruto);
+  return { pasos, op: d.op, bruto, valor, redujo: valor !== bruto };
+}
 
 export type Calculada = Posicion & { valor: number | null; valor9: number | null };
 
@@ -462,8 +569,12 @@ export type Calculada = Posicion & { valor: number | null; valor9: number | null
  * El orden de la lista NO es casual: una posición sólo puede pedir las que
  * están por encima de ella. Si se mueve una, hay que comprobarlo.
  */
+export function baseReducida(b: BaseNacimiento): BaseNacimiento {
+  return { dia: b22(b.dia), mes: b22(b.mes), anio: b22(b.anio) };
+}
+
 export function calculaBase22(b: BaseNacimiento): Calculada[] {
-  const base: BaseNacimiento = { dia: b22(b.dia), mes: b22(b.mes), anio: b22(b.anio) };
+  const base = baseReducida(b);
   const ya: Record<string, number> = {};
   return POSICIONES.map((p) => {
     let valor: number | null = null;

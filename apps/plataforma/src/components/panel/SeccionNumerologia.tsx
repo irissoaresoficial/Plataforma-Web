@@ -11,28 +11,30 @@
  * centro la familia de la que sale todo.
  *
  * ESTA PANTALLA ES DE ESCUELA, NO SÓLO DE CONSULTA. Por eso la tabla se arma
- * delante en vez de aparecer hecha, y por eso cada casilla se puede pulsar para
- * ver de dónde sale su número. Quien la usa no viene sólo a leer un resultado:
- * viene a aprender a sacarlo.
+ * delante en vez de aparecer hecha, y por eso cada casilla se toca y cuenta de
+ * dónde sale su número. Quien la usa no viene sólo a leer un resultado: viene a
+ * aprender a sacarlo.
  *
- * Y POR ESO SE DICE DE DÓNDE VIENE CADA COSA. Trece casillas tienen fuente
- * escrita publicada; las seis del Espejo cuadran con la tabla de Iris pero
- * ninguna fuente accesible enuncia su fórmula, así que salen marcadas con un
- * punto y lo dicen cuando se abren. Esa distinción es lo que separa a una
- * escuela de alguien que se lo inventa: no cuesta nada decirla y lo cambia todo.
+ * LA EXPLICACIÓN YA NO VA DEBAJO. Estaba en una tarjeta bajo el dibujo, y para
+ * leerla había que bajar — o sea, perder de vista el círculo que se acababa de
+ * pulsar. Ahora se abre encima, sobre cristal, con el dibujo detrás.
+ *
+ * Y SE DICE DE DÓNDE VIENE CADA COSA. Trece casillas tienen fuente escrita
+ * publicada; las seis del Espejo cuadran con la tabla de Iris pero ninguna
+ * fuente accesible enuncia su fórmula, así que salen marcadas con un punto y lo
+ * dicen al abrirse. Esa distinción es lo que separa a una escuela de alguien
+ * que se lo inventa: no cuesta nada decirla y lo cambia todo.
  */
 
-import { useState } from "react";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { APOYO, NOTA, PAD_SM, TARJETA, TITULO } from "@/lib/ui";
-import { cuantasCalculan, type Calculada } from "@/lib/base22";
+import { APOYO, NOTA, TITULO } from "@/lib/ui";
+import { cuantasCalculan } from "@/lib/base22";
 import RejillaBase22 from "./RejillaBase22";
 import Pendiente from "./Pendiente";
 
 export default function SeccionNumerologia() {
   const { r, re } = useApp();
-  const [abierta, setAbierta] = useState<Calculada | null>(null);
 
   /* Una empresa no tiene fecha de nacimiento, y esta tabla entera sale de la
      fecha. No es que falte: es que no aplica. */
@@ -63,68 +65,7 @@ export default function SeccionNumerologia() {
         </p>
       </div>
 
-      <RejillaBase22 base={{ dia: r.fecha.dia, mes: r.fecha.mes, anio: r.fecha.anio }} alElegir={setAbierta} />
-
-      {/* La ficha de la casilla que se acabe de pulsar. Va debajo del dibujo y
-          no en una ventana encima: en clase se mira la tabla y la explicación a
-          la vez, y una ventana que tapa la tabla obliga a cerrarla para
-          comprobar lo que se acaba de leer. */}
-      {abierta && (
-        <section style={css(TARJETA + PAD_SM + "display:flex;flex-direction:column;gap:var(--s3);")}>
-          <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
-            <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>La casilla</span>
-            <span style={css("font-family:var(--font-ui);font-weight:600;font-size:var(--t-title);color:var(--text);")}>
-              {abierta.nombre}
-            </span>
-            {abierta.sigla && (
-              <span style={css("font-size:var(--t-mini);color:var(--text-4);letter-spacing:.04em;")}>
-                {abierta.sigla}
-              </span>
-            )}
-            {abierta.valor !== null && (
-              <span style={css("margin-left:auto;font-family:var(--font-ui);font-weight:600;font-size:var(--t-hero);color:var(--gold);line-height:1;")}>
-                {abierta.valor}
-              </span>
-            )}
-          </div>
-
-          {abierta.de ? (
-            <p style={css(APOYO + "margin:0;")}>
-              <b style={css("color:var(--text);")}>De dónde sale:</b> {abierta.de}.
-              {abierta.valor9 !== null && <> En base 9 se lee como un {abierta.valor9}.</>}
-            </p>
-          ) : (
-            <p style={css(APOYO + "margin:0;color:var(--red);")}>
-              Todavía no está la fórmula de esta casilla. No se rellena a ojo: un número inventado aquí acaba en el
-              documento que se le entrega a la persona.
-            </p>
-          )}
-
-          {abierta.significado && <p style={css(APOYO + "margin:0;")}>{abierta.significado}</p>}
-
-          {/* De dónde viene la fórmula. Sólo se dice cuando hay algo que decir:
-              en las trece con fuente no hace falta ninguna coletilla. */}
-          {abierta.certeza === "reconstruido" && (
-            <p style={css(NOTA + "margin:0;border-left:2px solid var(--gold);padding-left:var(--s3);")}>
-              <b style={css("color:var(--text-2);")}>Casilla deducida.</b> Esta fórmula da exactamente el número que
-              tiene la tabla de Iris hecha a mano, y sigue la regla del Espejo —restar, el mayor menos el menor, y un
-              cero se lee como 22—, pero ninguna fuente publicada la enuncia con estas palabras. Se enseña como
-              deducción, no como cita.
-            </p>
-          )}
-
-          {abierta.aviso && <p style={css(NOTA + "margin:0;")}>{abierta.aviso}</p>}
-
-          <button
-            onClick={() => setAbierta(null)}
-            style={css(
-              "align-self:flex-start;background:none;border:none;color:var(--text-3);font-size:var(--t-mini);cursor:pointer;padding:0;text-decoration:underline;"
-            )}
-          >
-            Cerrar
-          </button>
-        </section>
-      )}
+      <RejillaBase22 base={{ dia: r.fecha.dia, mes: r.fecha.mes, anio: r.fecha.anio }} />
 
       {/* El estado, dicho con los números exactos. «Comprobado» a secas no dice
           nada; decir cuántas tienen fuente y cuántas son deducción se puede

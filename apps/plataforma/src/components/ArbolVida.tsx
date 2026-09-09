@@ -1,6 +1,8 @@
 "use client";
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
+import { SEF, SENDEROS } from "@/lib/tree";
 import { arbolGeometria } from "@/lib/arbol";
 import type { Idioma } from "@/lib/documento";
 import type { Resultado } from "@/lib/engine";
@@ -33,9 +35,20 @@ export default function ArbolVida({
   colorNombre = "var(--text-3)",
   estilo = "width:100%;height:auto;display:block;",
   idioma = "es",
+  alElegirSendero,
 }: {
   r: Resultado;
   animado?: boolean;
+  /**
+   * Qué hacer cuando se toca un sendero. Sólo lo pasa el panel: en el documento
+   * impreso no hay nada que tocar, y allí estas zonas ni siquiera se dibujan.
+   *
+   * El árbol tiene 22 senderos y cada uno ES un arcano —el índice del sendero
+   * es el número del arcano—, así que tocar una línea es preguntar por esa
+   * carta. Hasta ahora el dibujo era sólo para mirar y las cartas había que
+   * buscarlas en otra pantalla.
+   */
+  alElegirSendero?: (arcano: number) => void;
   /** Nombres de las diez sefirot junto a su círculo. */
   nombres?: boolean;
   /** Nombres de los arcanos montados sobre sus senderos. */
@@ -54,9 +67,24 @@ export default function ArbolVida({
   const quieto = useReducedMotion();
   const vivo = animado && !quieto;
   const { senderos, sefirot, marcasCamino, complementarios, rotulos: rots, rotulosComp } = arbolGeometria(r, idioma);
+  const [sobre, setSobre] = useState<number | null>(null);
 
   return (
     <svg viewBox="-54 -8 488 676" style={css(estilo)}>
+      {/* El resalte del sendero por el que se está pasando. Va debajo de todo
+          lo demás: es un engrosamiento del propio camino, no una capa encima. */}
+      {alElegirSendero && sobre !== null && (
+        <line
+          x1={SEF[SENDEROS[sobre][0]].x}
+          y1={SEF[SENDEROS[sobre][0]].y}
+          x2={SEF[SENDEROS[sobre][1]].x}
+          y2={SEF[SENDEROS[sobre][1]].y}
+          stroke="var(--gold)"
+          strokeWidth={13}
+          strokeOpacity={0.28}
+          strokeLinecap="round"
+        />
+      )}
       {/* Los complementarios van los primeros, por debajo de todo. */}
       {complementarios.map((c, i) => (
         <motion.line
@@ -182,6 +210,48 @@ export default function ArbolVida({
           >
             {t.nombre}
           </motion.text>
+        ))}
+
+      {/* ------------------------------------------------ LO QUE SE TOCA
+          Van las últimas, encima de todo, y son invisibles: una línea gruesa
+          y transparente por cada sendero.
+
+          El trazo real tiene entre 1,4 y 4 px de ancho en las unidades del
+          dibujo — o sea, dos o tres píxeles en pantalla. Nadie acierta eso con
+          el dedo. Estas zonas tienen 20, que es la medida a la que un dedo da
+          sin apuntar, y no se ven porque no pintan nada: sólo escuchan.
+
+          `pointerEvents="stroke"` es lo que hace que escuche la línea y no su
+          caja: sin eso, un sendero en diagonal se tragaría los toques de medio
+          árbol. */}
+      {alElegirSendero &&
+        SENDEROS.map(([a, b], i) => (
+          <line
+            key={"z" + i}
+            x1={SEF[a].x}
+            y1={SEF[a].y}
+            x2={SEF[b].x}
+            y2={SEF[b].y}
+            stroke="transparent"
+            strokeWidth={20}
+            strokeLinecap="round"
+            pointerEvents="stroke"
+            style={{ cursor: "pointer" }}
+            role="button"
+            tabIndex={0}
+            aria-label={"Arcano " + i}
+            onClick={() => alElegirSendero(i)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                alElegirSendero(i);
+              }
+            }}
+            onPointerEnter={() => setSobre(i)}
+            onPointerLeave={() => setSobre((s) => (s === i ? null : s))}
+            onFocus={() => setSobre(i)}
+            onBlur={() => setSobre((s) => (s === i ? null : s))}
+          />
         ))}
     </svg>
   );

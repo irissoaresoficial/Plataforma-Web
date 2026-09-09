@@ -1505,3 +1505,146 @@ button:not(:disabled):active {
   min-height: 100svh;
   background: #2b1119;
 }
+
+/* ===========================================================================
+   LA FICHA DE UN GRÁFICO
+   ===========================================================================
+   La hoja de cristal que se abre al pulsar un círculo de la rejilla de base 22
+   o un sendero del Árbol de la Vida.
+
+   Son dos piezas en una y por eso está aquí y no en el componente: en el móvil
+   es una HOJA QUE SUBE DESDE ABAJO, pegada al borde inferior, con las esquinas
+   de arriba redondeadas y el pulgar encima de los botones; en pantalla ancha es
+   un DIÁLOGO CENTRADO. Escribirlo con dos componentes distintos habría sido
+   duplicar el contenido para cambiarle el sitio. */
+.ficha-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(74, 58, 48, 0.24);
+  -webkit-backdrop-filter: saturate(1.15) blur(10px);
+  backdrop-filter: saturate(1.15) blur(10px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.ficha-grafico {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: 92vh;
+  max-height: 92svh;
+  /* Tres piezas: la cabeza y el pie se quedan quietos y sólo el cuerpo rueda.
+     Es lo que hace que el número, el nombre y las flechas de «siguiente» estén
+     siempre a la vista, aunque el arcano traiga cuatro mil caracteres. */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--vidrio-denso);
+  -webkit-backdrop-filter: var(--vidrio-difuminado);
+  backdrop-filter: var(--vidrio-difuminado);
+  border: 1px solid var(--vidrio-borde);
+  border-bottom: none;
+  border-radius: 26px 26px 0 0;
+  /* La sombra grande de la casa, y encima un filo de luz por dentro del canto
+     superior: es lo que hace que el cristal se lea como cristal y no como un
+     rectángulo translúcido. */
+  box-shadow: var(--nm-alto), inset 0 1px 0 var(--nm-luz);
+  padding: 0;
+}
+
+.ficha-cabeza {
+  flex: none;
+  padding: 20px clamp(18px, 5vw, 28px) 14px;
+}
+.ficha-cuerpo {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+  padding: 0 clamp(18px, 5vw, 28px) 18px;
+}
+.ficha-pie {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  border-top: 1px solid var(--border);
+  padding: 12px clamp(18px, 5vw, 28px) calc(14px + env(safe-area-inset-bottom));
+}
+
+/* El asidero: la barrita que dice «esto se empuja hacia abajo». */
+.ficha-asa {
+  display: block;
+  width: 40px;
+  height: 4px;
+  border-radius: 980px;
+  background: var(--border-strong);
+  margin: -6px auto 14px;
+}
+
+@media (min-width: 720px) {
+  /* En pantalla ancha la hoja deja de estar pegada abajo: se centra, se
+     despega de los cuatro lados y recupera el canto redondo entero. El
+     contenedor cambia con ella —de `align-items:flex-end` a `center`— desde
+     aquí, para que el componente no tenga que saber en qué ancho está. */
+  .ficha-velo {
+    align-items: center;
+    padding: 32px 24px;
+  }
+  .ficha-grafico {
+    border: 1px solid var(--vidrio-borde);
+    border-radius: 26px;
+    max-height: 86vh;
+  }
+  .ficha-cabeza {
+    padding: 26px 32px 16px;
+  }
+  .ficha-cuerpo {
+    padding: 0 32px 20px;
+  }
+  .ficha-pie {
+    padding: 14px 32px 18px;
+  }
+  .ficha-asa {
+    display: none;
+  }
+}
+
+/* ===========================================================================
+   LOS GRÁFICOS QUE SE PUEDEN TOCAR
+   ===========================================================================
+   Vale para la rejilla de base 22 y para el árbol. Lo que se puede pulsar tiene
+   que parecerlo antes de pulsarlo: el cursor cambia, y al pasar por encima la
+   pieza sube un pelo. En una pantalla táctil no hay «pasar por encima», y por
+   eso el `:active` hace lo mismo — ahí el aviso llega con el dedo ya puesto,
+   que es lo único que se puede hacer. */
+.grafico-toca {
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.grafico-toca:hover,
+.grafico-toca:active {
+  transform: scale(1.07);
+}
+.grafico-toca:focus-visible {
+  outline: none;
+}
+/* El aro de foco se pinta con el propio SVG (un círculo detrás), porque un
+   `outline` sobre un <g> rodea su caja entera —nombre incluido— y sale un
+   rectángulo torcido alrededor de medio dibujo. */
+@media (prefers-reduced-motion: reduce) {
+  .grafico-toca {
+    transition: none;
+  }
+  .grafico-toca:hover,
+  .grafico-toca:active {
+    transform: none;
+  }
+}

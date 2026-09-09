@@ -1,17 +1,25 @@
 "use client";
+import { useState } from "react";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { arbolGeometria } from "@/lib/arbol";
+import { arbolGeometria, arcosDe } from "@/lib/arbol";
 import { COL, COL_TX } from "@/lib/tree";
+import { KDATA } from "@/lib/kdata";
 import { frase, titulo } from "@/lib/format";
 import Particulas from "../Particulas";
 import Parrafo from "./Parrafo";
-import { tarjetaCon, PAD_SM } from "@/lib/ui";
+import { tarjetaCon, PAD_SM, NOTA } from "@/lib/ui";
 import Lienzo from "../Lienzo";
 import ArbolVida from "../ArbolVida";
+import FichaGrafico, { type Contenido } from "./FichaGrafico";
+
+const ETAPA = { origen: "camino de origen", transformacion: "camino de transformación", destino: "camino de destino" } as const;
 
 export default function SeccionArbol() {
   const { r, verArcano } = useApp();
+  /* Qué sendero se está mirando. Los 22 senderos del árbol son los 22 arcanos,
+     así que esto es, literalmente, «qué carta está abierta». */
+  const [sendero, setSendero] = useState<number | null>(null);
   if (!r) return null;
   // Sólo para la leyenda: el dibujo lo arma <ArbolVida /> por su cuenta.
   const { rotulosComp } = arbolGeometria(r);
@@ -31,6 +39,36 @@ export default function SeccionArbol() {
     return { ...d, nombre: titulo(carta.nombre), lema: frase(carta.lema), texto: (carta.texto || "").replace(/^[“"][^”"]*[”"]\.?\s*/, "") };
   });
 
+  /* Qué caminos de esta persona pasan por cada sendero. Es lo que permite que
+     la ficha de un arcano diga «y además éste es tu camino de destino» en vez
+     de soltar la carta a secas, igual para todo el mundo. */
+  const arcos = arcosDe(r);
+
+  const fichaDe = (n: number): Contenido => {
+    const c = KDATA.arcanos[String(n)] || ({} as (typeof KDATA.arcanos)[string]);
+    const roles = arcos[n] || [];
+    const bloques: Contenido["bloques"] = [];
+    if (roles.length) {
+      bloques.push({
+        label: "En esta carta",
+        tono: "oro",
+        texto: "Este sendero lleva tu " + roles.map((x) => ETAPA[x]).join(" y tu ") + ".",
+      });
+    }
+    if (c.pareja) bloques.push({ label: "Este camino en pareja", texto: c.pareja });
+    return {
+      k: "arcano" + n,
+      etiqueta: roles.length ? "Sendero del árbol · uno de los tuyos" : "Sendero del árbol",
+      titulo: titulo(c.nombre) || "Arcano " + n,
+      apunte: "Arcano " + n,
+      valor: n,
+      lema: frase(c.lema),
+      cuerpo: (c.texto || "").replace(/^[“"][^”"]*[”"]\.?\s*/, ""),
+      bloques,
+      color: roles.length ? COL[roles[0]] : undefined,
+    };
+  };
+
   return (
     <div data-dos="ancho">
       <Lienzo anclado>
@@ -39,8 +77,15 @@ export default function SeccionArbol() {
         </div>
         <div style={css("position:relative;")}>
           <Particulas cantidad={20} />
-          <ArbolVida r={r} estilo="position:relative;width:100%;height:auto;display:block;" />
+          <ArbolVida
+            r={r}
+            estilo="position:relative;width:100%;height:auto;display:block;"
+            alElegirSendero={setSendero}
+          />
         </div>
+        <p style={css(NOTA + "margin:var(--s3) 0 0;")}>
+          Toca cualquier sendero: los veintidós son los veintidós arcanos, y se abre el suyo.
+        </p>
 
         <div style={css("display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s4);border-top:1px solid var(--border);padding-top:var(--s4);")}>
           {camDef.map((d, i) => (
@@ -102,6 +147,17 @@ export default function SeccionArbol() {
           </article>
         )}
       </div>
+
+      {/* La misma hoja de cristal que usa la rejilla de base 22. Los dos
+          gráficos de la plataforma se explican igual y se recorren igual: aquí
+          las flechas pasan de un arcano al siguiente sin cerrar. */}
+      <FichaGrafico
+        contenido={sendero === null ? null : fichaDe(sendero)}
+        alCerrar={() => setSendero(null)}
+        alAnterior={() => setSendero((n) => ((n ?? 0) + 21) % 22)}
+        alSiguiente={() => setSendero((n) => ((n ?? 0) + 1) % 22)}
+        posicion={sendero === null ? undefined : { i: sendero + 1, total: 22 }}
+      />
     </div>
   );
 }
