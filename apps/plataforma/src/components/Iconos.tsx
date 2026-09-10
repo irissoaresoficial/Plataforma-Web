@@ -122,6 +122,41 @@ export const IcoNumerologia = (p: P) => (
   </Caja>
 );
 
+/**
+ * Las dos bases de la numerología, dibujadas como son sus cartas.
+ *
+ * No comparten icono a propósito. Son dos sistemas distintos —la de 22 sale de
+ * la fecha, la de 9 del nombre— y la forma de su carta es lo primero que las
+ * distingue en clase: una es una rejilla ancha arriba y estrecha en medio, y la
+ * otra es un cuadrado de nueve casillas. Poniéndoles el mismo icono con distinto
+ * rótulo, en la columna plegada a iconos serían indistinguibles.
+ */
+
+/** Base 22: la rejilla, con su cintura estrecha y el eje del medio. */
+export const IcoBase22 = (p: P) => (
+  <Caja {...p}>
+    <circle cx="5" cy="6.5" r="1.5" fill="currentColor" stroke="none" opacity=".75" />
+    <circle cx="12" cy="5" r="1.7" fill="currentColor" stroke="none" />
+    <circle cx="19" cy="6.5" r="1.5" fill="currentColor" stroke="none" opacity=".75" />
+    <circle cx="12" cy="12" r="2" />
+    <circle cx="5" cy="17.5" r="1.5" fill="currentColor" stroke="none" opacity=".75" />
+    <circle cx="12" cy="19" r="1.7" fill="currentColor" stroke="none" />
+    <circle cx="19" cy="17.5" r="1.5" fill="currentColor" stroke="none" opacity=".75" />
+    <path d="M12 6.7v3.3M12 14v3.3" opacity=".5" />
+  </Caja>
+);
+
+/** Base 9: el cuadro de inclusión, con una casa vacía — que es lo que se mira. */
+export const IcoBase9 = (p: P) => (
+  <Caja {...p}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="2.4" opacity=".55" />
+    <path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17" opacity=".35" />
+    <circle cx="6.35" cy="6.35" r="1.15" fill="currentColor" stroke="none" />
+    <circle cx="17.65" cy="12" r="1.15" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="17.65" r="1.15" fill="currentColor" stroke="none" opacity=".6" />
+  </Caja>
+);
+
 /** Plegar y desplegar la columna de la izquierda. */
 export const IcoPlegar = ({ abierto = true, ...p }: P & { abierto?: boolean }) => (
   <Caja {...p}>

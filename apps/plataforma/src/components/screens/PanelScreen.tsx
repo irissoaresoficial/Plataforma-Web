@@ -12,6 +12,7 @@ import SeccionAlma from "../panel/SeccionAlma";
 import SeccionCuentas from "../panel/SeccionCuentas";
 import SeccionCiclos from "../panel/SeccionCiclos";
 import SeccionNumerologia from "../panel/SeccionNumerologia";
+import SeccionBase9 from "../panel/SeccionBase9";
 import SeccionEmpresa from "../panel/SeccionEmpresa";
 import Pendiente from "../panel/Pendiente";
 import { DISCIPLINAS } from "../Sidebar";
@@ -30,7 +31,7 @@ const SECCIONES: Array<{ k: Seccion; label: string; pie: string }> = [
 ];
 
 export default function PanelScreen() {
-  const { r, re, seccion, disciplina } = useApp();
+  const { r, re, seccion, disciplina, base } = useApp();
   const quieto = useReducedMotion();
 
   /*
@@ -103,6 +104,10 @@ export default function PanelScreen() {
         <div style={css("position:relative;z-index:1;min-width:0;flex:1 1 260px;")}>
           <div style={css("display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:980px;background:var(--gold-soft);color:var(--gold-deep);font-size:var(--t-mini);font-weight:590;")}>
             {DISCIPLINAS.find((d) => d.k === disciplina)?.label}
+            {/* Con dos bases dentro de Numerología, «Numerología» a secas ya no
+                dice en cuál estás. La chapa es lo único de la cabecera que lo
+                puede decir sin robarle sitio al nombre de la persona. */}
+            {disciplina === "numerologia" && (base === "b9" ? " · Base 9" : " · Base 22")}
           </div>
           <h1
             style={css(
@@ -171,8 +176,12 @@ export default function PanelScreen() {
       {/* La key hace que React tire el árbol anterior al cambiar de sección,
        * así la animación de entrada se reproduce en cada salto y no sólo la
        * primera vez. */}
-      <div key={disciplina + seccion} style={css("animation:es33-alza .5s cubic-bezier(.22,1,.36,1) both;")}>
-        {disciplina === "numerologia" && <SeccionNumerologia />}
+      <div key={disciplina + seccion + base} style={css("animation:es33-alza .5s cubic-bezier(.22,1,.36,1) both;")}>
+        {/* Numerología son DOS sistemas, no dos vistas del mismo. La base 22
+            sale de la fecha y dice cómo se comporta alguien; la base 9 sale del
+            nombre completo y dice de qué está hecho. Cuál se mira lo lleva el
+            contexto, porque quien lo cambia es la columna de la izquierda. */}
+        {disciplina === "numerologia" && (base === "b9" ? <SeccionBase9 /> : <SeccionNumerologia />)}
         {disciplina === "kabala" && empresa && <SeccionEmpresa />}
         {disciplina === "kabala" && !empresa && (
           <>

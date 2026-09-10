@@ -73,6 +73,22 @@ export type Seccion = "resumen" | "arbol" | "numeros" | "estructura" | "alma" | 
  *  Feng Shui estaba aquí y se ha quitado: era un hueco vacío en la navegación y
  *  el dueño ha pedido retirarlo hasta que haya algo que enseñar. */
 export type Disciplina = "kabala" | "numerologia";
+
+/**
+ * Las dos bases de la numerología, que son dos sistemas distintos y no dos
+ * vistas del mismo.
+ *
+ *   b22 — Kris Hadar. Sale sólo de la FECHA y describe cómo se COMPORTA una
+ *         persona: la rejilla de diecinueve casillas.
+ *   b9  — Martine Coquatrix. Sale del NOMBRE COMPLETO (y de la fecha) y describe
+ *         de qué está HECHA: las nueve casas, sus habitantes y sus puentes.
+ *
+ * Van en el contexto y no dentro de la pantalla porque la columna de la
+ * izquierda tiene que poder saltar de una a otra: es lo que las hace
+ * encontrables. Quien entra en «Numerología» y sólo ve la rejilla de 22 no sabe
+ * que la otra existe.
+ */
+export type Base = "b22" | "b9";
 /** Un estudio se hace de una persona o de una empresa. La empresa no tiene
  *  apellidos, ni género, ni fecha: se lee entera de su nombre. */
 export type Tipo = "persona" | "empresa";
@@ -140,6 +156,8 @@ type Ctx = {
   setLateral: (v: boolean) => void;
   setDisciplina: (d: Disciplina) => void;
   setSeccion: (s: Seccion) => void;
+  base: Base;
+  setBase: (b: Base) => void;
   /**
    * A quién se está mirando en Clientes.
    *
@@ -227,6 +245,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setView = useCallback((v: View) => router.push(RUTA[v]), [router]);
   const [seccion, setSeccion] = useState<Seccion>("resumen");
   const [disciplina, setDisciplina] = useState<Disciplina>("kabala");
+  const [base, setBase] = useState<Base>("b22");
   const [clienteAbierto, setClienteAbierto] = useState<string | null>(null);
   const [focoFicha, setFocoFicha] = useState<"nota" | null>(null);
   const [facturaAbierta, setFacturaAbierta] = useState<string | null>(null);
@@ -411,6 +430,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       seccion,
       disciplina,
       setDisciplina,
+      base,
+      setBase,
       lateral,
       setLateral,
       setSeccion,
@@ -451,7 +472,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       marca: MARCA,
       anioUniversal,
     }),
-    [view, setView, seccion, disciplina, lateral, clienteAbierto, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
+    [view, setView, seccion, disciplina, base, lateral, clienteAbierto, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
   );
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;

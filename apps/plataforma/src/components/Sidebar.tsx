@@ -2,11 +2,13 @@
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { useApp, type Seccion, type Disciplina, type View } from "@/lib/app-context";
+import { useApp, type Base, type Seccion, type Disciplina, type View } from "@/lib/app-context";
 import {
   IcoAgenda,
   IcoAlma,
   IcoArbol,
+  IcoBase9,
+  IcoBase22,
   IcoCiclos,
   IcoClientes,
   IcoConsulta,
@@ -36,6 +38,18 @@ const KABALA: Item[] = [
   { k: "alma", label: "Imagen del alma", Ico: IcoAlma },
   { k: "cuentas", label: "Cuentas abiertas", Ico: IcoCuentas },
   { k: "ciclos", label: "Ciclos vitales", Ico: IcoCiclos },
+];
+
+/**
+ * Las dos bases de la numerología, que son las «partes» de esa disciplina.
+ *
+ * Los rótulos van cortos porque la columna es estrecha, pero llevan el número
+ * dentro a propósito: «22» y «9» son como se llaman en clase, y es lo que hace
+ * que se entienda de un vistazo que son dos sistemas y no dos pestañas.
+ */
+const BASES: Array<{ k: Base; label: string; Ico: Ico }> = [
+  { k: "b22", label: "Base 22", Ico: IcoBase22 },
+  { k: "b9", label: "Base 9", Ico: IcoBase9 },
 ];
 
 /** Las disciplinas de la escuela, en el orden en que se estudian. Feng Shui
@@ -85,7 +99,7 @@ const DESPACHO: Array<{ k: View; label: string; Ico: Ico }> = [
  * discrepar. `alCambiar` lo usa el cajón para cerrarse al elegir.
  */
 export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void; compacta?: boolean }) {
-  const { r, re, view, setView, seccion, setSeccion, disciplina, setDisciplina } = useApp();
+  const { r, re, view, setView, seccion, setSeccion, disciplina, setDisciplina, base, setBase } = useApp();
   const quieto = useReducedMotion();
   // Qué disciplinas están desplegadas. Se abre la que se está mirando, y
   // pulsando su nombre se cierra.
@@ -187,9 +201,45 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
 
         {DISCIPLINAS.map((d) => {
           const dentro = view === "panel" && disciplina === d.k;
-          // Sólo Kábala tiene partes por ahora; Numerología no lleva flecha
-          // porque no hay nada que desplegar todavía.
-          const partes = d.k === "kabala" && hayEstudio ? partesKabala : [];
+          /*
+           * LAS PARTES DE CADA DISCIPLINA.
+           *
+           * Kábala tiene siete —las siete partes de una carta— y Numerología
+           * tiene DOS, que no son dos vistas de lo mismo sino dos sistemas
+           * distintos: la base 22 sale de la fecha y describe cómo se comporta
+           * alguien; la base 9 sale del nombre completo y describe de qué está
+           * hecho. Antes aquí no había flecha porque Numerología no tenía nada
+           * que desplegar, y eso dejaba la base 9 sin forma de encontrarse.
+           *
+           * Cada parte trae su propio salto porque las dos disciplinas guardan
+           * su sitio en sitios distintos —`seccion` una y `base` la otra—, así
+           * que la lista lleva la acción dentro en vez de decidirse abajo.
+           */
+          const partes: Array<{ k: string; label: string; Ico: Ico; activo: boolean; ir: () => void }> = !hayEstudio
+            ? []
+            : d.k === "kabala"
+              ? partesKabala.map((x) => ({
+                  k: x.k,
+                  label: x.label,
+                  Ico: x.Ico,
+                  activo: dentro && seccion === x.k,
+                  ir: () => {
+                    setView("panel");
+                    setDisciplina("kabala");
+                    setSeccion(x.k);
+                  },
+                }))
+              : BASES.map((x) => ({
+                  k: x.k,
+                  label: x.label,
+                  Ico: x.Ico,
+                  activo: dentro && base === x.k,
+                  ir: () => {
+                    setView("panel");
+                    setDisciplina("numerologia");
+                    setBase(x.k);
+                  },
+                }));
           const abierta = partes.length > 0 && (compacta || abiertas.includes(d.k));
           return (
             <div key={d.k} style={css("display:flex;flex-direction:column;gap:2px;")}>
@@ -219,19 +269,17 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
                     transition={{ height: { duration: 0.34, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.22 } }}
                     style={css("overflow:hidden;")}
                   >
-                    {partes.map(({ k, label, Ico }, i) => (
+                    {partes.map(({ k, label, Ico, activo, ir: saltar }, i) => (
                       <motion.div
                         key={k}
                         initial={quieto ? false : { opacity: 0, x: -6 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.05 + i * 0.035, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                       >
-                        {fila(seccion === k && dentro, Ico, label, () => {
-                          // Pulsar una parte de Kábala lleva al panel en Kábala,
+                        {fila(activo, Ico, label, () => {
+                          // Pulsar una parte lleva al panel en su disciplina,
                           // aunque se estuviera en otra pantalla.
-                          setView("panel");
-                          setDisciplina("kabala");
-                          setSeccion(k);
+                          saltar();
                           alCambiar?.();
                         })}
                       </motion.div>
