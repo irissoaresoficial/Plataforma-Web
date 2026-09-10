@@ -4488,3 +4488,68 @@ body[data-nav-claro='si'] .sello-color {
   border: 1px solid var(--linea-2);
   color: var(--tx-3);
 }
+
+/* ==================================================================
+   EL VÍDEO DEL BLOQUE «¿Y A TI QUÉ NÚMERO TE TOCÓ?»
+   ==================================================================
+   Ocupa el hueco donde después va la cuenta. Es vertical —viene de un reel—
+   así que se le pone tope de alto y no de ancho: a ancho completo en un
+   escritorio mediría casi mil píxeles de alto y empujaría el bloque entero.
+   ================================================================== */
+.tn-video {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  border-radius: var(--radio);
+  overflow: hidden;
+  background: #140b0e;
+  /* La misma sombra que el cartel del curso: lo que flota en esta web flota
+     igual, venga de donde venga. */
+  box-shadow: 0 2px 4px rgba(34, 29, 31, 0.05), 0 24px 56px -24px rgba(69, 26, 37, 0.34);
+  line-height: 0;
+}
+.tn-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(52vh, 460px);
+  object-fit: cover;
+  aspect-ratio: 9 / 16;
+}
+
+/* La portada sin cartel: una sola columna, centrada y estrecha.
+   Con el cartel del curso fuera, la rejilla de dos columnas dejaba el texto
+   pegado a la izquierda y media pantalla en blanco a la derecha. Una frase
+   sola se pone en medio. */
+.hero-solo {
+  grid-template-columns: 1fr !important;
+  justify-items: center;
+  text-align: center;
+}
+.hero-solo .hero-texto {
+  align-items: center;
+  /* 34ch, no 24. A 24 la frase se partía en cinco renglones —«Lo que / se
+     repite / en tu vida / no empezó / contigo»— y además estrangulaba la fila
+     de botones hasta apilarlos. A 34 caben las dos mitades de la frase en dos
+     líneas, que es como está escrita. */
+  max-width: 34ch;
+}
+.hero-solo .hero-botones {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+@media (max-width: 600px) {
+  /* En el móvil los dos botones siguen uno debajo de otro y a todo el ancho:
+     es lo que los hace acertar sin mirar. */
+  .hero-solo .hero-texto {
+    max-width: none;
+    width: 100%;
+  }
+  .hero-solo .hero-botones {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

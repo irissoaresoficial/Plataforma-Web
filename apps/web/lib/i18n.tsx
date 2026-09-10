@@ -8,7 +8,7 @@ export const COPY = {
   es: {
     n1: 'Cómo funciona', n2: 'Ver mi número', n3: 'Cursos', n4: 'Membresía', book: 'Reservar', free: 'Gratis',
     kick: 'Numerología transgeneracional · online desde 2010',
-    h1a: 'Hay cosas que se repiten en tu vida.', h1b: 'Y no empezaron contigo.',
+    h1a: 'Lo que se repite en tu vida', h1b: 'no empezó contigo.',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
     hcta: 'Reservar una sesión', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
     s1: 'personas atendidas', s2: 'desde', s3: 'idiomas',
@@ -85,7 +85,7 @@ export const COPY = {
   pt: {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
-    h1a: 'Há coisas que se repetem na tua vida.', h1b: 'E não começaram contigo.',
+    h1a: 'O que se repete na tua vida', h1b: 'não começou contigo.',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
     hcta: 'Marcar uma sessão', hcta2: 'Ver o meu número, grátis', hbadge: 'Online · ES / PT / EN',
     s1: 'pessoas acompanhadas', s2: 'desde', s3: 'idiomas',
@@ -159,7 +159,7 @@ export const COPY = {
   en: {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
-    h1a: 'Some things keep repeating in your life.', h1b: 'And they did not start with you.',
+    h1a: 'What keeps repeating in your life', h1b: 'did not start with you.',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
     hcta: 'Book a session', hcta2: 'See my number, free', hbadge: 'Online · ES / PT / EN',
     s1: 'people seen', s2: 'since', s3: 'languages',

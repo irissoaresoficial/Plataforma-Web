@@ -17,7 +17,7 @@ import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
-import { CONTACTO, CURSOS, FOTOS, KABALA, MEMBRESIA, SESION, aniosDeConsulta, eur, falta } from '@/content/site';
+import { CONTACTO, FOTOS, KABALA, MEMBRESIA, SESION, aniosDeConsulta, eur } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
 
 const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
@@ -78,7 +78,6 @@ export default function Home() {
   /* El curso que sale en la ficha de la portada: el primero que tenga fecha de
      verdad. Sin ninguno, la ficha no se dibuja: es preferible un hueco a una
      fecha inventada. */
-  const proximo = CURSOS.find((c) => !falta(c.fechas)) ?? null;
 
   /* La oferta de aniversario sólo se enseña si están LOS DOS datos: el precio
      rebajado y cuántas plazas quedan. Con uno solo saldría un número tachado
@@ -136,7 +135,7 @@ export default function Home() {
         <div id="glow" style={{ position: 'absolute', width: 900, height: 900, left: 0, top: 0, margin: '-450px 0 0 -450px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,163,92,.16),transparent 66%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
 
         <div style={{ position: 'relative', zIndex: 3, maxWidth: ANCHO, margin: '0 auto', width: '100%' }}>
-          <div className="hero-rejilla">
+          <div className="hero-rejilla hero-solo">
             <div className="hero-texto" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.8vw,36px)' }}>
               <Reveal>
                 <Rotulo className="rotulo-hero">{t.kick}</Rotulo>
@@ -164,9 +163,13 @@ export default function Home() {
                   {t.h1b}
                 </Palabras>
               </h1>
-              <Reveal delay={150} desde="izq">
-                <p style={{ margin: 0, fontSize: 'var(--t-entrada)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '38ch' }}>{t.hsub}</p>
-              </Reveal>
+              {/* Aquí iba «Te enseño de dónde viene lo que se repite. Y cómo
+                  se corta.» Fuera: la portada se queda en UNA frase.
+
+                  Y no se pierde nada. Lo que hacía esa línea —decir qué se
+                  vende— lo dice ahora el bloque de las dos consultas, con su
+                  precio delante, que es donde de verdad se decide. En la
+                  portada sólo quedan la frase y los dos botones. */}
               <Reveal delay={220}>
                 <div className="hero-botones">
                   <PillCTA onClick={openChat} variant="cream" label={t.hcta} curLabel={t.cbook} />
@@ -177,66 +180,18 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <Reveal delay={120} desde="crece" className="hero-marco-caja">
-              {/* La flotación va en su propia capa: el Reveal ya usa transform
-                  en la caja de fuera, y dos animaciones sobre la misma
-                  propiedad se pisan. */}
-              <div className="hero-flota">
-                {/*
-                  ================================================================
-                  LA CARTELERA DEL PRÓXIMO CURSO
-                  ================================================================
+            {/* AQUÍ ESTABA EL CARTEL DEL PRÓXIMO CURSO, y se ha quitado a
+                petición de Gerson: la portada se queda con una frase y dos
+                botones, sin nada más que mirar.
 
-                  Aquí había un retrato de Iris con una fichita de cristal
-                  apoyada en el borde que decía «Próximo curso · 26 y 27 de
-                  septiembre». Ahora es un cartel: la imagen del curso ocupando
-                  el marco entero, y encima —dentro, no flotando al lado— el
-                  nombre y las fechas, como el cartel de una película en la
-                  puerta del cine.
+                No desaparece de la web — sigue entero en /cursos, y la portada
+                lleva a esa página desde el menú, desde el bloque de cursos de
+                más abajo y desde el pie. Lo que cambia es que ya no compite con
+                el titular en la primera pantalla.
 
-                  POR QUÉ TODO EL CARTEL ES UN ENLACE Y NO SÓLO LA FICHA. Un
-                  cartel se mira entero y se toca donde caiga; obligar a acertar
-                  en un rectangulito de 200 px es perder a la mitad, y en un
-                  móvil a bastante más.
-
-                  Y SI ALGÚN DÍA NO HAY CARTEL, vuelve el retrato de Iris tal y
-                  como estaba. Una portada nunca se queda en blanco por faltar
-                  una imagen.
-                */}
-                {proximo?.cartel ? (
-                  <Link
-                    href={`/cursos#${proximo.id}`}
-                    className="cartel"
-                    data-mag
-                    data-cur-label="Ver"
-                    aria-label={`${proximo.titulo} — ${proximo.fechas}`}
-                  >
-                    <Foto
-                      src={proximo.cartel}
-                      alt={`Cartel de ${proximo.titulo}`}
-                      llenar
-                      radius={0}
-                      priority
-                      sizes="(max-width:900px) 80vw, 44vw"
-                    />
-                    <span className="cartel-pie">
-                      <span className="cartel-rotulo">
-                        Próximo curso
-                        <i>{proximo.fechas}</i>
-                      </span>
-                      <strong className="cartel-titulo">{proximo.titulo}</strong>
-                      <span className="cartel-accion">
-                        Ver el curso <i aria-hidden>→</i>
-                      </span>
-                    </span>
-                  </Link>
-                ) : (
-                  <div className="hero-marco">
-                    <Foto src={FOTOS.portada} alt="Iris Soares" llenar radius={0} priority sizes="(max-width:900px) 80vw, 44vw" objectPosition="center 38%" />
-                  </div>
-                )}
-              </div>
-            </Reveal>
+                Si algún día se quiere de vuelta, está en el historial: era un
+                <Link> a /cursos#id con la imagen a sangre y el nombre y las
+                fechas dentro, como el cartel de una película. */}
           </div>
         </div>
       </div>
@@ -451,11 +406,15 @@ export default function Home() {
             <Revelado>
               <Foto
                 src={FOTOS.hablando}
-                alt="Iris dando una formación, con la sala llena detrás"
+                alt="Iris Soares, en su consulta"
                 ratio="4/5"
                 radius="var(--radio)"
                 sizes="(max-width:900px) 66vw, 340px"
-                objectPosition="center 26%"
+                /* El retrato es 9:16 y el marco 4:5, así que hay que decidir qué
+                   se recorta. A 26 % la coronilla quedaba pegada al borde de
+                   arriba; a 15 % la cabeza respira y lo que se va es suelo, que
+                   no cuenta nada. */
+                objectPosition="center 15%"
               />
             </Revelado>
           </Paralaje>

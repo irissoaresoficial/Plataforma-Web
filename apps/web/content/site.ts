@@ -46,7 +46,23 @@ export const FOTOS = {
   /** La principal, entera. Vertical. */
   retrato: '/images/iris.jpg',
   /** Ella hablando o en directo. Vertical. */
-  hablando: '/images/iris-hablando.jpg',
+  hablando: '/images/iris-consulta.jpg',
+
+  /*
+   * EL VÍDEO DE LA PORTADA.
+   *
+   * Un reel de Iris de medio minuto: «tu fecha es un código sagrado». Vive en el
+   * hueco del bloque «¿Y a ti qué número te tocó?» mientras nadie ha escrito su
+   * fecha — dice con su cara y su voz justo lo que ese bloque pide que hagas— y
+   * desaparece en cuanto aparece la cuenta.
+   *
+   * El cartel NO es decorativo: sin él, `preload="metadata"` sigue enseñando un
+   * rectángulo negro, y con él la portada se ve entera aunque nadie le dé al
+   * play. Sale del segundo 1,5 del propio vídeo, que es donde ya se lee la
+   * frase.
+   */
+  video: '/video/codigo-sagrado.mp4',
+  videoCartel: '/images/codigo-sagrado-cartel.jpg',
   /** Un plano cercano, para el bloque de quién es. Vertical. */
   cerca: '/images/iris-cerca.jpg',
   /**

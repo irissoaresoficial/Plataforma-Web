@@ -26,6 +26,7 @@ import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Reduccion from './Reduccion';
+import { FOTOS } from '@/content/site';
 import { CURVA } from './movimiento';
 import { pasosCaminoDeVida } from '@/lib/numerologia';
 
@@ -243,34 +244,48 @@ export default function TuNumero() {
               className="tn-espera"
             >
               {/*
-                  EL HUECO INVITA A ESCRIBIR. NO ENSEÑA UNA CUENTA YA HECHA.
+                  MIENTRAS NO HAY NÚMERO, AQUÍ ESTÁ IRIS DICIÉNDOLO.
 
-                  Aquí había un ejemplo con los cuatro pliegues de la fecha
-                  14·3·1981 y un párrafo explicando cómo se reduce. Estaba mal
-                  por dos motivos, y el segundo es el gordo.
+                  Este hueco ha tenido tres inquilinos y el tercero es el bueno.
 
-                  Uno: nadie ha pedido una lección. Explicar el método antes de
-                  que la persona haya visto SU número es contestar una pregunta
-                  que todavía no se ha hecho.
+                  Primero enseñaba un ejemplo resuelto con la fecha 14·3·1981, y
+                  estaba mal: los tres campos de al lado llevan 14, 3 y 1981 de
+                  marcador de posición, así que cualquiera veía una fecha puesta
+                  y un resultado calculado y daba por hecho que eso ya estaba
+                  hecho. No se entendía que había que escribir la suya.
 
-                  Dos, y éste es el que rompía la pantalla: los tres campos de
-                  arriba llevan de marcador de posición 14, 3 y 1981 — y este
-                  ejemplo enseñaba justo «14·3·1981 → 9» debajo. Los dos grises,
-                  uno encima del otro. Cualquiera que llega ve una fecha puesta y
-                  un resultado calculado, y da por hecho que eso ya está hecho:
-                  no se entiende que los campos están vacíos y que hay que
-                  escribir la suya. Se veía raro porque estaba mal.
+                  Después fue un hueco excavado con una flecha hacia arriba.
+                  Honesto, pero vacío — y así lo dijo Gerson: «no sé cuál es la
+                  función de eso ahí».
 
-                  Ahora el hueco no dice nada de cuentas: señala hacia arriba, a
-                  las casillas.
+                  Ahora está el vídeo, y el vídeo dice exactamente esto: «tu
+                  fecha es un código sagrado». O sea, la misma frase que el
+                  bloque, dicha por ella y con su cara. Mientras la persona no ha
+                  escrito nada, lo que ocupa el hueco es el motivo para escribir.
+
+                  Y EN CUANTO ESCRIBE, EL VÍDEO SE VA. Su sitio lo ocupa la
+                  cuenta, que es lo que ha venido a ver. Un vídeo que se queda
+                  sonando al lado del resultado compite con él.
               */}
-              {/* El hueco es redondo y está excavado igual que las casillas de
-                  al lado: sin decirlo, es el mismo gesto, y señala justo ahí. */}
-              <div className="tn-hueco">
-                <span className="tn-flecha-arriba" aria-hidden>↑</span>
+              <div className="tn-video">
+                {/* Sin reproducción automática. Iris habla, así que sin sonido
+                    no se entiende nada — y con sonido el navegador lo bloquea.
+                    Con el cartel puesto y `preload="metadata"`, los cinco megas
+                    del vídeo no se descargan hasta que alguien le da: la portada
+                    pesa lo mismo que antes. */}
+                <video
+                  controls
+                  playsInline
+                  preload="metadata"
+                  poster={FOTOS.videoCartel}
+                  aria-label="Iris explica por qué tu fecha de nacimiento es un código"
+                >
+                  <source src={FOTOS.video} type="video/mp4" />
+                  Tu navegador no puede reproducir este vídeo.
+                </video>
               </div>
               <p className="tn-invita">
-                Escribe arriba tu fecha de nacimiento y tu número aparece aquí.
+                Escribe arriba tu fecha y tu número aparece aquí, en lugar del vídeo.
               </p>
               <span className="tn-invita-nota">Sin registrarte. Sin dejar el correo.</span>
             </motion.div>
