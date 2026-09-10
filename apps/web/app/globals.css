@@ -4553,3 +4553,375 @@ body[data-nav-claro='si'] .sello-color {
     align-items: stretch;
   }
 }
+
+/* ==================================================================
+   EL BLOQUE DEL NÚMERO — GRANATE, CRISTAL Y RELIEVE
+   ==================================================================
+   Es el único sitio de la portada donde la persona HACE algo. Sobre el papel
+   claro se leía como un párrafo más; sobre el granate se ve que ahí pasa otra
+   cosa.
+
+   Y el acabado es el de la plataforma, no otro inventado: cristal para lo que
+   flota, relieve HACIA DENTRO para lo que es un hueco donde se escribe, y
+   relieve hacia fuera para lo que se pulsa. Esa es la regla —lo que se hunde es
+   contenido, lo que sobresale es acción— y es lo que hace que se entienda sin
+   leer nada.
+   ================================================================== */
+.tn-banda {
+  position: relative;
+  z-index: 3;
+  background: var(--bg);
+  color: var(--tx);
+  overflow: hidden;
+}
+/* Márgenes de verdad. La rejilla de dentro llegaba a 1180 px y la banda daba
+   sólo 36 px de aire a cada lado: en un portátil de 1280 el panel del vídeo
+   quedaba pegado al borde de la pantalla. Ahora el bloque respira. */
+.tn-banda .banda-dentro {
+  max-width: 1120px;
+}
+@media (min-width: 900px) {
+  .tn-banda {
+    padding-left: clamp(36px, 6vw, 96px);
+    padding-right: clamp(36px, 6vw, 96px);
+  }
+  .tn {
+    gap: clamp(32px, 5vw, 72px);
+  }
+}
+
+.tn-banda .tn-titulo,
+.tn-banda .tn-titulo em {
+  color: var(--tx);
+}
+.tn-banda .tn-texto,
+.tn-banda .tn-invita {
+  color: var(--tx-2);
+}
+.tn-banda .tn-nota,
+.tn-banda .tn-invita-nota {
+  color: var(--tx-3);
+}
+.tn-banda .rotulo,
+.tn-banda .rotulo-dato {
+  color: var(--oro-luz, #e2cda2);
+}
+
+/* ── las casillas de la fecha: excavadas ────────────────────────────
+   Relieve hacia dentro. Sobre oscuro la luz del filo no puede ser blanca —se
+   vería como un borde pintado— sino un reflejo muy tenue por el lado
+   contrario a la sombra. */
+.tn-banda .tn-input {
+  background: rgba(0, 0, 0, 0.18);
+  color: var(--tx);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.5), inset -1px -1px 3px rgba(251, 246, 238, 0.07);
+  transition: box-shadow 0.25s ease, background 0.25s ease;
+}
+.tn-banda .tn-input::placeholder {
+  color: rgba(251, 246, 238, 0.3);
+}
+.tn-banda .tn-input:focus {
+  background: rgba(0, 0, 0, 0.24);
+  box-shadow: inset 2px 2px 7px rgba(0, 0, 0, 0.55), 0 0 0 3px rgba(226, 205, 162, 0.3);
+}
+
+/* ── el panel de la derecha: cristal ────────────────────────────────
+   Translúcido y desenfocado, con un filo de luz por dentro del canto de
+   arriba. Ese filo es la mitad del efecto: sin él es un rectángulo gris; con
+   él, el canto capta la luz como lo haría un cristal de verdad. */
+.tn-banda .tn-resultado {
+  background: rgba(251, 246, 238, 0.055);
+  -webkit-backdrop-filter: saturate(1.25) blur(22px);
+  backdrop-filter: saturate(1.25) blur(22px);
+  border: 1px solid rgba(251, 246, 238, 0.12);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(251, 246, 238, 0.14);
+}
+.tn-banda .tn-siguiente {
+  border-top-color: rgba(251, 246, 238, 0.16);
+}
+
+/* ── el botón principal, en relieve ─────────────────────────────────
+   Sobresale del cristal: es lo que se pulsa. */
+.tn-banda .tn-acciones .pill {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 10px 24px -10px rgba(0, 0, 0, 0.6);
+}
+
+/* ── el vídeo ───────────────────────────────────────────────────────
+   Arranca solo y en silencio. El canto lleva el mismo filo de luz que el
+   cristal que lo sostiene, así se lee como una pieza dentro de la otra y no
+   como una foto pegada encima. */
+.tn-video {
+  position: relative;
+  width: 100%;
+  max-width: 286px;
+  margin: 0 auto;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #140b0e;
+  box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(251, 246, 238, 0.16);
+  line-height: 0;
+}
+.tn-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(50vh, 420px);
+  object-fit: cover;
+  aspect-ratio: 9 / 16;
+}
+
+/* El altavoz: una pastilla de cristal en la esquina del vídeo. Pequeña, pero
+   siempre a la vista — es la única forma de oír a Iris, y un control que hay
+   que adivinar no es un control. */
+.tn-sonido {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px 7px 10px;
+  border-radius: 100px;
+  border: 1px solid rgba(251, 246, 238, 0.24);
+  background: rgba(20, 11, 14, 0.52);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: #fbf6ee;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.tn-sonido:hover {
+  background: rgba(20, 11, 14, 0.74);
+  border-color: rgba(226, 205, 162, 0.5);
+}
+.tn-sonido:focus-visible {
+  outline: 2px solid var(--oro-luz, #e2cda2);
+  outline-offset: 2px;
+}
+
+/* ==================================================================
+   LOS SUSURROS
+   ==================================================================
+   Frases que asoman por los márgenes mientras se navega y explican de qué va
+   esto —la Kábala, la numerología, el árbol— sin abrir un bloque para
+   contarlo. Ver el comentario largo de components/Susurros.tsx.
+
+   Lo que hace que no molesten está aquí: no se pueden tocar, no tapan la
+   columna, y sólo existen cuando hay margen de verdad. El propio componente
+   ni siquiera se monta por debajo de 1180 px.
+   ================================================================== */
+.susurro {
+  position: fixed;
+  z-index: 40;
+  width: 230px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 15px 17px;
+  border-radius: 16px;
+  /* Cristal, como el resto de lo que flota en esta casa. */
+  background: rgba(251, 246, 238, 0.62);
+  -webkit-backdrop-filter: saturate(1.3) blur(16px);
+  backdrop-filter: saturate(1.3) blur(16px);
+  border: 1px solid rgba(34, 29, 31, 0.07);
+  box-shadow: 0 18px 44px -22px rgba(69, 26, 37, 0.3);
+  animation: susurro-entra 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.susurro-de {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--acento);
+}
+.susurro p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tx-2);
+  text-wrap: pretty;
+}
+
+/* Sobre los bloques oscuros el cristal claro cantaría, así que cambia con la
+   página. `.pagina-oscura` no existe en la portada, pero sí en la comunidad. */
+.pagina-oscura .susurro {
+  background: rgba(20, 11, 14, 0.55);
+  border-color: rgba(251, 246, 238, 0.14);
+}
+.pagina-oscura .susurro p {
+  color: rgba(251, 246, 238, 0.82);
+}
+
+/* Una sola esquina, la de abajo a la izquierda. Ver el comentario largo del
+   componente: repartirlas por los márgenes falló en cuanto se probó, porque
+   esta web tiene bloques a sangre y ahí no hay margen. */
+.susurro {
+  left: 22px;
+  bottom: 22px;
+}
+
+@keyframes susurro-entra {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Por debajo de 1180 px no hay margen que no sea contenido. El componente no se
+   monta, pero la regla se queda por si alguna vez se monta desde otro sitio. */
+@media (max-width: 1179px) {
+  .susurro { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .susurro { animation: none; }
+}
+
+/* ==================================================================
+   QUIÉN SOY — LA PORTADA DE IRIS
+   ==================================================================
+   Montado como la portada de alguien que se vende ella: fondo oscuro, el
+   retrato a sangre ocupando media pantalla, y el nombre en versal muy
+   espaciada como pieza gráfica, no como titular.
+
+   El nombre gigante ya estaba en la web, pero de adorno y al 7 % de opacidad
+   —o sea, invisible—. Aquí deja de ser marca de agua y pasa a ordenar el
+   bloque entero.
+   ================================================================== */
+.quien {
+  background: var(--bg);
+  color: var(--tx);
+  overflow: hidden;
+}
+.quien-marco {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  min-height: min(88vh, 820px);
+}
+@media (min-width: 900px) {
+  .quien-marco {
+    /* El retrato pesa un poco más que el texto: es lo que manda aquí. */
+    grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
+  }
+  /* Y va a la DERECHA aunque en el documento esté primero. Primero en el
+     código para que en el móvil, que se apila, se vea antes que el texto. */
+  .quien-retrato { order: 2; }
+  .quien-texto { order: 1; }
+}
+
+.quien-retrato {
+  position: relative;
+  min-height: 52vh;
+}
+@media (min-width: 900px) {
+  .quien-retrato { min-height: 0; }
+}
+.quien-retrato > :first-child,
+.quien-retrato img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* El velo: por abajo en el móvil (donde el texto viene debajo) y por el lado
+   del texto en escritorio. Sin él, la foto y el granate se tocan con un canto
+   duro que se lee como un recorte mal hecho. */
+.quien-velo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--bg) 0%, rgba(0, 0, 0, 0) 42%);
+}
+@media (min-width: 900px) {
+  .quien-velo {
+    background: linear-gradient(to right, var(--bg) 0%, rgba(0, 0, 0, 0) 26%);
+  }
+}
+
+.quien-texto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(12px, 1.6vw, 18px);
+  padding: clamp(44px, 7vw, 96px) clamp(16px, 4vw, 64px) clamp(56px, 8vw, 104px);
+  min-width: 0;
+}
+
+/* EL NOMBRE. En versal, muy abierto y en la serif: es la pieza gráfica del
+   bloque. El espaciado grande es lo que lo convierte en cartel — apretado
+   sería un titular más. */
+.quien-nombre {
+  display: block;
+  font-family: var(--serif);
+  font-weight: var(--peso-fino);
+  /* 4,6vw y no 6,2: a 6,2 «SOARES» rebasaba su columna en un portátil de 1440
+     y la primera línea salía cortada por la izquierda. */
+  font-size: clamp(34px, 4.6vw, 68px);
+  line-height: 0.98;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--tx);
+}
+.quien-oficio {
+  display: block;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+  color: var(--oro-luz, #e2cda2);
+  margin-bottom: clamp(10px, 1.6vw, 20px);
+}
+
+.quien-frase {
+  font-family: var(--serif);
+  font-weight: var(--peso-fino);
+  font-size: clamp(21px, 2.3vw, 30px);
+  line-height: 1.22;
+  letter-spacing: -0.018em;
+  color: var(--tx);
+  max-width: 20ch;
+  text-wrap: balance;
+}
+.quien-remate {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.4;
+  color: var(--oro-luz, #e2cda2);
+  max-width: 24ch;
+}
+
+.quien-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: clamp(8px, 1.4vw, 16px);
+  max-width: 44ch;
+}
+.quien-bio p {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: var(--tx-2);
+  text-wrap: pretty;
+}
+
+/* Las chapas de las seis disciplinas, en tono oscuro. */
+.quien-chips {
+  margin-top: clamp(10px, 1.8vw, 20px);
+  /* La cinta se sale por los dos lados a propósito —está pasando— pero no
+     puede nacer pegada al canto de la pantalla: se desangra hacia fuera del
+     relleno de la columna y vuelve a entrar. */
+  margin-left: calc(clamp(16px, 4vw, 64px) * -1);
+  margin-right: calc(clamp(16px, 4vw, 64px) * -1);
+  padding-left: clamp(16px, 4vw, 64px);
+}
+.quien-chips .chip {
+  border-color: rgba(251, 246, 238, 0.2);
+  color: var(--tx-2);
+}

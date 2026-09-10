@@ -51,6 +51,10 @@ export default function TuNumero() {
   const [f, setF] = useState<Fecha>({ dia: '', mes: '', anio: '' });
   const [hecho, setHecho] = useState<{ d: number; m: number; a: number } | null>(null);
   const [acabado, setAcabado] = useState(false);
+  /* El vídeo arranca solo y en silencio; el botón del altavoz lo enciende.
+     Ver el comentario largo de más abajo. */
+  const video = useRef<HTMLVideoElement>(null);
+  const [suena, setSuena] = useState(false);
 
   const error = queFalta(f);
   const completa = Boolean(f.dia && f.mes && f.anio);
@@ -139,8 +143,15 @@ export default function TuNumero() {
             la cuenta, cuando ya te has llevado tu número y la pregunta llega
             con algo detrás. Ahí sí abre el embudo; aquí sólo confundía.
         */}
+        {/* «¿Y a ti qué número te tocó?» sonaba a sorteo, y esto no es un
+            juego: es el primer paso de mirarse. El titular tiene que decir eso.
+
+            Y de paso arregla algo que chirriaba: la web entera habla de que lo
+            que se repite no empezó contigo, y este bloque preguntaba qué te
+            «tocó» — como si fuera suerte. Es justo lo contrario de lo que se
+            está contando. */}
         <h2 className="tn-titulo">
-          ¿Y a ti <em>qué número te tocó</em>?
+          Antes de cambiar nada, <em>hay que saber qué traes</em>.
         </h2>
         <p className="tn-texto">
           Pon tu fecha de nacimiento y lo ves ahora mismo. Es la <strong>misma cuenta</strong> que hago yo con
@@ -267,25 +278,64 @@ export default function TuNumero() {
                   cuenta, que es lo que ha venido a ver. Un vídeo que se queda
                   sonando al lado del resultado compite con él.
               */}
+              {/* CARTEL PRIMERO, VÍDEO DESPUÉS.
+
+                  Con `<video controls>` a secas, la barra negra del navegador
+                  está siempre puesta encima del cartel: sobre el granate se ve
+                  como un trozo de otra web pegado en medio. Y cada navegador
+                  dibuja la suya, así que no hay forma de que quede igual en dos
+                  sitios.
+
+                  Así que hasta que alguien le da al play no hay <video>: hay una
+                  foto con un botón dorado encima. Al pulsar, entra el vídeo ya
+                  reproduciéndose y con sus controles, que es cuando esos
+                  controles sirven para algo. */}
+              {/* ARRANCA SOLO Y EN SILENCIO, Y SE OYE DE UN TOQUE.
+
+                  Autoplay con sonido lo bloquean todos los navegadores desde
+                  hace años — no es una opción, es una ley del sitio. Lo que sí
+                  se puede es arrancar en silencio, y eso es lo que se hace: el
+                  vídeo se mueve solo, en bucle, y llama sin pedir permiso.
+
+                  Como Iris HABLA, el silencio se lleva la mitad del mensaje,
+                  así que hay un botón de altavoz siempre a la vista. Un toque y
+                  suena. Es la única forma honesta de tener las dos cosas.
+
+                  `muted` va también en el atributo del elemento y no sólo en la
+                  propiedad: Safari mira el atributo al montar, y sin él bloquea
+                  el arranque y deja el primer fotograma congelado. */}
               <div className="tn-video">
-                {/* Sin reproducción automática. Iris habla, así que sin sonido
-                    no se entiende nada — y con sonido el navegador lo bloquea.
-                    Con el cartel puesto y `preload="metadata"`, los cinco megas
-                    del vídeo no se descargan hasta que alguien le da: la portada
-                    pesa lo mismo que antes. */}
                 <video
-                  controls
+                  ref={video}
+                  autoPlay
+                  muted
+                  loop
                   playsInline
-                  preload="metadata"
+                  preload="auto"
                   poster={FOTOS.videoCartel}
                   aria-label="Iris explica por qué tu fecha de nacimiento es un código"
                 >
                   <source src={FOTOS.video} type="video/mp4" />
                   Tu navegador no puede reproducir este vídeo.
                 </video>
+                <button
+                  type="button"
+                  className="tn-sonido"
+                  onClick={() => {
+                    const v = video.current;
+                    if (!v) return;
+                    v.muted = !v.muted;
+                    setSuena(!v.muted);
+                    if (!v.muted) void v.play();
+                  }}
+                  aria-label={suena ? 'Silenciar el vídeo' : 'Oír a Iris'}
+                >
+                  <span aria-hidden>{suena ? '🔊' : '🔇'}</span>
+                  {suena ? 'Silenciar' : 'Oír a Iris'}
+                </button>
               </div>
               <p className="tn-invita">
-                Escribe arriba tu fecha y tu número aparece aquí, en lugar del vídeo.
+                Tu <b>número transgeneracional</b> sale aquí mismo.
               </p>
               <span className="tn-invita-nota">Sin registrarte. Sin dejar el correo.</span>
             </motion.div>

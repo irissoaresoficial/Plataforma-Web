@@ -16,6 +16,7 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
+import Susurros from '@/components/Susurros';
 import { useLang } from '@/lib/i18n';
 import { CONTACTO, FOTOS, KABALA, MEMBRESIA, SESION, aniosDeConsulta, eur } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
@@ -236,7 +237,14 @@ export default function Home() {
           del mismo tono para que lo único que las separe sean las sombras. Sobre
           blanco, la tarjeta beige se leía como un rectángulo gris grande y medio
           vacío en mitad de la página. */}
-      <div id="prueba" className="arena banda" style={{ scrollMarginTop: 80 }}>
+      {/* En granate, no en arena. Es el único bloque de la portada donde la
+          persona HACE algo —escribe su fecha y se lleva su número— y sobre el
+          papel claro se leía como un párrafo más de los de alrededor. El
+          granate lo saca de la página: se ve que ahí pasa otra cosa.
+
+          Y de paso resuelve el vídeo: un reel con la luz que tiene, recortado
+          sobre papel crema, se veía pegado; sobre el granate se integra. */}
+      <div id="prueba" className="vino banda tn-banda" style={{ scrollMarginTop: 80 }}>
         <div className="banda-dentro">
           <TuNumero />
         </div>
@@ -323,60 +331,84 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── QUIÉN SOY ────────────────────────────────────────── */}
-      <div className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: 'clamp(70px,9vw,120px) clamp(16px,4vw,56px) clamp(76px,10vw,150px)', overflow: 'hidden' }}>
-        {/* Su nombre a lo ancho de la sección, muy tenue: firma la página sin
-            gastar una línea de texto. Aquí sí hay aire para que respire. */}
-        <div aria-hidden style={{ maxWidth: ANCHO, margin: '0 auto clamp(-14px,-1.4vw,-30px)', pointerEvents: 'none' }}>
-          <span className="display" style={{ display: 'block', fontSize: 'clamp(54px,11vw,168px)', lineHeight: 0.9, letterSpacing: '-.02em', whiteSpace: 'nowrap', color: 'var(--tx)', opacity: 0.07 }}>
-            Iris Soares
-          </span>
-        </div>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(32px,5vw,84px)', alignItems: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,26px)' }}>
+      {/* ── QUIÉN SOY ─────────────────────────────────────────
+          EL RETRATO MANDA, Y EL NOMBRE ES LA PIEZA GRÁFICA.
+
+          Antes era el bloque más convencional de la web: rótulo, titular,
+          párrafo, foto pequeña al lado. Ahora está montado como la portada de
+          una persona que se vende ella —que es lo que es—: fondo oscuro, el
+          retrato a sangre ocupando media pantalla, y el nombre en versal muy
+          espaciada por encima, del tamaño de un cartel.
+
+          El nombre gigante ya estaba, pero de adorno y al 7 % de opacidad, o
+          sea invisible. Aquí deja de ser marca de agua y pasa a ser la pieza
+          que ordena el bloque: es lo primero que se ve y lo que dice de quién
+          es esta web.
+
+          En el móvil se apila —retrato arriba, texto debajo— porque un retrato
+          a media pantalla en 390 px no deja sitio para nada más. */}
+      <div className="vino quien" style={{ position: 'relative', zIndex: 3 }}>
+        <div className="quien-marco">
+          {/* La foto va primero en el orden del documento y a la derecha en el
+              dibujo: en el móvil, que se apila, tiene que verse ANTES que el
+              texto — es lo que hace que se lea como su portada. */}
+          <div className="quien-retrato">
+            <Revelado>
+              <Foto
+                src={FOTOS.hablando}
+                alt="Iris Soares, en su consulta"
+                ratio="4/5"
+                radius="0"
+                llenar
+                sizes="(max-width:900px) 100vw, 46vw"
+                /* El retrato es 9:16 y el marco 4:5, así que hay que decidir
+                   qué se recorta: a 15 % la cabeza respira y lo que se va es
+                   suelo, que no cuenta nada. */
+                objectPosition="center 15%"
+              />
+            </Revelado>
+            {/* Un velo por el lado del texto para que el nombre no se pise con
+                la imagen cuando las dos columnas se tocan. */}
+            <span className="quien-velo" aria-hidden />
+          </div>
+
+          <div className="quien-texto">
             <Reveal>
-              <Rotulo>{t.w_lab}</Rotulo>
+              {/* En dos líneas y no en una. A una sola, «IRIS SOARES» a este
+                  cuerpo no cabe en su columna y se salía por la izquierda: la
+                  primera palabra quedaba cortada. Partido, además, se parece
+                  más a lo que es — un cartel. */}
+              <span className="quien-nombre">
+                Iris
+                <br />
+                Soares
+              </span>
             </Reveal>
-            {/* La frase de Iris va partida en dos, y no por capricho: entera y
-                a cuerpo de titular ocupaba cinco renglones y se comía el bloque
-                — un titular de cinco líneas deja de ser un titular. Partida, la
-                primera mitad dice qué hace y la segunda, en dorado, dice a
-                dónde va. No se pierde ni una palabra. */}
-            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '17ch' }}>
+            <Reveal delay={60}>
+              <span className="quien-oficio">{t.w_lab} · Numerología transgeneracional</span>
+            </Reveal>
+
+            <Reveal delay={120} className="quien-frase">
               {t.w_h}
             </Reveal>
-            <Reveal delay={110}>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: 'var(--serif)',
-                  fontStyle: 'italic',
-                  fontSize: 'var(--t-entrada)',
-                  lineHeight: 1.4,
-                  color: 'var(--acento)',
-                  maxWidth: '24ch',
-                }}
-              >
-                {t.w_h2}
-              </p>
+            <Reveal delay={170}>
+              <p className="quien-remate">{t.w_h2}</p>
             </Reveal>
-            <Reveal delay={140}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 'var(--t-cuerpo)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '42ch' }}>
-                <p style={{ margin: 0 }}>{t.w_p1}</p>
-                <p style={{ margin: 0 }}>{t.w_p2}</p>
+
+            <Reveal delay={220}>
+              <div className="quien-bio">
+                <p>{t.w_p1}</p>
+                <p>{t.w_p2}</p>
               </div>
             </Reveal>
-            {/* Las seis disciplinas, en cinta continua. Apiladas ocupaban tres
-                renglones y se leían como una lista de la compra; pasando, se
-                leen de un vistazo y ocupan una línea. Se desvanecen por los dos
-                lados en vez de cortarse contra el borde: una palabra partida a
-                la mitad se lee como un fallo, y desvanecida se lee como que la
-                cinta sigue. */}
-            <Reveal delay={200}>
-              <div className="cinta-chips">
+
+            {/* Las seis disciplinas. En cinta continua, como estaban: apiladas
+                ocupaban tres renglones y se leían como una lista de la compra. */}
+            <Reveal delay={280}>
+              <div className="cinta-chips quien-chips">
                 <Marquesina segundos={34}>
                   {chips.map((c) => (
-                    <span key={c} className="chip chip-cinta">
+                    <span key={c} className="chip">
                       {c}
                     </span>
                   ))}
@@ -384,40 +416,6 @@ export default function Home() {
               </div>
             </Reveal>
           </div>
-          {/*
-            LA FOTO DE «QUIÉN SOY», MÁS PEQUEÑA Y CON AIRE ALREDEDOR.
-
-            Estaba a 1/1 y al ancho entero de su columna. En un móvil eso son
-            390 px de cara: un primerísimo plano recortado por arriba y por
-            abajo que, tan cerca, no da cercanía — da apuro. Y el cuadrado se
-            comía la sala del fondo, que es justo lo que dice que está
-            trabajando.
-
-            Ahora es un retrato 4/5, más chico que su columna, y se ve la sala
-            llena detrás. Se lee como «aquí está ella, dando una formación» y no
-            como una foto de carné gigante.
-
-            Y se mueve al pasar: se destapa de abajo arriba mientras va más
-            despacio que la página. Es la misma pareja de gestos que la franja
-            de fotos de más arriba — se usa lo que ya existe en la casa en vez
-            de inventar otra animación distinta para esta foto sola.
-          */}
-          <Paralaje cantidad={30} className="quien-foto">
-            <Revelado>
-              <Foto
-                src={FOTOS.hablando}
-                alt="Iris Soares, en su consulta"
-                ratio="4/5"
-                radius="var(--radio)"
-                sizes="(max-width:900px) 66vw, 340px"
-                /* El retrato es 9:16 y el marco 4:5, así que hay que decidir qué
-                   se recorta. A 26 % la coronilla quedaba pegada al borde de
-                   arriba; a 15 % la cabeza respira y lo que se va es suelo, que
-                   no cuenta nada. */
-                objectPosition="center 15%"
-              />
-            </Revelado>
-          </Paralaje>
         </div>
       </div>
 
@@ -826,6 +824,9 @@ export default function Home() {
       </div>
 
       <ChatWidget ref={chatRef} />
+      {/* Las frases que asoman por los márgenes mientras se baja. Van aquí, al
+          final y fuera de todo: son de la página entera, no de ningún bloque. */}
+      <Susurros />
     </div>
   );
 }
