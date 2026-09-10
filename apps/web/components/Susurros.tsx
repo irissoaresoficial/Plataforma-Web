@@ -64,16 +64,16 @@ const PRIMERA = 3400;
  * seguidas no se lleve dos veces lo mismo.
  */
 const FRASES = [
-  { de: 'Kábala', txt: '«Kábala» significa recibir. No hay que creer en nada: es una forma de leer cómo está montada una persona por dentro.' },
-  { de: 'Numerología', txt: 'Tu fecha de nacimiento no se elige. Por eso dice tanto: es el único dato tuyo que estaba escrito antes de que tú llegaras.' },
-  { de: 'El árbol', txt: 'El Árbol de la Vida son diez estaciones por las que pasa todo lo que te ocurre, desde que lo piensas hasta que lo haces.' },
-  { de: 'Transgeneracional', txt: 'Lo que se repite en una familia no es carácter. Es una historia que alguien no pudo cerrar, y que sigue buscando quien la cierre.' },
-  { de: 'Los senderos', txt: 'Veintidós caminos unen esas diez estaciones. En tu carta se encienden los que te tocan, y cada uno tiene su arcano.' },
-  { de: 'Numerología', txt: 'No predice nada. Ordena: te enseña de dónde viene lo que ya te está pasando.' },
-  { de: 'El Tikun', txt: 'Tikun quiere decir rectificación. Lo que se hereda no se aguanta: se repara y se devuelve a su sitio.' },
-  { de: 'Los ciclos', txt: 'La vida no va en línea recta, va por tramos. Saber en cuál estás cambia lo que tiene sentido intentar hoy.' },
-  { de: 'Kábala', txt: 'No es una religión ni cosa de iniciados. Es un mapa, y los mapas se leen para no andar en círculos.' },
-  { de: 'Tu nombre', txt: 'El nombre también cuenta. Es lo primero que alguien decidió por ti, y viene con el encargo de quien lo eligió.' },
+  { de: 'Kábala', txt: '«Kábala» quiere decir recibir. No hay que creer en nada: es un mapa de cómo eres por dentro, y los mapas se miran, no se creen.' },
+  { de: 'Numerología', txt: 'Tu fecha de nacimiento no la elegiste tú. Por eso dice tanto: es el único dato tuyo que ya estaba escrito antes de que llegaras.' },
+  { de: 'El árbol', txt: 'El Árbol de la Vida son diez paradas por las que pasa todo lo que te ocurre: desde que se te ocurre algo hasta que lo haces de verdad.' },
+  { de: 'Tu familia', txt: '¿Te has fijado en que en tu familia se repite siempre lo mismo? Eso no es carácter. Es algo que alguien no pudo cerrar y sigue buscando quién lo cierre.' },
+  { de: 'Los senderos', txt: 'Entre esas diez paradas hay veintidós caminos. En tu carta se encienden los que te tocan a ti, y cada uno cuenta algo tuyo.' },
+  { de: 'Numerología', txt: 'No adivina el futuro. Ordena el presente: te enseña de dónde viene eso que ya te está pasando.' },
+  { de: 'El Tikun', txt: 'Tikun significa reparar. Lo que te llega de tu familia no hay que aguantarlo: se repara y se le devuelve a quien era.' },
+  { de: 'Los ciclos', txt: 'La vida no va en línea recta, va por tramos. Saber en cuál estás cambia lo que merece la pena intentar este año.' },
+  { de: 'Kábala', txt: 'No es una religión, ni es para elegidos. Es un mapa. Y un mapa sirve para dejar de dar vueltas en círculo.' },
+  { de: 'Tu nombre', txt: 'Tu nombre también cuenta. Fue lo primero que alguien decidió por ti, y viene con lo que esa persona esperaba de ti.' },
 ];
 
 export default function Susurros() {

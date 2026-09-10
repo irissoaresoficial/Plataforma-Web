@@ -17,6 +17,7 @@ import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
+import ArbolVida from '@/components/ArbolVida';
 import { useLang } from '@/lib/i18n';
 import { CONTACTO, FOTOS, KABALA, MEMBRESIA, SESION, aniosDeConsulta, eur } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
@@ -609,33 +610,53 @@ export default function Home() {
             </Reveal>
             <Reveal delay={120}>
               <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '44ch' }}>
-                «Kábala» significa <i>recibir</i>. No es una religión ni hay que creer en nada: es una forma de leer
-                cómo está montada una persona por dentro, y por dónde le entra y le sale la vida.
+                «Kábala» quiere decir <i>recibir</i>. No es una religión y no hay que creer en nada: es una forma de ver
+                cómo eres por dentro, y por dónde te entra y te sale la vida.
               </p>
             </Reveal>
           </div>
 
-          <div className="kab-rejilla">
+          {/* EL ÁRBOL, AL LADO DE LO QUE LO EXPLICA.
+              Las cuatro piezas decían «diez estaciones» y «veintidós senderos»
+              sin enseñar ninguna, y el pie de este mismo bloque promete que
+              esto se dibuja delante de ti. Ahora se dibuja: el árbol entra a la
+              izquierda y las cuatro piezas se recolocan a su derecha, así que
+              se lee «10 · El Árbol de la Vida» con el árbol justo al lado. En
+              móvil se apilan y el árbol va primero.
+
+              Y EL PIE SE HA METIDO AQUÍ DENTRO, en la columna de la derecha.
+              Estaba debajo, cruzando el bloque entero, y dejaba doscientos
+              píxeles de granate vacío al lado del árbol. Aquí abajo cierra la
+              columna, la iguala de alto con el dibujo y —lo que importa— pone
+              el botón de reservar justo después de lo que lo explica, en vez
+              de a una pantalla de distancia. */}
+          <div className="kab-cuerpo">
+            <Reveal delay={80}>
+              <ArbolVida />
+            </Reveal>
+
+            <div className="kab-columna">
+            <div className="kab-rejilla">
             {[
               {
                 n: '10',
                 t: 'El Árbol de la Vida',
-                p: 'Diez estaciones por las que pasa todo lo que te ocurre, desde que lo piensas hasta que lo haces. Es el plano de la casa.',
+                p: 'Diez paradas por las que pasa todo lo que te ocurre: desde que se te ocurre algo hasta que lo haces. Es el plano de la casa.',
               },
               {
                 n: '22',
                 t: 'Los senderos',
-                p: 'Los caminos que unen esas diez estaciones. Cada uno tiene su arcano, y en tu carta se encienden los que te tocan.',
+                p: 'Los caminos que unen esas diez paradas. En tu carta se encienden los que te tocan a ti, y cada uno cuenta algo tuyo.',
               },
               {
                 n: '3',
                 t: 'Tus tres caminos',
-                p: 'De dónde vienes, qué has venido a transformar y hacia dónde vas. Salen de tu fecha, y son los que se leen en la consulta.',
+                p: 'De dónde vienes, qué has venido a cambiar y hacia dónde vas. Salen de tu fecha, y son los que se leen en la consulta.',
               },
               {
                 n: 'תיקון',
                 t: 'El Tikun',
-                p: 'La palabra que sostiene todo esto: rectificación. Lo que se hereda no se aguanta — se repara y se devuelve a su sitio.',
+                p: 'La palabra que sostiene todo esto: reparar. Lo que te llega de tu familia no hay que aguantarlo — se repara y se le devuelve a quien era.',
               },
             ].map((k, i) => (
               <Reveal key={k.t} delay={100 + i * 60} className="kab-ficha">
@@ -644,22 +665,24 @@ export default function Home() {
                 <p className="kab-txt">{k.p}</p>
               </Reveal>
             ))}
-          </div>
-
-          <Reveal delay={340}>
-            <div className="kab-pie">
-              <p>
-                En consulta esto no se explica: se dibuja delante de ti con tu nombre y tu fecha, y sales con el mapa en
-                la mano.
-              </p>
-              <PillCTA
-                onClick={openChat}
-                variant="gold"
-                label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
-                curLabel={t.cbook}
-              />
             </div>
-          </Reveal>
+
+            <Reveal delay={340}>
+              <div className="kab-pie">
+                <p>
+                  En consulta esto no se explica: se dibuja delante de ti con tu nombre y tu fecha, y sales con el mapa
+                  en la mano.
+                </p>
+                <PillCTA
+                  onClick={openChat}
+                  variant="gold"
+                  label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
+                  curLabel={t.cbook}
+                />
+              </div>
+            </Reveal>
+            </div>
+          </div>
         </div>
       </div>
 
