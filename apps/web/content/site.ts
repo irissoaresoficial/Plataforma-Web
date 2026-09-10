@@ -228,7 +228,59 @@ export const SESION = {
   /** Tal y como se quiera enseñar: "90 minutos", "una hora y media". */
   duracion: PENDIENTE,
   /** En euros. null = todavía sin precio, y la web no enseña ninguno. */
-  precio: null as number | null,
+  precio: 150 as number | null,
+  /**
+   * EL PRECIO DE ANIVERSARIO — 111 € PARA LAS DIECISÉIS PRIMERAS.
+   *
+   * Confirmado por Gerson el 14 de septiembre de 2026. Los tres números tienen
+   * un porqué y por eso se pueden decir en voz alta:
+   *
+   *   · 111 sale del aniversario, que cae en día 14;
+   *   · 16 plazas, una por cada año de consulta — Iris abrió en 2010;
+   *   · y se acaba cuando se llenan las dieciséis. No hay fecha límite, así que
+   *     la web NO monta una cuenta atrás: una cuenta atrás sobre una escasez
+   *     que no es de tiempo es mentir con un reloj.
+   *
+   * Una rebaja con motivo se lee como una condición; una sin motivo se lee como
+   * que mañana seguirá ahí. Por eso el motivo va escrito al lado del número, y
+   * no en un correo al que llega poca gente.
+   *
+   * `null` en cualquiera de los dos apaga la oferta entera y la web vuelve a
+   * enseñar sólo el precio normal, sin tachar nada.
+   */
+  precioOferta: 111 as number | null,
+  /** Cuántas quedan a ese precio. Se baja a mano según se van llenando. */
+  plazasOferta: 16 as number | null,
+  /** El año en que Iris abrió consulta. De aquí salen los «años» del motivo. */
+  desde: 2010,
+};
+
+/**
+ * Los años de consulta, contados solos.
+ *
+ * Escrito a mano se queda viejo el 1 de enero y nadie se acuerda de tocarlo:
+ * una web que dice «16 años» cuando ya son 17 se lee como abandonada, y es el
+ * dato que sostiene el motivo de la oferta.
+ */
+export function aniosDeConsulta(): number {
+  return new Date().getFullYear() - SESION.desde;
+}
+
+/* ------------------------------------------------------------------ */
+/*  LA CONSULTA DE KÁBALA                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * El otro servicio del catálogo. Confirmado por Gerson el 14 de septiembre de
+ * 2026: es una consulta, con el mismo formato que la de arriba, pero leyendo la
+ * carta con Kábala en vez de con numerología transgeneracional.
+ *
+ * NO es un curso ni una formación. Si algún día lo es, se escribe en otro sitio
+ * — mezclar «consulta» y «formación» en la misma ficha es lo que hace que la
+ * gente pregunte por WhatsApp qué está comprando exactamente.
+ */
+export const KABALA = {
+  precio: 333 as number | null,
 };
 
 /* ------------------------------------------------------------------ */

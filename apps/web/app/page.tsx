@@ -17,7 +17,7 @@ import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import { useLang } from '@/lib/i18n';
-import { CONTACTO, CURSOS, FOTOS, MEMBRESIA, falta } from '@/content/site';
+import { CONTACTO, CURSOS, FOTOS, KABALA, MEMBRESIA, SESION, aniosDeConsulta, eur, falta } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
 
 const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
@@ -80,6 +80,14 @@ export default function Home() {
      fecha inventada. */
   const proximo = CURSOS.find((c) => !falta(c.fechas)) ?? null;
 
+  /* La oferta de aniversario sólo se enseña si están LOS DOS datos: el precio
+     rebajado y cuántas plazas quedan. Con uno solo saldría un número tachado
+     sin motivo —o un motivo sin número— y las dos mitades son las que hacen
+     que se entienda. Apagando cualquiera de los dos en content/site.ts, la
+     ficha vuelve sola a enseñar el precio normal y nada más. */
+  const ofertaViva = SESION.precioOferta != null && SESION.plazasOferta != null;
+  const anios = aniosDeConsulta();
+
   /* Doce, no cuatro. Quien duda antes de reservar no duda de una cosa: duda de
      si esto es adivinación, de si le van a pedir creer algo, de qué pasa si no
      sabe las fechas de sus abuelos y de si puede mover la cita. Cada pregunta
@@ -106,7 +114,17 @@ export default function Home() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta={t.book} onCta={openChat} conIdiomas extra={[{ href: '#prueba', label: t.n1 }, { href: '#dudas', label: 'Dudas' }]} />
+      <Nav
+        cta={t.book}
+        onCta={openChat}
+        conIdiomas
+        extra={[
+          { href: '#consultas', label: 'La consulta' },
+          { href: '#kabala', label: 'Qué es la Kábala' },
+          { href: '#prueba', label: t.n1 },
+          { href: '#dudas', label: 'Dudas' },
+        ]}
+      />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
       {/* Manda el retrato, con dos fichas apoyadas en su borde. El bloque ya no
@@ -364,8 +382,28 @@ export default function Home() {
             <Reveal>
               <Rotulo>{t.w_lab}</Rotulo>
             </Reveal>
-            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '14ch' }}>
+            {/* La frase de Iris va partida en dos, y no por capricho: entera y
+                a cuerpo de titular ocupaba cinco renglones y se comía el bloque
+                — un titular de cinco líneas deja de ser un titular. Partida, la
+                primera mitad dice qué hace y la segunda, en dorado, dice a
+                dónde va. No se pierde ni una palabra. */}
+            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '17ch' }}>
               {t.w_h}
+            </Reveal>
+            <Reveal delay={110}>
+              <p
+                style={{
+                  margin: 0,
+                  fontFamily: 'var(--serif)',
+                  fontStyle: 'italic',
+                  fontSize: 'var(--t-entrada)',
+                  lineHeight: 1.4,
+                  color: 'var(--acento)',
+                  maxWidth: '24ch',
+                }}
+              >
+                {t.w_h2}
+              </p>
             </Reveal>
             <Reveal delay={140}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 'var(--t-cuerpo)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '42ch' }}>
@@ -435,6 +473,92 @@ export default function Home() {
           donde toca: la cuenta se ve en la portada, el temario en la ficha del
           curso y las capas del árbol en la landing de la comunidad. */}
 
+      {/* ── LAS DOS CONSULTAS ────────────────────────────────
+          El bloque que faltaba, y era el más importante que faltaba.
+
+          Esta web contaba muy bien QUÉ pasa en una familia y QUIÉN es Iris, y
+          después no decía en ninguna parte qué se compra ni cuánto cuesta.
+          Había que llegar al chat para enterarse. Una web que esconde el precio
+          no protege la venta: la retrasa hasta que la persona se cansa.
+
+          Van las dos juntas y no en dos sitios distintos porque la pregunta
+          real de quien llega no es «¿cuánto cuesta la consulta?», es «¿cuál de
+          las dos es la mía?». Puestas al lado se contesta sola. */}
+      <div id="consultas" className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: PAD, scrollMarginTop: 80 }}>
+        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,44px)' }}>
+          <Reveal>
+            <Rotulo>La consulta</Rotulo>
+          </Reveal>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(20px,3vw,48px)', alignItems: 'end' }}>
+            <Reveal delay={60} className="titular-seccion" style={{ maxWidth: '15ch' }}>
+              Una hora contigo y con tu historia delante.
+            </Reveal>
+            <Reveal delay={120}>
+              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '42ch' }}>
+                Online, con tu carta preparada antes de vernos. Sales sabiendo quién eres y qué decisión tomar hoy.
+              </p>
+            </Reveal>
+          </div>
+
+          <div className="consultas-rejilla">
+            {/* ------------------------------------------- LA CONSULTA */}
+            <Reveal delay={100} className="consulta-ficha consulta-ficha-alta">
+              {ofertaViva && (
+                <span className="consulta-chapa">
+                  {SESION.plazasOferta} plazas · {anios} años de consulta
+                </span>
+              )}
+              <h3 className="consulta-nombre">Consulta con Iris</h3>
+              <p className="consulta-que">
+                Numerología transgeneracional. Miramos de dónde viene lo que se repite en tu familia, en qué generación
+                empezó y qué parte te toca soltar a ti.
+              </p>
+              <div className="consulta-precio">
+                {ofertaViva ? (
+                  <>
+                    <b>{eur(SESION.precioOferta)}</b>
+                    <s>{eur(SESION.precio)}</s>
+                  </>
+                ) : (
+                  <b>{eur(SESION.precio)}</b>
+                )}
+              </div>
+              {ofertaViva && (
+                <p className="consulta-motivo">
+                  Precio de aniversario, que cae en día 14. Son {SESION.plazasOferta} plazas, una por cada año de
+                  consulta, y se acaba cuando se llenen.
+                </p>
+              )}
+              <PillCTA onClick={openChat} variant="cream" label="Reservar mi consulta" curLabel={t.cbook} />
+            </Reveal>
+
+            {/* --------------------------------------- LA DE KÁBALA */}
+            <Reveal delay={170} className="consulta-ficha">
+              {/* Chapa también aquí. Sin ella las dos fichas empezaban a
+                  distinta altura y el conjunto se leía torcido — y además la
+                  vacía parecía la que sobra. Ésta va en tono neutro para que la
+                  de las plazas siga siendo la que llama. */}
+              <span className="consulta-chapa consulta-chapa-neutra">La más profunda</span>
+              <h3 className="consulta-nombre">Consulta de Kábala</h3>
+              <p className="consulta-que">
+                La misma hora, leyendo tu carta con el Árbol de la Vida: los caminos que te tocan, los arcanos que los
+                rigen y las cuentas que traes abiertas. Es la lectura más profunda de las dos.
+              </p>
+              <div className="consulta-precio">
+                <b>{eur(KABALA.precio)}</b>
+              </div>
+              <p className="consulta-motivo">
+                Para quien ya se ha mirado por dentro alguna vez y quiere ir al fondo.{' '}
+                <Link href="#kabala" data-mag>
+                  Qué es la Kábala →
+                </Link>
+              </p>
+              <PillCTA onClick={openChat} variant="dark" label="Reservar la de Kábala" curLabel={t.cbook} />
+            </Reveal>
+          </div>
+        </div>
+      </div>
+
       {/* ── LO QUE LE ESCRIBEN ────────────────────────────────
           La prueba va aquí, justo antes de las tres cosas que se piden
           —comunidad, cursos, sesión—: primero se enseña que hay gente detrás y
@@ -502,6 +626,83 @@ export default function Home() {
               <PillCTA href="/membresia" variant="dark" label={t.wl_cta} curLabel={t.csee} />
             </Reveal>
           </div>
+        </div>
+      </div>
+
+      {/* ── QUÉ ES LA KÁBALA ─────────────────────────────────
+          La web vendía una consulta de Kábala y no explicaba en ninguna parte
+          qué es la Kábala. Quien no lo sepa —que es casi todo el mundo— no
+          compra la más cara de las dos: no por el precio, sino porque no sabe
+          qué está comprando.
+
+          Y se cuenta como lo que es en esta casa: una herramienta de
+          autoconocimiento, no una religión ni una cosa de iniciados. Las cuatro
+          piezas de abajo son las cuatro que Iris usa de verdad en una consulta
+          —el árbol, los senderos, los caminos y el Tikun—, así que quien lea
+          esto reconoce después lo que ve en pantalla. */}
+      <div id="kabala" className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
+        <CampoNumeros intensidad={1.5} densidad={150_000} />
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,44px)' }}>
+          <Reveal>
+            <Rotulo claro>Qué es la Kábala</Rotulo>
+          </Reveal>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(20px,3vw,48px)', alignItems: 'end' }}>
+            <Reveal delay={60} className="titular-seccion" style={{ maxWidth: '16ch' }}>
+              Un mapa de ti que tiene tres mil años.
+            </Reveal>
+            <Reveal delay={120}>
+              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '44ch' }}>
+                «Kábala» significa <i>recibir</i>. No es una religión ni hay que creer en nada: es una forma de leer
+                cómo está montada una persona por dentro, y por dónde le entra y le sale la vida.
+              </p>
+            </Reveal>
+          </div>
+
+          <div className="kab-rejilla">
+            {[
+              {
+                n: '10',
+                t: 'El Árbol de la Vida',
+                p: 'Diez estaciones por las que pasa todo lo que te ocurre, desde que lo piensas hasta que lo haces. Es el plano de la casa.',
+              },
+              {
+                n: '22',
+                t: 'Los senderos',
+                p: 'Los caminos que unen esas diez estaciones. Cada uno tiene su arcano, y en tu carta se encienden los que te tocan.',
+              },
+              {
+                n: '3',
+                t: 'Tus tres caminos',
+                p: 'De dónde vienes, qué has venido a transformar y hacia dónde vas. Salen de tu fecha, y son los que se leen en la consulta.',
+              },
+              {
+                n: 'תיקון',
+                t: 'El Tikun',
+                p: 'La palabra que sostiene todo esto: rectificación. Lo que se hereda no se aguanta — se repara y se devuelve a su sitio.',
+              },
+            ].map((k, i) => (
+              <Reveal key={k.t} delay={100 + i * 60} className="kab-ficha">
+                <span className="kab-num">{k.n}</span>
+                <h3 className="kab-tit">{k.t}</h3>
+                <p className="kab-txt">{k.p}</p>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal delay={340}>
+            <div className="kab-pie">
+              <p>
+                En consulta esto no se explica: se dibuja delante de ti con tu nombre y tu fecha, y sales con el mapa en
+                la mano.
+              </p>
+              <PillCTA
+                onClick={openChat}
+                variant="gold"
+                label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
+                curLabel={t.cbook}
+              />
+            </div>
+          </Reveal>
         </div>
       </div>
 
@@ -583,8 +784,22 @@ export default function Home() {
           <Reveal delay={150}>
             <PillCTA onClick={openChat} variant="gold" label={t.c_btn} curLabel={t.cbook} />
           </Reveal>
+          {/* El precio también aquí, y no sólo en la ficha de arriba. Este es el
+              último botón de la página: quien llega hasta aquí ha bajado la web
+              entera y lo justo es que no tenga que subir a buscar cuánto cuesta
+              para decidirse. */}
           <Reveal delay={210}>
-            <span style={{ fontSize: 12, color: 'var(--tx-3)' }}>{t.c_micro}</span>
+            <span style={{ fontSize: 12, color: 'var(--tx-3)' }}>
+              {ofertaViva ? (
+                <>
+                  {eur(SESION.precioOferta)} en vez de {eur(SESION.precio)} · quedan {SESION.plazasOferta} plazas
+                </>
+              ) : SESION.precio != null ? (
+                <>{eur(SESION.precio)}</>
+              ) : null}
+              {' · '}
+              {t.c_micro}
+            </span>
           </Reveal>
         </div>
       </div>

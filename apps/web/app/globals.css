@@ -4307,3 +4307,184 @@ body[data-nav-claro='si'] .sello-color {
   padding-right: 18px;
   white-space: nowrap;
 }
+
+/* ==================================================================
+   LAS DOS CONSULTAS
+   ==================================================================
+   Dos fichas al lado, porque la pregunta de quien llega no es «cuánto cuesta»
+   sino «cuál de las dos es la mía»: puestas juntas se contesta sola.
+
+   La de Iris manda —lleva chapa, fondo propio y el filete dorado— y la de
+   Kábala es la hermana seria: mismo tamaño, sin adornos. No se distinguen por
+   ser una más grande que la otra, sino por el peso del color. Dos fichas de
+   distinto tamaño se leerían como «ésta es la buena y ésta el descarte».
+   ================================================================== */
+.consultas-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(18px, 2.4vw, 32px);
+  align-items: stretch;
+}
+
+.consulta-ficha {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: clamp(26px, 3.4vw, 40px);
+  border-radius: var(--radio);
+  border: 1px solid var(--linea);
+  background: var(--superficie);
+}
+/* La principal: el filete dorado al canto y un fondo un punto más cálido. El
+   color marca, no rellena — la misma regla que el resto de la casa. */
+.consulta-ficha-alta {
+  border-color: var(--linea-2);
+  box-shadow: inset 3px 0 0 var(--acento);
+}
+
+.consulta-chapa {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px;
+  border-radius: 100px;
+  background: var(--acento-suave, rgba(200, 155, 74, 0.13));
+  color: #8f6b18;
+  font-size: var(--rotulo-tam);
+  font-weight: var(--rotulo-peso);
+  letter-spacing: var(--rotulo-esp);
+  text-transform: uppercase;
+}
+
+.consulta-nombre {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.3vw, 28px);
+  font-weight: var(--peso-fino);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--tx);
+}
+
+.consulta-que {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.6;
+  color: var(--tx-2);
+  max-width: 40ch;
+  /* Empuja el precio y el botón al fondo, así las dos fichas alinean sus
+     botones aunque un texto sea más largo que el otro. */
+  flex: 1;
+}
+
+.consulta-precio {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 4px;
+}
+.consulta-precio b {
+  font-family: var(--serif);
+  font-size: clamp(38px, 4.4vw, 54px);
+  font-weight: var(--peso-fino);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+.consulta-precio s {
+  font-size: 19px;
+  color: var(--tx-3);
+  text-decoration-thickness: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.consulta-motivo {
+  margin: 0;
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  color: var(--tx-3);
+  max-width: 38ch;
+}
+.consulta-motivo a {
+  color: var(--acento);
+  white-space: nowrap;
+}
+
+/* ==================================================================
+   QUÉ ES LA KÁBALA
+   ==================================================================
+   Cuatro piezas sobre el granate. No son tarjetas: son cuatro columnas
+   separadas por una línea fina, porque esto no es un catálogo de servicios —
+   es una explicación, y una explicación no se trocea en cajas.
+   ================================================================== */
+.kab-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(20px, 2.6vw, 40px);
+}
+
+.kab-ficha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(251, 246, 238, 0.16);
+}
+
+/* El número en la serif y en dorado: es el que hace que las cuatro se lean
+   como parte de un mismo sistema y no como cuatro párrafos sueltos. Y el
+   hebreo del Tikun cae aquí sin romper nada, que es la gracia. */
+.kab-num {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: var(--peso-fino);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--oro-luz, #e2cda2);
+  font-variant-numeric: tabular-nums;
+}
+
+.kab-tit {
+  margin: 0;
+  font-size: var(--t-ficha);
+  font-weight: var(--peso-medio);
+  letter-spacing: -0.015em;
+  color: var(--tx);
+}
+
+.kab-txt {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.62;
+  color: var(--tx-2);
+  text-wrap: pretty;
+}
+
+.kab-pie {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 3vw, 40px);
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(251, 246, 238, 0.16);
+  padding-top: clamp(22px, 3vw, 34px);
+}
+.kab-pie p {
+  margin: 0;
+  flex: 1;
+  min-width: 260px;
+  font-size: var(--t-cuerpo);
+  line-height: 1.6;
+  color: var(--tx-2);
+  max-width: 46ch;
+}
+
+/* La chapa de la ficha secundaria: mismo sitio y mismo tamaño que la dorada
+   —para que las dos fichas empiecen a la misma altura— pero sin fondo. Marca
+   sin llamar. */
+.consulta-chapa-neutra {
+  background: none;
+  border: 1px solid var(--linea-2);
+  color: var(--tx-3);
+}

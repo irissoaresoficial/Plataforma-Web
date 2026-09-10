@@ -89,14 +89,21 @@ export default function Membresia() {
         <CampoNumeros intensidad={1.7} densidad={130_000} />
 
         <div className="com-dentro">
+          {/* La flor de lis, arriba del todo. Esta página no lleva la barra con
+              la marca —es una pantalla sola— así que sin el sello no había nada
+              que dijera de quién es la comunidad hasta el titular. */}
           <Reveal>
+            <Marca tam={44} texto={false} claro />
+          </Reveal>
+
+          <Reveal delay={40}>
             <span className="com-obras">
               <i aria-hidden />
               Próximamente
             </span>
           </Reveal>
 
-          <Reveal as="h1" delay={70} className="com-titular">
+          <Reveal as="h1" delay={100} className="com-titular">
             La comunidad
             <br />
             <em>de Iris Soares</em>
@@ -115,13 +122,13 @@ export default function Membresia() {
 
               Lo que sí hay que decir es qué gana quien entre primero. Eso no es
               defenderse: es dar un motivo. */}
-          <Reveal delay={140}>
+          <Reveal delay={170}>
             <p className="com-linea">
               Un grupo pequeño. Cada mes, una parte de tu historia familiar.
             </p>
           </Reveal>
 
-          <Reveal delay={190}>
+          <Reveal delay={220}>
             <p className="com-condicion">Las primeras deciden conmigo qué se trabaja dentro.</p>
           </Reveal>
 
@@ -130,7 +137,7 @@ export default function Membresia() {
               único que se puede hacer en esta página. Cuando sólo hay una
               acción, ponerla en una caja aparte no es adorno: es lo que hace
               que se vea sin leer nada. */}
-          <Reveal delay={240}>
+          <Reveal delay={270}>
             <div id="avisar" className="com-caja">
               <p className="com-caja-titulo">Te aviso antes que a nadie</p>
               <LeadForm
