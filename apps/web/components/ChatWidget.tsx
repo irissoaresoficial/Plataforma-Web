@@ -138,6 +138,26 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     ojo.observe(portada);
     return () => ojo.disconnect();
   }, []);
+
+  /*
+   * EL BOTÓN AVISA DE QUE ESTÁ AHÍ.
+   *
+   * Los susurros —las frases que explican la Kábala— salen de este botón como
+   * pensamientos de viñeta, con su cola apuntando a la cara de Iris. Si el botón
+   * no se ve, un pensamiento sin cabeza es un cartel suelto en una esquina, que
+   * es justo lo que se quería quitar.
+   *
+   * Se publica en el `<html>` y con un evento en vez de levantar un contexto:
+   * son dos componentes que no se conocen, que se montan en páginas distintas y
+   * que no comparten ningún árbol. El atributo es para quien llegue tarde (lee
+   * el estado actual sin esperar al siguiente cambio) y el evento para quien ya
+   * estaba escuchando.
+   */
+  const botonALaVista = !(open || tapado);
+  useEffect(() => {
+    document.documentElement.dataset.iris = botonALaVista ? 'si' : 'no';
+    window.dispatchEvent(new Event('iris:boton'));
+  }, [botonALaVista]);
   /* Los tres trozos de la fecha de nacimiento, cada uno por su lado: hasta que
      no están los tres no hay fecha que validar ni número que calcular. */
   const [nacDia, setNacDia] = useState('');

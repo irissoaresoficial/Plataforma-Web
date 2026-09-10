@@ -4,53 +4,56 @@ import { useEffect, useState } from 'react';
 
 /**
  * ============================================================================
- * LOS SUSURROS — LO QUE SE APRENDE SIN QUERER, MIENTRAS SE BAJA
+ * LOS SUSURROS — LO QUE IRIS VA PENSANDO MIENTRAS TÚ BAJAS
  * ============================================================================
  *
- * Frases cortas que asoman por los márgenes de la página mientras se navega,
- * se quedan unos segundos y se van. Explican en palabras llanas de qué va esto
- * —la Kábala, la numerología, el árbol, los ciclos— sin abrir un bloque nuevo
- * para contarlo.
+ * Frases cortas que salen del botón del chat como pensamientos, se quedan unos
+ * segundos y se reabsorben. Explican en palabras llanas de qué va esto —la
+ * Kábala, la numerología, el árbol, los ciclos— sin abrir un bloque nuevo para
+ * contarlo.
  *
  * ---------------------------------------------------------------------------
- * POR QUÉ ASÍ Y NO EN UNA SECCIÓN
+ * POR QUÉ SALEN DEL CHAT Y NO DE UNA ESQUINA CUALQUIERA
  * ---------------------------------------------------------------------------
- * Esta web vende dos consultas y una de ellas es de Kábala. Quien no sabe qué
- * es la Kábala no compra la más cara: no por el precio, sino porque no sabe qué
- * está comprando. Pero tampoco se puede parar la página para dar una clase —
- * nadie ha venido a estudiar.
+ * La primera versión las ponía en la esquina de abajo a la izquierda, sueltas.
+ * Funcionaba, pero no se entendía QUIÉN habla: una caja de cristal aparece sola
+ * en un borde de la pantalla y el cerebro la lee como un anuncio, que es
+ * exactamente lo que uno ha aprendido a no mirar.
  *
- * Los susurros resuelven las dos cosas: enseñan sin interrumpir. Quien va a lo
- * suyo los ignora; quien tiene curiosidad los lee y, al llegar a la ficha de
- * 333 €, ya sabe de qué le hablan.
+ * Ahora salen del botón donde está la cara de Iris, con la cola de dos bolitas
+ * que en cualquier viñeta significa «esto lo está pensando ella». Cambia dos
+ * cosas de golpe: se sabe de quién es la voz, y el botón de reservar —que es la
+ * única forma de reservar en toda la web— deja de ser un botón parado en una
+ * esquina y pasa a ser alguien que está ahí.
  *
  * ---------------------------------------------------------------------------
- * LAS TRES REGLAS QUE HACEN QUE ESTO NO SEA UN INFIERNO
+ * LAS REGLAS QUE HACEN QUE ESTO NO SEA UN INFIERNO
  * ---------------------------------------------------------------------------
- * Un elemento que aparece solo encima de una página es, casi siempre, una mala
- * idea. Éstas son las condiciones bajo las que no lo es:
- *
  *   1. UNA SOLA A LA VEZ, y con silencio entre medias. Dos frases flotando
  *      compiten entre ellas y con el texto de la página.
- *   2. SIEMPRE EN LA MISMA ESQUINA, la de abajo a la izquierda, y sólo si la
- *      pantalla es ancha. Por debajo de 1180 px no sale ninguna: en un móvil
- *      esto sería puro estorbo.
- *   3. NO SE TOCAN Y NO ROBAN EL FOCO. `pointer-events: none` y
- *      `aria-hidden`: no se pueden pulsar por error, no aparecen en el
- *      tabulador y un lector de pantalla no las lee en mitad de un párrafo.
+ *   2. SÓLO CUANDO EL BOTÓN ESTÁ. Si el botón no se ve —la portada a pantalla
+ *      completa lo esconde, y el chat abierto lo tapa— no hay nada de donde
+ *      puedan salir, así que no salen. Un pensamiento sin cabeza es un cartel.
+ *   3. SÓLO EN PANTALLA ANCHA (1180 px). En un móvil el pensamiento taparía
+ *      media pantalla.
+ *   4. NO SE TOCAN Y NO ROBAN EL FOCO. `pointer-events: none` y `aria-hidden`:
+ *      no se pueden pulsar por error, no salen en el tabulador y un lector de
+ *      pantalla no las lee en mitad de un párrafo.
  *
- * Y una cuarta que no es negociable: con `prefers-reduced-motion` no se monta
+ * Y una quinta que no es negociable: con `prefers-reduced-motion` no se monta
  * ninguna. Para quien ha pedido que las cosas no se muevan, esto es exactamente
  * lo que ha pedido que no pase.
  */
 
-/** Cuánto está una frase en pantalla, y cuánto silencio hay después. */
+/** Cuánto está una frase en pantalla, cuánto tarda en reabsorberse, y cuánto
+ *  silencio hay después. La salida tiene que cuadrar con la animación del CSS. */
 const DURA = 7200;
+const SALIDA = 460;
 const SILENCIO = 5200;
 const PRIMERA = 3400;
 
 /**
- * Lo que dicen.
+ * Lo que piensa.
  *
  * Cada una es una idea entera en una línea y media. Nada de aquí es inventado:
  * el árbol, los 22 senderos, los tres caminos y el Tikun salen del mismo
@@ -73,62 +76,77 @@ const FRASES = [
   { de: 'Tu nombre', txt: 'El nombre también cuenta. Es lo primero que alguien decidió por ti, y viene con el encargo de quien lo eligió.' },
 ];
 
-/*
- * SIEMPRE EN LA MISMA ESQUINA, Y ES LA DE ABAJO A LA IZQUIERDA.
- *
- * La primera versión las repartía por cuatro sitios de los márgenes, y salió
- * mal a la primera prueba: la web tiene bloques a sangre —el retrato de «Quién
- * soy» ocupa el ancho entero— y ahí no hay margen que valga. Un susurro cayó
- * justo encima del nombre de Iris.
- *
- * Una sola esquina, siempre la misma, arregla las dos cosas: no puede tapar un
- * titular (los titulares no viven abajo del todo) y se vuelve predecible — a la
- * segunda ya sabes de dónde salen y las lees o las ignoras a voluntad. La de
- * abajo a la derecha está ocupada por el botón del chat.
- */
-
 export default function Susurros() {
-  const [i, setI] = useState<number | null>(null);
+  /** Qué frase toca y en qué momento de su vida está. */
+  const [frase, setFrase] = useState<{ i: number; yendose: boolean } | null>(null);
+
+  /**
+   * SI NO ESTÁ EL BOTÓN, NO HAY PENSAMIENTO.
+   *
+   * El ChatWidget publica en el `<html>` si su botón se ve o no —lo esconde
+   * mientras la portada ocupa la pantalla, y mientras el chat está abierto—.
+   * Se lee de ahí en vez de levantar un contexto: son dos componentes que no se
+   * conocen y que viven en páginas distintas.
+   */
+  const [hayBoton, setHayBoton] = useState(false);
+  useEffect(() => {
+    const mira = () => setHayBoton(document.documentElement.dataset.iris === 'si');
+    mira();
+    window.addEventListener('iris:boton', mira);
+    return () => window.removeEventListener('iris:boton', mira);
+  }, []);
 
   useEffect(() => {
     /* Ni con el movimiento reducido, ni en pantallas donde el margen es
-       contenido. Las dos comprobaciones van aquí y no en el CSS porque así ni
-       siquiera se monta el temporizador. */
+       contenido, ni mientras no haya botón del que salir. Las comprobaciones van
+       aquí y no en el CSS porque así ni se monta el temporizador. */
     if (typeof window === 'undefined') return;
+    if (!hayBoton) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!window.matchMedia('(min-width: 1180px)').matches) return;
 
     let n = 0;
     let vivo = true;
     const relojes: ReturnType<typeof setTimeout>[] = [];
+    const luego = (ms: number, f: () => void) =>
+      relojes.push(setTimeout(() => vivo && f(), ms));
 
     const ciclo = () => {
-      if (!vivo) return;
-      setI(n % FRASES.length);
+      const i = n % FRASES.length;
       n += 1;
-      relojes.push(
-        setTimeout(() => {
-          if (!vivo) return;
-          setI(null);
-          relojes.push(setTimeout(ciclo, SILENCIO));
-        }, DURA)
-      );
+      setFrase({ i, yendose: false });
+      /* Se va como vino: primero se marca la salida —el CSS la encoge de vuelta
+         hacia el botón— y sólo cuando esa animación ha terminado se desmonta. */
+      luego(DURA, () => {
+        setFrase({ i, yendose: true });
+        luego(SALIDA, () => {
+          setFrase(null);
+          luego(SILENCIO, ciclo);
+        });
+      });
     };
-    relojes.push(setTimeout(ciclo, PRIMERA));
+    luego(PRIMERA, ciclo);
 
     return () => {
       vivo = false;
       relojes.forEach(clearTimeout);
+      setFrase(null);
     };
-  }, []);
+  }, [hayBoton]);
 
-  if (i === null) return null;
-  const f = FRASES[i];
+  if (!frase) return null;
+  const f = FRASES[frase.i];
 
   return (
-    <aside className="susurro" aria-hidden="true">
+    <aside className={`susurro${frase.yendose ? ' susurro-sale' : ''}`} aria-hidden="true">
       <span className="susurro-de">{f.de}</span>
       <p>{f.txt}</p>
+      {/* La cola de la viñeta: dos bolitas que bajan hacia la cara de Iris. Van
+          como elementos y no como `::before`/`::after` porque cada una entra con
+          su propio retraso, y encadenar dos animaciones distintas en
+          pseudoelementos del mismo nodo se vuelve ilegible enseguida. */}
+      <i className="susurro-cola susurro-cola-1" />
+      <i className="susurro-cola susurro-cola-2" />
     </aside>
   );
 }
