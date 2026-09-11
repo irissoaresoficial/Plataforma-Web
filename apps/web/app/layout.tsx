@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Fraunces, Instrument_Sans } from 'next/font/google';
 import { LangProvider } from '@/lib/i18n';
+import Medicion from '@/components/Medicion';
 import './globals.css';
 
 /*
@@ -79,6 +80,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" className={`${display.variable} ${texto.variable}`}>
       <body>
         <LangProvider>{children}</LangProvider>
+        {/* La medición va en el layout y no en cada página porque el cartel del
+            consentimiento tiene que salir se entre por donde se entre — también
+            si alguien llega directo a /cursos desde un anuncio. Mientras no
+            estén puestas las variables del píxel, esto no pinta nada. */}
+        <Medicion />
       </body>
     </html>
   );

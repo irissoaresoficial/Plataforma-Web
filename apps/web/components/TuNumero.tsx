@@ -29,6 +29,7 @@ import Reduccion from './Reduccion';
 import { FOTOS } from '@/content/site';
 import { CURVA } from './movimiento';
 import { pasosCaminoDeVida } from '@/lib/numerologia';
+import { medir } from '@/lib/medir';
 
 type Fecha = { dia: string; mes: string; anio: string };
 
@@ -77,6 +78,10 @@ export default function TuNumero() {
 
   const calcular = () => {
     if (!puede) return;
+    /* El gancho, no la venta. Sirve para saber cuánta gente que llega de un
+       anuncio llega a hacer algo, aunque no reserve: si esto sube y las reservas
+       no, el problema está después, no en el anuncio. */
+    medir('numero');
     setAcabado(false);
     setHecho({ d: +f.dia, m: +f.mes, a: +f.anio });
     requestAnimationFrame(() =>

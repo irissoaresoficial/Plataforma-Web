@@ -103,8 +103,22 @@ export default function Privacidad() {
 
       <h2>Cookies</h2>
       <p>
-        Esta web <strong>no usa cookies de publicidad ni de seguimiento</strong>, y no hay perfilado
-        de nadie. El idioma que eliges se guarda en tu propio navegador y no se envía a ningún sitio.
+        El idioma que eliges se guarda en tu propio navegador y no se envía a ningún sitio. Eso no se
+        puede desactivar, porque sin ello la web no sabría en qué idioma hablarte, y tampoco sirve
+        para identificarte.
+      </p>
+      <p>
+        <strong>Cookies de medición.</strong> Si hacemos publicidad, usamos las cookies de Meta y de
+        Google para saber qué anuncios traen gente y cuáles no. No se cargan hasta que tú dices que
+        sí en el cartel que sale abajo, y si dices que no, no se carga nada — ni el programa que las
+        pone. Puedes cambiar de idea borrando los datos de este sitio en tu navegador: el cartel
+        vuelve a preguntarte.
+      </p>
+      <p>
+        Lo que se envía es que alguien ha abierto el chat, ha reservado, ha dejado su correo o ha
+        calculado su número. <strong>Nunca se envía quién eres:</strong> ni tu nombre, ni tu correo,
+        ni tu teléfono, ni tu fecha de nacimiento. Y si no hay ninguna campaña en marcha, no verás el
+        cartel porque no hay nada que cargar.
       </p>
     </PaginaTexto>
   );

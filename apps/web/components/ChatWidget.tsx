@@ -4,9 +4,10 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import Image from 'next/image';
 import { useLang } from '@/lib/i18n';
 import { DEFAULT_HOURS } from '@/lib/booking';
-import { LOGO_COLOR } from '@/content/site';
+import { LOGO_COLOR, SESION } from '@/content/site';
 import { caminoDeVida, SENTIDO, SENTIDO_DEUDA } from '@/lib/numerologia';
 import useCapa from './useCapa';
+import { medir } from '@/lib/medir';
 
 /*
  * EL AGENTE HACE NUMEROLOGÍA, NO RELLENA UN FORMULARIO
@@ -370,6 +371,10 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
 
   const openChat = () => {
     setOpen(true);
+    /* El principio del embudo. Sin esto sólo se sabe cuánta gente reserva, y no
+       cuánta lo intenta — que es el número que dice si el problema está en el
+       anuncio o está en el chat. */
+    medir('chat');
     if (!msgs.length) bot(flow[0].ask, 420);
     // Huecos reales de la agenda de Iris. Si no contesta, se usa la plantilla por defecto.
     if (!avail) {
@@ -400,6 +405,19 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
       setTyping(false);
 
       if (out?.ok) {
+        /*
+         * AQUÍ, Y NO ANTES, ES LA CONVERSIÓN.
+         *
+         * Ni al abrir el chat, ni al elegir hora, ni al pulsar enviar: cuando el
+         * servidor ha contestado que la reserva ha entrado. Contarla un paso
+         * antes infla el número con las que fallan, y entonces Meta aprende a
+         * buscar gente que empieza y no termina.
+         *
+         * Va el valor en euros porque es lo que permite a las plataformas pujar
+         * por lo que deja más dinero, no por lo que deja más reservas. No va ni
+         * el correo, ni el nombre, ni la fecha de nacimiento.
+         */
+        medir('reserva', { value: SESION.precioOferta ?? SESION.precio, currency: 'EUR' });
         /*
          * GUARDADA SÍ, CONFIRMADA TODAVÍA NO.
          *

@@ -22,6 +22,7 @@
 import { useId, useState } from 'react';
 import { sendLead } from '@/lib/sendLead';
 import { CONTACTO } from '@/content/site';
+import { medir } from '@/lib/medir';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -85,7 +86,13 @@ export default function LeadForm({
     const partes = [detalle, whatsapp.trim() ? `WhatsApp: ${whatsapp.trim()}` : ''].filter(Boolean);
     const ok = await sendLead({ email, nombre, origen, detalle: partes.join(' · '), whatsapp: whatsapp.trim() });
     setSending(false);
-    if (ok) setDone(true);
+    if (ok) {
+      /* Un correo dejado no es una venta, pero sí es la señal más barata que
+         tiene esta web: es por lo que puede pujar una campaña fría mientras no
+         haya reservas suficientes para que Meta aprenda de ellas. */
+      medir('lead', { origen });
+      setDone(true);
+    }
     else setErr(`No he podido guardarlo ahora mismo. Inténtalo en un minuto o escribe a ${CONTACTO.email}.`);
   };
 
