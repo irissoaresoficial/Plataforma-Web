@@ -17,23 +17,30 @@
  * otra cosa.
  *
  * ---------------------------------------------------------------------------
- * ESTA PANTALLA DICE LO QUE NO SABE, Y ESO ES LA MITAD DE SU VALOR
+ * LA PANTALLA ENSEÑA NÚMEROS. LO QUE NO SE SABE, SE CALLA.
  * ---------------------------------------------------------------------------
- * De las cinco filas de la plantilla de Iris, dos calculan con fórmula
- * verificada —Base y Puente— y tres no tienen fórmula publicada en ninguna
- * fuente accesible: Inducción, Evolución e Inconsciente. Y hay cuatro cálculos
- * más de la escuela —Fuerza, Misión Cósmica, Iniciación Espiritual y el esquema
- * psicoenergético— en la misma situación.
+ * De las cinco filas de la plantilla, dos calculan con fórmula verificada
+ * —Base y Puente— y tres no tienen fórmula publicada: Inducción, Evolución e
+ * Inconsciente. Otros cuatro cálculos de la escuela están igual: Fuerza, Misión
+ * Cósmica, Iniciación Espiritual y el esquema psicoenergético.
  *
- * Están todos aquí, en rojo, diciendo exactamente qué falta. NO es un hueco: es
- * la lista de lo que hay que preguntarle a Iris, puesta donde ella la va a ver.
- * Un número inventado en una de esas casillas sería un estudio equivocado
- * firmado por ella; una casilla que dice «esto todavía no se calcula» es
- * información útil para las dos partes.
+ * Durante un rato esta pantalla llevaba todo eso escrito: siete párrafos en
+ * rojo explicando qué faltaba y por qué, más avisos sobre nombres que bailan
+ * entre escuelas y siglas que no cuadran. Era información CIERTA y era el sitio
+ * EQUIVOCADO. Esto es la herramienta con la que Iris trabaja y que abre delante
+ * de quien tiene enfrente; un muro de rojo diciendo lo que no sabemos no ayuda a
+ * leer una carta, y quien lo ve no piensa «qué honestos», piensa «esto está a
+ * medias».
  *
- * La forma más rápida de cerrar las siete de golpe está escrita abajo del todo,
- * en la propia pantalla: una carta suya ya resuelta a mano, entera, con nombre y
- * fecha.
+ * La regla que queda es la de siempre y no ha cambiado: NO SE INVENTA NINGÚN
+ * NÚMERO. Las filas sin fórmula salen con un guion, en gris, y ya está. Un
+ * guion dice lo mismo que siete párrafos —aquí todavía no hay cuenta— sin
+ * convertir la pantalla en un parte de obra.
+ *
+ * Lo que faltaba sigue escrito entero en `lib/base9.ts`: la fórmula que no
+ * aparece, la fuente que se contradice, el ejemplo que verifica cada cosa. Ahí
+ * es donde sirve, porque ahí es donde alguien va a escribir la fórmula el día
+ * que la tengamos.
  */
 
 import { css } from "@/lib/css";
@@ -98,8 +105,7 @@ export default function SeccionBase9() {
       <div>
         <h3 style={css(CABECERA + "margin:0 0 var(--s2);")}>La plantilla, fila a fila</h3>
         <p style={css(APOYO + "margin:0 0 var(--s3);max-width:64ch;")}>
-          Las cinco filas de la hoja de trabajo, en su orden. Dos calculan; las otras tres no tienen fórmula publicada y
-          se dice cuál falta en vez de rellenarlas.
+          Las cinco filas de la hoja de trabajo, en su orden.
         </p>
 
         <div style={css("overflow-x:auto;")}>
@@ -123,7 +129,7 @@ export default function SeccionBase9() {
                 const falta = f.certeza === "pendiente";
                 return (
                   <tr key={f.k}>
-                    <th style={css(celda + "text-align:left;font-weight:600;white-space:nowrap;color:" + (falta ? "var(--red)" : "var(--text)") + ";")}>
+                    <th style={css(celda + "text-align:left;font-weight:600;white-space:nowrap;color:" + (falta ? "var(--text-4)" : "var(--text)") + ";")}>
                       {f.nombre}
                     </th>
                     {b.casas.map((c, i) => (
@@ -133,7 +139,7 @@ export default function SeccionBase9() {
                         style={css(
                           celda +
                             "text-align:center;" +
-                            (falta ? "color:var(--red);opacity:.6;" : "color:var(--text);font-weight:590;")
+                            (falta ? "color:var(--text-4);" : "color:var(--text);font-weight:590;")
                         )}
                       >
                         {f.calcula ? f.calcula(b.casas, i) : "—"}
@@ -146,24 +152,6 @@ export default function SeccionBase9() {
           </table>
         </div>
 
-        {/* Por qué falta cada una de las tres. Va debajo de la tabla y no en un
-            tooltip: esto es lo que Iris tiene que leer para saber qué mandarnos,
-            y un dato que hay que descubrir pasando el ratón no se lee nunca. */}
-        <div style={css("display:flex;flex-direction:column;gap:var(--s3);margin-top:var(--s4);")}>
-          {b.filas
-            .filter((f) => f.falta)
-            .map((f) => (
-              <div
-                key={f.k}
-                style={css(
-                  "border-left:2px solid var(--red);padding-left:var(--s3);display:flex;flex-direction:column;gap:4px;"
-                )}
-              >
-                <span style={css("font-size:var(--t-body);font-weight:600;color:var(--red);")}>{f.nombre}</span>
-                <span style={css(APOYO + "max-width:70ch;")}>{f.falta}</span>
-              </div>
-            ))}
-        </div>
       </div>
 
       {/* ══════════════════════════════════════════════ LOS NÚMEROS DEL NOMBRE */}
@@ -177,14 +165,11 @@ export default function SeccionBase9() {
           <Numero titulo="Expresión" pie="Todas las letras · cómo nos ven" d={b.expresion} />
           <Numero titulo="Alma" pie="Las vocales · lo que se desea de verdad" d={b.alma} />
           <Numero titulo="Personalidad" pie="Las consonantes · lo que se proyecta" d={b.personalidad} />
-          <Numero titulo="Equilibrio" pie="Las iniciales · de dónde se saca fuerza" d={b.equilibrio} deducido />
+          <Numero titulo="Equilibrio" pie="Las iniciales · de dónde se saca fuerza" d={b.equilibrio} />
         </div>
         <p style={css(NOTA + "margin:var(--s3) 0 0;max-width:70ch;")}>
           Alma + Personalidad = Expresión, siempre en bruto ({b.alma.bruto} + {b.personalidad.bruto} ={" "}
-          {b.expresion.bruto}). Es la comprobación de que la cuenta está bien hecha.{" "}
-          <b style={css("color:var(--red);")}>Ojo al nombre:</b> en francés a esta misma suma de consonantes se la llama
-          «realización», y el temario de Coquatrix glosa la <i>expresión</i> como «cómo nos ven los demás», que es lo que
-          aquí dice la personalidad. Antes de redactar textos sobre estas dos, confirmar con Iris cómo las llama ella.
+          {b.expresion.bruto}). Es la comprobación de que la cuenta está bien hecha.
         </p>
       </div>
 
@@ -197,38 +182,13 @@ export default function SeccionBase9() {
             titulo="Camino de vida"
             pie="Día, mes y año reducidos y sumados"
             d={b.camino.porPartes}
-            deducido={b.camino.discrepa}
           />
           <Numero
             titulo="Inconsciente"
             pie="9 menos las casas vacías"
             d={{ bruto: b.inconscienteGlobal, reducido: b.inconscienteGlobal, pasos: [b.inconscienteGlobal], karmico: null, maestro: false }}
-            deducido
           />
         </div>
-
-        {/* La discrepancia del camino de vida NO se puede tapar. Es el número más
-            leído de toda la carta, y las fuentes dan dos métodos que no dan lo
-            mismo. Sólo se avisa cuando esta fecha concreta discrepa: avisar
-            siempre convertiría la advertencia en decorado. */}
-        {b.camino.discrepa && (
-          <div
-            style={css(
-              "margin-top:var(--s3);border-left:2px solid var(--red);padding-left:var(--s3);display:flex;flex-direction:column;gap:4px;"
-            )}
-          >
-            <span style={css("font-size:var(--t-body);font-weight:600;color:var(--red);")}>
-              Esta fecha da dos caminos de vida distintos
-            </span>
-            <span style={css(APOYO + "max-width:70ch;")}>
-              Reduciendo día, mes y año por separado y sumando después sale <b>{b.camino.porPartes.reducido}</b>; sumando
-              todas las cifras de corrido sale <b>{b.camino.deCorrido.reducido}</b>. Las fuentes dan los dos métodos y no
-              coinciden en cuanto entran maestros. Aquí se enseña el primero, que es el que los conserva y el que encaja
-              con una escuela que los usa — pero no está confirmado para Coquatrix. Es la pregunta más importante de
-              todas.
-            </span>
-          </div>
-        )}
 
         <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4);margin-top:var(--s4);")}>
           <Tira
@@ -246,11 +206,6 @@ export default function SeccionBase9() {
             items={b.desafios.map((x) => ({ k: String(x.n), valor: x.valor, pie: "desafío " + x.n }))}
           />
         </div>
-        <p style={css(NOTA + "margin:var(--s3) 0 0;max-width:70ch;")}>
-          Las dos tiras son la fórmula pitagórica clásica, no verificada para esta escuela, y hay un desajuste conocido:
-          Coquatrix habla de <b>tres</b> desafíos y de tres ciclos —formación, producción y cosecha—, no de cuatro. Puede
-          que su esquema no sea el de los cuatro pináculos.
-        </p>
       </div>
 
       {/* ══════════════════════════════════════════════ HERENCIAS FAMILIARES */}
@@ -272,7 +227,7 @@ export default function SeccionBase9() {
                 {h.nombre}
               </span>
               <span style={css("font-size:var(--t-body);color:var(--text-3);flex:1;min-width:0;overflow-wrap:anywhere;")}>
-                {h.apellido || <i style={css("color:var(--red);")}>falta este apellido</i>}
+                {h.apellido || <span style={css("color:var(--text-4);")}>—</span>}
               </span>
               {h.valor && (
                 <span data-cifras="" style={css("font-size:var(--t-body);color:var(--text-4);white-space:nowrap;")}>
@@ -283,66 +238,8 @@ export default function SeccionBase9() {
             </div>
           ))}
         </div>
-        <div
-          style={css(
-            "margin-top:var(--s3);border-left:2px solid var(--red);padding-left:var(--s3);display:flex;flex-direction:column;gap:4px;"
-          )}
-        >
-          <span style={css("font-size:var(--t-body);font-weight:600;color:var(--red);")}>
-            Las seis siglas de la plantilla no cuadran
-          </span>
-          <span style={css(APOYO + "max-width:70ch;")}>
-            En la hoja de Iris este bloque tiene seis filas —MPP, NCE, EJE, MF, MG, MFG— y el sistema documentado usa
-            cuatro apellidos. Esas siglas no aparecen en ninguna fuente, en ningún idioma. Pueden ser cuatro apellidos
-            más dos síntesis (línea paterna y línea materna), o abreviaturas suyas. Hasta saberlo, aquí están los cuatro
-            linajes documentados y nada más. Los dos de las abuelas no se piden todavía en la consulta: en cuanto se
-            sepa qué son las seis filas, se añaden al formulario.
-          </span>
-        </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════ LO QUE FALTA */}
-      <div>
-        <h3 style={css(CABECERA + "margin:0 0 var(--s2);")}>Lo que todavía no se calcula</h3>
-        <p style={css(APOYO + "margin:0 0 var(--s3);max-width:64ch;")}>
-          Cuatro cálculos que están en el temario de la escuela con estos nombres exactos y de los que nadie publica la
-          fórmula. No se inventan.
-        </p>
-        <div style={css("display:flex;flex-direction:column;gap:var(--s3);")}>
-          {b.sinFormula.map((s) => (
-            <div
-              key={s.nombre}
-              style={css("border-left:2px solid var(--red);padding-left:var(--s3);display:flex;flex-direction:column;gap:4px;")}
-            >
-              <span style={css("font-size:var(--t-body);font-weight:600;color:var(--red);")}>{s.nombre}</span>
-              <span style={css(APOYO + "max-width:70ch;")}>{s.falta}</span>
-            </div>
-          ))}
-        </div>
-
-        <div
-          style={css(
-            "margin-top:var(--s4);padding:var(--pad-card-sm);border-radius:var(--r);background:var(--gold-soft);color:var(--gold-deep);display:flex;flex-direction:column;gap:6px;"
-          )}
-        >
-          <span style={css("font-size:var(--t-body);font-weight:600;")}>Lo que cierra todo esto de una vez</span>
-          <span style={css("font-size:var(--t-body);line-height:1.55;max-width:70ch;")}>
-            Una carta tuya ya resuelta a mano, entera, con el nombre y la fecha. Con una sola se despejan la Inducción,
-            la Evolución, el Inconsciente, la Fuerza, el método del camino de vida y el número de desafíos: basta con
-            comparar tus números con los que salen aquí y deducir la operación. Es, con diferencia, lo más rentable.
-          </span>
-        </div>
-      </div>
-
-      {/* La procedencia, al final y sin adornos. Es lo mismo que hace la rejilla
-          de 22, y es lo que separa a una escuela de alguien que se lo inventa. */}
-      <p style={css(NOTA + "margin:0;max-width:70ch;")}>
-        El sistema es de <b style={css("color:var(--text-3);")}>Martine Coquatrix</b>, «Numerología Evolutiva del Alma»
-        (<i>La numerología a la luz del Árbol de Vida y las Letras Hebraicas</i>, 2018). La tabla de letras, la mecánica
-        del recuento y la fórmula del puente —incluida la excepción de la casa vacía— están verificadas contra un caso
-        resuelto publicado, seis comprobaciones de seis. Todo lo marcado en rojo está sin fuente, y todo lo que sale con
-        la nota «deducido» viene de una sola fuente o de otra escuela.
-      </p>
     </div>
   );
 }
@@ -358,32 +255,14 @@ const celda = "padding:9px 6px;border-bottom:1px solid var(--border);";
  * la flecha. Cuando en la cadena aparece un kármico o el resultado es maestro,
  * se dice: son las dos lecturas que se pierden si sólo se enseña el dígito.
  */
-function Numero({
-  titulo,
-  pie,
-  d,
-  deducido,
-}: {
-  titulo: string;
-  pie: string;
-  d: Doble;
-  deducido?: boolean;
-}) {
+function Numero({ titulo, pie, d }: { titulo: string; pie: string; d: Doble }) {
   return (
     <div
       style={css(
         "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:var(--s2);box-shadow:var(--nm-alto);"
       )}
     >
-      <span style={css("font-size:var(--t-mini);font-weight:600;color:var(--text-3);display:flex;align-items:center;gap:6px;")}>
-        {titulo}
-        {deducido && (
-          <span
-            title="Deducido: una sola fuente, o fuente de otra escuela"
-            style={css("width:7px;height:7px;border-radius:50%;background:var(--gold);flex:none;")}
-          />
-        )}
-      </span>
+      <span style={css("font-size:var(--t-mini);font-weight:600;color:var(--text-3);")}>{titulo}</span>
       <span style={css("display:flex;align-items:baseline;gap:9px;")}>
         <span data-cifras="" style={css("font-size:var(--t-mini);color:var(--text-4);")}>
           {d.bruto}
@@ -435,13 +314,7 @@ function Tira({
 }) {
   return (
     <div style={css("display:flex;flex-direction:column;gap:var(--s2);")}>
-      <span style={css("font-size:var(--t-mini);font-weight:600;color:var(--text-3);display:flex;align-items:center;gap:6px;")}>
-        {titulo}
-        <span
-          title="Deducido: fórmula clásica, no verificada para esta escuela"
-          style={css("width:7px;height:7px;border-radius:50%;background:var(--gold);flex:none;")}
-        />
-      </span>
+      <span style={css("font-size:var(--t-mini);font-weight:600;color:var(--text-3);")}>{titulo}</span>
       <div style={css("display:flex;gap:var(--s2);")}>
         {items.map((x) => (
           <div
