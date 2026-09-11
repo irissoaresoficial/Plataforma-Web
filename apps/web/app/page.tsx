@@ -15,7 +15,7 @@ import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
-import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
+import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
 import { useLang } from '@/lib/i18n';
@@ -74,7 +74,23 @@ export default function Home() {
   // Sin barra de progreso: se fue con el bloque de los tres pasos.
   useSiteScroll();
   const chatRef = useRef<ChatWidgetHandle>(null);
-  const openChat = () => chatRef.current?.open();
+  /* Qué consulta se reserva viaja hasta el chat. Sin esto, el botón de Kábala
+     abría un agente que no nombraba la Kábala ni los 333 € en ningún momento, y
+     la persona salía creyendo que había reservado otra cosa. */
+  const openChat = (servicio: Servicio) => chatRef.current?.open(servicio);
+  /*
+   * Y ÉSTE ES EL QUE SE ENGANCHA A UN BOTÓN.
+   *
+   * `openChat` no puede ir suelto en un `onClick`: el navegador le pasaría el
+   * evento del clic como primer argumento, y ese argumento es ahora QUÉ se
+   * reserva. Acabaría llegando un MouseEvent donde se espera «consulta» o
+   * «kabala». TypeScript lo cazó en el botón del pie y en ningún otro sitio,
+   * porque los demás pasan por un componente que declara `() => void` y ahí no
+   * se ve — así que el arreglo no es taparlo donde saltó, es no dejar nunca el
+   * argumento al aire.
+   */
+  const abrirConsulta = () => openChat('consulta');
+  const abrirKabala = () => openChat('kabala');
   const [faq, setFaq] = useState(-1);
 
   /* El curso que sale en la ficha de la portada: el primero que tenga fecha de
@@ -117,7 +133,7 @@ export default function Home() {
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <Nav
         cta={t.book}
-        onCta={openChat}
+        onCta={abrirConsulta}
         conIdiomas
         extra={[
           { href: '#consultas', label: 'La consulta' },
@@ -174,7 +190,7 @@ export default function Home() {
                   portada sólo quedan la frase y los dos botones. */}
               <Reveal delay={220}>
                 <div className="hero-botones">
-                  <PillCTA onClick={openChat} variant="cream" label={t.hcta} curLabel={t.cbook} />
+                  <PillCTA onClick={abrirConsulta} variant="cream" label={t.hcta} curLabel={t.cbook} />
                   <Link href="#prueba" data-mag className="btn-outline">
                     {t.hcta2}
                   </Link>
@@ -449,7 +465,7 @@ export default function Home() {
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(20px,3vw,48px)', alignItems: 'end' }}>
             <Reveal delay={60} className="titular-seccion" style={{ maxWidth: '15ch' }}>
-              Una hora contigo y con tu historia delante.
+              Contigo y con tu historia delante.
             </Reveal>
             <Reveal delay={120}>
               <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '42ch' }}>
@@ -487,7 +503,7 @@ export default function Home() {
                   consulta, y se acaba cuando se llenen.
                 </p>
               )}
-              <PillCTA onClick={openChat} variant="cream" label="Reservar mi consulta" curLabel={t.cbook} />
+              <PillCTA onClick={abrirConsulta} variant="cream" label="Reservar mi consulta" curLabel={t.cbook} />
             </Reveal>
 
             {/* --------------------------------------- LA DE KÁBALA */}
@@ -511,7 +527,12 @@ export default function Home() {
                   Qué es la Kábala →
                 </Link>
               </p>
-              <PillCTA onClick={openChat} variant="dark" label="Reservar la de Kábala" curLabel={t.cbook} />
+              <PillCTA
+                onClick={abrirKabala}
+                variant="dark"
+                label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
+                curLabel={t.cbook}
+              />
             </Reveal>
           </div>
         </div>
@@ -674,7 +695,7 @@ export default function Home() {
                   en la mano.
                 </p>
                 <PillCTA
-                  onClick={openChat}
+                  onClick={abrirKabala}
                   variant="gold"
                   label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
                   curLabel={t.cbook}
@@ -762,7 +783,7 @@ export default function Home() {
             <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '34ch' }}>{t.c_p}</p>
           </Reveal>
           <Reveal delay={150}>
-            <PillCTA onClick={openChat} variant="gold" label={t.c_btn} curLabel={t.cbook} />
+            <PillCTA onClick={abrirConsulta} variant="gold" label={t.c_btn} curLabel={t.cbook} />
           </Reveal>
           {/* El precio también aquí, y no sólo en la ficha de arriba. Este es el
               último botón de la página: quien llega hasta aquí ha bajado la web
@@ -772,7 +793,7 @@ export default function Home() {
             <span style={{ fontSize: 12, color: 'var(--tx-3)' }}>
               {ofertaViva ? (
                 <>
-                  {eur(SESION.precioOferta)} en vez de {eur(SESION.precio)} · quedan {SESION.plazasOferta} plazas
+                  {eur(SESION.precioOferta)} en vez de {eur(SESION.precio)} · son {SESION.plazasOferta} plazas
                 </>
               ) : SESION.precio != null ? (
                 <>{eur(SESION.precio)}</>
@@ -801,7 +822,7 @@ export default function Home() {
                   la que abre la reserva. */}
               <button
                 type="button"
-                onClick={openChat}
+                onClick={abrirConsulta}
                 data-mag
                 style={{
                   background: 'none',

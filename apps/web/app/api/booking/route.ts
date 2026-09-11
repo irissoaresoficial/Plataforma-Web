@@ -82,7 +82,10 @@ export async function POST(request: Request) {
         email: booking.email,
         nombre: booking.nombre,
         origen: 'reserva',
-        detalle: `${booking.dia} a las ${booking.hora}. Nacida el ${booking.fecha}. ${booking.motivo}`.slice(0, 500),
+        /* Qué consulta, lo primero del detalle. Es lo que Iris necesita ver de
+           un vistazo en la bandeja: una de 333 € y una de 111 € no se preparan
+           igual, y hasta ahora llegaban idénticas. */
+        detalle: `${booking.servicio === 'kabala' ? 'KÁBALA · ' : ''}${booking.dia} a las ${booking.hora}. Nacida el ${booking.fecha}. ${booking.motivo}`.slice(0, 500),
         whatsapp: '',
         lang: booking.lang || 'es',
       },

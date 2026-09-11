@@ -4,7 +4,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import Image from 'next/image';
 import { useLang } from '@/lib/i18n';
 import { DEFAULT_HOURS } from '@/lib/booking';
-import { LOGO_COLOR, SESION } from '@/content/site';
+import { KABALA, LOGO_COLOR, SESION, eur } from '@/content/site';
 import { caminoDeVida, SENTIDO, SENTIDO_DEUDA } from '@/lib/numerologia';
 import useCapa from './useCapa';
 import { medir } from '@/lib/medir';
@@ -100,7 +100,18 @@ const partir = (s: string) => s.match(/\S+\s*/g) || [];
 type Data = { nombre?: string; fecha?: string; motivo?: string; dia?: string; diaISO?: string; hora?: string; email?: string };
 type Availability = Record<string, string[]>;
 
-export type ChatWidgetHandle = { open: () => void };
+/**
+ * QUÉ SE ESTÁ RESERVANDO.
+ *
+ * Había un solo chat para dos consultas de precio muy distinto —111 € y 333 €—
+ * y no recibía cuál. O sea que quien pulsaba «Reservar la consulta de Kábala ·
+ * 333 €» entraba en un agente que no nombraba la Kábala ni el precio en ningún
+ * momento, daba sus datos, elegía hora y salía creyendo que había reservado otra
+ * cosa. Ningún cambio de texto arreglaba eso: faltaba el dato.
+ */
+export type Servicio = 'consulta' | 'kabala';
+
+export type ChatWidgetHandle = { open: (servicio?: Servicio) => void };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -115,6 +126,11 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   const [data, setData] = useState<Data>({});
   const [done, setDone] = useState(false);
   const [calOffset, setCalOffset] = useState(0);
+  /* Cuál de las dos consultas se está reservando. Lo pone quien abre el chat y
+     el agente lo dice en voz alta antes de pedir nada: si alguien viene del
+     botón de 333 € tiene que leer «Kábala» y «333 €» en la primera frase, no
+     descubrirlo en el correo. */
+  const [servicio, setServicio] = useState<Servicio>('consulta');
   /*
    * EL BOTÓN DEL CHAT SE CALLA MIENTRAS SE VE LA PORTADA.
    *
@@ -197,8 +213,23 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     'Hay una fecha que vuelve en mi familia',
   ];
 
+  /*
+   * LA PRIMERA FRASE DICE QUÉ SE ESTÁ RESERVANDO.
+   *
+   * Sólo cuando es la de Kábala, y por una razón: quien ha pulsado un botón que
+   * pone «333 €» tiene que leer «Kábala» y «333 €» antes de dar su nombre. Si lo
+   * descubre en el correo de confirmación, ya es tarde — y si no lo descubre, ha
+   * reservado una cosa creyendo que era otra.
+   *
+   * Para la consulta normal no hace falta: es la que anuncia la web entera y el
+   * agente ya se presenta como «el agente de Iris».
+   */
+  const saludoDe = (s: Servicio) =>
+    s === 'kabala' ? t.ch_a1_kabala.replace('{p}', eur(KABALA.precio)) : t.ch_a1;
+  const saludo = saludoDe(servicio);
+
   const flow = [
-    { key: 'nombre' as const, ask: t.ch_a1, ph: t.ch_p1 },
+    { key: 'nombre' as const, ask: saludo, ph: t.ch_p1 },
     /* La fecha de nacimiento se ELIGE, no se teclea. Ver el bloque de los tres
        desplegables más abajo para el porqué. */
     { key: 'fecha' as const, ask: t.ch_a2, ph: t.ch_p2, first: true, nacimiento: true },
@@ -369,13 +400,23 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [escrito, typing, cola]);
 
-  const openChat = () => {
+  const openChat = (queReserva: Servicio = 'consulta') => {
+    setServicio(queReserva);
     setOpen(true);
     /* El principio del embudo. Sin esto sólo se sabe cuánta gente reserva, y no
        cuánta lo intenta — que es el número que dice si el problema está en el
        anuncio o está en el chat. */
     medir('chat');
-    if (!msgs.length) bot(flow[0].ask, 420);
+    /*
+     * EL SALUDO SE CALCULA DEL ARGUMENTO, NO DEL ESTADO.
+     *
+     * `setServicio` no cambia nada hasta el siguiente repintado, así que aquí
+     * dentro `servicio` todavía vale lo de antes y `flow[0].ask` traía el
+     * saludo equivocado: se pulsaba el botón de Kábala y el agente empezaba
+     * como si fuera la consulta normal. Comprobado en el navegador, y era
+     * exactamente el fallo que este cambio venía a arreglar.
+     */
+    if (!msgs.length) bot(saludoDe(queReserva), 420);
     // Huecos reales de la agenda de Iris. Si no contesta, se usa la plantilla por defecto.
     if (!avail) {
       fetch('/api/availability')
@@ -391,7 +432,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
     setTimeout(() => inputRef.current?.focus(), 480);
   };
 
-  useImperativeHandle(ref, () => ({ open: openChat }));
+  useImperativeHandle(ref, () => ({ open: (queReserva?: Servicio) => openChat(queReserva ?? 'consulta') }));
 
   const sendBooking = async (booking: Data) => {
     setTyping(true);
@@ -399,7 +440,10 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
       const res = await fetch('/api/booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...booking, lang }),
+        /* `servicio` va al servidor para que el correo de Iris diga cuál de
+           las dos consultas es. Sin esto, dos reservas de precio muy distinto
+           llegan idénticas y hay que adivinarlo. */
+        body: JSON.stringify({ ...booking, servicio, lang }),
       });
       const out = await res.json().catch(() => null);
       setTyping(false);
@@ -417,7 +461,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
          * por lo que deja más dinero, no por lo que deja más reservas. No va ni
          * el correo, ni el nombre, ni la fecha de nacimiento.
          */
-        medir('reserva', { value: SESION.precioOferta ?? SESION.precio, currency: 'EUR' });
+        medir('reserva', { value: servicio === 'kabala' ? KABALA.precio : SESION.precioOferta ?? SESION.precio, currency: 'EUR', servicio });
         /*
          * GUARDADA SÍ, CONFIRMADA TODAVÍA NO.
          *
@@ -436,7 +480,10 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           bot(t.ch_apuntado.replace('{d}', booking.dia || '').replace('{h}', booking.hora || ''), 300);
           return;
         }
-        bot(t.ch_sum.replace('{d}', booking.dia || '').replace('{h}', booking.hora || ''), 260);
+        /* El resumen cierra nombrando lo mismo que abrió. Si el saludo dijo
+           «consulta de Kábala», el cierre no puede decir «sesión» a secas. */
+        const resumen = servicio === 'kabala' ? t.ch_sum_kabala : t.ch_sum;
+        bot(resumen.replace('{d}', booking.dia || '').replace('{h}', booking.hora || ''), 260);
         setTimeout(() => bot(t.ch_conf.replace('{e}', booking.email || ''), 500), 2600);
         return;
       }
@@ -605,7 +652,9 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
         type="button"
         id="chat-launcher"
         className="vino"
-        onClick={openChat}
+        /* Con `onClick={openChat}` el navegador pasaba el evento del clic como
+           primer argumento, y ese argumento es ahora QUÉ se reserva. */
+        onClick={() => openChat('consulta')}
         aria-label={t.cbook || 'Reservar una sesión'}
         data-mag
         data-cur-label={t.cbook}

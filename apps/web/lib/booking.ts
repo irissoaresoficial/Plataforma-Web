@@ -6,6 +6,17 @@ export type Booking = {
   diaISO: string; // YYYY-MM-DD del día elegido
   hora: string; // HH:MM (hora española)
   email: string;
+  /**
+   * CUÁL DE LAS DOS CONSULTAS.
+   *
+   * `consulta` es la de 111/150 € y `kabala` la de 333 €. Viaja desde el chat
+   * porque son dos precios muy distintos y hasta ahora llegaban idénticas: en
+   * la bandeja de Iris no había forma de saber cuál había reservado quién.
+   *
+   * Se valida contra la lista en vez de guardar lo que llegue: esto entra por
+   * una petición pública y de aquí sale un correo.
+   */
+  servicio: 'consulta' | 'kabala';
   lang?: string;
 };
 
@@ -35,6 +46,7 @@ export function parseBooking(input: unknown): { booking: Booking | null; error: 
     diaISO: str('diaISO', 10),
     hora: str('hora', 5),
     email: str('email', 160).toLowerCase(),
+    servicio: str('servicio', 16) === 'kabala' ? 'kabala' : 'consulta',
     lang: str('lang', 2) || 'es',
   };
 

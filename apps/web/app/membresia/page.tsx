@@ -79,7 +79,7 @@ export default function Membresia() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta="Avisadme" ctaHref="#avisar" />
+      <Nav cta="Avísame" ctaHref="#avisar" />
 
       {/* ═══════════════════════════════════════════════ LA ÚNICA PANTALLA */}
       <div className="vino com-hero">
@@ -143,7 +143,7 @@ export default function Membresia() {
               <LeadForm
                 origen="membresia"
                 detalle="Aviso de apertura de la comunidad"
-                cta="Avisadme"
+                cta="Avísame"
                 variant="dark"
                 successTitle="Hecho. Te aviso yo."
                 successText="Te escribo yo antes de abrir, y te pregunto qué quieres trabajar dentro."
