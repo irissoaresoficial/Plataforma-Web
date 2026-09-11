@@ -82,12 +82,9 @@ comprueba("alma + personalidad = expresión", r.alma.bruto + r.personalidad.brut
 comprueba("equilibrio (iniciales G+A+G)", r.equilibrio.reducido, 6);
 comprueba("inconsciente global (9 − casas vacías)", r.inconscienteGlobal, 8);
 
-console.log("\n══ LOS NÚMEROS DE LA FECHA · 16/02/1987 ══\n");
-
-comprueba("camino de vida (por partes)", r.camino.porPartes.reducido, 7);
-comprueba("realizaciones", r.realizaciones.map((x) => x.valor), [9, 5, 5, 9]);
-comprueba("desafíos", r.desafios.map((x) => x.valor), [5, 0, 5, 5]);
-comprueba("el desafío 0 sobrevive (no se vuelve 9)", r.desafios[1].valor, 0);
+/* El camino de vida, las realizaciones y los desafíos se comprobaban aquí y ya
+   no: los calcula engine.ts desde el manual de Iris, y tenerlos dos veces hizo
+   que las dos copias se separaran (cuatro desafíos aquí, tres allí). */
 
 console.log("\n══ LAS DOS REDUCCIONES, QUE NO SON LA MISMA ══\n");
 

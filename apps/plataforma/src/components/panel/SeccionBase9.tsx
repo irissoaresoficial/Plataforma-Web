@@ -166,6 +166,13 @@ export default function SeccionBase9() {
           <Numero titulo="Alma" pie="Las vocales · lo que se desea de verdad" d={b.alma} />
           <Numero titulo="Personalidad" pie="Las consonantes · lo que se proyecta" d={b.personalidad} />
           <Numero titulo="Equilibrio" pie="Las iniciales · de dónde se saca fuerza" d={b.equilibrio} />
+          {/* El inconsciente sale del propio cuadro —cuántas casas quedan
+              vacías—, así que vive aquí y no con los números de la fecha. */}
+          <Numero
+            titulo="Inconsciente"
+            pie="9 menos las casas vacías"
+            d={{ bruto: b.inconscienteGlobal, reducido: b.inconscienteGlobal, pasos: [b.inconscienteGlobal], karmico: null, maestro: false }}
+          />
         </div>
         <p style={css(NOTA + "margin:var(--s3) 0 0;max-width:70ch;")}>
           Alma + Personalidad = Expresión, siempre en bruto ({b.alma.bruto} + {b.personalidad.bruto} ={" "}
@@ -173,40 +180,14 @@ export default function SeccionBase9() {
         </p>
       </div>
 
-      {/* ══════════════════════════════════════════════ LOS NÚMEROS DE LA FECHA */}
-      <div>
-        <h3 style={css(CABECERA + "margin:0 0 var(--s2);")}>Los números de la fecha</h3>
-
-        <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--s3);")}>
-          <Numero
-            titulo="Camino de vida"
-            pie="Día, mes y año reducidos y sumados"
-            d={b.camino.porPartes}
-          />
-          <Numero
-            titulo="Inconsciente"
-            pie="9 menos las casas vacías"
-            d={{ bruto: b.inconscienteGlobal, reducido: b.inconscienteGlobal, pasos: [b.inconscienteGlobal], karmico: null, maestro: false }}
-          />
-        </div>
-
-        <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4);margin-top:var(--s4);")}>
-          <Tira
-            titulo="Realizaciones"
-            pie="Las cuatro etapas, con las edades en que entran"
-            items={b.realizaciones.map((x) => ({
-              k: String(x.n),
-              valor: x.valor,
-              pie: x.hasta === null ? `desde los ${x.desde}` : `${x.desde} – ${x.hasta}`,
-            }))}
-          />
-          <Tira
-            titulo="Desafíos"
-            pie="Restas, no sumas. Un 0 es «el desafío de todos»"
-            items={b.desafios.map((x) => ({ k: String(x.n), valor: x.valor, pie: "desafío " + x.n }))}
-          />
-        </div>
-      </div>
+      {/* Lo que sale de la FECHA —camino de vida, ciclos, realizaciones y
+          desafíos— no se repite aquí: vive en «Ciclos vitales», calculado desde
+          el manual de la propia Iris. Estuvo duplicado y las dos copias no
+          daban lo mismo. */}
+      <p style={css(NOTA + "margin:0;max-width:64ch;")}>
+        El camino de vida, los ciclos, las realizaciones y los desafíos salen de la fecha, y están en{" "}
+        <b style={css("color:var(--text-3);")}>Ciclos vitales</b>.
+      </p>
 
       {/* ══════════════════════════════════════════════ HERENCIAS FAMILIARES */}
       <div>

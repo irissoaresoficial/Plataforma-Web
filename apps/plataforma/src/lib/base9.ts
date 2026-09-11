@@ -532,100 +532,41 @@ export function equilibrio(partes: string[]): Doble {
 }
 
 /* ==========================================================================
-   7 · LOS NÚMEROS DE LA FECHA
+   7 · LO QUE NO ESTÁ AQUÍ, Y POR QUÉ
+   ==========================================================================
+
+   Aquí había camino de vida, realizaciones y desafíos, y estaba MAL tenerlos.
+
+   No porque las cuentas fallaran —dos de las tres coincidían— sino porque ya
+   las calcula `engine.ts`, y las calcula desde el manual de la propia Iris.
+   Tener la misma cuenta escrita dos veces no es redundancia inofensiva: las dos
+   copias se separan, y aquí ya se habían separado.
+
+   EL FALLO CONCRETO, para que no vuelva: esto sacaba CUATRO desafíos —los
+   cuatro pináculos de la numerología pitagórica genérica— y el manual de Iris
+   dice tres, con nombre y con edades:
+
+       1.er desafío menor  |mes − día|        hasta los 42 años aprox.
+       2.º  desafío menor  |día − año|        de los 42 en adelante
+       Desafío mayor       |d1 − d2|          toda la vida
+
+   O sea que la misma persona veía cuatro desafíos en Base 9 y tres en Ciclos
+   vitales, con números distintos. Eso no es un detalle: es la carta
+   contradiciéndose a sí misma delante de quien la está leyendo.
+
+   El manual cierra además la duda que traía la investigación sobre el CAMINO DE
+   VIDA. Había dos métodos posibles y no coincidían; el manual usa el de reducir
+   día, mes y año por separado y sumarlos después, y las realizaciones que
+   publica sólo cuadran con ése. Queda resuelto, y queda resuelto en engine.ts,
+   que es donde vive.
+
+   Lo que sí es de esta base y se queda: el cuadro de inclusión, los puentes, los
+   números del nombre y las herencias familiares. Lo que sale de la FECHA se mira
+   en Ciclos vitales.
+
+   Fuente: «3.1 NUMEROLOGIA CICLOS VITALES.pdf», material de curso de Iris,
+   apartados 18.1 (Realizaciones), 18.2 (Desafíos) y 18.3 (cálculo de los ciclos).
    ========================================================================== */
-
-/**
- * El camino de vida — Y AQUÍ HAY UN RIESGO REAL QUE NO SE PUEDE TAPAR.
- *
- * Las fuentes dan DOS métodos incompatibles:
- *
- *   a) POR PARTES: reducir día, mes y año por separado, sumarlos y reducir.
- *   b) DE CORRIDO: sumar todas las cifras de la fecha y reducir al final.
- *
- * No dan lo mismo en cuanto entran maestros. Esta escuela usa maestros, y el
- * método por partes es el que los preserva, así que es el que se toma por bueno
- * —pero NO está confirmado para Coquatrix, y es el número más leído de toda la
- * carta.
- *
- * Por eso esto devuelve LOS DOS y avisa cuando discrepan, en vez de elegir en
- * silencio. Cuando `discrepa` es cierto, la pantalla tiene que decirlo: es la
- * única forma honesta de enseñar un número del que no estamos seguros.
- */
-export function caminoDeVida(e: { dia: number; mes: number; anio: number }): {
-  porPartes: Doble;
-  deCorrido: Doble;
-  valor: number;
-  discrepa: boolean;
-} {
-  const porPartes = doble(red9(e.dia) + red9(e.mes) + red9(e.anio));
-  const cifras = `${e.dia}${e.mes}${e.anio}`
-    .split("")
-    .reduce((s, c) => s + Number(c), 0);
-  const deCorrido = doble(cifras);
-  return {
-    porPartes,
-    deCorrido,
-    valor: porPartes.reducido,
-    discrepa: porPartes.reducido !== deCorrido.reducido,
-  };
-}
-
-/**
- * Las cuatro realizaciones (pináculos). RECONSTRUIDO.
- *
- * Es la fórmula pitagórica estándar, no verificada para Coquatrix. Y hay un
- * problema abierto encima: la escuela habla de TRES ciclos —formación, producción
- * y cosecha— y de tres desafíos estructurales, no de cuatro. Puede que su esquema
- * no sea el de los cuatro pináculos. Se calculan porque la fórmula es sólida en
- * la tradición de la que sale esta escuela, y se marcan.
- *
- * La primera dura `36 − caminoDeVida` años; la segunda y la tercera, nueve cada
- * una; la cuarta, hasta el final.
- */
-export function realizaciones(e: { dia: number; mes: number; anio: number }, camino: number) {
-  const d = red9(e.dia);
-  const m = red9(e.mes);
-  const a = red9(e.anio);
-  const r1 = red9(m + d);
-  const r2 = red9(d + a);
-  const r3 = red9(r1 + r2);
-  const r4 = red9(m + a);
-  const finPrimera = 36 - camino;
-  return [
-    { n: 1, valor: r1, desde: 0, hasta: finPrimera },
-    { n: 2, valor: r2, desde: finPrimera, hasta: finPrimera + 9 },
-    { n: 3, valor: r3, desde: finPrimera + 9, hasta: finPrimera + 18 },
-    { n: 4, valor: r4, desde: finPrimera + 18, hasta: null as number | null },
-  ];
-}
-
-/**
- * Los cuatro desafíos. RECONSTRUIDO.
- *
- * Restas, no sumas, y **el 0 es un resultado válido y significativo**: es «el
- * desafío de todos». Por eso aquí se usa `red1` y no `red9` — `red9` respetaría
- * un maestro que en una resta no significa nada, y ninguna de las dos puede
- * convertir el 0 en 9.
- *
- * ⚠️ Coquatrix habla de TRES desafíos. Esto calcula los cuatro clásicos. Sin
- * resolver.
- */
-export function desafios(e: { dia: number; mes: number; anio: number }) {
-  const d = red9(e.dia);
-  const m = red9(e.mes);
-  const a = red9(e.anio);
-  const d1 = red1(Math.abs(d - m));
-  const d2 = red1(Math.abs(a - d));
-  const d3 = red1(Math.abs(d1 - d2));
-  const d4 = red1(Math.abs(a - m));
-  return [
-    { n: 1, valor: d1 },
-    { n: 2, valor: d2 },
-    { n: 3, valor: d3 },
-    { n: 4, valor: d4 },
-  ];
-}
 
 /* ==========================================================================
    8 · LAS HERENCIAS FAMILIARES
@@ -693,9 +634,6 @@ export type ResultadoB9 = {
   alma: Doble;
   personalidad: Doble;
   equilibrio: Doble;
-  camino: ReturnType<typeof caminoDeVida>;
-  realizaciones: ReturnType<typeof realizaciones>;
-  desafios: ReturnType<typeof desafios>;
   inconscienteGlobal: number;
   herencias: Linaje[];
   /** Cálculos con nombre confirmado en el temario y fórmula desconocida. */
@@ -735,7 +673,6 @@ const SIN_FORMULA = [
 export function calculaBase9(e: EntradaB9): ResultadoB9 {
   const nombreCompleto = [e.nombre, e.apellido1, e.apellido2].filter(Boolean).join(" ");
   const { casas, totalLetras, cuadra } = inclusion(nombreCompleto);
-  const camino = caminoDeVida(e);
   return {
     nombreCompleto,
     casas,
@@ -747,9 +684,6 @@ export function calculaBase9(e: EntradaB9): ResultadoB9 {
     alma: alma(nombreCompleto),
     personalidad: personalidad(nombreCompleto),
     equilibrio: equilibrio([e.nombre, e.apellido1, e.apellido2]),
-    camino,
-    realizaciones: realizaciones(e, camino.valor),
-    desafios: desafios(e),
     inconscienteGlobal: inconscienteGlobal(casas),
     herencias: herencias(e),
     sinFormula: SIN_FORMULA,
