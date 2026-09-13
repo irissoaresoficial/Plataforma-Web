@@ -4,7 +4,9 @@ import Link from 'next/link';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
-import Reveal from '@/components/Reveal';
+/* Antes `Reveal`, un fundido de duración fija. `Aparece` ata el movimiento a
+   la rueda. Explicado en components/Aparece.tsx. */
+import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import ChatWidget from '@/components/ChatWidget';
@@ -92,22 +94,25 @@ export default function Membresia() {
           {/* La flor de lis, arriba del todo. Esta página no lleva la barra con
               la marca —es una pantalla sola— así que sin el sello no había nada
               que dijera de quién es la comunidad hasta el titular. */}
-          <Reveal>
+          <Aparece modo="escala">
             <Marca tam={44} texto={false} claro />
-          </Reveal>
+          </Aparece>
 
-          <Reveal delay={40}>
+          <Aparece retraso={1}>
             <span className="com-obras">
               <i aria-hidden />
               Próximamente
             </span>
-          </Reveal>
+          </Aparece>
 
-          <Reveal as="h1" delay={100} className="com-titular">
+          {/* Sin el modo de palabra a palabra: el titular lleva un salto de
+              línea y una cursiva dentro, o sea que no es un texto suelto que se
+              pueda partir en palabras sin perder el `<em>`. */}
+          <Aparece as="h1" retraso={2} className="com-titular">
             La comunidad
             <br />
             <em>de Iris Soares</em>
-          </Reveal>
+          </Aparece>
 
           {/* La página entera, en dos líneas. La primera dice de qué va; la
               segunda es el motivo para dejar el correo HOY y no en noviembre.
@@ -122,22 +127,25 @@ export default function Membresia() {
 
               Lo que sí hay que decir es qué gana quien entre primero. Eso no es
               defenderse: es dar un motivo. */}
-          <Reveal delay={170}>
-            <p className="com-linea">
-              Un grupo pequeño. Cada mes, una parte de tu historia familiar.
-            </p>
-          </Reveal>
+          {/* La única frase que cuenta de qué va, escrita palabra a palabra.
+              En una página de veinte palabras, que la frase se escriba es
+              literalmente todo el movimiento que hay que ver. */}
+          <Aparece modo="letras" retraso={3} className="com-linea" as="p">
+            Un grupo pequeño. Cada mes, una parte de tu historia familiar.
+          </Aparece>
 
-          <Reveal delay={220}>
+          <Aparece retraso={4}>
             <p className="com-condicion">Las primeras deciden conmigo qué se trabaja dentro.</p>
-          </Reveal>
+          </Aparece>
 
           {/* --------------------------------------------------- LA CAJA
               El formulario va dentro de una caja de cristal, centrada, y es lo
               único que se puede hacer en esta página. Cuando sólo hay una
               acción, ponerla en una caja aparte no es adorno: es lo que hace
               que se vea sin leer nada. */}
-          <Reveal delay={270}>
+          {/* La caja se acerca, no sube: es lo único que se puede hacer aquí y
+              entra con un gesto distinto al del texto. */}
+          <Aparece modo="escala" retraso={5}>
             <div id="avisar" className="com-caja">
               <p className="com-caja-titulo">Te aviso antes que a nadie</p>
               <LeadForm
@@ -152,13 +160,13 @@ export default function Membresia() {
                 pedirWhatsapp
               />
             </div>
-          </Reveal>
+          </Aparece>
         </div>
 
         {/* El pie, dentro de la misma pantalla oscura. Una página de un solo
             bloque no puede llevar un pie claro debajo: sería una segunda
             pantalla, que es justo lo que se ha quitado. */}
-        <div className="com-pie">
+        <Aparece className="com-pie">
           <Link href="/" aria-label="Ir al inicio">
             <Marca tam={30} claro />
           </Link>
@@ -166,7 +174,7 @@ export default function Membresia() {
             <Link href="/legal">Aviso legal</Link>
             <Link href="/privacidad">Tus datos</Link>
           </span>
-        </div>
+        </Aparece>
       </div>
       {/* EL CHAT, TAMBIÉN AQUÍ.
           Estaba sólo en la portada, y es la única forma de reservar una sesión

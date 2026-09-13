@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
-import Reveal from '@/components/Reveal';
+/* Antes `Reveal`, un fundido de duración fija. `Aparece` ata el movimiento a
+   la rueda. Explicado en components/Aparece.tsx. */
+import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import ChatWidget from '@/components/ChatWidget';
@@ -170,18 +172,20 @@ export default function Sinergia() {
         />
         <div style={{ position: 'relative', zIndex: 3, maxWidth: 1240, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(26px,3.4vw,58px)', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.2vw,28px)' }}>
-            <Reveal>
+            <Aparece>
               <div style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>Gratis · resultado al momento</div>
-            </Reveal>
-            <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontFamily: 'var(--serif)', lineHeight: 0.99, letterSpacing: '-.026em', maxWidth: '16ch' }}>
+            </Aparece>
+            {/* Sin el modo de palabra a palabra: la mitad del titular va en un
+                `<span>` dorado, o sea que el hijo no es un texto suelto. */}
+            <Aparece as="h1" retraso={1} style={{ margin: 0, fontSize: 'min(clamp(38px,6vw,80px),15vh)', fontFamily: 'var(--serif)', lineHeight: 0.99, letterSpacing: '-.026em', maxWidth: '16ch' }}>
               Con tu madre, con tu socio, con tu pareja: <span style={{ color: 'var(--acento)' }}>siempre acabas en el mismo sitio</span>.
-            </Reveal>
-            <Reveal delay={150}>
+            </Aparece>
+            <Aparece retraso={2}>
               <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.5, color: 'var(--tx-2)', maxWidth: '40ch' }}>
                 Elige a cualquier persona de tu vida —tu madre, tu padre, tu abuela, tu hijo, tu socio, tu pareja— y mira qué se activa entre los dos. Dos nombres, dos fechas y lo tienes.
               </p>
-            </Reveal>
-            <Reveal delay={220}>
+            </Aparece>
+            <Aparece retraso={3}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {['Tu número y el de esa persona', 'Lo que se activa entre los dos', 'Tres frases concretas para trabajarlo'].map((f) => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15 }}>
@@ -190,16 +194,18 @@ export default function Sinergia() {
                   </div>
                 ))}
               </div>
-            </Reveal>
-            <Reveal delay={290}>
+            </Aparece>
+            <Aparece retraso={4}>
               <a href="#calc" data-mag data-cur-label="Empezar" className="pill pill-cream" style={{ alignSelf: 'flex-start' }}>
                 <span>Empezar — dos minutos</span>
                 <span className="pill-arrow">↓</span>
               </a>
-            </Reveal>
+            </Aparece>
           </div>
 
-          <Reveal delay={120}>
+          {/* La calculadora se acerca: es la pieza con la que se juega, y
+              acercándose se pone delante en vez de desfilar como el texto. */}
+          <Aparece modo="escala" retraso={2}>
             <div id="calc" style={{ background: '#FFFFFF', color: 'var(--tx)', borderRadius: 'var(--radio)', padding: 'clamp(20px,2.4vw,32px)', display: 'flex', flexDirection: 'column', gap: 18, boxShadow: '0 34px 80px rgba(0,0,0,.5)', scrollMarginTop: 90 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
                 <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>{stepLabel}</span>
@@ -449,25 +455,27 @@ export default function Sinergia() {
                 </div>
               )}
             </div>
-          </Reveal>
+          </Aparece>
         </div>
       </div>
 
       <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(60px,8vw,120px) clamp(14px,3vw,36px)' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
-          <Reveal>
+          <Aparece>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#8F6B18' }}>
               <span>Cómo se calcula</span>
               <span style={{ flex: 1, height: 1, background: 'var(--linea)' }} />
             </div>
-          </Reveal>
+          </Aparece>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(230px,1fr))', gap: 10 }}>
             {[
               ['01', 'Tu número', 'Se suman los dígitos de tu fecha de nacimiento hasta dejar uno solo.'],
               ['02', 'El de la otra persona', 'Lo mismo con su fecha. Dos números que ya explican mucho.'],
               ['03', 'Y el de los dos', 'Sumando los vuestros sale lo que se activa cuando estáis juntos.'],
             ].map(([n, title, desc], i) => (
-              <Reveal key={n} delay={i * 90}>
+              /* Un escalón por tarjeta: los tres pasos de la cuenta entran en
+                 el orden en el que se leen. */
+              <Aparece key={n} retraso={i}>
                 <div data-card className="card-hover-light" style={{ background: '#FFFFFF', border: '1px solid var(--linea)', borderRadius: 'var(--radio)', padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, minHeight: 190 }}>
                   {/* El 01·02·03 son los tres pasos de la cuenta, en orden: es
                       información, no adorno, así que se lee. Con el gris de
@@ -478,15 +486,16 @@ export default function Sinergia() {
                     <span style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--tx-2)' }}>{desc}</span>
                   </div>
                 </div>
-              </Reveal>
+              </Aparece>
             ))}
           </div>
-          <Reveal>
-            <div style={{ fontSize: 'var(--t-seccion)', fontFamily: 'var(--serif)', lineHeight: 1.06, letterSpacing: '-.022em', maxWidth: '24ch' }}>
-              Esto es una foto. En consulta se ve la película entera: de dónde viene y en qué generación empezó.
-            </div>
-          </Reveal>
-          <Reveal delay={80}>
+          {/* La frase de cierre, escrita palabra a palabra. Es el argumento
+              que lleva de la prueba gratis a la consulta: que se lea al ritmo
+              al que se baja es lo que hace que se lea. */}
+          <Aparece modo="letras" style={{ fontSize: 'var(--t-seccion)', fontFamily: 'var(--serif)', lineHeight: 1.06, letterSpacing: '-.022em', maxWidth: '24ch' }}>
+            Esto es una foto. En consulta se ve la película entera: de dónde viene y en qué generación empezó.
+          </Aparece>
+          <Aparece retraso={1}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
               <Link href="/#cita" data-mag data-cur-label="Reservar" className="pill pill-dark">
                 <span>Reservar una sesión</span>
@@ -496,12 +505,14 @@ export default function Sinergia() {
                 O ver la comunidad
               </Link>
             </div>
-          </Reveal>
+          </Aparece>
         </div>
       </div>
 
       <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(34px,5vw,60px) clamp(14px,3vw,36px) 26px' }}>
-        <div style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        {/* Lo último de la página también entra; el recorrido se recorta por
+            lo que queda de scroll para que llegue puesto del todo. */}
+        <Aparece style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: 'var(--tx)' }}>
                 <Marca tam={52} apilado />
@@ -515,7 +526,7 @@ export default function Sinergia() {
             </span>
           </div>
           <span style={{ fontSize: 15, color: 'var(--tx-4)' }}>© 2026</span>
-        </div>
+        </Aparece>
       </div>
 
       {res && <Informe e={res} />}

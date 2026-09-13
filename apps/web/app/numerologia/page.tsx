@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useRef } from 'react';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
-import Reveal from '@/components/Reveal';
+/* Antes `Reveal`, un fundido de duración fija. `Aparece` ata el movimiento a
+   la rueda: si paras de bajar, para. Explicado en components/Aparece.tsx. */
+import Aparece from '@/components/Aparece';
 import Foto from '@/components/Foto';
 import TuNumero from '@/components/TuNumero';
 import useSiteScroll from '@/components/useSiteScroll';
@@ -84,24 +86,29 @@ export default function Numerologia() {
       <div className="claro bloque-limpio" style={{ paddingTop: 'clamp(128px,15vw,200px)' }}>
         <div className="limpio-dentro">
           <div className="limpio-texto">
-            <Reveal>
-              <h1 className="titular-seccion limpio-h">Numerología transgeneracional: qué es y para qué sirve.</h1>
-            </Reveal>
-            <Reveal delay={80}>
+            {/* El titular de la página, escrito palabra a palabra según se
+                baja. Es lo primero que se lee y es largo: entero de golpe se
+                salta, escribiéndose se lee. */}
+            <Aparece as="h1" modo="letras" className="titular-seccion limpio-h">
+              Numerología transgeneracional: qué es y para qué sirve.
+            </Aparece>
+            <Aparece retraso={1}>
               <p className="limpio-p">
                 Tu nombre y tu fecha de nacimiento guardan lo que ha ido pasando en tu familia. Puestos en números, el
                 patrón se ve: qué se repite, en qué generación empezó y por dónde te llegó a ti.
               </p>
-            </Reveal>
-            <Reveal delay={140}>
+            </Aparece>
+            <Aparece retraso={2}>
               <p className="limpio-p">
                 Un hijo que no se reconoció, alguien que estuvo preso, una muerte de la que no se volvió a hablar. Cosas
                 que pasaron de verdad y que nadie cerró. Nadie tuvo la culpa, pero una historia que no se cierra sigue
                 bajando hasta que alguien la mira de frente.
               </p>
-            </Reveal>
+            </Aparece>
           </div>
-          <Reveal delay={180} className="limpio-foto">
+          {/* La foto se acerca en vez de subir: es la fila de hombres
+              repitiéndose, y acercándose se lee como que enfoca en ella. */}
+          <Aparece modo="escala" retraso={1} className="limpio-foto">
             <Foto
               src={FOTOS.generaciones}
               alt="Una fila de hombres de distintas edades, uno detrás de otro, en la misma postura y con las mismas manos sobre la mesa, repitiéndose hacia el fondo"
@@ -109,7 +116,7 @@ export default function Numerologia() {
               radius="0"
               sizes="(max-width:900px) 100vw, 40vw"
             />
-          </Reveal>
+          </Aparece>
         </div>
       </div>
 
@@ -118,9 +125,12 @@ export default function Numerologia() {
           que habla el texto de arriba: enseñarla en el momento en que se acaba
           de explicar es lo que la convierte en prueba en vez de en juguete. */}
       <div id="prueba" className="vino banda tn-banda" style={{ scrollMarginTop: 80 }}>
-        <div className="banda-dentro">
+        {/* La calculadora se acerca. Es una pieza con la que se INTERACTÚA:
+            que suba como un párrafo la iguala con el texto de al lado, y
+            acercándose se lee como que se pone delante. */}
+        <Aparece modo="escala" className="banda-dentro">
           <TuNumero />
-        </div>
+        </Aparece>
       </div>
 
       {/* ── QUÉ SALE ─────────────────────────────────────────
@@ -128,16 +138,18 @@ export default function Numerologia() {
           para cada persona; ni una de las cinco está de adorno. */}
       <div className="claro bloque-limpio">
         <div style={{ maxWidth: 1180, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(32px,4vw,58px)' }}>
-          <Reveal className="titular-seccion" style={{ maxWidth: '15ch' }}>
+          <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '15ch' }}>
             Qué sale de tu nombre y de tu fecha.
-          </Reveal>
+          </Aparece>
           <div className="num-rejilla">
             {QUE_SALE.map((q, i) => (
-              <Reveal key={q.t} delay={60 + i * 50} className="num-ficha">
+              /* Un escalón por ficha: las cinco entran en cascada y la
+                 rejilla se lee de arriba abajo, no de golpe. */
+              <Aparece key={q.t} retraso={i} className="num-ficha">
                 <span className="num-etiqueta">{q.n}</span>
                 <h2 className="num-tit">{q.t}</h2>
                 <p className="num-txt">{q.p}</p>
-              </Reveal>
+              </Aparece>
             ))}
           </div>
         </div>
@@ -148,24 +160,24 @@ export default function Numerologia() {
           antes del precio es lo que permite leer el resto sin sospecha. */}
       <div className="arena bloque-limpio">
         <div className="cierre-uno">
-          <Reveal className="titular-seccion cierre-uno-h">Y qué no es.</Reveal>
-          <Reveal delay={70}>
+          <Aparece modo="letras" className="titular-seccion cierre-uno-h">Y qué no es.</Aparece>
+          <Aparece retraso={1}>
             <p className="cierre-uno-p">
               No adivina el futuro. Mira hacia atrás, no hacia delante: nadie te va a decir con quién te vas a casar ni
               cuándo te va a tocar la lotería.
             </p>
-          </Reveal>
-          <Reveal delay={130}>
+          </Aparece>
+          <Aparece retraso={2}>
             <p className="cierre-uno-p">
               No hay que creer en nada. No hay religión, ni grupo, ni nada a lo que apuntarse. La cuenta se hace delante
               de ti, con números, y la puedes rehacer tú.
             </p>
-          </Reveal>
-          <Reveal delay={190}>
+          </Aparece>
+          <Aparece retraso={3}>
             <p className="cierre-uno-p">
               Y no sustituye a un psicólogo. Si estás en terapia, sigue con ella: esto acompaña y no interfiere.
             </p>
-          </Reveal>
+          </Aparece>
         </div>
       </div>
 
@@ -175,15 +187,15 @@ export default function Numerologia() {
           cuánto cuesta. */}
       <div id="consulta" className="claro bloque-limpio" style={{ scrollMarginTop: 80 }}>
         <div className="cierre-uno">
-          <Reveal className="titular-seccion cierre-uno-h">La consulta.</Reveal>
-          <Reveal delay={70}>
+          <Aparece modo="letras" className="titular-seccion cierre-uno-h">La consulta.</Aparece>
+          <Aparece retraso={1}>
             <p className="cierre-uno-p">
               Online, con tu carta ya preparada antes de vernos. Miramos de dónde viene lo que se repite en tu familia,
               en qué generación empezó y qué parte te toca soltar a ti. Sales con tu historia puesta en números y
               explicada delante de ti — no con una lista de consejos.
             </p>
-          </Reveal>
-          <Reveal delay={130}>
+          </Aparece>
+          <Aparece retraso={2}>
             <p className="num-precio">
               {ofertaViva ? (
                 <>
@@ -193,39 +205,42 @@ export default function Numerologia() {
                 <b>{eur(SESION.precio)}</b>
               )}
             </p>
-          </Reveal>
+          </Aparece>
           {ofertaViva && (
-            <Reveal delay={170}>
+            <Aparece retraso={3}>
               <p className="cierre-uno-p">
                 Es el precio de aniversario, que cae en día 14. Son {SESION.plazasOferta} plazas, una por cada año de
                 consulta, y se acaba cuando se llenen.
               </p>
-            </Reveal>
+            </Aparece>
           )}
-          <Reveal delay={220}>
+          <Aparece retraso={4}>
             <button type="button" className="portada-cta" onClick={abrirConsulta} data-mag data-cur-label="Reservar">
               <span>Reservar mi consulta</span>
               <i aria-hidden>→</i>
             </button>
-          </Reveal>
-          <Reveal delay={280}>
+          </Aparece>
+          <Aparece retraso={5}>
             <p className="cierre-uno-puertas">
               <Link href="/kabala" data-mag>
                 Y la consulta de Kábala, ¿qué es? →
               </Link>
             </p>
-          </Reveal>
+          </Aparece>
         </div>
       </div>
 
       {/* ── PIE ──────────────────────────────────────────────── */}
       <div className="arena" style={{ background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(44px,6vw,72px) clamp(16px,4vw,56px) 30px' }}>
-        <div style={{ maxWidth: 1180, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 28, alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* Lo último de la página también se mueve. El recorrido se recorta
+            por lo que queda de scroll, así que llega puesto del todo aunque no
+            haya más página por debajo para terminar de subirlo. */}
+        <Aparece style={{ maxWidth: 1180, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 28, alignItems: 'center', justifyContent: 'space-between' }}>
           <Marca tam={68} apilado />
           <Link href="/" data-mag style={{ fontSize: 'var(--t-cuerpo)', color: 'var(--tx-2)' }}>
             ← Volver al inicio
           </Link>
-        </div>
+        </Aparece>
       </div>
 
       <ChatWidget ref={chatRef} />

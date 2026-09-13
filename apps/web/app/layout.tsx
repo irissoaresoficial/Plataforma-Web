@@ -3,6 +3,10 @@ import { Fraunces, Instrument_Sans } from 'next/font/google';
 import { LangProvider } from '@/lib/i18n';
 import Medicion from '@/components/Medicion';
 import './globals.css';
+/* El sistema de aparición al bajar (`components/Aparece.tsx`). Va DESPUÉS de la
+   hoja global a propósito: en un empate de especificidad tiene que ganar el
+   movimiento, y así no hace falta ni un `!important` para colocarlo. */
+import './movimiento.css';
 
 /*
  * LAS DOS LETRAS DE LA CASA

@@ -1,0 +1,202 @@
+/*
+ * ============================================================================
+ * MOVIMIENTO.CSS — LA MITAD EN CSS DE `Aparece`
+ * ============================================================================
+ *
+ * El componente sólo hace una cosa: escribir en `--p` un número de 0 a 1 con
+ * cuánto ha entrado el bloque en la ventana. TODO lo que se ve pasa aquí, y va
+ * en un archivo aparte de `globals.css` por dos motivos.
+ *
+ * UNO, PORQUE ES UN SISTEMA Y NO UNOS ESTILOS. Son sesenta líneas que dependen
+ * de un componente concreto y de un nombre de variable concreto; mezcladas en
+ * las seis mil de la hoja global se pierden y alguien acaba escribiendo un
+ * segundo revelado sin saber que éste existe.
+ *
+ * Y DOS, PORQUE `globals.css` NO SE TOCA. Se está trabajando en ella a la vez
+ * que en esto.
+ *
+ * Se importa DESPUÉS de la hoja global en `layout.tsx`, así que en un empate de
+ * especificidad manda ésta. No hay ni un `!important` fuera del bloque de menos
+ * movimiento, que es el único sitio donde tiene que ganar sí o sí.
+ *
+ * Y NI UNA REGLA DE TAMAÑO DE LETRA. Ni aquí ni en el componente: esto mueve
+ * cosas, no las escribe. La regla de la casa —nada por debajo de 15 px— no se
+ * puede romper desde un archivo que no habla de tipografía.
+ */
+
+/*
+ * `--p` NACE VALIENDO 1, O SEA «PUESTO DEL TODO».
+ *
+ * Declararla con @property no es un adorno de sintaxis: le da un valor inicial
+ * de verdad. Si por lo que sea la clase `.aparece-on` estuviera puesta y nadie
+ * escribiera el número —un error en el bucle, un `cancelAnimationFrame` de más,
+ * una extensión del navegador que se cruce— el bloque sale ENTERO en vez de
+ * desaparecer. Sin @property, `var(--p)` sin valor invalida la declaración y el
+ * resultado es el mismo por otro camino, pero esto lo deja dicho en alto.
+ *
+ * `inherits: true` porque las palabras del modo `letras` leen la `--p` de su
+ * frase; cada palabra saca la suya de ahí.
+ */
+@property --p {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+/*
+ * EL ESTADO DE PARTIDA ES «SE VE».
+ *
+ * Esta clase no toca ni la opacidad ni la posición, y eso es deliberado: es lo
+ * que pinta el servidor y lo que queda si el JavaScript no llega, falla o está
+ * desactivado. El efecto entero vive en `.aparece-on`, y esa clase la pone el
+ * componente al montarse. Nunca al revés: un revelado que parte de invisible y
+ * se arregla con JavaScript es contenido que se pierde el día que el JavaScript
+ * no cargue.
+ */
+.aparece {
+  /* Sin propiedades. Está aquí para que se lea que existe y por qué está vacía. */
+}
+
+/* Ya hay quien mide y escribe `--p`: a partir de aquí manda el número. */
+.aparece-on {
+  opacity: var(--p);
+}
+
+/*
+ * SÓLO `transform` Y `opacity`, Y SIEMPRE EN `translate3d`.
+ *
+ * `translate3d` en vez de `translateY` porque el 3d es lo que le dice al
+ * navegador que suba el bloque a su propia capa: moverlo deja de repintar lo
+ * que tiene detrás. Con `translateY` a secas, cada frame repinta el fondo, y en
+ * un móvil eso son los tirones de siempre.
+ */
+.aparece-on.apa-sube {
+  transform: translate3d(0, calc((1 - var(--p)) * 28px), 0);
+}
+
+/* Entra desde la izquierda. Se sale del borde mientras entra, así que sólo se
+   usa dentro de contenedores con `overflow-x: clip` — que en esta web son
+   todas las páginas por su div de fuera. */
+.aparece-on.apa-lado {
+  transform: translate3d(calc((1 - var(--p)) * -36px), 0, 0);
+}
+
+/* De 0,94 a 1. Poco a propósito: por debajo de 0,9 la letra se ve escalada
+   —los remates engordan y adelgazan— y se lee como un zoom, no como algo que
+   se acerca. */
+.aparece-on.apa-escala {
+  transform: scale(calc(0.94 + var(--p) * 0.06));
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * MODO LETRAS
+ * ---------------------------------------------------------------------------
+ * La frase se escribe según bajas. Aquí la frase entera NO se mueve ni se
+ * atenúa: quien lo hace es cada palabra por su cuenta, con su propio trocito
+ * del recorrido.
+ */
+.aparece-on.apa-letras {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * La palabra es `inline-block` para poder moverse. Eso tiene una consecuencia
+ * que ya nos costó una vez: un `inline-block` se come el espacio en blanco que
+ * lleve al final, así que el espacio va FUERA del span, en el JSX. Si algún día
+ * la frase sale escrita del tirón, el fallo está allí y no aquí.
+ *
+ * Sin la clase del efecto, la palabra es una palabra normal y corriente.
+ */
+.apa-pal {
+  display: inline-block;
+}
+
+/*
+ * A CADA PALABRA, SU TROZO DEL RECORRIDO.
+ *
+ * `--i` es el número de palabra y `--n` cuántas hay. La cuenta reparte el
+ * recorrido entre todas y deja que se solapen de tres en tres: sin solape se
+ * lee como una máquina de escribir —un tic que se ha visto mil veces— y con
+ * solape se lee como alguien diciendo la frase.
+ *
+ * La cuenta está hecha para que, con `--p` en 1, la ÚLTIMA palabra salga a 1
+ * exacto: (1*(n+3) - (n-1)) / 3 = 4/3, que el clamp recorta. O sea que cuando
+ * el bloque termina de entrar no queda ni una palabra a medias, pase lo que
+ * pase con el reparto.
+ *
+ * Y el suelo de la opacidad es 0,1 y no 0: una frase que se escribe sola pero
+ * cuyo hueco no existe hasta que llega da un salto de maquetación al aparecer,
+ * y a media opacidad se intuye el bloque de texto antes de poder leerlo, que es
+ * el gesto de la portada.
+ */
+.aparece-on.apa-letras .apa-pal {
+  --pp: clamp(0, calc((var(--p) * (var(--n) + 3) - var(--i)) / 3), 1);
+  opacity: calc(0.1 + var(--pp) * 0.9);
+  transform: translate3d(0, calc((1 - var(--pp)) * 0.32em), 0);
+}
+
+/*
+ * `will-change` SÓLO MIENTRAS ESTÁ CERCA.
+ *
+ * Esta clase la pone y la quita el observador. Es importante que sea temporal:
+ * `will-change` permanente en treinta bloques a la vez le pide al navegador
+ * treinta capas de composición que no puede sostener en un teléfono, y el
+ * remedio acaba siendo peor que la enfermedad. Puesto y quitado, sólo lo pagan
+ * los dos o tres bloques que hay a la vista.
+ */
+.aparece-cerca {
+  will-change: opacity, transform;
+}
+.aparece-on.apa-letras.aparece-cerca .apa-pal {
+  will-change: opacity, transform;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * MENOS MOVIMIENTO: NADA SE MUEVE, Y TODO SE VE
+ * ---------------------------------------------------------------------------
+ * El componente ya se sale antes de poner la clase, así que esto no debería
+ * hacer falta nunca. Está igualmente porque es la regla que no se negocia y
+ * porque hay un caso real en el que sí hace falta: quien cambia la preferencia
+ * del sistema con la página ya abierta. El efecto ya está montado y el bucle ya
+ * corre; esto lo deja quieto en el acto sin tener que recargar.
+ *
+ * Es el único sitio del archivo con `!important`, y aquí sí toca: tiene que
+ * ganarle a las reglas de arriba, que son más específicas.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .aparece,
+  .aparece-on,
+  .aparece-on.apa-sube,
+  .aparece-on.apa-lado,
+  .aparece-on.apa-escala,
+  .aparece-on.apa-letras {
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+  .apa-pal,
+  .aparece-on.apa-letras .apa-pal {
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+}
+
+/*
+ * Y AL IMPRIMIR, TODO PUESTO.
+ *
+ * El informe de la sinergia se imprime desde el navegador con `window.print()`.
+ * Un bloque a media opacidad porque nunca pasó por pantalla saldría en el papel
+ * medio borrado, y ahí no hay scroll que valga para arreglarlo.
+ */
+@media print {
+  .aparece,
+  .aparece-on,
+  .apa-pal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

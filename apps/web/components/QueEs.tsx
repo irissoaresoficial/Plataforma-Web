@@ -188,6 +188,29 @@ export default function QueEs({ titular, uno, dos }: { titular: string; uno: str
       id = requestAnimationFrame(bucle);
     };
 
+    /*
+     * AL SALIR DE PANTALLA, EL TEXTO SE DEJA COMO TIENE QUE QUEDAR.
+     *
+     * Esto es el fallo clásico de este patrón y aquí lo tuvimos: el observador
+     * apaga el bucle cuando el bloque sale de la ventana, y si en ese fotograma
+     * todavía faltaban palabras por encender, se quedan apagadas PARA SIEMPRE.
+     * Nadie lo nota bajando despacio; se nota bajando de un golpe de rueda, que
+     * es como baja media gente. Ocho palabras invisibles al fondo de la página,
+     * medidas en el navegador.
+     *
+     * Así que al apagar el bucle se cierra a mano: si el bloque ha quedado por
+     * ENCIMA de la ventana, ya se ha leído entero y se enciende todo; si ha
+     * quedado por debajo, todavía no ha llegado su turno y se apaga todo. Nunca
+     * a medias.
+     */
+    const cierra = () => {
+      const pasado = c.getBoundingClientRect().bottom < 0;
+      for (const g of grupos) {
+        g.pal.forEach((w) => w.classList.toggle('pal-si', pasado));
+        g.vistas = pasado ? g.pal.length : 0;
+      }
+    };
+
     const ojo = new IntersectionObserver(
       ([x]) => {
         if (x.isIntersecting && !vivo) {
@@ -196,6 +219,7 @@ export default function QueEs({ titular, uno, dos }: { titular: string; uno: str
         } else if (!x.isIntersecting && vivo) {
           vivo = false;
           cancelAnimationFrame(id);
+          cierra();
         }
       },
       { threshold: 0, rootMargin: '120px' },

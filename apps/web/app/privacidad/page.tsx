@@ -1,4 +1,14 @@
 import PaginaTexto from '@/components/PaginaTexto';
+/*
+ * Igual que en el aviso legal: cada apartado entra al llegar a él. En una
+ * página que es texto seguido de arriba abajo, eso es lo único que marca dónde
+ * acaba un apartado y empieza el siguiente mientras se baja.
+ *
+ * El molde (`PaginaTexto`) no se toca: el movimiento va aquí. Los estilos de
+ * `.texto-legal` son de descendencia, así que un envoltorio en medio no le
+ * quita el estilo a nada.
+ */
+import Aparece from '@/components/Aparece';
 import { CONTACTO, TITULAR } from '@/content/site';
 import { Texto } from '@/components/Pendiente';
 
@@ -14,13 +24,21 @@ export default function Privacidad() {
       entradilla="En claro y sin rodeos: qué se te pide, para qué, quién más lo ve, cuánto tiempo se guarda y cómo pedir que se borre."
       actualizado="4 de septiembre de 2026"
     >
-      <h2>Quién responde de tus datos</h2>
+      <Aparece>
+        <h2>Quién responde de tus datos</h2>
+      </Aparece>
+      <Aparece retraso={1}>
       <p>
         <Texto valor={TITULAR.nombre} />, NIF <Texto valor={TITULAR.nif} />. Puedes escribir
         a {CONTACTO.email} para cualquier cosa de esta página.
       </p>
 
-      <h2>Qué se pide y para qué</h2>
+      </Aparece>
+
+      <Aparece>
+        <h2>Qué se pide y para qué</h2>
+      </Aparece>
+      <Aparece retraso={1}>
 
       <h3>Si reservas una sesión</h3>
       <p>
@@ -49,7 +67,12 @@ export default function Privacidad() {
         mandarte los detalles. Nada más.
       </p>
 
-      <h2>Con qué permiso</h2>
+      </Aparece>
+
+      <Aparece>
+        <h2>Con qué permiso</h2>
+      </Aparece>
+      <Aparece retraso={1}>
       <ul>
         <li>
           <strong>Para prestarte el servicio</strong> que has pedido (tu sesión, tu curso): porque
@@ -64,7 +87,12 @@ export default function Privacidad() {
         </li>
       </ul>
 
-      <h2>Quién más los ve</h2>
+      </Aparece>
+
+      <Aparece>
+        <h2>Quién más los ve</h2>
+      </Aparece>
+      <Aparece retraso={1}>
       <p>Solo los proveedores necesarios para que esto funcione, y cada uno solo lo suyo:</p>
       <ul>
         <li>
@@ -81,7 +109,12 @@ export default function Privacidad() {
       </ul>
       <p>No se venden tus datos a nadie, ni se ceden para publicidad de terceros.</p>
 
-      <h2>Cuánto tiempo se guardan</h2>
+      </Aparece>
+
+      <Aparece>
+        <h2>Cuánto tiempo se guardan</h2>
+      </Aparece>
+      <Aparece retraso={1}>
       <ul>
         <li>
           <strong>Reservas y sesiones:</strong> mientras seas cliente y después el tiempo que la ley
@@ -93,7 +126,12 @@ export default function Privacidad() {
         </li>
       </ul>
 
-      <h2>Qué puedes pedir, y siempre gratis</h2>
+      </Aparece>
+
+      <Aparece>
+        <h2>Qué puedes pedir, y siempre gratis</h2>
+      </Aparece>
+      <Aparece retraso={1}>
       <p>
         Acceder a lo que tenemos tuyo, corregirlo, borrarlo, limitar su uso, oponerte a que lo usemos
         o pedir que te lo demos en un archivo para llevártelo a otro sitio. Escribe a{' '}
@@ -101,7 +139,12 @@ export default function Privacidad() {
         puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).
       </p>
 
-      <h2>Cookies</h2>
+      </Aparece>
+
+      <Aparece>
+        <h2>Cookies</h2>
+      </Aparece>
+      <Aparece retraso={1}>
       <p>
         El idioma que eliges se guarda en tu propio navegador y no se envía a ningún sitio. Eso no se
         puede desactivar, porque sin ello la web no sabría en qué idioma hablarte, y tampoco sirve
@@ -120,6 +163,7 @@ export default function Privacidad() {
         ni tu teléfono, ni tu fecha de nacimiento. Y si no hay ninguna campaña en marcha, no verás el
         cartel porque no hay nada que cargar.
       </p>
+      </Aparece>
     </PaginaTexto>
   );
 }

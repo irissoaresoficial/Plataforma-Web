@@ -5,7 +5,10 @@ import { useRef } from 'react';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
-import Reveal from '@/components/Reveal';
+/* `Reveal` era un fundido de duración fija que se disparaba al asomar el
+   bloque; `Aparece` ata el movimiento a la rueda. Está explicado entero en
+   components/Aparece.tsx — aquí sólo se usa. */
+import Aparece from '@/components/Aparece';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
@@ -83,19 +86,23 @@ export default function Kabala() {
       <div className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(104px,13vh,168px) clamp(16px,4vw,56px) clamp(60px,8vw,110px)', overflow: 'hidden' }}>
         <CampoNumeros intensidad={1.5} densidad={150_000} />
         <div style={{ position: 'relative', zIndex: 2, maxWidth: 1320, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,44px)' }}>
-          <Reveal>
+          <Aparece>
             <Rotulo claro>Qué es la Kábala</Rotulo>
-          </Reveal>
+          </Aparece>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(20px,3vw,48px)', alignItems: 'end' }}>
-            <Reveal delay={60} className="titular-seccion" style={{ maxWidth: '16ch' }}>
+            {/* El titular de entrada, palabra a palabra. Es el primero de la
+                página y el único que se lee entero antes de decidir seguir
+                bajando: que se escriba al ritmo al que se baja es exactamente
+                lo que hace que se lea en vez de saltárselo. */}
+            <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '16ch' }}>
               Un mapa de ti que tiene tres mil años.
-            </Reveal>
-            <Reveal delay={120}>
+            </Aparece>
+            <Aparece retraso={1}>
               <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '44ch' }}>
                 «Kábala» quiere decir <i>recibir</i>. No es una religión y no hay que creer en nada: es una forma de ver
                 cómo eres por dentro, y por dónde te entra y te sale la vida.
               </p>
-            </Reveal>
+            </Aparece>
           </div>
 
           {/* EL ÁRBOL, AL LADO DE LO QUE LO EXPLICA.
@@ -113,9 +120,12 @@ export default function Kabala() {
               el botón de reservar justo después de lo que lo explica, en vez
               de a una pantalla de distancia. */}
           <div className="kab-cuerpo">
-            <Reveal delay={80}>
+            {/* El árbol se acerca en vez de subir. Es un dibujo y no un
+                párrafo: acercándose se lee como que se enfoca, y subiendo se
+                leería como una fila más de la lista de al lado. */}
+            <Aparece modo="escala">
               <ArbolVida />
-            </Reveal>
+            </Aparece>
 
             <div className="kab-columna">
             <div className="kab-rejilla">
@@ -141,15 +151,18 @@ export default function Kabala() {
                 p: 'La palabra que sostiene todo esto: reparar. Lo que te llega de tu familia no hay que aguantarlo — se repara y se le devuelve a quien era.',
               },
             ].map((k, i) => (
-              <Reveal key={k.t} delay={100 + i * 60} className="kab-ficha">
+              /* Las cuatro fichas entran en cascada, un escalón cada una: la
+                 rejilla se lee como una lista que se va escribiendo y no como
+                 cuatro cajas que aparecen de golpe. */
+              <Aparece key={k.t} retraso={i} className="kab-ficha">
                 <span className="kab-num">{k.n}</span>
                 <h3 className="kab-tit">{k.t}</h3>
                 <p className="kab-txt">{k.p}</p>
-              </Reveal>
+              </Aparece>
             ))}
             </div>
 
-            <Reveal delay={340}>
+            <Aparece retraso={2}>
               <div className="kab-pie">
                 <p>
                   En consulta esto no se explica: se dibuja delante de ti con tu nombre y tu fecha, y sales con el mapa
@@ -161,7 +174,7 @@ export default function Kabala() {
                   label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
                 />
               </div>
-            </Reveal>
+            </Aparece>
             </div>
           </div>
         </div>
@@ -173,39 +186,53 @@ export default function Kabala() {
           con qué compararse. */}
       <div className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD }}>
         <div style={{ maxWidth: 1320, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
-          <Reveal><Rotulo>La consulta de Kábala</Rotulo></Reveal>
+          <Aparece><Rotulo>La consulta de Kábala</Rotulo></Aparece>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(22px,3vw,52px)', alignItems: 'start' }}>
-            <Reveal delay={60} className="titular-seccion" style={{ maxWidth: '15ch' }}>
+            <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '15ch' }}>
               No es una sesión. Son tres.
-            </Reveal>
-            <Reveal delay={120} style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(16px,2vw,24px)', maxWidth: '46ch' }}>
-              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)' }}>
-                Un mapa así no se lee de una sentada. Se dibuja con tu nombre y tu fecha, se recorre entero, y sales con
-                él en la mano — no con apuntes de algo que te contaron.
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(14px,2vw,22px)', flexWrap: 'wrap' }}>
+            </Aparece>
+            {/* La columna del precio se abrió en tres piezas con su escalón
+                cada una. Antes las tres entraban juntas dentro de un solo
+                envoltorio, y el número —que es lo que hay que mirar— llegaba a
+                la vez que el párrafo que lo justifica. Escalonado, se lee en el
+                orden en el que hay que leerlo: primero el motivo, después la
+                cifra con el botón, y al final la letra del pie. */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(16px,2vw,24px)', maxWidth: '46ch' }}>
+              <Aparece retraso={1}>
+                <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)' }}>
+                  Un mapa así no se lee de una sentada. Se dibuja con tu nombre y tu fecha, se recorre entero, y sales
+                  con él en la mano — no con apuntes de algo que te contaron.
+                </p>
+              </Aparece>
+              <Aparece retraso={2} style={{ display: 'flex', alignItems: 'center', gap: 'clamp(14px,2vw,22px)', flexWrap: 'wrap' }}>
                 <span style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(30px,3.4vw,42px)', fontWeight: 'var(--peso-fino)', lineHeight: 1, letterSpacing: '-.02em' }}>
                   {eur(KABALA.precio)}
                 </span>
                 <PillCTA onClick={abrirKabala} variant="cream" label="Reservar la consulta de Kábala" />
-              </div>
-              <p style={{ margin: 0, fontSize: 'var(--t-mini)', color: 'var(--tx-3)' }}>
-                Las tres sesiones, online. Se reserva hablando, en un minuto.
-              </p>
-            </Reveal>
+              </Aparece>
+              <Aparece retraso={3}>
+                <p style={{ margin: 0, fontSize: 'var(--t-mini)', color: 'var(--tx-3)' }}>
+                  Las tres sesiones, online. Se reserva hablando, en un minuto.
+                </p>
+              </Aparece>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(40px,6vw,70px) clamp(16px,4vw,56px)' }}>
-        <div className="com-pie" style={{ maxWidth: 1320, margin: '0 auto' }}>
+        {/* El pie también entra. Es lo último de la página, o sea el caso que
+            rompe este patrón en media internet: nunca llega a subir del todo
+            porque ya no se puede bajar más. El componente lo tiene resuelto
+            recortando el recorrido por lo que queda de página. */}
+        <Aparece className="com-pie" style={{ maxWidth: 1320, margin: '0 auto' }}>
           <Link href="/" aria-label="Ir al inicio"><Marca tam={30} claro /></Link>
           <span>
             <Link href="/">Inicio</Link>
             <Link href="/legal">Aviso legal</Link>
             <Link href="/privacidad">Tus datos</Link>
           </span>
-        </div>
+        </Aparece>
       </div>
 
       <ChatWidget ref={chatRef} />

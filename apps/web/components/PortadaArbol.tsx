@@ -331,6 +331,18 @@ export default function PortadaArbol({ pasos }: { pasos: [PasoPortada, PasoPorta
       id = requestAnimationFrame(pinta);
     };
 
+    /* Y al salir de pantalla, las palabras se dejan como tienen que quedar.
+       Si el bucle se apaga a media escritura —pasa bajando de un golpe de
+       rueda— las que faltaban se quedan apagadas para siempre. Por encima de la
+       ventana: todo escrito. Por debajo: todo por escribir. Nunca a medias. */
+    const cierraPalabras = () => {
+      const pasado = c.getBoundingClientRect().bottom < 0;
+      for (const g of grupos) {
+        g.pal.forEach((w) => w.classList.toggle('pal-si', pasado));
+        g.vistas = pasado ? g.pal.length : 0;
+      }
+    };
+
     const ojo = new IntersectionObserver(
       ([x]) => {
         enPortada(x.isIntersecting);
@@ -340,6 +352,7 @@ export default function PortadaArbol({ pasos }: { pasos: [PasoPortada, PasoPorta
         } else if (!x.isIntersecting && vivo) {
           vivo = false;
           cancelAnimationFrame(id);
+          cierraPalabras();
         }
       },
       { threshold: 0 },

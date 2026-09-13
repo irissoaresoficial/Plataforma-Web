@@ -5,7 +5,19 @@ import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
-import Reveal from '@/components/Reveal';
+/*
+ * `Aparece` en vez de `Reveal`, en toda la web.
+ *
+ * `Reveal` era un fundido de setecientas milésimas que se dispara cuando el
+ * bloque asoma y ya no depende de nada más. Eso no es movimiento de scroll: es
+ * una animación que CASUALMENTE empieza al bajar — si paras la rueda, sigue
+ * sola hasta el final, y si bajas de golpe te la pierdes entera.
+ *
+ * En `Aparece` el movimiento va atado a la rueda: cuánto ha entrado el bloque
+ * es un número de 0 a 1 que el CSS usa para la opacidad y el desplazamiento.
+ * Bajas y entra, paras y se para a media entrada. Ver components/Aparece.tsx.
+ */
+import Aparece from '@/components/Aparece';
 import { Palabras, Marquesina, Paralaje, Revelado, Entra } from '@/components/movimiento';
 import TuNumero from '@/components/TuNumero';
 import Anclado from '@/components/Anclado';
@@ -270,17 +282,17 @@ export default function Home() {
       <div id="hola" className="claro hola">
         <div className="hola-marco">
           <div className="hola-texto">
-            <Reveal>
+            <Aparece>
               <h2 className="hola-h">
                 {t.w_hola}
                 <br />
                 <b>{t.w_oficio}</b>
               </h2>
-            </Reveal>
-            <Reveal delay={90}>
+            </Aparece>
+            <Aparece retraso={1}>
               <p className="hola-p">{t.w_que}</p>
-            </Reveal>
-            <Reveal delay={170}>
+            </Aparece>
+            <Aparece retraso={2}>
               {/* El mismo botón que la portada: la frase y una flecha en un
                   disco levantado del papel. Una sola forma de pedir en toda la
                   página, y se reconoce a la segunda vez que se ve. */}
@@ -294,7 +306,7 @@ export default function Home() {
                 <span>{t.hcta}</span>
                 <i aria-hidden>→</i>
               </button>
-            </Reveal>
+            </Aparece>
           </div>
 
           {/* El retrato, con su canto y sin degradados encima. Aquí va la foto
@@ -387,11 +399,11 @@ export default function Home() {
       <div id="consultas" className="claro bloque-limpio" style={{ scrollMarginTop: 80 }}>
         <div className="cierre-marco">
         <div className="cierre-uno">
-          <Reveal className="titular-seccion cierre-uno-h">{t.cu_h}</Reveal>
-          <Reveal delay={80}>
+          <Aparece className="titular-seccion cierre-uno-h">{t.cu_h}</Aparece>
+          <Aparece retraso={1}>
             <p className="cierre-uno-p">{t.cu_p}</p>
-          </Reveal>
-          <Reveal delay={150}>
+          </Aparece>
+          <Aparece retraso={2}>
             <button
               type="button"
               className="portada-cta"
@@ -402,11 +414,11 @@ export default function Home() {
               <span>{t.hcta}</span>
               <i aria-hidden>→</i>
             </button>
-          </Reveal>
+          </Aparece>
           {/* Y las dos puertas para quien quiera leer antes de hablar. Como
               enlaces y no como botones: pesan menos que la acción de arriba, que
               es la que interesa. */}
-          <Reveal delay={220}>
+          <Aparece retraso={3}>
             <p className="cierre-uno-puertas">
               <Link href="/numerologia" data-mag>
                 {t.cu_num}
@@ -415,7 +427,7 @@ export default function Home() {
                 {t.cu_kab}
               </Link>
             </p>
-          </Reveal>
+          </Aparece>
         </div>
 
         {/*
@@ -451,14 +463,14 @@ export default function Home() {
               siempre» se leían pisados por «¿Las sesiones son online?». La clase
               apaga el sticky por debajo de 900 px. */}
           <div className="faq-titulo">
-            <Reveal>
+            <Aparece>
               <Rotulo claro>{t.f_lab}</Rotulo>
-            </Reveal>
-            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
+            </Aparece>
+            <Aparece retraso={1} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
               {t.f_h}
-            </Reveal>
+            </Aparece>
           </div>
-          <Reveal>
+          <Aparece>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {faqs.map(([q, a], i) => {
                 const on = faq === i;
@@ -486,24 +498,24 @@ export default function Home() {
                 );
               })}
             </div>
-          </Reveal>
+          </Aparece>
         </div>
       </div>
 
       {/* ── CIERRE ───────────────────────────────────────────── */}
       <div id="cita" className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: 'clamp(90px,12vw,170px) clamp(16px,4vw,56px)' }}>
         <div style={{ maxWidth: 880, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 26 }}>
-          <Reveal className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
+          <Aparece className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
             {t.c_h}
-          </Reveal>
-          <Reveal delay={80}>
+          </Aparece>
+          <Aparece retraso={1}>
             <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '34ch' }}>{t.c_p}</p>
-          </Reveal>
+          </Aparece>
           {/* El mismo botón que la portada y que el saludo de Iris: una sola
               forma de pedir en toda la página. Y sin la línea del precio
               debajo — el precio está en la ficha de la consulta, con cuerpo de
               texto de verdad, y lo dice el chat en la primera respuesta. */}
-          <Reveal delay={150}>
+          <Aparece retraso={2}>
             <button
               type="button"
               className="portada-cta portada-cta-oscuro"
@@ -514,7 +526,7 @@ export default function Home() {
               <span>{t.c_btn}</span>
               <i aria-hidden>→</i>
             </button>
-          </Reveal>
+          </Aparece>
         </div>
       </div>
 

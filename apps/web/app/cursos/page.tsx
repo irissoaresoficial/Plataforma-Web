@@ -5,7 +5,9 @@ import { useState } from 'react';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
-import Reveal from '@/components/Reveal';
+/* Antes `Reveal`, un fundido de duración fija. `Aparece` ata el movimiento a
+   la rueda. Explicado en components/Aparece.tsx. */
+import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import ChatWidget from '@/components/ChatWidget';
@@ -39,7 +41,13 @@ function CursoBloque({ curso }: { curso: Curso }) {
 
   return (
     <>
-      <article
+      {/* La tarjeta del curso no se movía en absoluto: era el único bloque
+          grande de la web que aparecía de golpe. Se acerca en vez de subir
+          porque es una ficha de producto —una cosa que se pone delante de ti—
+          y porque lo de arriba y lo de abajo ya suben. */}
+      <Aparece
+        as="article"
+        modo="escala"
         id={curso.id}
         className={`curso-card${curso.cartel ? ' curso-card-cartel' : ''}`}
         style={{ scrollMarginTop: 96 }}
@@ -152,7 +160,7 @@ function CursoBloque({ curso }: { curso: Curso }) {
             </button>
           </div>
         </div>
-      </article>
+      </Aparece>
 
       <CursoDetalle curso={curso} abierto={detalle} onCerrar={() => setDetalle(false)} />
     </>
@@ -212,20 +220,20 @@ export default function Cursos() {
             {/* Aquí iba el rótulo «CURSOS Y TALLERES EN DIRECTO» en versalitas.
                 Fuera, como los otros siete de la web: no decía nada que el
                 titular no diga ya, y ponía una línea de ruido delante. */}
-            <Reveal as="h1" delay={70} className="cur-h1">
+            <Aparece as="h1" modo="letras" className="cur-h1">
               Dos días que cambian la conversación en tu casa.
-            </Reveal>
-            <Reveal delay={120}>
+            </Aparece>
+            <Aparece retraso={1}>
               <p className="cur-entrada">
                 En directo y con tu caso encima de la mesa: sales sabiendo hacer las cuentas tú, no con apuntes.
               </p>
-            </Reveal>
+            </Aparece>
 
             {/* LOS DATOS, EN UNA TIRA. Cada uno se dibuja sólo si existe, así
                 que un curso al que le falte el horario no deja un hueco raro:
                 deja de tener esa línea. */}
             {proximo && (
-              <Reveal delay={170}>
+              <Aparece retraso={2}>
                 <dl className="cur-datos">
                   {!falta(proximo.fechas) && (
                     <div><dt>Cuándo</dt><dd>{proximo.fechas}</dd></div>
@@ -237,14 +245,14 @@ export default function Cursos() {
                     <div><dt>Son</dt><dd>{proximo.duracion}</dd></div>
                   )}
                 </dl>
-              </Reveal>
+              </Aparece>
             )}
 
             {/* EL PRECIO Y EL BOTÓN, JUNTOS Y EN EL MISMO RENGLÓN. Separados,
                 el precio se lee como un dato más; pegado al botón es la última
                 cosa que se mira antes de pulsar, que es donde tiene que estar. */}
             {proximo && (
-              <Reveal delay={210}>
+              <Aparece retraso={3}>
                 <div className="cur-cerrar">
                   {proximo.precio != null && (
                     <span className="cur-precio">
@@ -257,25 +265,28 @@ export default function Cursos() {
                     <span className="pill-arrow">↓</span>
                   </a>
                 </div>
-              </Reveal>
+              </Aparece>
             )}
 
             {proximo?.fechaISO && (
-              <Reveal delay={250}>
+              <Aparece retraso={4}>
                 <div className="cur-reloj">
                   <CuentaAtras fechaISO={proximo.fechaISO} abiertoDesdeISO={proximo.inscripcionDesdeISO} compacto />
                 </div>
-              </Reveal>
+              </Aparece>
             )}
           </div>
 
-          <Reveal delay={160} className="cur-hero-video">
+          {/* El vídeo se acerca. Es la cara de Iris: subiendo se lee como una
+              fila más de la ficha de al lado, acercándose se lee como que se
+              pone delante. */}
+          <Aparece modo="escala" retraso={2} className="cur-hero-video">
             <VideoPresenta
               src="/video/iris-presentacion.mp4"
               cartel="/images/iris-presentacion-cartel.jpg"
               etiqueta="Que te lo cuente Iris"
             />
-          </Reveal>
+          </Aparece>
         </div>
       </div>
 
@@ -283,14 +294,14 @@ export default function Cursos() {
           de "los cursos", sin necesidad de una línea ni de un titular más. */}
       <div className="arena banda">
         <div className="banda-dentro" style={{ display: 'grid', gap: 'clamp(16px,2.2vw,26px)' }}>
-          <Reveal style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 4 }}>
+          <Aparece style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 4 }}>
             <h2 style={{ margin: 0, fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em' }}>
               Lo que hay abierto ahora
             </h2>
             <span style={{ fontSize: 15, color: 'var(--tx-2)' }}>
               {CURSOS.length === 1 ? '1 convocatoria' : `${CURSOS.length} convocatorias`}
             </span>
-          </Reveal>
+          </Aparece>
           {CURSOS.map((curso) => (
             <CursoBloque key={curso.id} curso={curso} />
           ))}
@@ -303,7 +314,8 @@ export default function Cursos() {
           {/* El único bloque de granate de la página: es el cierre, y por eso
               es el que pesa. Al llevar la clase, dentro de él los colores se
               recalculan solos y nada hereda la tinta oscura de fuera. */}
-          <Reveal
+          <Aparece
+            modo="escala"
             className="vino"
             style={{
               display: 'grid',
@@ -333,8 +345,12 @@ export default function Cursos() {
                 <span className="pill-arrow">→</span>
               </Link>
             </div>
-          </Reveal>
-          <div style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          </Aparece>
+          {/* El pie también entra: es lo último de la página, y ahí es donde
+              este patrón suele dejar contenido a media opacidad para siempre
+              porque ya no queda scroll con el que terminar de subirlo. El
+              componente lo resuelve recortando el recorrido por lo que queda. */}
+          <Aparece style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <Link href="/" style={{ fontSize: 15, fontWeight: 700, color: 'var(--tx)' }}>
                 <Marca tam={52} apilado />
@@ -353,7 +369,7 @@ export default function Cursos() {
               </span>
             </div>
             <span style={{ fontSize: 15, color: 'var(--tx-4)' }}>© 2026 · Cursos</span>
-          </div>
+          </Aparece>
         </div>
       </div>
       {/* EL CHAT, TAMBIÉN AQUÍ.

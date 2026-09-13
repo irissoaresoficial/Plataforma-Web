@@ -4,7 +4,9 @@ import Link from 'next/link';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
-import Reveal from '@/components/Reveal';
+/* Antes `Reveal`, un fundido de duración fija. `Aparece` ata el movimiento a
+   la rueda. Explicado en components/Aparece.tsx. */
+import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import ChatWidget from '@/components/ChatWidget';
@@ -81,56 +83,70 @@ export default function Taller() {
         <CampoNumeros intensidad={1.7} densidad={130_000} />
 
         <div className="tal-dentro">
-          <Reveal>
+          {/* El sello se acerca; lo de debajo sube. Dos gestos distintos para
+              que la pantalla de entrada no se lea como una sola cosa que se
+              desliza. */}
+          <Aparece modo="escala">
             <Marca tam={44} texto={false} claro />
-          </Reveal>
+          </Aparece>
 
-          <Reveal delay={40}>
+          <Aparece retraso={1}>
             <span className="tal-chapa">
               <i aria-hidden />
               Taller online · gratis · {TALLER.duracion}
             </span>
-          </Reveal>
+          </Aparece>
 
           {/* EL DOLOR PRIMERO. Tres cosas que le pasan de verdad a quien entra,
-              escritas como se cuentan, y sólo después la herramienta. */}
-          <Reveal as="h1" delay={100} className="tal-titular">
+              escritas como se cuentan, y sólo después la herramienta.
+
+              Aquí NO va el modo de palabra a palabra aunque sea el titular:
+              lleva un salto de línea y una cursiva dentro, o sea que el hijo no
+              es un texto suelto y no hay nada que partir en palabras. Partirlo
+              a la fuerza costaría el `<em>`, que es lo que hace el remate de la
+              frase. */}
+          <Aparece as="h1" retraso={2} className="tal-titular">
             Cambias de trabajo, cambias de pareja,
             <br />
             <em>y a los seis meses estás en la misma conversación.</em>
-          </Reveal>
+          </Aparece>
 
-          <Reveal delay={170}>
+          <Aparece retraso={3}>
             <p className="tal-entrada">
               No es mala suerte y no eres tú. Es un patrón, y los patrones se pueden leer. En hora y media te enseño a
               verlo escrito en tu propia fecha de nacimiento — la tuya, no un ejemplo.
             </p>
-          </Reveal>
+          </Aparece>
 
           {/* QUÉ PASA DENTRO. Tres líneas, y las tres se pueden cumplir. Nada de
               «transformarás tu vida»: se enseña a hacer una cuenta y a leerla. */}
-          <Reveal delay={220}>
-            <ul className="tal-lista">
-              <li>Sacamos tu número delante de ti, con tu fecha. Sales sabiendo hacer la cuenta tú.</li>
-              <li>Verás por qué eso que se repite en tu familia no empezó contigo.</li>
-              <li>Y qué se hace con ello, que es la parte que nadie cuenta.</li>
-            </ul>
-          </Reveal>
+          {/* Las tres líneas entran una detrás de otra y no el bloque entero:
+              son tres promesas distintas y se leen mejor de una en una. El
+              `<ul>` se queda quieto y lo que se mueve es cada `<li>`, para no
+              romper la lista en tres listas de uno. */}
+          <ul className="tal-lista">
+            <Aparece as="li" retraso={4}>Sacamos tu número delante de ti, con tu fecha. Sales sabiendo hacer la cuenta tú.</Aparece>
+            <Aparece as="li" retraso={5}>Verás por qué eso que se repite en tu familia no empezó contigo.</Aparece>
+            <Aparece as="li" retraso={6}>Y qué se hace con ello, que es la parte que nadie cuenta.</Aparece>
+          </ul>
 
           {/* LA FECHA, SI LA HAY. Y si no la hay, no se dice nada: un hueco
               honesto se lee mejor que un «próximamente» de relleno. */}
           {hayFecha && (
-            <Reveal delay={260}>
+            <Aparece retraso={6}>
               <div className="tal-cuando">
                 <span className="tal-dia">{dia}</span>
                 <span className="tal-hora">{TALLER.hora}</span>
                 {TALLER.donde && <span className="tal-donde">{TALLER.donde}</span>}
                 <CuentaAtras fechaISO={TALLER.fechaISO} compacto />
               </div>
-            </Reveal>
+            </Aparece>
           )}
 
-          <Reveal delay={280}>
+          {/* La caja del formulario se acerca. Es lo único que se puede hacer
+              en la página: que entre con un gesto distinto al del texto es lo
+              que la separa de todo lo demás sin necesidad de una línea. */}
+          <Aparece modo="escala" retraso={7}>
             <div id="apuntarme" className="tal-caja">
               <p className="tal-caja-titulo">
                 {hayFecha ? 'Guarda tu plaza' : 'Te aviso yo del día'}
@@ -151,19 +167,19 @@ export default function Taller() {
                 pedirWhatsapp
               />
             </div>
-          </Reveal>
+          </Aparece>
 
           {/* La salida para quien no quiere esperar al taller. Es un enlace de
               texto y no un botón: no puede competir con lo único que se pide en
               esta página, que es el correo. */}
-          <Reveal delay={320}>
+          <Aparece retraso={8}>
             <p className="tal-pie-nota">
               ¿No quieres esperar? <Link href="/">Habla con Iris y reserva una consulta</Link>.
             </p>
-          </Reveal>
+          </Aparece>
         </div>
 
-        <div className="com-pie">
+        <Aparece className="com-pie">
           <Link href="/" aria-label="Ir al inicio">
             <Marca tam={30} claro />
           </Link>
@@ -171,7 +187,7 @@ export default function Taller() {
             <Link href="/legal">Aviso legal</Link>
             <Link href="/privacidad">Tus datos</Link>
           </span>
-        </div>
+        </Aparece>
       </div>
       <ChatWidget />
     </div>
