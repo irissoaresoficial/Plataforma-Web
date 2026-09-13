@@ -18,6 +18,7 @@ import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
+import ArbolFamilia from '@/components/ArbolFamilia';
 import { useLang } from '@/lib/i18n';
 import { CONTACTO, FOTOS, KABALA, MEMBRESIA, SESION, aniosDeConsulta, eur } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
@@ -32,13 +33,25 @@ const ANCHO = 1320;
  *  · online desde 2010»— y con la rayita y su hueco delante se partía en dos
  *  renglones, robándole diecisiete píxeles de alto a una pantalla donde ya no
  *  cabía el cartel. */
-function Rotulo({ children, claro = false, className = '' }: { children: React.ReactNode; claro?: boolean; className?: string }) {
-  return (
-    <div className={className} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
-      <span className="rotulo-linea" style={{ width: 22, height: 1, background: 'currentColor', opacity: 0.5 }} />
-      <span>{children}</span>
-    </div>
-  );
+/*
+ * LOS RÓTULOS PEQUEÑOS YA NO SE PINTAN.
+ *
+ * Eran las líneas en versalitas espaciadas encima de cada bloque —«NUMEROLOGÍA
+ * TRANSGENERACIONAL · ONLINE DESDE 2010», «LA CONSULTA», «QUÉ ES LA KÁBALA»— y
+ * Gerson las ha quitado de toda la web.
+ *
+ * Tenía razón, y el motivo es de diseño y no de gusto: un rótulo así no informa
+ * de nada que el titular de debajo no diga ya, y en cambio pone una línea de
+ * ruido tipográfico delante de cada bloque. Ocho veces en una página, eso deja
+ * de ser un recurso y pasa a ser un tic — y es de las cosas que hacen que una
+ * web se lea antigua.
+ *
+ * El componente se queda vacío en vez de borrar sus ocho llamadas: así ninguna
+ * rejilla se queda con un hueco donde había un hijo, y el día que se quiera
+ * recuperar alguno se descomenta aquí.
+ */
+function Rotulo(_p: { children: React.ReactNode; claro?: boolean; className?: string }) {
+  return null;
 }
 
 function PillCTA({ onClick, href, variant, label, curLabel }: { onClick?: () => void; href?: string; variant: 'cream' | 'gold' | 'dark'; label: string; curLabel?: string }) {
@@ -149,91 +162,52 @@ export default function Home() {
           debajo del borde, así que lo primero que veía quien entraba era un
           titular enorme y ninguna forma de hacer nada con él. */}
       <div id="top" className="claro hero-lleno">
-        <CampoNumeros intensidad={0.7} />
+        {/* Los números flotando de fondo se han quitado SÓLO de la portada.
+            Contra un dibujo de trazo tan fino no son ambiente: son ruido, y se
+            leen como manchas encima del árbol. Siguen en los demás bloques,
+            donde el fondo es liso y ahí sí hacen su trabajo. */}
         <div id="glow" style={{ position: 'absolute', width: 900, height: 900, left: 0, top: 0, margin: '-450px 0 0 -450px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,163,92,.16),transparent 66%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
 
-        <div style={{ position: 'relative', zIndex: 3, maxWidth: ANCHO, margin: '0 auto', width: '100%' }}>
-          <div className="hero-rejilla hero-solo">
-            <div className="hero-texto" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px,2.8vw,36px)' }}>
-              <Reveal>
-                <Rotulo className="rotulo-hero">{t.kick}</Rotulo>
-              </Reveal>
-              {/*
-                  EL TITULAR CUENTA UNA HISTORIA, Y DEBAJO ESTÁ LA HISTORIA.
-                  --------------------------------------------------------
-                  Antes había un titular y dos botones. Nada más. El titular era
-                  bueno —«Lo que se repite en tu vida no empezó contigo»— pero
-                  se quedaba solo: quien entraba leía una frase bonita y tenía
-                  que decidir con eso.
+        {/*
+            EL ÁRBOL SE DIBUJA, Y ENTONCES SE LEE LA FRASE.
+            ------------------------------------------------------------------
+            Aquí había un titular grande en serif con una línea en cursiva
+            dorada, y era exactamente lo que Gerson dijo: invitación de boda. La
+            portada de una web que vende esto no puede parecer un menú de
+            restaurante caro.
 
-                  Ahora la primera pantalla cuenta algo. Tres líneas de titular,
-                  dos párrafos que dicen qué historia es, y un solo botón con el
-                  precio debajo. El personaje es la FAMILIA: no Iris, que no le
-                  interesa a quien no la conoce, y no quien entra, que ya tiene
-                  su bloque más abajo y aquí sonaría a que le cuentan su vida
-                  sin haberle preguntado.
+            Ahora la portada es un árbol de familia dibujándose en tinta fina,
+            generación a generación, y cuando va por la mitad entra la frase.
+            Al final —después de leerla— aparece una rama que no está dibujada:
+            punteada, en dorado, y no llega a ninguna parte.
 
-                  Palabra a palabra: un titular que aparece de golpe se lee como
-                  una imagen; apareciendo así se lee como alguien diciéndolo. */}
-              <h1 className="titular-portada" style={{ margin: 0 }}>
-                <Palabras retraso={0.1} className="titular-frase">
-                  {t.h1a}
-                </Palabras>
-                <Palabras
-                  retraso={0.1 + t.h1a.split(' ').length * 0.055}
-                  className="titular-frase"
-                >
-                  {t.h1b}
-                </Palabras>
-                <Palabras
-                  retraso={0.1 + (t.h1a + ' ' + t.h1b).split(' ').length * 0.055}
-                  className="titular-frase titular-remate"
-                  style={{ color: 'var(--acento)' }}
-                >
-                  {t.h1c}
-                </Palabras>
+            Ésa es la historia que nadie contó, y no hace falta explicarla.
+
+            El titular baja de la serif a una sans apretada. Contra un dibujo de
+            trazo tan fino, una serif de sesenta píxeles compite; una sans
+            cerrada se aparta y deja que mande el árbol, que es lo que aquí
+            tiene que mandar. Y el dorado sale UNA sola vez en toda la pantalla:
+            en la rama que falta. */}
+        <div className="hero-arbol">
+          <ArbolFamilia>
+            <div className="hero-arbol-texto">
+              <h1 className="hero-arbol-h1">
+                {t.h1a}
+                <br />
+                <b>{t.h1b}</b>
               </h1>
-
-              <Reveal delay={180}>
-                <div className="hero-historia">
-                  <p>{t.h1p1}</p>
-                  <p>{t.h1p2}</p>
-                </div>
-              </Reveal>
-
-              {/* UN SOLO BOTÓN, con el precio debajo y la prueba gratis como
-                  enlace de texto. Antes eran dos botones del mismo tamaño: uno
-                  llevaba a reservar y el otro se llevaba a la persona a otra
-                  parte de la página, y los dos pesaban igual. Nadie tiene que
-                  subir a buscar cuánto cuesta esto. */}
-              <Reveal delay={240}>
-                <div className="hero-cierre">
-                  <PillCTA onClick={abrirConsulta} variant="cream" label={t.hcta} curLabel={t.cbook} />
-                  <p className="hero-micro">
-                    {ofertaViva
-                      ? `${eur(SESION.precioOferta!)} las ${SESION.plazasOferta} primeras · después, ${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`
-                      : `${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`}
-                  </p>
-                  <Link href="#prueba" data-mag className="hero-enlace">
-                    ¿Prefieres ver algo antes? Calcula tu número, gratis →
-                  </Link>
-                </div>
-              </Reveal>
+              <p className="hero-arbol-p">{t.h1p1}</p>
+              <p className="hero-arbol-p hero-arbol-p2">{t.h1p2}</p>
+              <div className="hero-arbol-cierre">
+                <PillCTA onClick={abrirConsulta} variant="cream" label={t.hcta} curLabel={t.cbook} />
+                <p className="hero-micro">
+                  {ofertaViva
+                    ? `${eur(SESION.precioOferta!)} las ${SESION.plazasOferta} primeras · después, ${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`
+                    : `${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`}
+                </p>
+              </div>
             </div>
-
-            {/* AQUÍ ESTABA EL CARTEL DEL PRÓXIMO CURSO, y se ha quitado a
-                petición de Gerson: la portada se queda con una frase y dos
-                botones, sin nada más que mirar.
-
-                No desaparece de la web — sigue entero en /cursos, y la portada
-                lleva a esa página desde el menú, desde el bloque de cursos de
-                más abajo y desde el pie. Lo que cambia es que ya no compite con
-                el titular en la primera pantalla.
-
-                Si algún día se quiere de vuelta, está en el historial: era un
-                <Link> a /cursos#id con la imagen a sangre y el nombre y las
-                fechas dentro, como el cartel de una película. */}
-          </div>
+          </ArbolFamilia>
         </div>
       </div>
 

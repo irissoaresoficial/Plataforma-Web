@@ -14,15 +14,18 @@ export const COPY = {
        estás contando sin haberle preguntado. La familia hace las dos cosas que
        este negocio necesita: le quita la culpa —esto no lo empezaste tú— y le
        deja el trabajo —pero lo puedes cerrar tú—. */
-    h1a: 'En tu familia hay una historia', h1b: 'que nadie contó.',
-    /* La tercera línea, en dorado. Es la que convierte el dato en un encargo, y
-       no es nueva: ya la decían los susurros. */
-    h1c: 'Y sigue buscando quién la cierre.',
+    /* MÁS DOLOR Y MÁS CLARO. La versión anterior contaba lo que pasa en una
+       familia; ésta dice lo que le pasa a QUIEN ESTÁ LEYENDO. «Lo estás
+       pagando tú» es la frase que hace levantar la vista: no describe un
+       fenómeno, señala un precio que se está pagando ahora mismo. */
+    h1a: 'Lo que en tu familia nunca se contó,', h1b: 'lo estás pagando tú.',
+    /* La tercera línea en dorado se ha retirado del titular: ese trabajo lo hace
+       ahora la rama dorada del árbol, que aparece sin decir nada. */
     /* La entrada. Los tres ejemplos son los que pidió Gerson, con su cláusula:
        sin «nadie tuvo la culpa» el titular acusa a la familia de quien lee, que
        es justo lo que aquí no se hace. */
-    h1p1: 'Un amante que nunca se reconoció. Alguien que estuvo preso. Una enfermedad de la que en casa no se hablaba. Nadie lo cuenta, nadie tuvo la culpa y nadie lo eligió — y aun así baja de generación en generación hasta que a alguien le toca mirarlo.',
-    h1p2: 'Te toca a ti. En una consulta conmigo te enseño cuál es esa historia, en qué generación empezó, cómo llegó hasta ti y qué parte te toca soltar.',
+    h1p1: 'No es tu carácter, ni mala suerte. Es algo que pasó antes de que tú nacieras y de lo que en tu casa nunca se habló: un amante que no se reconoció, alguien que estuvo preso, una enfermedad que se calló. Nadie tuvo la culpa. Pero nadie lo cerró, y por eso sigue bajando.',
+    h1p2: 'Te ha tocado a ti. En una consulta te enseño qué historia es, en qué generación empezó y qué parte te toca soltar.',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
     hcta: 'Reservar mi consulta', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
     s1: 'personas atendidas', s2: 'desde', s3: 'idiomas',
@@ -110,10 +113,9 @@ export const COPY = {
   pt: {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
-    h1a: 'Na tua família há uma história', h1b: 'que ninguém contou.',
-    h1c: 'E continua à procura de quem a feche.',
-    h1p1: 'Um amante que nunca foi reconhecido. Alguém que esteve preso. Uma doença de que em casa não se falava. Ninguém conta, ninguém teve culpa e ninguém escolheu — e mesmo assim desce de geração em geração até que a alguém lhe toca olhar.',
-    h1p2: 'Toca-te a ti. Numa consulta comigo mostro-te qual é essa história, em que geração começou, como chegou até ti e que parte te toca largar.',
+    h1a: 'O que na tua família nunca se contou,', h1b: 'estás a pagá-lo tu.',
+    h1p1: 'Não é o teu carácter, nem falta de sorte. É algo que aconteceu antes de tu nasceres e de que em tua casa nunca se falou: um amante que não foi reconhecido, alguém que esteve preso, uma doença que se calou. Ninguém teve culpa. Mas ninguém a fechou, e por isso continua a descer.',
+    h1p2: 'Calhou-te a ti. Numa consulta mostro-te que história é, em que geração começou e que parte te toca largar.',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
     hcta: 'Marcar a minha consulta', hcta2: 'Ver o meu número, grátis', hbadge: 'Online · ES / PT / EN',
     s1: 'pessoas acompanhadas', s2: 'desde', s3: 'idiomas',
@@ -192,10 +194,9 @@ export const COPY = {
   en: {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
-    h1a: 'Your family holds a story', h1b: 'nobody ever told.',
-    h1c: 'And it is still looking for someone to close it.',
-    h1p1: 'A lover never acknowledged. Someone who went to prison. An illness nobody spoke about at home. Nobody tells it, nobody was to blame and nobody chose it — and it still comes down the generations until it falls to someone to look at it.',
-    h1p2: 'It has fallen to you. In a session with me I show you what that story is, which generation it started in, how it reached you and what part is yours to let go of.',
+    h1a: 'What your family never spoke about,', h1b: 'you are the one paying for.',
+    h1p1: 'It is not your character, and it is not bad luck. It is something that happened before you were born and was never spoken about at home: a lover never acknowledged, someone who went to prison, an illness that was hushed. Nobody was to blame. But nobody closed it, so it keeps coming down.',
+    h1p2: 'It has landed on you. In a session I show you what that story is, which generation it started in, and what part is yours to let go of.',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
     hcta: 'Book my session', hcta2: 'See my number, free', hbadge: 'Online · ES / PT / EN',
     s1: 'people seen', s2: 'since', s3: 'languages',

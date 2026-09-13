@@ -35,13 +35,25 @@ import { KABALA, eur } from '@/content/site';
  * sitio para decir lo que faltaba y era importante: que son TRES sesiones.
  */
 
-function Rotulo({ children, claro = false }: { children: React.ReactNode; claro?: boolean }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: claro ? 'var(--oro-luz)' : 'var(--acento)' }}>
-      <span style={{ width: 22, height: 1, background: 'currentColor', opacity: 0.5 }} />
-      <span>{children}</span>
-    </div>
-  );
+/*
+ * LOS RÓTULOS PEQUEÑOS YA NO SE PINTAN.
+ *
+ * Eran las líneas en versalitas espaciadas encima de cada bloque —«NUMEROLOGÍA
+ * TRANSGENERACIONAL · ONLINE DESDE 2010», «LA CONSULTA», «QUÉ ES LA KÁBALA»— y
+ * Gerson las ha quitado de toda la web.
+ *
+ * Tenía razón, y el motivo es de diseño y no de gusto: un rótulo así no informa
+ * de nada que el titular de debajo no diga ya, y en cambio pone una línea de
+ * ruido tipográfico delante de cada bloque. Ocho veces en una página, eso deja
+ * de ser un recurso y pasa a ser un tic — y es de las cosas que hacen que una
+ * web se lea antigua.
+ *
+ * El componente se queda vacío en vez de borrar sus ocho llamadas: así ninguna
+ * rejilla se queda con un hueco donde había un hijo, y el día que se quiera
+ * recuperar alguno se descomenta aquí.
+ */
+function Rotulo(_p: { children: React.ReactNode; claro?: boolean; className?: string }) {
+  return null;
 }
 
 function PillCTA({ onClick, variant, label }: { onClick: () => void; variant: 'gold' | 'cream'; label: string }) {

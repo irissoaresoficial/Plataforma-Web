@@ -209,9 +209,9 @@ export default function Cursos() {
             ahí la cara vende más que la ficha. */}
         <div className="cur-hero-dentro">
           <div className="cur-hero-texto">
-            <Reveal>
-              <div className="espaciado" style={{ fontSize: 11, fontWeight: 700, color: 'var(--acento)' }}>Cursos y talleres en directo</div>
-            </Reveal>
+            {/* Aquí iba el rótulo «CURSOS Y TALLERES EN DIRECTO» en versalitas.
+                Fuera, como los otros siete de la web: no decía nada que el
+                titular no diga ya, y ponía una línea de ruido delante. */}
             <Reveal as="h1" delay={70} className="cur-h1">
               Dos días que cambian la conversación en tu casa.
             </Reveal>

@@ -5749,3 +5749,191 @@ body[data-nav-claro='si'] .sello-color {
   gap: clamp(12px, 2vw, 20px);
   flex-wrap: wrap;
 }
+
+/* ==================================================================
+   EL ÁRBOL DE FAMILIA QUE SE DIBUJA SOLO
+   ==================================================================
+   Ver el comentario largo de components/ArbolFamilia.tsx. Aquí sólo vive el
+   movimiento: cada rama es un trazo con su turno, y la que nadie terminó llega
+   la última, en dorado y punteada.
+
+   Todo el movimiento se dispara con una clase —`.arbolf-visto`— así que si
+   algo va lento el árbol sale igual, sólo que antes. Nunca se queda a medias.
+   ================================================================== */
+.arbolf {
+  position: relative;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+.arbolf svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* --- las ramas -----------------------------------------------------------
+   El truco de siempre: la línea se dibuja entera pero con el trazo desplazado
+   fuera, y se trae a su sitio. `--largo` lo pone el componente rama a rama,
+   porque una raya de 200 px y una de 20 no pueden tardar lo mismo. */
+.arbolf-ramas path {
+  fill: none;
+  stroke: var(--tinta, #221d1f);
+  stroke-linecap: round;
+  stroke-dasharray: var(--largo);
+  stroke-dashoffset: var(--largo);
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 0.9, 0.5, 1) var(--t, 0ms);
+}
+.arbolf-visto .arbolf-ramas path {
+  stroke-dashoffset: 0;
+}
+
+/* Los nudos: cada uno es una persona, y por eso están huecos. */
+.arbolf-nodos circle {
+  fill: var(--papel, #fff);
+  stroke: var(--tinta, #221d1f);
+  stroke-width: 1.3;
+  opacity: 0;
+  transform: scale(0.3);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.4s ease var(--t, 0ms),
+    transform 0.5s cubic-bezier(0.34, 1.5, 0.64, 1) var(--t, 0ms);
+}
+.arbolf-visto .arbolf-nodos circle {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- LA RAMA QUE NADIE TERMINÓ ------------------------------------------
+   Punteada, no discontinua: son puntos sueltos que no llegan a formar una
+   línea. Es una rama que existe y de la que no queda el trazo. */
+.arbolf-rota path {
+  fill: none;
+  stroke: var(--oro, #a9884f);
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 9;
+  opacity: 0;
+  transition: opacity 0.85s ease var(--t, 0ms);
+}
+.arbolf-visto .arbolf-rota path {
+  opacity: 1;
+}
+
+/* El texto entra cuando el árbol va por la mitad. */
+.arbolf-texto {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.9s ease var(--t, 0ms),
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--t, 0ms);
+}
+.arbolf-visto .arbolf-texto {
+  opacity: 1;
+  transform: none;
+}
+
+/* Quieto: el árbol entero desde el primer fotograma, rama dorada incluida. */
+.arbolf-quieto .arbolf-ramas path,
+.arbolf-quieto .arbolf-nodos circle,
+.arbolf-quieto .arbolf-rota path,
+.arbolf-quieto .arbolf-texto {
+  transition-duration: 0s;
+  transition-delay: 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arbolf-ramas path,
+  .arbolf-nodos circle,
+  .arbolf-rota path,
+  .arbolf-texto {
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+}
+
+/* ==================================================================
+   LA PORTADA: EL ÁRBOL Y LA FRASE
+   ==================================================================
+   El árbol arriba, la frase debajo. Centrado, y aquí sí toca: el dibujo es
+   simétrico y sale de un tronco en el centro, así que un texto pegado a la
+   izquierda quedaría descolgado de la única forma que hay en pantalla.
+
+   Y el titular baja de la serif a una sans apretada. Contra un trazo tan fino,
+   una serif de sesenta píxeles compite; una sans cerrada se aparta y deja que
+   mande el árbol.
+   ================================================================== */
+.hero-arbol {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+}
+/* El árbol, más ancho que alto y sin pasarse: por encima de 520 px de alto
+   empuja la frase fuera de la primera pantalla en un portátil. */
+.hero-arbol .arbolf svg {
+  /* Manda el ANCHO, no el alto: el árbol tiene que cruzar la pantalla como en
+     el dibujo, no quedarse en una miniatura en el centro. El tope de altura
+     está para que el botón no se caiga del pliegue en un portátil de 900 px
+     —medido— pero con el lienzo a 1,79:1 casi nunca llega a aplicarse. */
+  width: 100%;
+  max-height: min(38vh, 360px);
+}
+.hero-arbol-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(14px, 1.8vw, 20px);
+  margin-top: clamp(10px, 2vw, 26px);
+}
+.hero-arbol-h1 {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(27px, 3.6vw, 44px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.038em;
+  max-width: 20ch;
+  text-wrap: balance;
+  color: var(--tx);
+}
+/* La segunda mitad es la que duele. Va en el mismo tamaño y en granate: el
+   dorado se ha reservado entero para la rama que falta. */
+.hero-arbol-h1 b {
+  font-weight: 600;
+  color: var(--vino, #451a25);
+}
+.hero-arbol-p {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: var(--tx-2);
+  max-width: 58ch;
+  text-wrap: pretty;
+}
+.hero-arbol-p2 {
+  color: var(--tx);
+}
+.hero-arbol-cierre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  margin-top: clamp(4px, 1vw, 10px);
+}
+.hero-arbol-cierre .hero-micro {
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  /* En vertical el abanico se queda muy pequeño si se limita por altura: aquí
+     manda el ancho y el árbol ocupa la pantalla de lado a lado. */
+  .hero-arbol .arbolf svg {
+    max-height: none;
+    width: 100%;
+  }
+  .hero-arbol-h1 { max-width: 17ch; }
+}
