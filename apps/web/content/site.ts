@@ -585,6 +585,61 @@ export const CURSOS: Curso[] = [
   },
 ];
 
+/* ------------------------------------------------------------------ */
+/*  EL TALLER GRATUITO                                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * EL TALLER ONLINE GRATUITO.
+ *
+ * Decidido en la reunión del 13 de septiembre de 2026: un taller de hora y
+ * media, gratis, para octubre. Es la pieza que puede traer gente antes que
+ * ninguna otra, porque lo gratis no se piensa: se entra.
+ *
+ * ---------------------------------------------------------------------------
+ * LA PÁGINA EXISTE ANTES QUE LA FECHA, Y ESO ES A PROPÓSITO
+ * ---------------------------------------------------------------------------
+ * Todavía no hay día. La reacción normal sería esperar a tenerlo para publicar
+ * la página, y sería un error: cada día sin página es un día sin recoger
+ * correos de gente que ya está interesada.
+ *
+ * Así que la página funciona en dos estados y cambia sola:
+ *
+ *   SIN FECHA  ·  «Estoy cerrando el día. Déjame tu correo y te aviso yo.»
+ *                 Es una lista de espera, y es verdad. Nadie promete una fecha
+ *                 que no existe.
+ *   CON FECHA  ·  sale el día, la hora y la cuenta atrás, y el botón pasa a ser
+ *                 «Guardar mi plaza».
+ *
+ * Para encenderla basta con rellenar `fechaISO` y `hora` aquí abajo. No hay que
+ * tocar la página.
+ *
+ * NADA DE LO QUE HAY AQUÍ ESTÁ INVENTADO, y lo que falta se queda vacío. La
+ * frase y el titular sí los he escrito yo, porque son la voz de la casa y no un
+ * dato: salen del mismo sitio que el bloque «A ver si te suena» de la portada.
+ */
+export const TALLER = {
+  /** Se enseña sólo si hay las dos. Vacío = la página es lista de espera. */
+  fechaISO: '' as string,
+  /** «19:00 (hora española)». Vacío = no se dice ninguna hora. */
+  hora: '' as string,
+  /** Acordado en la reunión: hora y media. */
+  duracion: '1 h 30 min',
+  /** Zoom, YouTube, directo de Instagram… Vacío = no se promete plataforma. */
+  donde: '' as string,
+  /** Plazas. null = no se enseña contador y no se mete prisa falsa. */
+  plazas: null as number | null,
+  /**
+   * ¿Se graba y se manda a quien se apunte?
+   *
+   * `null` mientras no esté decidido, y entonces no se dice nada. Prometer la
+   * grabación sube mucho los registros — y por eso mismo no se puede prometer
+   * sin que sea verdad: quien se apunta por la grabación y no la recibe no
+   * vuelve a abrir un correo de Iris.
+   */
+  grabacion: null as boolean | null,
+} as const;
+
 /** true si el valor sigue sin rellenar. */
 export const falta = (v: unknown) => v === PENDIENTE || v === null || v === '' || v === undefined;
 

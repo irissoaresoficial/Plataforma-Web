@@ -568,7 +568,33 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
      * se lee como letra pequeña metida de tapadillo.
      */
     if (cur.key === 'hora') {
-      bot([PAGO_ACTIVO ? t.ch_cond_pago : t.ch_cond, next.ask], 1200);
+      /*
+       * EL PRECIO SE DICE AQUÍ, EN LA CONVERSACIÓN.
+       *
+       * Antes no se decía en ninguna parte del chat: alguien reservaba una
+       * consulta de 111 € o de 333 € y salía sin haber leído la cifra. La duda
+       * del precio no desaparece por no escribirla — se la lleva puesta hasta
+       * que decide no volver.
+       *
+       * Y se dice DESPUÉS de elegir hora, no al entrar. Quien ya tiene un hueco
+       * concreto encima de la mesa y lo quiere lee el precio como un dato; el
+       * mismo número en la primera frase es un portazo.
+       *
+       * La oferta sólo se nombra si están sus dos mitades —el precio rebajado y
+       * cuántas plazas—, igual que en la portada: un número tachado sin motivo,
+       * o un motivo sin número, se lee como truco de vendedor.
+       */
+      const ofertaViva = SESION.precioOferta != null && SESION.plazasOferta != null;
+      const precio =
+        servicio === 'kabala'
+          ? t.ch_precio_kabala.replace('{p}', eur(KABALA.precio))
+          : ofertaViva
+            ? t.ch_precio_oferta
+                .replace('{o}', eur(SESION.precioOferta))
+                .replace('{p}', eur(SESION.precio))
+                .replace('{n}', String(SESION.plazasOferta))
+            : t.ch_precio.replace('{p}', eur(SESION.precio));
+      bot([precio, PAGO_ACTIVO ? t.ch_cond_pago : t.ch_cond, next.ask], 1200);
       return;
     }
 

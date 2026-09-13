@@ -14,6 +14,7 @@ import LeadForm from '@/components/LeadForm';
 import Pendiente, { Hueco } from '@/components/Pendiente';
 import CursoDetalle from '@/components/CursoDetalle';
 import CuentaAtras from '@/components/CuentaAtras';
+import VideoPresenta from '@/components/VideoPresenta';
 import Foto from '@/components/Foto';
 import { CURSOS, MEMBRESIA, PENDIENTE, eur, falta, type Curso } from '@/content/site';
 
@@ -168,6 +169,9 @@ const enLetra = (iso: string) =>
 export default function Cursos() {
   useSiteScroll();
   const abre = enLetra(MEMBRESIA.abreISO);
+  /* El primero de la lista es el que se anuncia arriba. Si algún día no hay
+     ninguno, el bloque de urgencia no se dibuja y la página sigue en pie. */
+  const proximo = CURSOS[0];
 
   return (
     <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
@@ -187,24 +191,64 @@ export default function Cursos() {
             pointerEvents: 'none',
           }}
         />
-        <div style={{ position: 'relative', zIndex: 3, maxWidth: 1180, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(20px,2.4vw,30px)' }}>
-          <Reveal>
-            <div className="espaciado" style={{ fontSize: 11, fontWeight: 700, color: 'var(--acento)' }}>Cursos y talleres en directo</div>
+        {/*
+            EL VÍDEO MANDA EN ESTA PÁGINA.
+            ------------------------------------------------------------------
+            Antes lo primero que se veía era el cartel del curso: un cuadro de
+            tres generaciones atadas con cuerdas rojas y caras de terror. Como
+            pieza es potente; como anuncio de un curso de pago, da miedo — y
+            quien llega de un anuncio decide en cinco segundos.
+
+            Lo que sí convence es ella contándolo. Así que el vídeo va arriba,
+            en horizontal y grande, y debajo justo lo que hace falta para
+            decidir: cuánto queda, cuántas plazas y el botón. Nada más entre
+            medias. */}
+        <div className="cur-hero-dentro">
+          <div className="cur-hero-texto">
+            <Reveal>
+              <div className="espaciado" style={{ fontSize: 11, fontWeight: 700, color: 'var(--acento)' }}>Cursos y talleres en directo</div>
+            </Reveal>
+            <Reveal as="h1" delay={70} className="cur-h1">
+              Dos días que cambian la conversación en tu casa.
+            </Reveal>
+            <Reveal delay={140}>
+              <p className="cur-entrada">
+                En directo y con tu caso encima de la mesa: sales sabiendo hacer las cuentas tú, no con apuntes.
+              </p>
+            </Reveal>
+          </div>
+
+          <Reveal delay={180}>
+            <VideoPresenta
+              src="/video/iris-presentacion.mp4"
+              cartel="/images/iris-presentacion-cartel.jpg"
+              etiqueta="Que te lo cuente Iris"
+            />
           </Reveal>
-          <Reveal as="h1" delay={70} style={{ margin: 0, fontSize: 'var(--t-portada)', fontWeight: 'var(--peso-fino)', lineHeight: 1.0, letterSpacing: '-.03em', maxWidth: '15ch', textWrap: 'balance' }}>
-            Dos días que cambian la conversación en tu casa.
-          </Reveal>
-          <Reveal delay={140}>
-            <p style={{ margin: 0, fontSize: 'var(--t-entrada)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '44ch' }}>
-              En directo y con tu caso encima de la mesa: sales sabiendo hacer las cuentas tú, no con apuntes.
-            </p>
-          </Reveal>
-          <Reveal delay={200}>
-            <a href={`#${CURSOS[0]?.id ?? 'proximo'}`} data-mag data-cur-label="Ver" className="pill pill-cream" style={{ alignSelf: 'flex-start' }}>
-              <span>Ver el próximo</span>
-              <span className="pill-arrow">↓</span>
-            </a>
-          </Reveal>
+
+          {/* LA URGENCIA, DEBAJO DEL VÍDEO Y NO ANTES.
+              Antes de ver el vídeo, «quedan doce días» no significa nada —
+              todavía no se sabe doce días para qué. Justo después, es lo único
+              que falta por saber. Y cada dato se dibuja sólo si existe: una
+              cuenta atrás sin fecha o unas plazas sin número son ruido. */}
+          {proximo && (
+            <Reveal delay={240}>
+              <div className="cur-urgencia">
+                {proximo.fechaISO && (
+                  <CuentaAtras fechaISO={proximo.fechaISO} abiertoDesdeISO={proximo.inscripcionDesdeISO} />
+                )}
+                <div className="cur-urgencia-cta">
+                  {proximo.plazas != null && (
+                    <span className="cur-plazas">Son {proximo.plazas} plazas, y el grupo se cierra ahí.</span>
+                  )}
+                  <a href={`#${proximo.id}`} data-mag data-cur-label="Ver" className="pill pill-cream">
+                    <span>Ver el curso y apuntarme</span>
+                    <span className="pill-arrow">↓</span>
+                  </a>
+                </div>
+              </div>
+            </Reveal>
+          )}
         </div>
       </div>
 
