@@ -5940,52 +5940,53 @@ body[data-nav-claro='si'] .sello-color {
   max-width: 46ch;
 }
 
-/* --- «sigue bajando» -----------------------------------------------------
-   Hace falta: sin esto nadie descubre que el árbol responde y la portada se
-   queda en una foto. En minúscula y sin espaciar —no es uno de los rótulos que
-   se quitaron de la web— y la gota dorada que cae por el hilo dice a dónde hay
-   que ir sin tener que explicarlo. */
+/* --- la gota que baja ----------------------------------------------------
+   Aquí ponía «Sigue bajando» en letra pequeña. Se ha ido con el resto de la
+   letra pequeña de la web: en una portada de tres frases, una instrucción en
+   doce píxeles es la única línea que se lee como un manual.
+
+   Lo que queda es la misma idea sin palabras — y es la idea de toda la página:
+   una gota dorada que BAJA. Cae por una ranura y vuelve a caer. Eso es lo que
+   hace una historia que nadie cerró, y es lo que hay que hacer con la rueda.
+
+   Y está tallada, no dibujada. Es relieve del propio papel: una sombra suya
+   arriba a la izquierda y una luz suya abajo a la derecha, las dos del color de
+   la página. Por eso funciona aunque el fondo cambie de tono con la sombra del
+   vídeo — no hay ningún color fijo que se quede descolgado.
+
+   La regla de la casa: lo que se hunde es contenido, lo que sobresale es
+   acción. Esto no se pulsa; esto avisa. Va hundido. */
 .portada-baja {
-  display: inline-flex;
-  align-items: center;
-  gap: 11px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--tx-3);
-}
-.portada-baja i {
   position: relative;
   display: block;
-  width: 1px;
-  height: 28px;
-  background: rgba(34, 29, 31, 0.14);
-  overflow: hidden;
+  width: 23px;
+  height: 46px;
+  border-radius: 100px;
+  background: var(--portada-fondo, #ebe9e5);
+  box-shadow:
+    inset 2px 2px 4px rgba(58, 48, 44, 0.17),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8),
+    0 1px 0 rgba(255, 255, 255, 0.45);
 }
-.portada-baja i::after {
-  content: '';
+.portada-baja i {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 11px;
+  left: 50%;
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
   background: var(--oro);
-  animation: portada-gota 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  box-shadow: 0 1px 2px rgba(125, 95, 30, 0.4);
+  animation: portada-gota 2.3s cubic-bezier(0.55, 0, 0.4, 1) infinite;
 }
+/* Sale de arriba, cae, y desaparece antes de llegar al fondo. Que no toque el
+   suelo es lo que hace que se lea como «sigue» y no como «se acabó». */
 @keyframes portada-gota {
-  0% { transform: translateY(-13px); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translateY(28px); opacity: 0; }
-}
-
-/* --- la barra, mientras la portada está en pantalla ----------------------
-   Con el vídeo ocupando la pantalla entera, una barra esmerilada blanca es una
-   tira que corta el dibujo por arriba. Mientras se está en la portada se vuelve
-   transparente y la marca flota sobre el papel; en cuanto se sale, vuelve. */
-html[data-portada='si'] .barra {
-  background: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  border-bottom-color: transparent;
+  0% { transform: translateY(-3px); opacity: 0; }
+  18% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { transform: translateY(24px); opacity: 0; }
 }
 
 @media (max-width: 760px) {
@@ -6037,7 +6038,7 @@ html[data-portada='si'] .barra {
      página y el componente se entera de que aquí no se mueve nada. */
   .portada { min-height: 100svh; }
   .portada-paso { opacity: 1; transform: none; pointer-events: auto; transition: none; }
-  .portada-baja i::after { animation: none; }
+  .portada-baja i { animation: none; opacity: 1; }
 }
 
 /* ==================================================================

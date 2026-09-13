@@ -185,9 +185,11 @@ export default function Home() {
                 <br />
                 <b>{t.h1b}</b>
               </h1>
-              <span className="portada-baja">
+              {/* «Sigue bajando» era letra pequeña, y la letra pequeña se ha
+                  ido de toda la web. Lo dice mejor sin decirlo: una ranura
+                  hundida en el papel y una gota dorada cayendo por ella. */}
+              <span className="portada-baja" aria-hidden>
                 <i />
-                {t.h1baja}
               </span>
             </>,
             <>
