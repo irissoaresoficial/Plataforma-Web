@@ -21,9 +21,14 @@ import ArbolVida from '@/components/ArbolVida';
 import PortadaArbol from '@/components/PortadaArbol';
 import VideoPresenta from '@/components/VideoPresenta';
 import QueEs from '@/components/QueEs';
+import SinergiaAqui from '@/components/SinergiaAqui';
 import { useLang } from '@/lib/i18n';
 import { CONTACTO, FOTOS, MEMBRESIA } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
+/* El CSS de la sinergia vive en su propio archivo: es una pieza entera con su
+   maqueta, sus casillas y su resultado, y meterla en globals.css la escondía
+   entre seis mil líneas. */
+import './sinergia-aqui.css';
 
 const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
 const ANCHO = 1320;
@@ -327,51 +332,28 @@ export default function Home() {
           baja. El detalle está en components/QueEs.tsx. */}
       <QueEs titular={t.q_h} uno={t.q_p1} dos={t.q_p2} />
 
-      {/* ── EL REGALO: LA SINERGIA ───────────────────────────
-          Aquí estaba la calculadora del número personal, en granate, con su
-          formulario de tres casillas y su vídeo al lado. Se va, y no porque
-          estuviera mal: porque en esta página ya había DOS cosas gratis y ése
-          es justo el lío del que se quejaba Gerson — tantos servicios que la
-          gente se pierde.
+      {/* ── EL REGALO: LA SINERGIA, AQUÍ MISMO ───────────────
+          Aquí estaba la calculadora del número personal. Se fue a /numerologia,
+          que es su casa: en la portada había DOS cosas gratis y ése es justo el
+          lío del que se quejaba Gerson — tantos servicios que la gente se
+          pierde.
 
-          Queda una sola, y es la que engancha de verdad. Al leer sobre lo que
-          se repite en una familia, a todo el mundo se le viene alguien a la
-          cabeza. Esto no le pide su fecha: le pide la de ESA persona.
+          Y en su sitio estuvo un rato un bloque con dos círculos vacíos y un
+          botón que LLEVABA A OTRA PÁGINA. Duró lo que tardó en verlo: «no
+          quiero que salga de la página». Tenía razón y por un motivo que no es
+          de gusto — mandar a alguien a otra pantalla en mitad de una historia
+          es perder la historia.
 
-          Sin formulario aquí. Una frase, un botón y dos círculos que se cruzan
-          — que es literalmente lo que la palabra «sinergia» significa y lo que
-          la herramienta hace. La cuenta se hace en su página. */}
-      <div className="vino regalo">
-        <div className="regalo-dentro">
-          <Reveal className="regalo-signo">
-            {/* Dos círculos que se cruzan. No hace falta explicarlo: es lo que
-                la palabra significa, dibujado. Y no hay ningún número inventado
-                dentro — un resultado de mentira en una web que vende lecturas
-                de verdad es la peor idea posible. */}
-            <svg viewBox="0 0 200 120" aria-hidden focusable="false">
-              <circle cx="76" cy="60" r="46" />
-              <circle cx="124" cy="60" r="46" />
-            </svg>
-          </Reveal>
-          <Reveal delay={80} className="titular-seccion regalo-h">
-            {t.sg_h}
-          </Reveal>
-          <Reveal delay={150}>
-            <p className="regalo-p">{t.sg_p}</p>
-          </Reveal>
-          <Reveal delay={220}>
-            <Link
-              href="/sinergia"
-              className="portada-cta portada-cta-oscuro"
-              data-mag
-              data-cur-label={t.sg_cta}
-            >
-              <span>{t.sg_cta}</span>
-              <i aria-hidden>→</i>
-            </Link>
-          </Reveal>
-        </div>
-      </div>
+          Ahora la cuenta se hace aquí. Dos fechas, un botón, y el resultado
+          debajo sin recargar ni navegar. Y los dos círculos, que eran adorno,
+          se han convertido en el resultado: el número de cada uno en su lado y
+          el del vínculo en la lente, que es literalmente donde va. Vacíos no se
+          pintan, así que no hay ningún número de mentira en pantalla.
+
+          El cálculo es el mismo módulo del que come /sinergia: mismos números y
+          mismos textos, comprobados uno a uno contra esa página. Ni una
+          interpretación inventada. */}
+      <SinergiaAqui />
 
       {/* LAS TRES FOTOS SIN TEXTO ESTABAN AQUÍ. Un descanso visual en medio
           de una página de venta, y quien está decidiendo si se gasta 111 € no
