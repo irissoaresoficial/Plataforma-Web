@@ -98,8 +98,13 @@ export default function Nav({
   }, [abierto, cerrarCapa]);
 
   const fijos: Enlace[] = [
+    /* CINCO, NO OCHO. «Prueba gratis» sale del menú: ya está en la portada y en
+       el pie, y aquí era la tercera forma de irse antes de haber visto nada.
+       En su lugar entra la Kábala, que es lo que la gente pregunta y no tenía
+       dónde leerse. */
     { href: '/', label: 'Inicio' },
-    { href: '/sinergia', label: 'Prueba gratis' },
+    { href: '/kabala', label: 'Qué es la Kábala' },
+    { href: '/taller', label: 'Taller gratis' },
     { href: '/cursos', label: 'Cursos y talleres' },
     { href: '/membresia', label: 'La comunidad' },
   ];

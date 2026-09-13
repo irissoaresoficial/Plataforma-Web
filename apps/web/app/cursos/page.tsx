@@ -192,17 +192,21 @@ export default function Cursos() {
           }}
         />
         {/*
-            EL VÍDEO MANDA EN ESTA PÁGINA.
+            TODO LO QUE HACE FALTA PARA DECIDIR, EN LA PRIMERA PANTALLA.
             ------------------------------------------------------------------
-            Antes lo primero que se veía era el cartel del curso: un cuadro de
-            tres generaciones atadas con cuerdas rojas y caras de terror. Como
-            pieza es potente; como anuncio de un curso de pago, da miedo — y
-            quien llega de un anuncio decide en cinco segundos.
+            La versión anterior apilaba las cosas una debajo de otra: un titular
+            de cuatro líneas ocupando media pantalla, una frase, y debajo un
+            vídeo a todo lo ancho que ya se salía por abajo. Medido a 1440×900,
+            lo único que se veía al entrar era el titular y un tercio del vídeo
+            — ni la fecha, ni el precio, ni un botón.
 
-            Lo que sí convence es ella contándolo. Así que el vídeo va arriba,
-            en horizontal y grande, y debajo justo lo que hace falta para
-            decidir: cuánto queda, cuántas plazas y el botón. Nada más entre
-            medias. */}
+            Y esa era la pantalla que iba a recibir a la gente que llegue de un
+            anuncio, para un curso que empieza en menos de dos semanas.
+
+            Ahora va en dos columnas: a la izquierda lo que hay que saber y lo
+            que hay que pulsar, a la derecha la cara de Iris contándolo. Cabe
+            todo de una vez. En el móvil se apila —titular, vídeo, datos— porque
+            ahí la cara vende más que la ficha. */}
         <div className="cur-hero-dentro">
           <div className="cur-hero-texto">
             <Reveal>
@@ -211,44 +215,67 @@ export default function Cursos() {
             <Reveal as="h1" delay={70} className="cur-h1">
               Dos días que cambian la conversación en tu casa.
             </Reveal>
-            <Reveal delay={140}>
+            <Reveal delay={120}>
               <p className="cur-entrada">
                 En directo y con tu caso encima de la mesa: sales sabiendo hacer las cuentas tú, no con apuntes.
               </p>
             </Reveal>
-          </div>
 
-          <Reveal delay={180}>
-            <VideoPresenta
-              src="/video/iris-presentacion.mp4"
-              cartel="/images/iris-presentacion-cartel.jpg"
-              etiqueta="Que te lo cuente Iris"
-            />
-          </Reveal>
+            {/* LOS DATOS, EN UNA TIRA. Cada uno se dibuja sólo si existe, así
+                que un curso al que le falte el horario no deja un hueco raro:
+                deja de tener esa línea. */}
+            {proximo && (
+              <Reveal delay={170}>
+                <dl className="cur-datos">
+                  {!falta(proximo.fechas) && (
+                    <div><dt>Cuándo</dt><dd>{proximo.fechas}</dd></div>
+                  )}
+                  {!falta(proximo.horario) && (
+                    <div><dt>Horario</dt><dd>{proximo.horario}</dd></div>
+                  )}
+                  {!falta(proximo.duracion) && (
+                    <div><dt>Son</dt><dd>{proximo.duracion}</dd></div>
+                  )}
+                </dl>
+              </Reveal>
+            )}
 
-          {/* LA URGENCIA, DEBAJO DEL VÍDEO Y NO ANTES.
-              Antes de ver el vídeo, «quedan doce días» no significa nada —
-              todavía no se sabe doce días para qué. Justo después, es lo único
-              que falta por saber. Y cada dato se dibuja sólo si existe: una
-              cuenta atrás sin fecha o unas plazas sin número son ruido. */}
-          {proximo && (
-            <Reveal delay={240}>
-              <div className="cur-urgencia">
-                {proximo.fechaISO && (
-                  <CuentaAtras fechaISO={proximo.fechaISO} abiertoDesdeISO={proximo.inscripcionDesdeISO} />
-                )}
-                <div className="cur-urgencia-cta">
-                  {proximo.plazas != null && (
-                    <span className="cur-plazas">Son {proximo.plazas} plazas, y el grupo se cierra ahí.</span>
+            {/* EL PRECIO Y EL BOTÓN, JUNTOS Y EN EL MISMO RENGLÓN. Separados,
+                el precio se lee como un dato más; pegado al botón es la última
+                cosa que se mira antes de pulsar, que es donde tiene que estar. */}
+            {proximo && (
+              <Reveal delay={210}>
+                <div className="cur-cerrar">
+                  {proximo.precio != null && (
+                    <span className="cur-precio">
+                      <b>{eur(proximo.precio)}</b>
+                      {proximo.precioAntes != null && <s>{eur(proximo.precioAntes)}</s>}
+                    </span>
                   )}
                   <a href={`#${proximo.id}`} data-mag data-cur-label="Ver" className="pill pill-cream">
                     <span>Ver el curso y apuntarme</span>
                     <span className="pill-arrow">↓</span>
                   </a>
                 </div>
-              </div>
-            </Reveal>
-          )}
+              </Reveal>
+            )}
+
+            {proximo?.fechaISO && (
+              <Reveal delay={250}>
+                <div className="cur-reloj">
+                  <CuentaAtras fechaISO={proximo.fechaISO} abiertoDesdeISO={proximo.inscripcionDesdeISO} compacto />
+                </div>
+              </Reveal>
+            )}
+          </div>
+
+          <Reveal delay={160} className="cur-hero-video">
+            <VideoPresenta
+              src="/video/iris-presentacion.mp4"
+              cartel="/images/iris-presentacion-cartel.jpg"
+              etiqueta="Que te lo cuente Iris"
+            />
+          </Reveal>
         </div>
       </div>
 

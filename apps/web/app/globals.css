@@ -4725,24 +4725,39 @@ body[data-nav-claro='si'] .sello-color {
    Con el cartel del curso fuera, la rejilla de dos columnas dejaba el texto
    pegado a la izquierda y media pantalla en blanco a la derecha. Una frase
    sola se pone en medio. */
+/*
+ * A LA IZQUIERDA, NO CENTRADO.
+ *
+ * Estuvo centrado mientras la portada era una frase suelta, y ahí funcionaba:
+ * un cartel se centra. Ahora hay una historia de dos párrafos debajo, y un
+ * texto centrado de cinco renglones obliga al ojo a buscar dónde empieza cada
+ * línea. Un relato se lee alineado, con el margen izquierdo fijo.
+ *
+ * Y el titular baja de tamaño. Centrado y a 34ch salían CINCO líneas —«En tu
+ * familia / hay una historia / que nadie contó. / Y sigue buscando / quién la
+ * cierre.»— y empujaban el botón al borde de la pantalla. Con la columna algo
+ * más ancha y el cuerpo un punto menor, la historia entera y el botón con su
+ * precio caben en la primera pantalla, que es de lo que va todo esto.
+ */
 .hero-solo {
   grid-template-columns: 1fr !important;
-  justify-items: center;
-  text-align: center;
+  justify-items: start;
+  text-align: left;
 }
 .hero-solo .hero-texto {
-  align-items: center;
-  /* 34ch, no 24. A 24 la frase se partía en cinco renglones —«Lo que / se
-     repite / en tu vida / no empezó / contigo»— y además estrangulaba la fila
-     de botones hasta apilarlos. A 34 caben las dos mitades de la frase en dos
-     líneas, que es como está escrita. */
-  max-width: 34ch;
+  align-items: flex-start;
+  max-width: 46ch;
+  gap: clamp(16px, 2vw, 26px) !important;
+}
+.hero-solo .titular-portada {
+  font-size: clamp(31px, 4.4vw, 54px);
+  line-height: 1.03;
 }
 .hero-solo .hero-botones {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
 }
 @media (max-width: 600px) {
@@ -5479,33 +5494,97 @@ body[data-nav-claro='si'] .sello-color {
 .cur-hero-dentro {
   position: relative;
   z-index: 3;
-  max-width: 1000px;
+  max-width: 1180px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(20px, 2.6vw, 32px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(28px, 4vw, 60px);
+  align-items: center;
 }
 .cur-hero-texto {
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 1.8vw, 20px);
-  max-width: 40ch;
+  gap: clamp(13px, 1.6vw, 19px);
+  min-width: 0;
 }
 .cur-h1 {
   margin: 0;
-  font-size: clamp(33px, 5vw, 58px);
+  font-size: clamp(30px, 3.9vw, 47px);
   font-weight: var(--peso-fino);
-  line-height: 1.02;
-  letter-spacing: -0.03em;
+  line-height: 1.04;
+  letter-spacing: -.03em;
   text-wrap: balance;
 }
 .cur-entrada {
   margin: 0;
-  font-size: var(--t-entrada);
+  font-size: var(--t-cuerpo);
   font-weight: 300;
   line-height: 1.6;
   color: var(--tx-2);
-  max-width: 44ch;
+  max-width: 42ch;
+}
+
+/* Los datos, en tira. Rótulo pequeño arriba y el dato debajo: en una línea
+   corrida —«Cuándo 26 y 27 de septiembre Horario 10:00…»— hay que leerla entera
+   para encontrar lo que se busca. */
+.cur-datos {
+  margin: clamp(2px, 0.6vw, 6px) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 2vw, 26px);
+  padding-top: clamp(12px, 1.6vw, 18px);
+  border-top: 1px solid var(--linea);
+}
+.cur-datos div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cur-datos dt {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+.cur-datos dd {
+  margin: 0;
+  font-size: var(--t-mini);
+  color: var(--tx);
+  font-weight: 500;
+}
+
+/* El precio pegado al botón. Suelto se lee como un dato más; aquí es lo último
+   que se mira antes de pulsar, que es donde tiene que estar. */
+.cur-cerrar {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2vw, 22px);
+  flex-wrap: wrap;
+  margin-top: clamp(4px, 0.8vw, 8px);
+}
+.cur-precio {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+}
+.cur-precio b {
+  font-family: var(--serif);
+  font-size: clamp(30px, 3.4vw, 40px);
+  font-weight: var(--peso-fino);
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+.cur-precio s {
+  font-size: var(--t-mini);
+  color: var(--tx-3);
+  text-decoration-thickness: 1px;
+}
+.cur-reloj { margin-top: 2px; }
+
+@media (max-width: 899px) {
+  /* Apilado, y el vídeo SUBE por delante de los datos: en un móvil la cara de
+     Iris contándolo vende más que una ficha con horarios. */
+  .cur-hero-dentro { grid-template-columns: 1fr; gap: clamp(22px, 4vw, 30px); }
+  .cur-hero-video { order: -1; }
 }
 
 /* --- el marco del vídeo -------------------------------------------------- */
@@ -5597,4 +5676,76 @@ body[data-nav-claro='si'] .sello-color {
   font-size: var(--t-mini);
   color: var(--tx-2);
   max-width: 26ch;
+}
+
+/* ==================================================================
+   LA PORTADA CUENTA UNA HISTORIA
+   ==================================================================
+   Antes había un titular y dos botones, y nada más. El titular era bueno pero
+   se quedaba solo: quien entraba tenía que decidir con una frase.
+
+   Ahora la primera pantalla cuenta algo —tres líneas de titular y dos párrafos
+   que dicen qué historia es— y termina en un solo sitio, con el precio a la
+   vista para que nadie tenga que subir a buscarlo.
+   ================================================================== */
+
+/* La tercera línea del titular, la del encargo. Va algo menor que las dos de
+   arriba: es el remate, no el golpe. */
+.titular-remate {
+  font-size: 0.72em;
+  font-style: italic;
+}
+
+.hero-historia {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.5vw, 18px);
+  max-width: 52ch;
+}
+.hero-historia p {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: var(--tx-2);
+  text-wrap: pretty;
+}
+/* El segundo párrafo es el que dice qué se compra: va en tinta plena para que
+   se separe del que sólo describe el problema. */
+.hero-historia p:last-child {
+  color: var(--tx);
+}
+
+.hero-cierre {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+/* El precio debajo del botón y no en otra sección. Nadie tiene que subir a
+   buscar cuánto cuesta lo que le acaban de ofrecer. */
+.hero-micro {
+  margin: 0;
+  font-size: var(--t-mini);
+  color: var(--tx-3);
+  max-width: 42ch;
+}
+/* La prueba gratis, como enlace y no como botón. Dos botones del mismo tamaño
+   pesan igual, y uno de los dos se llevaba a la persona lejos de la venta. */
+.hero-enlace {
+  font-size: var(--t-mini);
+  color: var(--acento);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.hero-enlace:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* El botón de Kábala y el enlace a su página, uno al lado del otro. */
+.consulta-kab-acciones {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2vw, 20px);
+  flex-wrap: wrap;
 }

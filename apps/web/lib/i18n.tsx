@@ -8,7 +8,21 @@ export const COPY = {
   es: {
     n1: 'Cómo funciona', n2: 'Ver mi número', n3: 'Cursos', n4: 'Membresía', book: 'Reservar', free: 'Gratis',
     kick: 'Numerología transgeneracional · online desde 2010',
-    h1a: 'Lo que se repite en tu vida', h1b: 'no empezó contigo.',
+    /* EL TITULAR CUENTA UNA HISTORIA, y el personaje es la familia — no Iris
+       ni quien entra. Iris no le interesa a nadie que no la conozca, y hablarle
+       a la persona de su propia vida en la primera frase suena a que se la
+       estás contando sin haberle preguntado. La familia hace las dos cosas que
+       este negocio necesita: le quita la culpa —esto no lo empezaste tú— y le
+       deja el trabajo —pero lo puedes cerrar tú—. */
+    h1a: 'En tu familia hay una historia', h1b: 'que nadie contó.',
+    /* La tercera línea, en dorado. Es la que convierte el dato en un encargo, y
+       no es nueva: ya la decían los susurros. */
+    h1c: 'Y sigue buscando quién la cierre.',
+    /* La entrada. Los tres ejemplos son los que pidió Gerson, con su cláusula:
+       sin «nadie tuvo la culpa» el titular acusa a la familia de quien lee, que
+       es justo lo que aquí no se hace. */
+    h1p1: 'Un amante que nunca se reconoció. Alguien que estuvo preso. Una enfermedad de la que en casa no se hablaba. Nadie lo cuenta, nadie tuvo la culpa y nadie lo eligió — y aun así baja de generación en generación hasta que a alguien le toca mirarlo.',
+    h1p2: 'Te toca a ti. En una consulta conmigo te enseño cuál es esa historia, en qué generación empezó, cómo llegó hasta ti y qué parte te toca soltar.',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
     hcta: 'Reservar mi consulta', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
     s1: 'personas atendidas', s2: 'desde', s3: 'idiomas',
@@ -96,7 +110,10 @@ export const COPY = {
   pt: {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
-    h1a: 'O que se repete na tua vida', h1b: 'não começou contigo.',
+    h1a: 'Na tua família há uma história', h1b: 'que ninguém contou.',
+    h1c: 'E continua à procura de quem a feche.',
+    h1p1: 'Um amante que nunca foi reconhecido. Alguém que esteve preso. Uma doença de que em casa não se falava. Ninguém conta, ninguém teve culpa e ninguém escolheu — e mesmo assim desce de geração em geração até que a alguém lhe toca olhar.',
+    h1p2: 'Toca-te a ti. Numa consulta comigo mostro-te qual é essa história, em que geração começou, como chegou até ti e que parte te toca largar.',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
     hcta: 'Marcar a minha consulta', hcta2: 'Ver o meu número, grátis', hbadge: 'Online · ES / PT / EN',
     s1: 'pessoas acompanhadas', s2: 'desde', s3: 'idiomas',
@@ -175,7 +192,10 @@ export const COPY = {
   en: {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
-    h1a: 'What keeps repeating in your life', h1b: 'did not start with you.',
+    h1a: 'Your family holds a story', h1b: 'nobody ever told.',
+    h1c: 'And it is still looking for someone to close it.',
+    h1p1: 'A lover never acknowledged. Someone who went to prison. An illness nobody spoke about at home. Nobody tells it, nobody was to blame and nobody chose it — and it still comes down the generations until it falls to someone to look at it.',
+    h1p2: 'It has fallen to you. In a session with me I show you what that story is, which generation it started in, how it reached you and what part is yours to let go of.',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
     hcta: 'Book my session', hcta2: 'See my number, free', hbadge: 'Online · ES / PT / EN',
     s1: 'people seen', s2: 'since', s3: 'languages',

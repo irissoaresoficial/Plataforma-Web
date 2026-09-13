@@ -158,17 +158,23 @@ export default function Home() {
               <Reveal>
                 <Rotulo className="rotulo-hero">{t.kick}</Rotulo>
               </Reveal>
-              {/* Una sola voz y un solo tamaño. El giro lo marca el color, no un
-                  cuerpo cuatro veces mayor ni una cursiva: en dos tamaños tan
-                  distintos la frase se partía en dos y ocupaba siete renglones. */}
-              {/* Palabra a palabra. Un titular que aparece de golpe se lee como
-                  una imagen; apareciendo por palabras se lee como alguien que
-                  está diciendo la frase, que es lo que es. */}
-              {/* Cada frase en su renglón. Fluían seguidas y el reparto de
-                  líneas dejaba la «Y» sola al final de la segunda: la frase se
-                  partía en el peor sitio posible y se leía a trompicones. Con
-                  una frase por bloque, cada una se equilibra sola (text-wrap:
-                  balance) y el corte cae donde lo pondría cualquiera. */}
+              {/*
+                  EL TITULAR CUENTA UNA HISTORIA, Y DEBAJO ESTÁ LA HISTORIA.
+                  --------------------------------------------------------
+                  Antes había un titular y dos botones. Nada más. El titular era
+                  bueno —«Lo que se repite en tu vida no empezó contigo»— pero
+                  se quedaba solo: quien entraba leía una frase bonita y tenía
+                  que decidir con eso.
+
+                  Ahora la primera pantalla cuenta algo. Tres líneas de titular,
+                  dos párrafos que dicen qué historia es, y un solo botón con el
+                  precio debajo. El personaje es la FAMILIA: no Iris, que no le
+                  interesa a quien no la conoce, y no quien entra, que ya tiene
+                  su bloque más abajo y aquí sonaría a que le cuentan su vida
+                  sin haberle preguntado.
+
+                  Palabra a palabra: un titular que aparece de golpe se lee como
+                  una imagen; apareciendo así se lee como alguien diciéndolo. */}
               <h1 className="titular-portada" style={{ margin: 0 }}>
                 <Palabras retraso={0.1} className="titular-frase">
                   {t.h1a}
@@ -176,23 +182,40 @@ export default function Home() {
                 <Palabras
                   retraso={0.1 + t.h1a.split(' ').length * 0.055}
                   className="titular-frase"
-                  style={{ color: 'var(--acento)' }}
                 >
                   {t.h1b}
                 </Palabras>
+                <Palabras
+                  retraso={0.1 + (t.h1a + ' ' + t.h1b).split(' ').length * 0.055}
+                  className="titular-frase titular-remate"
+                  style={{ color: 'var(--acento)' }}
+                >
+                  {t.h1c}
+                </Palabras>
               </h1>
-              {/* Aquí iba «Te enseño de dónde viene lo que se repite. Y cómo
-                  se corta.» Fuera: la portada se queda en UNA frase.
 
-                  Y no se pierde nada. Lo que hacía esa línea —decir qué se
-                  vende— lo dice ahora el bloque de las dos consultas, con su
-                  precio delante, que es donde de verdad se decide. En la
-                  portada sólo quedan la frase y los dos botones. */}
-              <Reveal delay={220}>
-                <div className="hero-botones">
+              <Reveal delay={180}>
+                <div className="hero-historia">
+                  <p>{t.h1p1}</p>
+                  <p>{t.h1p2}</p>
+                </div>
+              </Reveal>
+
+              {/* UN SOLO BOTÓN, con el precio debajo y la prueba gratis como
+                  enlace de texto. Antes eran dos botones del mismo tamaño: uno
+                  llevaba a reservar y el otro se llevaba a la persona a otra
+                  parte de la página, y los dos pesaban igual. Nadie tiene que
+                  subir a buscar cuánto cuesta esto. */}
+              <Reveal delay={240}>
+                <div className="hero-cierre">
                   <PillCTA onClick={abrirConsulta} variant="cream" label={t.hcta} curLabel={t.cbook} />
-                  <Link href="#prueba" data-mag className="btn-outline">
-                    {t.hcta2}
+                  <p className="hero-micro">
+                    {ofertaViva
+                      ? `${eur(SESION.precioOferta!)} las ${SESION.plazasOferta} primeras · después, ${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`
+                      : `${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`}
+                  </p>
+                  <Link href="#prueba" data-mag className="hero-enlace">
+                    ¿Prefieres ver algo antes? Calcula tu número, gratis →
                   </Link>
                 </div>
               </Reveal>
@@ -214,37 +237,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── LA MARQUESINA ────────────────────────────────────
-          Los números con los que se trabaja, pasando sin parar. No es
-          decoración de relleno: son las doce cifras del oficio, y del 11, 22
-          y 33 sale el nombre de la escuela. */}
-      <div className="claro banda-filete" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: '16px 0' }}>
-        <Marquesina segundos={58}>
-          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '11', '22', '33'].map((n) => (
-            <span
-              key={n}
-              /* De cifras de cuarenta y dos píxeles en negrita a una tira
-                 discreta. Doce números gigantes en fila no son un detalle de
-                 la casa: son una valla publicitaria, y era lo primero que se
-                 veía después del titular. */
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'clamp(22px,3vw,44px)',
-                paddingRight: 'clamp(22px,3vw,44px)',
-                fontSize: 'clamp(15px,1.5vw,20px)',
-                fontWeight: 'var(--peso-fino)',
-                letterSpacing: '.02em',
-                color: ['11', '22', '33'].includes(n) ? 'var(--acento)' : 'var(--tx-4)',
-                fontVariantNumeric: 'tabular-nums',
-              }}
-            >
-              {n}
-              <span aria-hidden style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--linea-2)' }} />
-            </span>
-          ))}
-        </Marquesina>
-      </div>
+      {/* LA MARQUESINA DE DOCE NÚMEROS ESTABA AQUÍ, y se ha quitado.
+          Ocupaba el sitio más caro de la página —entre el titular y el primer
+          bloque de verdad— y no daba ni un motivo para seguir bajando. */}
 
       {/* ── TU NÚMERO ────────────────────────────────────────
           Aquí la web da antes de pedir: la cuenta es de verdad, es la misma
@@ -267,50 +262,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── FRANJA DE IMÁGENES: sin una palabra ───────────────
-          Cada foto se destapa de abajo arriba mientras por dentro se encoge:
-          dos velocidades en la misma pieza, que es lo que se lee como
-          profundidad y no como una cortina. Y las tres se mueven a ritmos
-          distintos al pasar, así la fila deja de ser una fila. */}
-      <div className="claro banda">
-        <div className="banda-dentro franja">
-          <Paralaje cantidad={54}>
-            <Revelado className="franja-foto">
-              <Foto
-                src={FOTOS.arbolPizarra}
-                alt="Unas manos dibujando con tiza, en una pizarra pequeña, el árbol de la vida con sus números"
-                ratio="3/4"
-                radius="var(--radio)"
-                sizes="(max-width:900px) 100vw, 30vw"
-              />
-            </Revelado>
-          </Paralaje>
-          <Paralaje cantidad={-22}>
-            <Revelado className="franja-foto" retraso={0.12}>
-              {/* Cuadrada porque la foto es apaisada: en el 3/4 de las otras dos
-                  se le iría la mitad del papel, que es lo único que hay que ver. */}
-              <Foto
-                src={FOTOS.laCuenta}
-                alt="Una fecha escrita a mano en un papel, sumada cifra a cifra hasta un solo número, con el resultado rodeado"
-                ratio="1/1"
-                radius="var(--radio)"
-                sizes="(max-width:900px) 100vw, 30vw"
-              />
-            </Revelado>
-          </Paralaje>
-          <Paralaje cantidad={78}>
-            <Revelado className="franja-foto" retraso={0.24}>
-              <Foto
-                src={FOTOS.cristales}
-                alt="Cuarzos y velas encendidas sobre el agua, al amanecer"
-                ratio="3/4"
-                radius="var(--radio)"
-                sizes="(max-width:900px) 100vw, 30vw"
-              />
-            </Revelado>
-          </Paralaje>
-        </div>
-      </div>
+      {/* LAS TRES FOTOS SIN TEXTO ESTABAN AQUÍ. Un descanso visual en medio
+          de una página de venta, y quien está decidiendo si se gasta 111 € no
+          necesita descansar: necesita el siguiente motivo. Las buenas —el árbol
+          en la pizarra y la cuenta a mano— vuelven donde prueban algo. */}
 
       {/* ── EL DOLOR ─────────────────────────────────────────
           Anclado: la sección se queda quieta y cada frase se lee sola. Es el
@@ -527,203 +482,53 @@ export default function Home() {
                   Qué es la Kábala →
                 </Link>
               </p>
-              <PillCTA
-                onClick={abrirKabala}
-                variant="dark"
-                label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
-                curLabel={t.cbook}
-              />
-            </Reveal>
-          </div>
-        </div>
-      </div>
-
-      {/* ── LO QUE LE ESCRIBEN ────────────────────────────────
-          La prueba va aquí, justo antes de las tres cosas que se piden
-          —comunidad, cursos, sesión—: primero se enseña que hay gente detrás y
-          después se pide algo. Al revés no funciona. */}
-      <div className="arena banda">
-        <div className="banda-dentro">
-          <Testimonios />
-        </div>
-      </div>
-
-      {/* ── EL LANZAMIENTO DE LA COMUNIDAD ───────────────────────
-          Es un lanzamiento, así que este bloque lleva una fecha y una cuenta,
-          no una foto. Donde iba la foto de sala —que no existe: salía el hueco
-          rojo de FOTO PENDIENTE, y era lo primero que se veía en el bloque que
-          más tiene que vender— va ahora la cuenta atrás.
-
-          El orden de la columna de la derecha cambia con esa idea: primero el
-          precio de la lista, que es la razón concreta para apuntarse hoy y no
-          en noviembre, y después el botón. Antes el precio iba enterrado entre
-          el párrafo y el botón, en un cuerpo más pequeño que el titular. */}
-      <div id="lista-espera" className="vino lanz-bloque" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
-        {/* Las cifras flotando, aquí más marcadas que en la portada.
-            Son las mismas —11, 22, 33, 3, 7, 9— y del mismo dorado; lo que
-            cambia es que sobre el granate ese dorado aguanta el doble de
-            intensidad sin gritar, mientras que sobre el papel claro de arriba a
-            0,7 ya se lee como tinta. La densidad también baja: un bloque de
-            media pantalla con la misma cantidad de cifras que una portada
-            entera se llena de ruido. */}
-        <CampoNumeros intensidad={1.7} densidad={150_000} />
-        <div className="lanz-rejilla" style={{ position: 'relative', zIndex: 2, maxWidth: ANCHO, margin: '0 auto' }}>
-          <Lanzamiento abreISO={MEMBRESIA.abreISO} desdeISO={MEMBRESIA.listaDesdeISO} />
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(16px,2vw,24px)' }}>
-            <Reveal>
-              <Rotulo claro>{t.wl_lab}</Rotulo>
-            </Reveal>
-            {/* A 15ch el titular se partía en cuatro renglones y dejaba
-                «Cambiarlo» solo en uno. */}
-            <Reveal delay={70} className="titular-seccion" style={{ maxWidth: '19ch' }}>
-              {t.wl_h}
-            </Reveal>
-            <Reveal delay={130}>
-              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '36ch' }}>{t.wl_p}</p>
-            </Reveal>
-
-            {/* AQUÍ IBA EL PRECIO, EN GRANDE. Ya no hay precio que enseñar: la
-                membresía es un próximamente y no se cobra nada, así que un
-                panel con un número tachado sería mentir en el sitio donde más
-                se mira. En su lugar va lo único que se pide —el correo— dicho
-                como lo que es: un aviso, no una compra.
-
-                Si algún día vuelve a haber precio, el panel está en el
-                historial y `MEMBRESIA.precioReserva` lo enciende otra vez. */}
-            <Reveal delay={180}>
-              <div className="lanz-aviso">
-                <span className="rotulo-dato">Las primeras</span>
-                <span className="lanz-aviso-txt">
-                  Abre pequeña, y las primeras deciden conmigo qué se trabaja cada mes. Déjame tu correo y te escribo yo
-                  antes que a nadie.
-                </span>
-              </div>
-            </Reveal>
-
-            <Reveal delay={230}>
-              <PillCTA href="/membresia" variant="dark" label={t.wl_cta} curLabel={t.csee} />
-            </Reveal>
-          </div>
-        </div>
-      </div>
-
-      {/* ── QUÉ ES LA KÁBALA ─────────────────────────────────
-          La web vendía una consulta de Kábala y no explicaba en ninguna parte
-          qué es la Kábala. Quien no lo sepa —que es casi todo el mundo— no
-          compra la más cara de las dos: no por el precio, sino porque no sabe
-          qué está comprando.
-
-          Y se cuenta como lo que es en esta casa: una herramienta de
-          autoconocimiento, no una religión ni una cosa de iniciados. Las cuatro
-          piezas de abajo son las cuatro que Iris usa de verdad en una consulta
-          —el árbol, los senderos, los caminos y el Tikun—, así que quien lea
-          esto reconoce después lo que ve en pantalla. */}
-      <div id="kabala" className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD, scrollMarginTop: 80, overflow: 'hidden' }}>
-        <CampoNumeros intensidad={1.5} densidad={150_000} />
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,44px)' }}>
-          <Reveal>
-            <Rotulo claro>Qué es la Kábala</Rotulo>
-          </Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(20px,3vw,48px)', alignItems: 'end' }}>
-            <Reveal delay={60} className="titular-seccion" style={{ maxWidth: '16ch' }}>
-              Un mapa de ti que tiene tres mil años.
-            </Reveal>
-            <Reveal delay={120}>
-              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '44ch' }}>
-                «Kábala» quiere decir <i>recibir</i>. No es una religión y no hay que creer en nada: es una forma de ver
-                cómo eres por dentro, y por dónde te entra y te sale la vida.
-              </p>
-            </Reveal>
-          </div>
-
-          {/* EL ÁRBOL, AL LADO DE LO QUE LO EXPLICA.
-              Las cuatro piezas decían «diez estaciones» y «veintidós senderos»
-              sin enseñar ninguna, y el pie de este mismo bloque promete que
-              esto se dibuja delante de ti. Ahora se dibuja: el árbol entra a la
-              izquierda y las cuatro piezas se recolocan a su derecha, así que
-              se lee «10 · El Árbol de la Vida» con el árbol justo al lado. En
-              móvil se apilan y el árbol va primero.
-
-              Y EL PIE SE HA METIDO AQUÍ DENTRO, en la columna de la derecha.
-              Estaba debajo, cruzando el bloque entero, y dejaba doscientos
-              píxeles de granate vacío al lado del árbol. Aquí abajo cierra la
-              columna, la iguala de alto con el dibujo y —lo que importa— pone
-              el botón de reservar justo después de lo que lo explica, en vez
-              de a una pantalla de distancia. */}
-          <div className="kab-cuerpo">
-            <Reveal delay={80}>
-              <ArbolVida />
-            </Reveal>
-
-            <div className="kab-columna">
-            <div className="kab-rejilla">
-            {[
-              {
-                n: '10',
-                t: 'El Árbol de la Vida',
-                p: 'Diez paradas por las que pasa todo lo que te ocurre: desde que se te ocurre algo hasta que lo haces. Es el plano de la casa.',
-              },
-              {
-                n: '22',
-                t: 'Los senderos',
-                p: 'Los caminos que unen esas diez paradas. En tu carta se encienden los que te tocan a ti, y cada uno cuenta algo tuyo.',
-              },
-              {
-                n: '3',
-                t: 'Tus tres caminos',
-                p: 'De dónde vienes, qué has venido a cambiar y hacia dónde vas. Salen de tu fecha, y son los que se leen en la consulta.',
-              },
-              {
-                n: 'תיקון',
-                t: 'El Tikun',
-                p: 'La palabra que sostiene todo esto: reparar. Lo que te llega de tu familia no hay que aguantarlo — se repara y se le devuelve a quien era.',
-              },
-            ].map((k, i) => (
-              <Reveal key={k.t} delay={100 + i * 60} className="kab-ficha">
-                <span className="kab-num">{k.n}</span>
-                <h3 className="kab-tit">{k.t}</h3>
-                <p className="kab-txt">{k.p}</p>
-              </Reveal>
-            ))}
-            </div>
-
-            <Reveal delay={340}>
-              <div className="kab-pie">
-                <p>
-                  En consulta esto no se explica: se dibuja delante de ti con tu nombre y tu fecha, y sales con el mapa
-                  en la mano.
-                </p>
+              <div className="consulta-kab-acciones">
                 <PillCTA
                   onClick={abrirKabala}
-                  variant="gold"
+                  variant="dark"
                   label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
                   curLabel={t.cbook}
                 />
+                {/* El bloque que explicaba la Kábala ya no está en la portada:
+                    era pantalla y media contando el producto de 333 € a alguien
+                    que aún no ha comprado el de 111 €. Aquí queda el enlace, y
+                    lo pulsa quien lo necesita. */}
+                <Link href="/kabala" data-mag className="hero-enlace">
+                  ¿Qué es la Kábala? →
+                </Link>
               </div>
             </Reveal>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* ── CURSOS ───────────────────────────────────────────── */}
-      <div className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: PAD }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,40px)' }}>
-          <Reveal>
-            <Rotulo>{t.e_lab}</Rotulo>
-          </Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(24px,3vw,56px)', alignItems: 'end' }}>
-            <Reveal delay={60} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
-              {t.e_h}
-            </Reveal>
-            <Reveal delay={140} style={{ display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'flex-start' }}>
-              <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '32ch' }}>{t.e_sub}</p>
-              <PillCTA href="/cursos" variant="cream" label={t.e_cta} curLabel={t.csee} />
-            </Reveal>
-          </div>
-        </div>
-      </div>
+      {/* AQUÍ ESTABAN LOS TESTIMONIOS, EL LANZAMIENTO DE LA COMUNIDAD Y LOS
+          CURSOS. Los tres se han quitado de la portada, y por el mismo motivo:
+          este tramo es el más caro de toda la página —la persona acaba de leer
+          el precio— y los tres le daban algo que hacer que no es reservar.
+
+          · Testimonios: eran seis de muestra, cada uno con la palabra
+            «Ejemplo» encima, bajo el titular «Esto no lo digo yo.» Es decir,
+            la sección de confianza diciendo que todavía no ha hablado nadie.
+            Vuelven, y vuelven justo aquí, el día que haya tres comentarios de
+            verdad del Instagram de Iris.
+          · La comunidad: media pantalla para apuntarse a algo que no existe.
+            Y peor: le da a quien estaba a punto de reservar una forma gratis de
+            sentir que ya ha hecho algo. Está en el pie y su página sigue en pie.
+          · Los cursos: son ocasionales y por definición no son el negocio. Su
+            botón era una salida de la portada. También al pie. */}
+
+      {/* EL BLOQUE ENTERO DE LA KÁBALA ESTABA AQUÍ —titular, árbol dibujado,
+          cuatro fichas y botón— y se ha mudado a /kabala con todo dentro.
+
+          Era pantalla y media explicando el producto de 333 € a alguien que
+          todavía no ha decidido si compra el de 111 €. Información correcta en
+          el momento equivocado, que es exactamente de lo que se quejaba Gerson:
+          «hay tantos servicios que la gente se pierde».
+
+          No se pierde nada: en el bloque de las consultas hay un enlace, en el
+          pie otro, y los susurros siguen explicando el árbol, los veintidós
+          senderos y el Tikun por el margen mientras se navega. */}
 
       {/* ── DUDAS ────────────────────────────────────────────── */}
       <div id="dudas" className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD }}>
