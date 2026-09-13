@@ -136,7 +136,6 @@ export default function Home() {
     [t.f_q12, t.f_a12],
     [t.f_q4, t.f_a4],
   ];
-  const chips = [t.w1, t.w2, t.w3, t.w4, t.w5, t.w6];
   const dolor = [t.p1, t.p2, t.p3, t.p4];
 
   return (
@@ -148,9 +147,14 @@ export default function Home() {
         cta={t.book}
         onCta={abrirConsulta}
         conIdiomas
+        /* Enlaces de ESTA página, no destinos. «Qué es la Kábala» apuntaba a
+           un `#kabala` que ya no existe —ese bloque se mudó entero a su propia
+           página— así que era un enlace que no llevaba a ningún sitio: se
+           pulsaba y no pasaba nada. La Kábala ya está en la lista de arriba del
+           menú, con su página. */
         extra={[
+          { href: '#hola', label: 'Quién es Iris' },
           { href: '#consultas', label: 'La consulta' },
-          { href: '#kabala', label: 'Qué es la Kábala' },
           { href: '#prueba', label: t.n1 },
           { href: '#dudas', label: 'Dudas' },
         ]}
@@ -216,6 +220,74 @@ export default function Home() {
       {/* LA MARQUESINA DE DOCE NÚMEROS ESTABA AQUÍ, y se ha quitado.
           Ocupaba el sitio más caro de la página —entre el titular y el primer
           bloque de verdad— y no daba ni un motivo para seguir bajando. */}
+
+      {/* ── HOLA, SOY IRIS ────────────────────────────────────
+          En cuanto el árbol termina de crecer, aparece ella. Y en ese orden,
+          que es el de cualquier conversación que va a acabar en una compra:
+          primero te enseño el problema, después te digo quién soy, qué miro y
+          cómo lo hago, y solo entonces te pido algo.
+
+          Antes este bloque estaba a mitad de página, detrás de la calculadora
+          y del bloque del dolor. O sea que la persona llevaba cuatro pantallas
+          leyendo a alguien sin nombre.
+
+          Y el nombre gigante en versales que había aquí —«IRIS / SOARES» de
+          setenta píxeles— se ha ido: ocupaba el sitio de un titular y no decía
+          nada. Ahora ese sitio lo ocupa el saludo, que dice quién es Y a qué se
+          dedica en la misma línea. Un cartel que además habla. */}
+      <div id="hola" className="vino quien" style={{ position: 'relative', zIndex: 3 }}>
+        <div className="quien-marco">
+          {/* La foto va primero en el orden del documento y a la derecha en el
+              dibujo: en el móvil, que se apila, tiene que verse ANTES que el
+              texto. */}
+          <div className="quien-retrato">
+            <Revelado>
+              <Foto
+                src={FOTOS.hablando}
+                alt="Iris Soares, en su consulta"
+                ratio="4/5"
+                radius="0"
+                llenar
+                sizes="(max-width:900px) 100vw, 46vw"
+                /* El retrato es 9:16 y el marco 4:5, así que hay que decidir
+                   qué se recorta: a 15 % la cabeza respira y lo que se va es
+                   suelo, que no cuenta nada. */
+                objectPosition="center 15%"
+              />
+            </Revelado>
+            <span className="quien-velo" aria-hidden />
+          </div>
+
+          <div className="quien-texto">
+            <Reveal>
+              <h2 className="quien-hola">
+                {t.w_hola}
+                <br />
+                <b>{t.w_oficio}</b>
+              </h2>
+            </Reveal>
+            <Reveal delay={70}>
+              <p className="quien-que">{t.w_que}</p>
+            </Reveal>
+            <Reveal delay={130}>
+              <p className="quien-como">{t.w_como}</p>
+            </Reveal>
+            <Reveal delay={190}>
+              <p className="quien-camino">{t.w_camino}</p>
+            </Reveal>
+            <Reveal delay={250}>
+              <div className="quien-cta">
+                <PillCTA onClick={abrirConsulta} variant="gold" label={t.hcta} curLabel={t.cbook} />
+                <p className="hero-micro">
+                  {ofertaViva
+                    ? `${eur(SESION.precioOferta!)} las ${SESION.plazasOferta} primeras · después, ${eur(SESION.precio!)}`
+                    : `${eur(SESION.precio!)}`}
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </div>
 
       {/* ── EL DOLOR ─────────────────────────────────────────
           Anclado: la sección se queda quieta y cada frase se lee sola. Es el
@@ -285,89 +357,6 @@ export default function Home() {
           de una página de venta, y quien está decidiendo si se gasta 111 € no
           necesita descansar: necesita el siguiente motivo. Las buenas —el árbol
           en la pizarra y la cuenta a mano— vuelven donde prueban algo. */}
-
-      {/* ── QUIÉN SOY ─────────────────────────────────────────
-          EL RETRATO MANDA, Y EL NOMBRE ES LA PIEZA GRÁFICA.
-
-          Antes era el bloque más convencional de la web: rótulo, titular,
-          párrafo, foto pequeña al lado. Ahora está montado como la portada de
-          una persona que se vende ella —que es lo que es—: fondo oscuro, el
-          retrato a sangre ocupando media pantalla, y el nombre en versal muy
-          espaciada por encima, del tamaño de un cartel.
-
-          El nombre gigante ya estaba, pero de adorno y al 7 % de opacidad, o
-          sea invisible. Aquí deja de ser marca de agua y pasa a ser la pieza
-          que ordena el bloque: es lo primero que se ve y lo que dice de quién
-          es esta web.
-
-          En el móvil se apila —retrato arriba, texto debajo— porque un retrato
-          a media pantalla en 390 px no deja sitio para nada más. */}
-      <div className="vino quien" style={{ position: 'relative', zIndex: 3 }}>
-        <div className="quien-marco">
-          {/* La foto va primero en el orden del documento y a la derecha en el
-              dibujo: en el móvil, que se apila, tiene que verse ANTES que el
-              texto — es lo que hace que se lea como su portada. */}
-          <div className="quien-retrato">
-            <Revelado>
-              <Foto
-                src={FOTOS.hablando}
-                alt="Iris Soares, en su consulta"
-                ratio="4/5"
-                radius="0"
-                llenar
-                sizes="(max-width:900px) 100vw, 46vw"
-                /* El retrato es 9:16 y el marco 4:5, así que hay que decidir
-                   qué se recorta: a 15 % la cabeza respira y lo que se va es
-                   suelo, que no cuenta nada. */
-                objectPosition="center 15%"
-              />
-            </Revelado>
-            {/* Un velo por el lado del texto para que el nombre no se pise con
-                la imagen cuando las dos columnas se tocan. */}
-            <span className="quien-velo" aria-hidden />
-          </div>
-
-          <div className="quien-texto">
-            <Reveal>
-              {/* En dos líneas y no en una. A una sola, «IRIS SOARES» a este
-                  cuerpo no cabe en su columna y se salía por la izquierda: la
-                  primera palabra quedaba cortada. Partido, además, se parece
-                  más a lo que es — un cartel. */}
-              <span className="quien-nombre">
-                Iris
-                <br />
-                Soares
-              </span>
-            </Reveal>
-            <Reveal delay={60}>
-              <span className="quien-oficio">{t.w_lab} · Numerología transgeneracional</span>
-            </Reveal>
-
-            <Reveal delay={120} className="quien-frase">
-              {t.w_h}
-            </Reveal>
-            <Reveal delay={170}>
-              <p className="quien-remate">{t.w_h2}</p>
-            </Reveal>
-
-            <Reveal delay={220}>
-              <div className="quien-bio">
-                <p>{t.w_p1}</p>
-                <p>{t.w_p2}</p>
-              </div>
-            </Reveal>
-
-            {/* LA CINTA DE SEIS DISCIPLINAS ESTABA AQUÍ —Derecho, Psicología,
-                Psicosomática, Descodificación, Numerología, Transgeneracional—
-                pasando en bucle como el teletipo de un canal de noticias.
-
-                Fuera. Ya lo cuenta el párrafo de arriba con frases enteras, y
-                seis pastillas girando solas debajo de un retrato es movimiento
-                que no significa nada: la clase de adorno que hace que una web
-                parezca de hace diez años. */}
-          </div>
-        </div>
-      </div>
 
       {/* Aquí iba «TRES PASOS. SIN MISTERIO» con tres fichas numeradas: me das
           dos datos, preparo tu historia, nos vemos en directo. Fuera.

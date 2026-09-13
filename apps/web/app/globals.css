@@ -5162,90 +5162,77 @@ body[data-nav-claro='si'] .sello-color {
   min-width: 0;
 }
 
-/* EL NOMBRE. En versal, muy abierto y en la serif: es la pieza gráfica del
-   bloque. El espaciado grande es lo que lo convierte en cartel — apretado
-   sería un titular más. */
 /*
- * EL NOMBRE, EN LA VOZ DE LA CASA.
+ * EL SALUDO. Es el titular del bloque y es la pieza gráfica: ocupa el sitio
+ * donde antes había un «IRIS / SOARES» de setenta píxeles en versales muy
+ * espaciadas. Aquel era un cartel de galería y no decía nada; éste dice quién
+ * es y a qué se dedica en la misma línea, y sigue siendo lo primero que se ve.
  *
- * Era una serif fina en versales muy espaciadas: un cartel de galería. Bonito
- * y de otra web. En la sans apretada el nombre sigue siendo lo primero que se
- * ve —que es su trabajo— pero ya no parece que anuncie una exposición.
- *
- * 4,6vw y no 6,2: a 6,2 «SOARES» rebasaba su columna en un portátil de 1440 y
- * la primera línea salía cortada por la izquierda.
+ * El oficio va en la segunda línea y en dorado claro. Es la palabra que casi
+ * nadie ha oído —«numeróloga transgeneracional»— así que tiene que caer donde
+ * el ojo ya está, no en un rótulo pequeño encima.
  */
-.quien-nombre {
-  display: block;
+.quien-hola {
+  margin: 0;
   font-family: var(--sans);
   font-weight: 600;
-  font-size: clamp(36px, 5vw, 74px);
-  line-height: 0.94;
-  letter-spacing: -0.045em;
+  font-size: clamp(31px, 3.9vw, 56px);
+  line-height: 0.99;
+  letter-spacing: -0.042em;
   color: var(--tx);
-}
-.quien-oficio {
-  /* «QUIÉN SOY · NUMEROLOGÍA TRANSGENERACIONAL» en versalitas doradas. Fuera,
-     como todos los rótulos pequeños: debajo hay una frase que dice quién es
-     mejor que eso, y arriba está su nombre. */
-  display: none;
-}
-
-.quien-frase {
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: clamp(21px, 2.3vw, 30px);
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-  color: var(--tx);
-  max-width: 22ch;
   text-wrap: balance;
-  margin-top: clamp(14px, 2vw, 24px);
 }
-/* «Y a devolverlos a su origen.» Se queda —remata la frase de arriba— pero sin
-   la cursiva serif dorada, que era el gesto más de invitación de boda que tenía
-   la web. Ahora es la misma letra, en el dorado claro y a media fuerza: se lee
-   como la coda de la frase anterior, que es lo que es. */
-.quien-remate {
-  margin: 0;
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: clamp(21px, 2.3vw, 30px);
-  line-height: 1.16;
-  letter-spacing: -0.03em;
+.quien-hola b {
+  font-weight: 600;
   color: var(--oro-luz, #e2cda2);
-  max-width: 24ch;
 }
 
-.quien-bio {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: clamp(8px, 1.4vw, 16px);
-  max-width: 44ch;
+/* QUÉ mira, CÓMO lo hace y DE DÓNDE viene. En ese orden, que es el orden en el
+   que se lo pregunta uno cuando está decidiendo si le paga a alguien.
+
+   El primero manda —va en el color del texto principal y un punto más grande—
+   y el tercero, la trayectoria, va en el tono más apagado: importa, pero no es
+   por lo que alguien reserva. */
+.quien-que {
+  margin: 0;
+  font-size: var(--t-entrada);
+  line-height: 1.55;
+  color: var(--tx);
+  max-width: 40ch;
+  text-wrap: pretty;
+  margin-top: clamp(10px, 1.6vw, 18px);
 }
-.quien-bio p {
+.quien-como {
   margin: 0;
   font-size: var(--t-cuerpo);
-  line-height: 1.65;
+  line-height: 1.62;
   color: var(--tx-2);
+  max-width: 44ch;
+  text-wrap: pretty;
+}
+.quien-camino {
+  margin: 0;
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  color: var(--tx-3);
+  max-width: 46ch;
   text-wrap: pretty;
 }
 
-/* Las chapas de las seis disciplinas, en tono oscuro. */
-.quien-chips {
-  margin-top: clamp(10px, 1.8vw, 20px);
-  /* La cinta se sale por los dos lados a propósito —está pasando— pero no
-     puede nacer pegada al canto de la pantalla: se desangra hacia fuera del
-     relleno de la columna y vuelve a entrar. */
-  margin-left: calc(clamp(16px, 4vw, 64px) * -1);
-  margin-right: calc(clamp(16px, 4vw, 64px) * -1);
-  padding-left: clamp(16px, 4vw, 64px);
+/* El botón y su precio. Aquí abajo y no arriba: la persona acaba de leer quién
+   es y qué hace, y ése es el primer momento del día en que pedirle algo no es
+   pedírselo a un desconocido. */
+.quien-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: clamp(12px, 2vw, 22px);
 }
-.quien-chips .chip {
-  border-color: rgba(251, 246, 238, 0.2);
-  color: var(--tx-2);
-}
+
+/* Aquí vivían la bio en dos párrafos y la cinta de seis disciplinas girando en
+   bucle. Los dos se han ido: la bio la resume ahora `.quien-camino` en tres
+   líneas, y la cinta era movimiento que no significaba nada. */
 
 /* ==================================================================
    EL CARTEL DE LAS COOKIES

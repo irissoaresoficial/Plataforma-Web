@@ -66,6 +66,27 @@ export const COPY = {
     q_p1: 'Con tu nombre y tu fecha de nacimiento —y las de tu familia, si las sabes— se dibuja el mapa de lo que se ha repetido en tu línea: quién cargó con qué, en qué generación empezó y por dónde te llegó a ti.',
     q_p2: 'No adivina el futuro. Mira hacia atrás para entender lo que ya te está pasando. La cuenta se hace delante de ti, con números, y la puedes rehacer tú.',
     w_lab: 'Quién soy', w_h: 'Soy Iris. Te ayudo a liberarte de los patrones que no te pertenecen.', w_h2: 'Y a devolverlos a su origen.',
+    /*
+     * EL SALUDO, EN CUANTO TERMINA EL ÁRBOL.
+     *
+     * «Hola. Soy Iris» y no «Iris Soares · numeróloga transgeneracional». Lo
+     * segundo es una tarjeta de visita; lo primero es alguien hablando. En una
+     * web que se vende sobre la confianza en UNA persona, la diferencia entre
+     * las dos cosas es toda la venta.
+     *
+     * Y el oficio va pegado al nombre, en la misma frase, porque «numeróloga
+     * transgeneracional» es una palabra que casi nadie ha oído: si no se dice
+     * aquí, en la línea donde la persona ya está mirando, no se dice.
+     *
+     * Después, tres párrafos y ni uno más: QUÉ mira, CÓMO lo hace y DE DÓNDE
+     * viene. Ese es el orden en el que se pregunta uno las cosas cuando está
+     * decidiendo si le paga a alguien.
+     */
+    w_hola: 'Hola. Soy Iris,',
+    w_oficio: 'numeróloga transgeneracional.',
+    w_que: 'Miro lo que en tu familia se repite y nadie sabe explicar por qué. No lo interpreto ni lo adivino: lo cuento con números, y te lo enseño hecho.',
+    w_como: 'Se hace con tu nombre y tu fecha de nacimiento, y con las de quien esté en tu línea si las sabes. De ahí sale el mapa de lo que ha ido bajando. Nos vemos online, con tu historia ya dibujada delante, y sales con ella en la mano.',
+    w_camino: 'Vengo del mundo corporativo, de años mirando patrones donde nadie miraba. En 2010 junté la numerología con la psicosomática clínica, las constelaciones y las terapias integrativas. Desde entonces hago esto y solo esto, en español, portugués e inglés.',
     w_p1: 'Pasé años observando patrones en el mundo corporativo y descifrando qué sucede cuando nadie mira.',
     w_p2: 'En 2010 uní lo mejor de la numerología, la psicosomática clínica, las constelaciones y las terapias integrativas para crear un método práctico y profundo. El objetivo de mi consulta es solo uno: que salgas sabiendo quién eres y qué decisión tomar hoy.',
     w1: 'Derecho', w2: 'Psicología', w3: 'Psicosomática', w4: 'Descodificación', w5: 'Numerología', w6: 'Transgeneracional',
@@ -161,6 +182,11 @@ export const COPY = {
     q_p1: 'Com o teu nome e a tua data de nascimento —e as da tua família, se as souberes— desenha-se o mapa do que se repetiu na tua linha: quem carregou com quê, em que geração começou e por onde chegou até ti.',
     q_p2: 'Não adivinha o futuro. Olha para trás para entender o que já te está a acontecer. A conta faz-se à tua frente, com números, e podes refazê-la tu.',
     w_lab: 'Quem sou', w_h: 'Sou a Iris. Ajudo-te a libertares-te dos padrões que não te pertencem.', w_h2: 'E a devolvê-los à sua origem.',
+    w_hola: 'Olá. Sou a Iris,',
+    w_oficio: 'numeróloga transgeracional.',
+    w_que: 'Olho para o que na tua família se repete e ninguém sabe explicar porquê. Não o interpreto nem o adivinho: conto-o com números, e mostro-to feito.',
+    w_como: 'Faz-se com o teu nome e a tua data de nascimento, e com as de quem estiver na tua linha se as souberes. Daí sai o mapa do que foi descendo. Vemo-nos online, com a tua história já desenhada à frente, e sais com ela na mão.',
+    w_camino: 'Venho do mundo corporativo, de anos a olhar para padrões onde ninguém olhava. Em 2010 juntei a numerologia com a psicossomática clínica, as constelações e as terapias integrativas. Desde então faço isto e só isto, em espanhol, português e inglês.',
     w_p1: 'Passei anos a observar padrões no mundo corporativo e a decifrar o que acontece quando ninguém olha.',
     w_p2: 'Em 2010 uni o melhor da numerologia, da psicossomática clínica, das constelações e das terapias integrativas para criar um método prático e profundo. O objetivo da minha consulta é só um: que saias a saber quem és e que decisão tomar hoje.',
     w1: 'Direito', w2: 'Psicologia', w3: 'Psicossomática', w4: 'Descodificação', w5: 'Numerologia', w6: 'Transgeracional',
@@ -247,6 +273,11 @@ export const COPY = {
     q_p1: 'From your name and date of birth \u2014and your family\u2019s, if you know them\u2014 we draw the map of what has repeated down your line: who carried what, which generation it started in, and how it reached you.',
     q_p2: 'It does not predict the future. It looks back to explain what is already happening to you. The arithmetic is done in front of you, and you can redo it yourself.',
     w_lab: 'Who I am', w_h: 'I am Iris. I help you free yourself from patterns that are not yours.', w_h2: 'And return them to where they came from.',
+    w_hola: 'Hello. I am Iris,',
+    w_oficio: 'a transgenerational numerologist.',
+    w_que: 'I look at what repeats in your family and nobody can explain why. I do not interpret it and I do not guess it: I work it out with numbers, and I show you the workings.',
+    w_como: 'It is done from your name and your date of birth, and from those of anyone in your line if you know them. Out of that comes the map of what has been coming down. We meet online with your story already drawn out in front of you, and you leave with it in your hands.',
+    w_camino: 'I come from the corporate world, from years spent watching patterns where nobody was looking. In 2010 I brought numerology together with clinical psychosomatics, constellations and integrative therapies. Since then this is all I do, in Spanish, Portuguese and English.',
     w_p1: 'I spent years observing patterns in the corporate world and working out what happens when nobody is looking.',
     w_p2: 'In 2010 I brought together the best of numerology, clinical psychosomatics, constellations and integrative therapies to build a method that is practical and deep. My consultation has one single aim: that you leave knowing who you are and what to decide today.',
     w1: 'Law', w2: 'Psychology', w3: 'Psychosomatics', w4: 'Decoding', w5: 'Numerology', w6: 'Transgenerational',
