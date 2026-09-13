@@ -1615,6 +1615,63 @@ body[data-nav-claro='si'] .sello-color {
 .menu-lista li:last-child {
   border-bottom: 1px solid var(--linea);
 }
+
+/*
+ * LA MEMBRESÍA, DESTACADA.
+ * ---------------------------------------------------------------------------
+ * Es el lanzamiento, y un lanzamiento que se lee igual que «Inicio» no es un
+ * lanzamiento. Pero destacar no es gritar: aquí no hay fondo de color ni caja
+ * ni una chapa roja. Hay tres cosas y ninguna hace ruido —el texto en granate,
+ * un filete dorado al canto y la palabra «Lanzamiento» al final de la línea, en
+ * dorado y del tamaño del texto normal, no de una etiqueta.
+ *
+ * El punto que late al lado es lo único que se mueve en todo el menú, y por eso
+ * se ve: en una lista quieta, una sola cosa que respira se lleva la mirada
+ * entera sin necesidad de ser grande.
+ */
+.menu-destacado {
+  position: relative;
+  padding-left: clamp(14px, 2vw, 22px);
+  margin-left: calc(clamp(14px, 2vw, 22px) * -1);
+}
+.menu-destacado::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  bottom: 1px;
+  width: 2px;
+  background: var(--acento, #c89b4a);
+}
+.menu-destacado a {
+  color: var(--vino, #451a25);
+}
+.menu-marca {
+  order: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--oro-tinta, #7d5f1e);
+  white-space: nowrap;
+}
+.menu-marca::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acento, #c89b4a);
+  animation: menu-late 2.4s ease-in-out infinite;
+}
+@keyframes menu-late {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.55); opacity: 0.45; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-marca::before { animation: none; }
+}
 /* Los 01 / 02 / 03 delante de cada entrada del menú se han quitado: numerar
    cinco enlaces no ayuda a nadie a elegir, y era otro sitio con letra pequeña.
    El elemento se queda vacío para no tocar la rejilla. */
@@ -5161,13 +5218,10 @@ body[data-nav-claro='si'] .sello-color {
        una consulta por la foto. */
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: clamp(48px, 6vw, 100px);
-    /* Y la foto llega al canto de la pantalla: se le quita el margen derecho al
-       marco y se le devuelve al texto por la izquierda, así el texto sigue
-       alineado con el resto de la página y la foto es el borde del bloque en
-       vez de una figura pegada dentro de él. */
-    max-width: none;
-    padding-right: 0;
-    padding-left: max(clamp(16px, 4vw, 56px), calc((100vw - 1320px) / 2 + clamp(16px, 4vw, 56px)));
+    /* Aquí la columna derecha se salía hasta el canto de la pantalla. Servía
+       cuando era una foto —una foto cortada por el borde se lee como que sigue
+       fuera— pero ahora es un VÍDEO, y a un vídeo cortado le falta un trozo de
+       imagen. Vuelve dentro del margen. */
   }
 }
 .hola-texto {
@@ -6199,4 +6253,218 @@ body[data-nav-claro='si'] .sello-color {
   .limpio-foto {
     order: 2;
   }
+}
+
+/* ==================================================================
+   EL VÍDEO DE IRIS, DENTRO DE SU BLOQUE
+   ==================================================================
+   Sustituye a la foto quieta. Es la pieza que conecta la página entera: hasta
+   aquí es una web contando un problema; a partir de aquí es una persona
+   explicando cómo lo mira. Nadie reserva una hora con una foto.
+   ================================================================== */
+.hola-video {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==================================================================
+   EL REGALO: LA SINERGIA
+   ==================================================================
+   Granate, y es el único bloque oscuro de todo ese tramo. No es capricho: aquí
+   se ofrece lo único gratis de la página, y tiene que verse que ahí pasa otra
+   cosa sin necesidad de escribir «GRATIS» en ninguna parte.
+
+   Centrado, corto y con un solo dibujo: dos círculos que se cruzan. Es lo que
+   la palabra «sinergia» significa, dibujado, y dentro no hay ningún número —un
+   resultado inventado en una web que vende lecturas de verdad es la peor idea
+   posible.
+   ================================================================== */
+.regalo {
+  position: relative;
+  z-index: 3;
+  background: var(--bg);
+  --relieve: var(--bg);
+  padding: clamp(84px, 11vw, 168px) clamp(16px, 4vw, 56px);
+}
+.regalo-dentro {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(20px, 2.6vw, 30px);
+}
+.regalo-signo {
+  display: block;
+  width: clamp(150px, 20vw, 210px);
+}
+.regalo-signo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.regalo-signo circle {
+  fill: none;
+  stroke: var(--acento, #c89b4a);
+  stroke-width: 1.1;
+  opacity: 0.62;
+}
+.regalo-h {
+  max-width: 16ch;
+}
+.regalo-p {
+  margin: 0;
+  font-size: var(--t-entrada);
+  line-height: 1.6;
+  color: var(--tx-2);
+  max-width: 44ch;
+  text-wrap: pretty;
+}
+
+/* ==================================================================
+   EL CIERRE DE LA PORTADA: UN BOTÓN
+   ==================================================================
+   Aquí había dos fichas con dos precios grandes, un tachado y tres botones.
+   Ahora hay una frase y un botón, y debajo las dos puertas —numerología y
+   Kábala— como enlaces: pesan menos que la acción, que es lo que interesa.
+   ================================================================== */
+.cierre-uno {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(20px, 2.6vw, 32px);
+}
+.cierre-uno-h {
+  max-width: 14ch;
+}
+.cierre-uno-p {
+  margin: 0;
+  font-size: var(--t-entrada);
+  line-height: 1.6;
+  color: var(--tx-2);
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+.cierre-uno-puertas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(16px, 3vw, 40px);
+  margin: clamp(4px, 1vw, 12px) 0 0;
+}
+.cierre-uno-puertas a {
+  font-size: var(--t-cuerpo);
+  font-weight: 500;
+  color: var(--oro-tinta, #7d5f1e);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.35s ease;
+}
+.cierre-uno-puertas a:hover {
+  border-bottom-color: currentColor;
+}
+
+/* ==================================================================
+   LAS CINCO PIEZAS DE LA NUMEROLOGÍA
+   ==================================================================
+   Cinco columnas de texto separadas por una raya de un píxel. Sin caja, sin
+   radio y sin fondo propio: la misma regla que en el resto de la casa desde que
+   se fueron las fichas.
+   ================================================================== */
+.num-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: clamp(26px, 3.5vw, 54px);
+}
+.num-ficha {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: clamp(20px, 2.4vw, 30px);
+  border-top: 1px solid var(--linea);
+}
+/* La etiqueta de arriba dice de dónde sale la pieza —«Tu número», «Tu nombre»,
+   «Los tramos»— y no es un rótulo en versalitas: es una palabra normal, en
+   dorado y del tamaño del texto. */
+.num-etiqueta {
+  font-size: var(--t-cuerpo);
+  font-weight: 500;
+  color: var(--oro-tinta, #7d5f1e);
+}
+.num-tit {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(19px, 1.8vw, 23px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.032em;
+  color: var(--tx);
+}
+.num-txt {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.62;
+  color: var(--tx-2);
+  text-wrap: pretty;
+}
+
+/* El precio, en la página que explica qué se compra. En la serif y grande: es
+   el único sitio de toda la web donde una cifra manda, y ahí una serif hace lo
+   que una sans no puede. */
+.num-precio {
+  margin: clamp(4px, 1vw, 12px) 0;
+  font-size: var(--t-entrada);
+  color: var(--tx-2);
+}
+.num-precio b {
+  font-family: var(--serif);
+  font-variation-settings: var(--display-ejes);
+  font-size: clamp(38px, 4.4vw, 54px);
+  font-weight: var(--peso-fino);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--tx);
+  font-variant-numeric: tabular-nums lining-nums;
+  margin-right: 10px;
+}
+
+/* ==================================================================
+   EL PIE
+   ==================================================================
+   Aquí vive lo que salió del menú: qué es la numerología, qué es la Kábala, la
+   sinergia y el taller gratis. Y es el sitio correcto, no el cajón de sastre —
+   al pie se llega después de haber leído, o sea buscando algo concreto, que es
+   justo cuando «qué es la Kábala» deja de ser ruido y pasa a ser lo que uno
+   quiere leer.
+   ================================================================== */
+.pie-rotulo {
+  font-size: var(--t-cuerpo);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.pie-enlace {
+  display: block;
+  font-size: var(--t-cuerpo);
+  color: var(--tx-2);
+  width: fit-content;
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.pie-enlace:hover {
+  color: var(--tx);
+  border-bottom-color: var(--linea-2, currentColor);
+}
+.pie-boton {
+  background: none;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
 }

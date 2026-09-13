@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 
 /**
  * ============================================================================
@@ -386,17 +386,24 @@ export default function PortadaArbol({ pasos }: { pasos: [PasoPortada, PasoPorta
               {p.nodo}
               {p.texto && (
                 <p className="portada-frase">
+                  {/* EL ESPACIO VA FUERA DEL SPAN, y esto no es un detalle: la
+                      palabra es `inline-block` para poder moverse, y un
+                      inline-block se COME el espacio que tenga dentro al final.
+                      Con el espacio dentro, la frase salía escrita del tirón:
+                      «Noestucarácter.Noesmalasuerte.». Fuera, el navegador lo
+                      trata como el hueco entre dos palabras de siempre y la
+                      línea parte donde tiene que partir. */}
                   {palabras(p.texto).map((w, k) => (
-                    <span key={k} className="pal">
-                      {w}{' '}
-                    </span>
+                    <Fragment key={k}>
+                      <span className="pal">{w}</span>{' '}
+                    </Fragment>
                   ))}
                   {p.fuerte && (
                     <b>
                       {palabras(p.fuerte).map((w, k) => (
-                        <span key={k} className="pal">
-                          {w}{' '}
-                        </span>
+                        <Fragment key={k}>
+                          <span className="pal">{w}</span>{' '}
+                        </Fragment>
                       ))}
                     </b>
                   )}

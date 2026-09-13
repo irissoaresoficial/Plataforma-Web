@@ -19,8 +19,9 @@ import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/C
 import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
 import PortadaArbol from '@/components/PortadaArbol';
+import VideoPresenta from '@/components/VideoPresenta';
 import { useLang } from '@/lib/i18n';
-import { CONTACTO, FOTOS, KABALA, MEMBRESIA, SESION, aniosDeConsulta, eur } from '@/content/site';
+import { CONTACTO, FOTOS, MEMBRESIA } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
 
 const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
@@ -103,20 +104,15 @@ export default function Home() {
    * argumento al aire.
    */
   const abrirConsulta = () => openChat('consulta');
-  const abrirKabala = () => openChat('kabala');
   const [faq, setFaq] = useState(-1);
 
   /* El curso que sale en la ficha de la portada: el primero que tenga fecha de
      verdad. Sin ninguno, la ficha no se dibuja: es preferible un hueco a una
      fecha inventada. */
 
-  /* La oferta de aniversario sólo se enseña si están LOS DOS datos: el precio
-     rebajado y cuántas plazas quedan. Con uno solo saldría un número tachado
-     sin motivo —o un motivo sin número— y las dos mitades son las que hacen
-     que se entienda. Apagando cualquiera de los dos en content/site.ts, la
-     ficha vuelve sola a enseñar el precio normal y nada más. */
-  const ofertaViva = SESION.precioOferta != null && SESION.plazasOferta != null;
-  const anios = aniosDeConsulta();
+  /* Los precios ya no salen en la portada: viven en /numerologia y /kabala,
+     que son las páginas que explican qué se compra, y el chat los dice en su
+     primera respuesta. Aquí no queda ninguna cifra que calcular. */
 
   /* Doce, no cuatro. Quien duda antes de reservar no duda de una cosa: duda de
      si esto es adivinación, de si le van a pedir creer algo, de qué pasa si no
@@ -246,17 +242,25 @@ export default function Home() {
           Ocupaba el sitio más caro de la página —entre el titular y el primer
           bloque de verdad— y no daba ni un motivo para seguir bajando. */}
 
+      {/* ── EL DOLOR ─────────────────────────────────────────
+          Anclado: la sección se queda quieta y cada frase se lee sola. Es el
+          mejor texto que tiene la web y como lista pasaba desapercibido. */}
+      <Anclado rotulo={t.p_lab} lineas={dolor} cierre={t.p_punch} />
+
       {/* ── HOLA, SOY IRIS ────────────────────────────────────
-          En cuanto el árbol termina de crecer, aparece ella.
+          El orden de la página es el de una conversación de verdad: primero el
+          problema —la portada y las cuatro frases del bloque de arriba, donde
+          la persona se reconoce— y SÓLO ENTONCES entra ella.
 
-          Y aparece EN EL MISMO PAPEL que la portada. La versión anterior era
-          una losa granate con el retrato a media pantalla difuminado por un
-          degradado, tres párrafos y una pastilla dorada: la plantilla de
-          cualquier web de coach de 2016. Aquí no hay velo, no hay losa y no hay
-          pastilla — hay papel, una frase grande y una foto con su canto.
+          Al revés no funciona: alguien presentándose antes de que le hayas
+          dicho por qué te interesa es un folleto. Presentándose justo después
+          de «y llevas años jurando que tú no ibas a ser así» es la respuesta a
+          la pregunta que la persona acaba de hacerse.
 
-          Y un párrafo, no tres. Lo que miro, cómo lo hago y desde cuándo, en
-          cuatro líneas. Lo demás ya lo cuenta la página entera. */}
+          Y aquí el nombre gigante en versales que había —«IRIS / SOARES» de
+          setenta píxeles— tampoco está: ocupaba el sitio de un titular y no
+          decía nada. Ese sitio lo ocupa el saludo, que dice quién es Y a qué se
+          dedica en la misma línea. */}
       <div id="hola" className="claro hola">
         <div className="hola-marco">
           <div className="hola-texto">
@@ -287,26 +291,26 @@ export default function Home() {
             </Reveal>
           </div>
 
-          {/* El retrato, con su canto y sin degradados encima. Un velo que
-              disuelve media cara en el fondo no es elegancia: es tapar una foto
-              que no acaba de encajar. Si la foto vale, se enseña entera. */}
-          <Revelado className="hola-foto">
-            <Foto
-              src={FOTOS.hablando}
-              alt="Iris Soares, en su consulta"
-              ratio="4/5"
-              radius="0"
-              sizes="(max-width:900px) 100vw, 42vw"
-              objectPosition="center 18%"
+          {/*
+              Y AQUÍ HABLA ELLA.
+              ----------------------------------------------------------------
+              La foto quieta se cambia por su vídeo. Es la pieza que conecta
+              toda la página: hasta aquí es una web contando un problema; a
+              partir de aquí es una persona explicando cómo lo mira. Nadie
+              reserva una hora con una foto.
+
+              No arranca solo — es Iris hablando, y un vídeo que se pone a
+              hablar solo se cierra — así que hasta que se pulsa es su retrato
+              con el botón encima. */}
+          <Revelado className="hola-video">
+            <VideoPresenta
+              src="/video/iris-presentacion.mp4"
+              cartel="/images/iris-presentacion-cartel.jpg"
+              etiqueta="Iris se presenta"
             />
           </Revelado>
         </div>
       </div>
-
-      {/* ── EL DOLOR ─────────────────────────────────────────
-          Anclado: la sección se queda quieta y cada frase se lee sola. Es el
-          mejor texto que tiene la web y como lista pasaba desapercibido. */}
-      <Anclado rotulo={t.p_lab} lineas={dolor} cierre={t.p_punch} />
 
       {/* ── QUÉ ES ESTO ──────────────────────────────────────
           El bloque que faltaba, y llevaba faltando desde el principio: en toda
@@ -346,24 +350,49 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── TU NÚMERO ────────────────────────────────────────
-          Aquí la web da antes de pedir: la cuenta es de verdad, es la misma
-          que hace Iris, y se ve sin registrarse ni dejar el correo. */}
-      {/* Arena y no blanco. El relieve de esta pieza se hace con luz, no con
-          color: el fondo, las casillas y la tarjeta tienen que ser exactamente
-          del mismo tono para que lo único que las separe sean las sombras. Sobre
-          blanco, la tarjeta beige se leía como un rectángulo gris grande y medio
-          vacío en mitad de la página. */}
-      {/* En granate, no en arena. Es el único bloque de la portada donde la
-          persona HACE algo —escribe su fecha y se lleva su número— y sobre el
-          papel claro se leía como un párrafo más de los de alrededor. El
-          granate lo saca de la página: se ve que ahí pasa otra cosa.
+      {/* ── EL REGALO: LA SINERGIA ───────────────────────────
+          Aquí estaba la calculadora del número personal, en granate, con su
+          formulario de tres casillas y su vídeo al lado. Se va, y no porque
+          estuviera mal: porque en esta página ya había DOS cosas gratis y ése
+          es justo el lío del que se quejaba Gerson — tantos servicios que la
+          gente se pierde.
 
-          Y de paso resuelve el vídeo: un reel con la luz que tiene, recortado
-          sobre papel crema, se veía pegado; sobre el granate se integra. */}
-      <div id="prueba" className="vino banda tn-banda" style={{ scrollMarginTop: 80 }}>
-        <div className="banda-dentro">
-          <TuNumero />
+          Queda una sola, y es la que engancha de verdad. Al leer sobre lo que
+          se repite en una familia, a todo el mundo se le viene alguien a la
+          cabeza. Esto no le pide su fecha: le pide la de ESA persona.
+
+          Sin formulario aquí. Una frase, un botón y dos círculos que se cruzan
+          — que es literalmente lo que la palabra «sinergia» significa y lo que
+          la herramienta hace. La cuenta se hace en su página. */}
+      <div className="vino regalo">
+        <div className="regalo-dentro">
+          <Reveal className="regalo-signo">
+            {/* Dos círculos que se cruzan. No hace falta explicarlo: es lo que
+                la palabra significa, dibujado. Y no hay ningún número inventado
+                dentro — un resultado de mentira en una web que vende lecturas
+                de verdad es la peor idea posible. */}
+            <svg viewBox="0 0 200 120" aria-hidden focusable="false">
+              <circle cx="76" cy="60" r="46" />
+              <circle cx="124" cy="60" r="46" />
+            </svg>
+          </Reveal>
+          <Reveal delay={80} className="titular-seccion regalo-h">
+            {t.sg_h}
+          </Reveal>
+          <Reveal delay={150}>
+            <p className="regalo-p">{t.sg_p}</p>
+          </Reveal>
+          <Reveal delay={220}>
+            <Link
+              href="/sinergia"
+              className="portada-cta portada-cta-oscuro"
+              data-mag
+              data-cur-label={t.sg_cta}
+            >
+              <span>{t.sg_cta}</span>
+              <i aria-hidden>→</i>
+            </Link>
+          </Reveal>
         </div>
       </div>
 
@@ -383,136 +412,52 @@ export default function Home() {
           donde toca: la cuenta se ve en la portada, el temario en la ficha del
           curso y las capas del árbol en la landing de la comunidad. */}
 
-      {/* ── LAS DOS CONSULTAS ────────────────────────────────
-          El bloque que faltaba, y era el más importante que faltaba.
+      {/* ── LA CONSULTA ──────────────────────────────────────
+          UN BOTÓN. NO DOS FICHAS CON PRECIO.
 
-          Esta web contaba muy bien QUÉ pasa en una familia y QUIÉN es Iris, y
-          después no decía en ninguna parte qué se compra ni cuánto cuesta.
-          Había que llegar al chat para enterarse. Una web que esconde el precio
-          no protege la venta: la retrasa hasta que la persona se cansa.
+          Aquí había dos columnas, dos precios grandes, un tachado, un motivo de
+          oferta y tres botones entre las dos. Es una tabla de tarifas puesta en
+          medio de una historia — y le hace a la persona la pregunta equivocada:
+          en vez de «¿quiero esto?», le pregunta «¿cuál de las dos y por cuánto?».
+          Eso es una decisión de compra, y todavía no toca.
 
-          Van las dos juntas y no en dos sitios distintos porque la pregunta
-          real de quien llega no es «¿cuánto cuesta la consulta?», es «¿cuál de
-          las dos es la mía?». Puestas al lado se contesta sola. */}
-      <div id="consultas" className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: PAD, scrollMarginTop: 80 }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,44px)' }}>
-          <Reveal>
-            <Rotulo>La consulta</Rotulo>
+          Lo que toca aquí es una sola cosa: hablar con Iris. El precio lo dice
+          el chat en la primera respuesta, y quien quiera verlo antes lo tiene
+          escrito en las dos páginas que lo explican —numerología y Kábala—,
+          enlazadas desde el pie y desde el propio texto. */}
+      <div id="consultas" className="claro bloque-limpio" style={{ scrollMarginTop: 80 }}>
+        <div className="cierre-uno">
+          <Reveal className="titular-seccion cierre-uno-h">{t.cu_h}</Reveal>
+          <Reveal delay={80}>
+            <p className="cierre-uno-p">{t.cu_p}</p>
           </Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(20px,3vw,48px)', alignItems: 'end' }}>
-            <Reveal delay={60} className="titular-seccion" style={{ maxWidth: '15ch' }}>
-              Contigo y con tu historia delante.
-            </Reveal>
-            <Reveal delay={120}>
-              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '42ch' }}>
-                Online, con tu carta preparada antes de vernos. Sales sabiendo quién eres y qué decisión tomar hoy.
-              </p>
-            </Reveal>
-          </div>
-
-          <div className="consultas-rejilla">
-            {/* ------------------------------------------- LA CONSULTA */}
-            <Reveal delay={100} className="consulta-ficha consulta-ficha-alta">
-              {ofertaViva && (
-                <span className="consulta-chapa">
-                  {SESION.plazasOferta} plazas · {anios} años de consulta
-                </span>
-              )}
-              <h3 className="consulta-nombre">Consulta con Iris</h3>
-              <p className="consulta-que">
-                Numerología transgeneracional. Miramos de dónde viene lo que se repite en tu familia, en qué generación
-                empezó y qué parte te toca soltar a ti.
-              </p>
-              <div className="consulta-precio">
-                {ofertaViva ? (
-                  <>
-                    <b>{eur(SESION.precioOferta)}</b>
-                    <s>{eur(SESION.precio)}</s>
-                  </>
-                ) : (
-                  <b>{eur(SESION.precio)}</b>
-                )}
-              </div>
-              {ofertaViva && (
-                <p className="consulta-motivo">
-                  Precio de aniversario, que cae en día 14. Son {SESION.plazasOferta} plazas, una por cada año de
-                  consulta, y se acaba cuando se llenen.
-                </p>
-              )}
-              <PillCTA onClick={abrirConsulta} variant="cream" label="Reservar mi consulta" curLabel={t.cbook} />
-            </Reveal>
-
-            {/* --------------------------------------- LA DE KÁBALA */}
-            <Reveal delay={170} className="consulta-ficha">
-              {/* Chapa también aquí. Sin ella las dos fichas empezaban a
-                  distinta altura y el conjunto se leía torcido — y además la
-                  vacía parecía la que sobra. Ésta va en tono neutro para que la
-                  de las plazas siga siendo la que llama. */}
-              <span className="consulta-chapa consulta-chapa-neutra">La más profunda</span>
-              <h3 className="consulta-nombre">Consulta de Kábala</h3>
-              <p className="consulta-que">
-                La misma hora, leyendo tu carta con el Árbol de la Vida: los caminos que te tocan, los arcanos que los
-                rigen y las cuentas que traes abiertas. Es la lectura más profunda de las dos.
-              </p>
-              <div className="consulta-precio">
-                <b>{eur(KABALA.precio)}</b>
-              </div>
-              <p className="consulta-motivo">
-                Para quien ya se ha mirado por dentro alguna vez y quiere ir al fondo.{' '}
-                <Link href="#kabala" data-mag>
-                  Qué es la Kábala →
-                </Link>
-              </p>
-              <div className="consulta-kab-acciones">
-                <PillCTA
-                  onClick={abrirKabala}
-                  variant="dark"
-                  /* Sin el precio dentro: ya está en grande dos líneas más
-                     arriba, y repetido aquí hacía un botón de cuarenta
-                     caracteres que se comía la línea entera. */
-                  label="Reservar la de Kábala"
-                  curLabel={t.cbook}
-                />
-                {/* El bloque que explicaba la Kábala ya no está en la portada:
-                    era pantalla y media contando el producto de 333 € a alguien
-                    que aún no ha comprado el de 111 €. Aquí queda el enlace, y
-                    lo pulsa quien lo necesita. */}
-                <Link href="/kabala" data-mag className="hero-enlace">
-                  ¿Qué es la Kábala? →
-                </Link>
-              </div>
-            </Reveal>
-          </div>
+          <Reveal delay={150}>
+            <button
+              type="button"
+              className="portada-cta"
+              onClick={abrirConsulta}
+              data-mag
+              data-cur-label={t.cbook}
+            >
+              <span>{t.hcta}</span>
+              <i aria-hidden>→</i>
+            </button>
+          </Reveal>
+          {/* Y las dos puertas para quien quiera leer antes de hablar. Como
+              enlaces y no como botones: pesan menos que la acción de arriba, que
+              es la que interesa. */}
+          <Reveal delay={220}>
+            <p className="cierre-uno-puertas">
+              <Link href="/numerologia" data-mag>
+                {t.cu_num}
+              </Link>
+              <Link href="/kabala" data-mag>
+                {t.cu_kab}
+              </Link>
+            </p>
+          </Reveal>
         </div>
       </div>
-
-      {/* AQUÍ ESTABAN LOS TESTIMONIOS, EL LANZAMIENTO DE LA COMUNIDAD Y LOS
-          CURSOS. Los tres se han quitado de la portada, y por el mismo motivo:
-          este tramo es el más caro de toda la página —la persona acaba de leer
-          el precio— y los tres le daban algo que hacer que no es reservar.
-
-          · Testimonios: eran seis de muestra, cada uno con la palabra
-            «Ejemplo» encima, bajo el titular «Esto no lo digo yo.» Es decir,
-            la sección de confianza diciendo que todavía no ha hablado nadie.
-            Vuelven, y vuelven justo aquí, el día que haya tres comentarios de
-            verdad del Instagram de Iris.
-          · La comunidad: media pantalla para apuntarse a algo que no existe.
-            Y peor: le da a quien estaba a punto de reservar una forma gratis de
-            sentir que ya ha hecho algo. Está en el pie y su página sigue en pie.
-          · Los cursos: son ocasionales y por definición no son el negocio. Su
-            botón era una salida de la portada. También al pie. */}
-
-      {/* EL BLOQUE ENTERO DE LA KÁBALA ESTABA AQUÍ —titular, árbol dibujado,
-          cuatro fichas y botón— y se ha mudado a /kabala con todo dentro.
-
-          Era pantalla y media explicando el producto de 333 € a alguien que
-          todavía no ha decidido si compra el de 111 €. Información correcta en
-          el momento equivocado, que es exactamente de lo que se quejaba Gerson:
-          «hay tantos servicios que la gente se pierde».
-
-          No se pierde nada: en el bloque de las consultas hay un enlace, en el
-          pie otro, y los susurros siguen explicando el árbol, los veintidós
-          senderos y el Tikun por el margen mientras se navega. */}
 
       {/* ── DUDAS ────────────────────────────────────────────── */}
       <div id="dudas" className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD }}>
@@ -598,49 +543,56 @@ export default function Home() {
               <Marca tam={68} apilado />
               <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'var(--tx-3)', maxWidth: '28ch' }}>{t.ft_p}</p>
             </div>
+            {/*
+                LOS LINKS DE INTERÉS.
+                ----------------------------------------------------------------
+                El menú de arriba se ha quedado en tres —Inicio, Talleres y la
+                membresía— porque cinco puertas no son cinco opciones, son cinco
+                motivos para no elegir ninguna.
+
+                Pero nada se pierde: todo lo que salió del menú vive aquí. Y es
+                el sitio correcto, no el cajón de sastre — al pie se llega
+                después de haber leído, o sea buscando algo concreto, que es
+                justo cuando «qué es la Kábala» deja de ser ruido y pasa a ser
+                lo que uno quiere leer. */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_start}</span>
+              <span className="pie-rotulo">{t.ft_start}</span>
               {/* Un <button>, no un <div>. Era un `div` con `onClick`: no lo
                   alcanzaba el tabulador, no lo activaba Intro y un lector de
                   pantalla lo leía como texto suelto — o sea, la primera línea
                   de «Empieza por aquí» no existía para quien no usa ratón. Y es
                   la que abre la reserva. */}
-              <button
-                type="button"
-                onClick={abrirConsulta}
-                data-mag
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  font: 'inherit',
-                  textAlign: 'left',
-                  fontSize: 15,
-                  color: 'var(--tx-2)',
-                  cursor: 'pointer',
-                }}
-              >
+              <button type="button" onClick={abrirConsulta} data-mag className="pie-enlace pie-boton">
                 {t.ft_1}
               </button>
-              <Link href="/sinergia" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
+              <Link href="/numerologia" data-mag className="pie-enlace">
+                Qué es la numerología transgeneracional
+              </Link>
+              <Link href="/kabala" data-mag className="pie-enlace">
+                Qué es la Kábala
+              </Link>
+              <Link href="/sinergia" data-mag className="pie-enlace">
                 {t.ft_2}
               </Link>
-              <Link href="/cursos" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
+              <Link href="/taller" data-mag className="pie-enlace">
+                Taller gratis
+              </Link>
+              <Link href="/cursos" data-mag className="pie-enlace">
                 {t.ft_3}
               </Link>
-              <Link href="/membresia" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
+              <Link href="/membresia" data-mag className="pie-enlace">
                 {t.ft_4}
               </Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_legal}</span>
-              <Link href="/legal" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
+              <span className="pie-rotulo">{t.ft_legal}</span>
+              <Link href="/legal" data-mag className="pie-enlace">
                 {t.ft_l1}
               </Link>
-              <Link href="/privacidad" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
+              <Link href="/privacidad" data-mag className="pie-enlace">
                 {t.ft_l2}
               </Link>
-              <a href={`mailto:${CONTACTO.email}`} data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
+              <a href={`mailto:${CONTACTO.email}`} data-mag className="pie-enlace">
                 {t.ft_l3}
               </a>
             </div>

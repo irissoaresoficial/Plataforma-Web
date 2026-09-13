@@ -61,9 +61,34 @@ export const COPY = {
      * duda número uno de quien llega de un anuncio, y contestarla aquí es lo
      * que permite que el resto de la página se lea sin sospecha.
      */
-    q_h: 'Esto se llama numerología transgeneracional.',
-    q_p1: 'Con tu nombre y tu fecha de nacimiento —y las de tu familia, si las sabes— se dibuja el mapa de lo que se ha repetido en tu línea. Un hijo que no se reconoció, alguien que estuvo preso, una muerte de la que no se volvió a hablar: cosas que pasaron de verdad y que nadie cerró.',
-    q_p2: 'No adivina el futuro. Mira hacia atrás para entender lo que ya te está pasando. La cuenta se hace delante de ti, con números, y la puedes rehacer tú.',
+    q_h: 'Se llama numerología transgeneracional.',
+    q_p1: 'Tu nombre y tu fecha guardan lo que ha ido pasando en tu familia. Puestos en números, el patrón se ve: qué se repite, en qué generación empezó y por dónde te llegó a ti.',
+    q_p2: 'No adivina el futuro. Explica el presente. Y la cuenta se hace delante de ti.',
+    /*
+     * EL REGALO.
+     *
+     * No se llama «regalo» en ninguna parte, y es a propósito: la palabra pone
+     * a la persona en guardia —lo gratis siempre cuesta algo— y encima no dice
+     * qué es. El gancho es otro y es el natural: quien acaba de leer sobre lo
+     * que se repite en una familia ya tiene a alguien en la cabeza. No hay que
+     * convencerle de nada, sólo nombrarlo.
+     */
+    sg_h: 'Se te ha venido alguien a la cabeza.',
+    sg_p: 'Tu fecha y la suya. Sale qué hay entre vosotros dos y por qué os pasa lo que os pasa. Sin dejar el correo.',
+    sg_cta: 'Verlo ahora',
+    /*
+     * EL CIERRE DE LA PORTADA: UN BOTÓN.
+     *
+     * Aquí había dos fichas con dos precios grandes, un tachado y tres botones.
+     * Una tabla de tarifas en medio de una historia le hace a la persona la
+     * pregunta equivocada: en vez de «¿quiero esto?», «¿cuál de las dos y por
+     * cuánto?». El precio vive en las dos páginas que explican qué se compra, y
+     * el chat lo dice en su primera respuesta.
+     */
+    cu_h: 'Vamos a mirar la tuya.',
+    cu_p: 'Online, con tu historia ya preparada antes de vernos. Sales sabiendo de dónde viene lo que se repite y qué decisión te toca tomar.',
+    cu_num: 'Qué es la numerología transgeneracional →',
+    cu_kab: 'Qué es la Kábala →',
     w_lab: 'Quién soy', w_h: 'Soy Iris. Te ayudo a liberarte de los patrones que no te pertenecen.', w_h2: 'Y a devolverlos a su origen.',
     /*
      * EL SALUDO, EN CUANTO TERMINA EL ÁRBOL.
@@ -177,7 +202,14 @@ export const COPY = {
     b_p1: 'Em toda a família há algo de que não se falou: um amante que nunca se reconheceu, uma doença psiquiátrica, alguém que esteve preso. Ninguém conta, e mesmo assim passa de geração em geração.',
     b_p2: 'Com o teu nome e a tua data vê-se em que geração começou, como chegou até ti e que parte te toca largar.',
     q_h: 'Isto chama-se numerologia transgeracional.',
-    q_p1: 'Com o teu nome e a tua data de nascimento —e as da tua família, se as souberes— desenha-se o mapa do que se repetiu na tua linha. Um filho que não foi reconhecido, alguém que esteve preso, uma morte de que não se voltou a falar: coisas que aconteceram e que ninguém fechou.',
+    q_p1: 'O teu nome e a tua data guardam o que foi acontecendo na tua família. Postos em números, o padrão vê-se: o que se repete, em que geração começou e por onde chegou até ti.',
+    sg_h: 'Veio-te alguém à cabeça.',
+    sg_p: 'A tua data e a dela. Sai o que há entre vocês os dois e porque vos acontece o que vos acontece. Sem deixar o email.',
+    sg_cta: 'Ver agora',
+    cu_h: 'Vamos olhar para a tua.',
+    cu_p: 'Online, com a tua história já preparada antes de nos vermos. Sais a saber de onde vem o que se repete e que decisão te toca tomar.',
+    cu_num: 'O que é a numerologia transgeracional →',
+    cu_kab: 'O que é a Kábala →',
     q_p2: 'Não adivinha o futuro. Olha para trás para entender o que já te está a acontecer. A conta faz-se à tua frente, com números, e podes refazê-la tu.',
     w_lab: 'Quem sou', w_h: 'Sou a Iris. Ajudo-te a libertares-te dos padrões que não te pertencem.', w_h2: 'E a devolvê-los à sua origem.',
     w_hola: 'Olá. Sou a Iris,',
@@ -265,7 +297,14 @@ export const COPY = {
     b_p1: 'Every family has something nobody talked about: a lover who was never acknowledged, a psychiatric illness, someone who was in prison. No one tells it, and it gets passed down all the same.',
     b_p2: 'With your name and your date you can see which generation it started in, how it reached you, and what is yours to put down.',
     q_h: 'This is called transgenerational numerology.',
-    q_p1: 'From your name and date of birth \u2014and your family\u2019s, if you know them\u2014 we draw the map of what has repeated down your line: who carried what, which generation it started in, and how it reached you.',
+    q_p1: 'Your name and your date hold what has been happening in your family. Put into numbers, the pattern shows: what repeats, which generation it started in, and how it reached you.',
+    sg_h: 'Somebody just came to mind.',
+    sg_p: 'Your date and theirs. It shows what is between the two of you and why the same thing keeps happening. No email needed.',
+    sg_cta: 'See it now',
+    cu_h: 'Let us look at yours.',
+    cu_p: 'Online, with your story prepared before we meet. You leave knowing where the repetition comes from and what decision is yours to make.',
+    cu_num: 'What transgenerational numerology is →',
+    cu_kab: 'What Kabbalah is →',
     q_p2: 'It does not predict the future. It looks back to explain what is already happening to you. The arithmetic is done in front of you, and you can redo it yourself.',
     w_lab: 'Who I am', w_h: 'I am Iris. I help you free yourself from patterns that are not yours.', w_h2: 'And return them to where they came from.',
     w_hola: 'Hello. I am Iris,',

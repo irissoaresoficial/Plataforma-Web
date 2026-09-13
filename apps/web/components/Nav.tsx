@@ -20,7 +20,13 @@ import { CONTACTO } from '@/content/site';
  * forma según el ancho, y no hay que decidir qué cabe.
  */
 
-type Enlace = { href: string; label: string; onClick?: () => void };
+type Enlace = {
+  href: string;
+  label: string;
+  onClick?: () => void;
+  /** Si viene, la entrada se pinta destacada y esto es lo que dice su marca. */
+  destacado?: string;
+};
 
 const IDIOMAS: { id: Lang; nombre: string }[] = [
   { id: 'es', nombre: 'Español' },
@@ -97,34 +103,30 @@ export default function Nav({
     };
   }, [abierto, cerrarCapa]);
 
-  const fijos: Enlace[] = [
-    /* CINCO, NO OCHO. «Prueba gratis» sale del menú: ya está en la portada y en
-       el pie, y aquí era la tercera forma de irse antes de haber visto nada.
-       En su lugar entra la Kábala, que es lo que la gente pregunta y no tenía
-       dónde leerse. */
-    { href: '/', label: 'Inicio' },
-    { href: '/kabala', label: 'Qué es la Kábala' },
-    { href: '/taller', label: 'Taller gratis' },
-    { href: '/cursos', label: 'Cursos y talleres' },
-    { href: '/membresia', label: 'La comunidad' },
-  ];
   /*
-   * LA LISTA GRANDE SON CUATRO. SIEMPRE CUATRO.
+   * TRES. NADA MÁS.
    *
-   * Antes se le pegaban delante los enlaces sueltos de cada página —«Cómo
-   * funciona», «Dudas»— y el menú salía con seis, numerados del 01 al 06. Con
-   * seis pasan dos cosas: el número deja de ayudar (nadie cuenta hasta seis en
-   * un menú) y, sobre todo, los cuatro sitios a los que se puede IR quedan
-   * mezclados con dos saltos dentro de la página en la que ya estás. No es lo
-   * mismo «llévame a los cursos» que «bájame a las dudas», y una lista que los
-   * pone al mismo nivel obliga a leerlos todos para distinguirlos.
+   * Había cinco —Inicio, Qué es la Kábala, Taller gratis, Cursos y talleres, La
+   * comunidad— y era otra vez el problema de siempre: tantas puertas que nadie
+   * sabe por cuál entrar. Cinco enlaces en un menú no son cinco opciones, son
+   * cinco motivos para no elegir ninguna.
    *
-   * Ahora arriba van los cuatro destinos y nada más. Los de la página bajan al
-   * pie del menú, con su rótulo, donde se entiende de un vistazo que son otra
-   * cosa. Y el tope no depende de que nadie se pase: la lista grande es
-   * `fijos`, así que aunque una página mande cinco enlaces sueltos, arriba
-   * siguen saliendo cuatro.
+   * Quedan los tres sitios a los que de verdad se quiere llevar a alguien. Todo
+   * lo demás —qué es la numerología, qué es la Kábala, la sinergia, el taller
+   * gratis— sigue existiendo y sigue enlazado, pero desde el pie, que es donde
+   * va lo que se busca cuando ya te interesa.
+   *
+   * Y la membresía va DESTACADA, con su marca al lado: es el lanzamiento, y un
+   * lanzamiento que se lee igual que «Inicio» no es un lanzamiento.
    */
+  const fijos: Enlace[] = [
+    { href: '/', label: 'Inicio' },
+    { href: '/cursos', label: 'Talleres' },
+    { href: '/membresia', label: 'La membresía', destacado: 'Lanzamiento' },
+  ];
+  /* Los enlaces sueltos de cada página —«Dudas», «La consulta»— NO se cuelan
+     en la lista grande: bajan al pie del menú, donde se entiende que son otra
+     cosa. No es lo mismo «llévame a los talleres» que «bájame a las dudas». */
   const enlaces = fijos;
 
   /*
@@ -219,8 +221,13 @@ export default function Nav({
         <nav ref={cajaRef} className="menu-caja" onClick={(e) => e.stopPropagation()}>
           <ul className="menu-lista">
             {enlaces.map((l, i) => (
-              <li key={l.href + l.label} style={{ transitionDelay: `${abierto ? 90 + i * 55 : 0}ms` }}>
+              <li
+                key={l.href + l.label}
+                className={l.destacado ? 'menu-destacado' : undefined}
+                style={{ transitionDelay: `${abierto ? 90 + i * 55 : 0}ms` }}
+              >
                 <span className="menu-num">{String(i + 1).padStart(2, '0')}</span>
+                {l.destacado && <span className="menu-marca">{l.destacado}</span>}
                 {l.href.startsWith('#') ? (
                   <a
                     href={l.href}
