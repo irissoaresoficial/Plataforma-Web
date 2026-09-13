@@ -81,19 +81,32 @@ export default function Susurros() {
   const [frase, setFrase] = useState<{ i: number; yendose: boolean } | null>(null);
 
   /**
-   * SI NO ESTÁ EL BOTÓN, NO HAY PENSAMIENTO.
+   * DOS CONDICIONES, Y LAS DOS SE LEEN DEL `<html>`.
    *
-   * El ChatWidget publica en el `<html>` si su botón se ve o no —lo esconde
-   * mientras la portada ocupa la pantalla, y mientras el chat está abierto—.
-   * Se lee de ahí en vez de levantar un contexto: son dos componentes que no se
-   * conocen y que viven en páginas distintas.
+   * SI NO ESTÁ EL BOTÓN, NO HAY PENSAMIENTO. El ChatWidget publica si su botón
+   * se ve o no —el chat abierto lo tapa—. Un pensamiento sin cabeza de la que
+   * salir es un cartel.
+   *
+   * Y EN LA PORTADA, CALLADOS. La portada es un dibujo a pantalla completa con
+   * tres frases encima; una caja gris de cuatro renglones hablando de la Kábala
+   * ahí en medio es lo único que sobra en toda la pantalla, y encima llega
+   * antes de que la persona sepa de qué va esto. El componente de la portada
+   * publica si está a la vista; en cuanto se sale, los susurros empiezan.
+   *
+   * Se lee del `<html>` en vez de levantar un contexto: son tres componentes
+   * que no se conocen y que viven en páginas distintas.
    */
-  const [hayBoton, setHayBoton] = useState(false);
+  const [puede, setPuede] = useState(false);
   useEffect(() => {
-    const mira = () => setHayBoton(document.documentElement.dataset.iris === 'si');
+    const raiz = document.documentElement;
+    const mira = () => setPuede(raiz.dataset.iris === 'si' && raiz.dataset.portada !== 'si');
     mira();
     window.addEventListener('iris:boton', mira);
-    return () => window.removeEventListener('iris:boton', mira);
+    window.addEventListener('iris:portada', mira);
+    return () => {
+      window.removeEventListener('iris:boton', mira);
+      window.removeEventListener('iris:portada', mira);
+    };
   }, []);
 
   useEffect(() => {
@@ -101,7 +114,7 @@ export default function Susurros() {
        contenido, ni mientras no haya botón del que salir. Las comprobaciones van
        aquí y no en el CSS porque así ni se monta el temporizador. */
     if (typeof window === 'undefined') return;
-    if (!hayBoton) return;
+    if (!puede) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!window.matchMedia('(min-width: 1180px)').matches) return;
 
@@ -132,7 +145,7 @@ export default function Susurros() {
       relojes.forEach(clearTimeout);
       setFrase(null);
     };
-  }, [hayBoton]);
+  }, [puede]);
 
   if (!frase) return null;
   const f = FRASES[frase.i];

@@ -134,7 +134,9 @@ export default function TuNumero() {
   return (
     <div className="tn">
       <div className="tn-lado">
-        <span className="rotulo">Empieza por aquí · gratis</span>
+        {/* «EMPIEZA POR AQUÍ · GRATIS» en versalitas se ha quitado, como todos
+            los rótulos pequeños de la web. Que es gratis lo dice la nota de
+            debajo del botón, que es donde de verdad hace falta leerlo. */}
         {/*
             EL TITULAR PROMETE LO QUE HACE EL FORMULARIO QUE TIENE DEBAJO.
 
@@ -156,7 +158,7 @@ export default function TuNumero() {
             «tocó» — como si fuera suerte. Es justo lo contrario de lo que se
             está contando. */}
         <h2 className="tn-titulo">
-          Antes de cambiar nada, <em>hay que saber qué traes</em>.
+          Antes de cambiar nada, hay que saber qué traes.
         </h2>
         <p className="tn-texto">
           Pon tu fecha de nacimiento y lo ves ahora mismo. Es la <strong>misma cuenta</strong> que hago yo con

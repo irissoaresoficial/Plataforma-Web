@@ -4,26 +4,44 @@ import { useEffect, useRef } from 'react';
 
 /**
  * ============================================================================
- * LA PORTADA: EL ÁRBOL CRECE CUANDO TÚ BAJAS
+ * LA PORTADA: EL ÁRBOL, A PANTALLA COMPLETA, CRECIENDO CUANDO TÚ BAJAS
  * ============================================================================
  *
- * Quien entra no ve una web con un vídeo puesto de fondo. Ve un dibujo a tinta
- * —un árbol de familia— y, en cuanto mueve la rueda del ratón, el dibujo CRECE.
- * Para. Retrocede si sube. El árbol no va a su aire: va al ritmo de la mano de
- * quien está mirando.
+ * El dibujo no está DENTRO de la portada: el dibujo ES la portada. Ocupa la
+ * pantalla entera, de borde a borde, y encima —abajo, a la izquierda— hay tres
+ * líneas de texto y un botón. Nada más.
  *
- * Eso es todo el truco, y es la diferencia entre «una web bonita» y «esta web
- * hace algo». Un vídeo que se reproduce solo es decoración y se ignora en dos
- * segundos. Un vídeo que responde obliga a probarlo, y probarlo es quedarse.
+ * Y no se reproduce solo. Avanza al ritmo de la rueda: bajas y crece, subes y
+ * vuelve atrás, paras y se para. Quien entra tarda dos segundos en darse cuenta
+ * de que el dibujo le hace caso, y ese descubrimiento es lo que le hace seguir
+ * bajando — que es justo lo que esta portada necesita que haga.
  *
  * ---------------------------------------------------------------------------
  * CÓMO FUNCIONA, EN UNA FRASE
  * ---------------------------------------------------------------------------
- * El bloque mide casi tres pantallas de alto. Dentro hay una escena PEGADA
- * (`position: sticky`) que ocupa exactamente una pantalla y se queda quieta
- * mientras las otras dos pasan por debajo. Ese recorrido —cuánto has bajado
- * dentro del bloque, de 0 a 1— se traduce en el segundo del vídeo que toca
- * enseñar. Bajar es adelantar la película a mano.
+ * El bloque mide tres pantallas de alto. Dentro hay una escena PEGADA
+ * (`position: sticky`) que ocupa exactamente una y se queda quieta mientras las
+ * otras dos pasan por debajo. Ese recorrido —cuánto has bajado dentro del
+ * bloque, de 0 a 1— se traduce en el segundo del vídeo que toca enseñar. Bajar
+ * es adelantar la película a mano.
+ *
+ * ---------------------------------------------------------------------------
+ * DOS VÍDEOS, NO UNO
+ * ---------------------------------------------------------------------------
+ * El dibujo es apaisado y un móvil es vertical. Recortar el apaisado para que
+ * llene un móvil se lleva por delante la mitad del árbol — y, sobre todo, la
+ * rama dorada de la derecha, que es la que cuenta la historia.
+ *
+ * Así que hay una versión vertical de verdad: el mismo dibujo entero, a lo
+ * ancho de la pantalla, y el papel de arriba y de abajo ESTIRADO desde las
+ * propias filas del borde del original y desenfocado. Como el papel de ese
+ * dibujo es liso, el estirado se lee como papel y no como un truco — y encima
+ * la sombra que cruza el vídeo cruza también el papel estirado, fotograma a
+ * fotograma, porque sale del mismo sitio.
+ *
+ * Cuál se carga se decide aquí y no con el atributo `media` de `<source>`, que
+ * es de los que unos navegadores respetan y otros no. Cada persona se descarga
+ * uno solo: el que va a ver.
  *
  * ---------------------------------------------------------------------------
  * POR QUÉ EL VÍDEO ESTÁ CODIFICADO APARTE
@@ -33,10 +51,9 @@ import { useEffect, useRef } from 'react';
  * retroceder a la última imagen entera y recomponer desde ahí — y eso, sesenta
  * veces por segundo, son tirones.
  *
- * `arbol-scroll.mp4` está codificado con una imagen entera cada CUATRO
- * fotogramas. Pesa algo más por segundo, pero se puede saltar a cualquier punto
- * sin recomponer nada. Dos megas por diez segundos: menos que una foto de las
- * que ya hay en esta web.
+ * Éstos van con una imagen entera cada CUATRO fotogramas. Pesan algo más por
+ * segundo, pero se puede saltar a cualquier punto sin recomponer nada. Dos
+ * megas el apaisado, uno el vertical.
  *
  * ---------------------------------------------------------------------------
  * EL SUAVIZADO
@@ -44,8 +61,7 @@ import { useEffect, useRef } from 'react';
  * El vídeo no salta al punto exacto donde está la página: se acerca a él un
  * 16 % por fotograma. Sin eso, una rueda de ratón —que no da pasos suaves, da
  * saltos de cien píxeles— hace que el árbol pegue tirones. Con eso, el árbol
- * «persigue» a la mano y el movimiento se lee como un ser vivo y no como una
- * barra de progreso.
+ * «persigue» a la mano y el movimiento se lee como un ser vivo.
  *
  * ---------------------------------------------------------------------------
  * LO QUE NO HACE
@@ -56,25 +72,34 @@ import { useEffect, useRef } from 'react';
  * ve al compartir el enlace y lo que ve quien tiene el móvil en modo ahorro.
  *
  * NO gasta batería fuera de la vista: el bucle solo corre mientras el bloque
- * está en pantalla, y un observador lo apaga en cuanto sale.
+ * está en pantalla.
  *
  * CON `prefers-reduced-motion` se apaga entero: el bloque se queda del alto de
- * su contenido, el vídeo se queda en su cartel, y los tres textos salen
- * apilados a la vez. Quien ha pedido que nada se mueva no tiene que bajar tres
- * pantallas para llegar al botón.
+ * una pantalla, el vídeo en su cartel y los tres textos salen a la vez.
  */
 
 /**
  * Dónde entra cada texto, en tanto por uno del recorrido.
  *
  * El primero está desde el segundo cero: hay que poder leer de qué va esto sin
- * haber tocado nada. Los otros dos llegan cuando el árbol ya ha crecido lo
- * bastante como para que se note que crece.
+ * haber tocado nada, y es lo que sale en el primer fotograma cuando se comparte
+ * el enlace.
  */
-const CORTES = [0.32, 0.62] as const;
+const CORTES = [0.34, 0.64] as const;
 
 /** Cuánto se acerca el vídeo a su destino en cada fotograma. */
 const PERSIGUE = 0.16;
+
+/**
+ * Por debajo de esta proporción de pantalla se sirve el vídeo vertical.
+ *
+ * 5:4 no es un número redondo elegido a ojo: el árbol ocupa el 70 % central del
+ * fotograma apaisado, y 1,25 dividido entre 1,778 da exactamente 0,703. O sea
+ * que en una pantalla de 5:4 el recorte de `cover` llega justo al borde del
+ * dibujo. Un pelo más estrecha y empezaría a comerse ramas — y la primera en
+ * caer sería la dorada, que está a la derecha.
+ */
+const ES_VERTICAL = '(max-aspect-ratio: 5/4)';
 
 export default function PortadaArbol({
   pasos,
@@ -92,13 +117,68 @@ export default function PortadaArbol({
     const v = vid.current;
     if (!c || !e || !v) return;
 
-    /* Nada de estado de React aquí dentro: el bucle escribe directamente en el
-       DOM. Sesenta re-renders por segundo para cambiar una opacidad es el
-       camino más corto a que una web se sienta pesada en un móvil. */
+    /* Qué vídeo toca. El webm solo hace falta para Firefox en Linux, que muchas
+       veces viene sin los códecs de pago; el resto del mundo se lleva el mp4,
+       que además busca fotograma por hardware. */
+    const puedeMp4 = v.canPlayType('video/mp4; codecs="avc1.42E01E"') !== '';
+    const forma = window.matchMedia(ES_VERTICAL);
+
+    const pon = (vertical: boolean) => {
+      const cual = vertical ? 'arbol-vertical' : 'arbol-scroll';
+      const nueva = `/video/${cual}.${puedeMp4 ? 'mp4' : 'webm'}`;
+      if (v.src.endsWith(nueva)) return;
+      /* Al girar el móvil se cambia de vídeo, y hay que devolverlo al mismo
+         punto: si no, el árbol vuelve a estar pelado con la página a media
+         altura. Los dos duran lo mismo, así que basta con el segundo. */
+      const donde = v.currentTime;
+      v.poster = vertical ? '/images/arbol-vertical-cartel.jpg' : '/images/arbol-scroll-cartel.jpg';
+      v.src = nueva;
+      c.classList.toggle('portada-vertical', vertical);
+      if (donde > 0) v.addEventListener('loadedmetadata', () => { v.currentTime = donde; }, { once: true });
+    };
+    pon(forma.matches);
+    const alGirar = (ev: MediaQueryListEvent) => pon(ev.matches);
+    forma.addEventListener('change', alGirar);
+
+    /*
+     * MIENTRAS LA PORTADA ESTÁ EN PANTALLA, LA PÁGINA SE APARTA.
+     *
+     * Este atributo lo lee el CSS y lo leen los susurros, y hace dos cosas:
+     *
+     *   · LA BARRA SE VUELVE TRANSPARENTE. Con el vídeo ocupando la pantalla
+     *     entera, la barra esmerilada blanca es una tira que corta el dibujo
+     *     por arriba. Aquí no estorba a nadie: en la portada no hay texto
+     *     arriba, y la marca y el botón se leen igual sobre el papel.
+     *   · LOS SUSURROS SE CALLAN. Son las burbujas que salen del chat contando
+     *     cosas de la Kábala. En medio de una portada de tres frases, una caja
+     *     gris con cuatro renglones es lo único que sobra en la pantalla.
+     *
+     * Se borra al desmontar para que ninguna otra página herede una barra
+     * invisible ni un chat mudo.
+     */
+    const raiz = document.documentElement;
+    const enPortada = (si: boolean) => {
+      const v = si ? 'si' : 'no';
+      if (raiz.dataset.portada !== v) {
+        raiz.dataset.portada = v;
+        window.dispatchEvent(new Event('iris:portada'));
+      }
+    };
+    enPortada(true);
+
+    /* Nada de estado de React en el bucle: escribe directamente en el DOM.
+       Sesenta re-renders por segundo para cambiar una opacidad es el camino más
+       corto a que una web se sienta pesada en un móvil. */
+    const limpia = () => {
+      forma.removeEventListener('change', alGirar);
+      delete raiz.dataset.portada;
+      window.dispatchEvent(new Event('iris:portada'));
+    };
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       c.classList.add('portada-quieta');
       e.dataset.paso = 'todos';
-      return;
+      return limpia;
     }
 
     /*
@@ -108,8 +188,7 @@ export default function PortadaArbol({
      * reproducido al menos una vez: se queda en el cartel y el árbol no crece
      * por mucho que bajes. Se arranca y se para en el mismo suspiro —sin
      * sonido, así que el sistema lo permite— y a partir de ahí los saltos de
-     * tiempo sí se dibujan. Si el navegador lo rechaza, no pasa nada: el
-     * `catch` se lo traga y en escritorio nunca hizo falta.
+     * tiempo sí se dibujan.
      */
     v.play().then(() => v.pause()).catch(() => {});
 
@@ -118,26 +197,21 @@ export default function PortadaArbol({
      *
      * El vídeo tiene una sombra que lo recorre: el papel empieza en un crema
      * claro (#ebe9e5) y a mitad de la animación baja hasta un gris (#c8c4bd).
-     * Cuarenta puntos de diferencia. Con un color de fondo fijo, no hay
-     * difuminado de bordes que valga: se ve el rectángulo del vídeo como un
-     * parche sucio sobre la página, y se ve MÁS cuanto más oscurece.
+     * Cuarenta puntos de diferencia. Con un color de fondo fijo se ve el
+     * rectángulo del vídeo como un parche sucio en cuanto la pantalla no tiene
+     * la proporción exacta del vídeo.
      *
      * Así que el fondo no es fijo. Cada tres fotogramas se dibuja el vídeo en
      * un lienzo de ocho por ocho —cuesta lo que no está escrito—, se promedia
      * el ANILLO DE FUERA (que siempre es papel, nunca tinta) y ese color pasa a
-     * ser el fondo del bloque. El rectángulo desaparece porque deja de existir:
-     * la página y el dibujo son el mismo papel, y la sombra que cruza el vídeo
-     * cruza también la pantalla.
-     *
-     * Si el navegador marcase el lienzo como contaminado —no debería, el vídeo
-     * sale del mismo dominio— se apaga y se queda el color de reserva del CSS.
+     * ser el fondo del bloque: la página y el dibujo son el mismo papel, y la
+     * sombra que cruza el vídeo cruza también la pantalla.
      */
     const lienzo = document.createElement('canvas');
     lienzo.width = 8;
     lienzo.height = 8;
     const pincel = lienzo.getContext('2d', { willReadFrequently: true });
     let mide = pincel !== null;
-    let cuenta = 0;
 
     const tomaLaLuz = () => {
       if (!mide || !pincel || v.readyState < 2) return;
@@ -167,6 +241,7 @@ export default function PortadaArbol({
     let suave = 0;
     let id = 0;
     let vivo = false;
+    let cuenta = 0;
 
     const pinta = () => {
       const r = c.getBoundingClientRect();
@@ -198,6 +273,7 @@ export default function PortadaArbol({
 
     const ojo = new IntersectionObserver(
       ([x]) => {
+        enPortada(x.isIntersecting);
         if (x.isIntersecting && !vivo) {
           vivo = true;
           id = requestAnimationFrame(pinta);
@@ -213,37 +289,37 @@ export default function PortadaArbol({
     return () => {
       ojo.disconnect();
       cancelAnimationFrame(id);
+      limpia();
     };
   }, []);
 
   return (
     <div ref={caja} className="portada">
       <div ref={escena} className="portada-escena" data-paso="0">
-        <div className="portada-marco">
-          <video
-            ref={vid}
-            className="portada-video"
-            poster="/images/arbol-scroll-cartel.jpg"
-            muted
-            playsInline
-            preload="auto"
-            disablePictureInPicture
-            aria-hidden
-            tabIndex={-1}
-          >
-            {/* El mp4 primero: es el único que entiende el iPhone, y en el
-                resto el salto de fotograma va por hardware. El webm queda
-                detrás para Firefox en Linux, que muchas veces viene sin los
-                códecs de pago instalados — y sin él ese navegador se queda con
-                el cartel y el árbol no crece nunca. */}
-            <source src="/video/arbol-scroll.mp4" type="video/mp4" />
-            <source src="/video/arbol-scroll.webm" type="video/webm" />
-          </video>
-        </div>
+        {/* Sin `src` en el servidor: lo pone el efecto según la forma de la
+            pantalla, para que nadie se descargue el vídeo que no va a ver.
+            Hasta entonces manda el cartel. */}
+        <video
+          ref={vid}
+          className="portada-video"
+          poster="/images/arbol-scroll-cartel.jpg"
+          muted
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+          aria-hidden
+          tabIndex={-1}
+        />
+
+        {/* Un velo de papel que sube desde abajo. El dibujo es tinta finísima
+            sobre crema y el texto va encima: sin esto, una rama cruzando una
+            letra la parte por la mitad. Es un degradado del propio color del
+            papel —el que el bucle acaba de medir— así que no se ve como un
+            filtro puesto encima: se ve como que ahí abajo hay más luz. */}
+        <span className="portada-velo" aria-hidden />
 
         {/* Los tres textos ocupan la MISMA casilla de una rejilla, así que se
-            cruzan en el sitio en vez de empujarse. Y la caja mide siempre lo
-            que el más alto de los tres: nada da un salto al cambiar. */}
+            cruzan en el sitio en vez de empujarse. */}
         <div className="portada-textos">
           {pasos.map((p, i) => (
             <div key={i} className="portada-paso" data-i={i}>

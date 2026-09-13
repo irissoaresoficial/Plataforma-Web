@@ -127,9 +127,63 @@ export default function Nav({
    */
   const enlaces = fijos;
 
+  /*
+   * ============================================================================
+   * LA BARRA SE APARTA CUANDO BAJAS Y VUELVE CUANDO SUBES
+   * ============================================================================
+   *
+   * Una barra fija se come cincuenta píxeles del alto de la pantalla en todo
+   * momento — y en un móvil eso es el 6 % de lo que se ve. Mientras bajas, esos
+   * cincuenta píxeles no te sirven de nada: estás leyendo, no navegando. En
+   * cuanto subes, sí: subir es el gesto de «quiero volver a algo», y ahí la
+   * barra tiene que estar antes de que la busques.
+   *
+   * Tres reglas para que no dé tirones:
+   *
+   *   1. ARRIBA DEL TODO, SIEMPRE VISIBLE. Por debajo de la altura de la propia
+   *      barra no tiene sentido esconderla.
+   *   2. UN MÍNIMO DE MOVIMIENTO ANTES DE HACER CASO. Sin él, el rebote elástico
+   *      del iPhone y cualquier temblor del dedo la hacen parpadear.
+   *   3. CON EL MENÚ ABIERTO NO SE MUEVE. La barra lleva dentro el botón que lo
+   *      cierra; esconderla con el menú abierto deja a la persona sin la salida.
+   *
+   * Y el trabajo se hace una vez por fotograma, no una vez por evento de scroll:
+   * el evento puede dispararse cien veces entre dos pinturas de pantalla.
+   */
+  const [oculta, setOculta] = useState(false);
+  useEffect(() => {
+    if (abierto) {
+      setOculta(false);
+      return;
+    }
+    /** Cuánto hay que moverse para que cuente. */
+    const UMBRAL = 8;
+    /** Por debajo de aquí la barra no se esconde nunca. */
+    const ZONA_ALTA = 90;
+
+    let anterior = window.scrollY;
+    let pedido = false;
+
+    const mide = () => {
+      pedido = false;
+      const y = window.scrollY;
+      const d = y - anterior;
+      if (Math.abs(d) < UMBRAL) return;
+      anterior = y;
+      setOculta(y > ZONA_ALTA && d > 0);
+    };
+    const alBajar = () => {
+      if (pedido) return;
+      pedido = true;
+      requestAnimationFrame(mide);
+    };
+    window.addEventListener('scroll', alBajar, { passive: true });
+    return () => window.removeEventListener('scroll', alBajar);
+  }, [abierto]);
+
   return (
     <>
-      <header className="barra">
+      <header className={`barra${oculta ? ' barra-fuera' : ''}`}>
         <Link href="/" className="barra-marca" onClick={() => setAbierto(false)}>
           <Marca tam={28} />
         </Link>

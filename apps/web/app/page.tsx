@@ -190,16 +190,20 @@ export default function Home() {
                 {t.h1baja}
               </span>
             </>,
-            <p className="portada-p portada-p-fuerte">{t.h1p1}</p>,
             <>
-              <p className="portada-p portada-p-fuerte">{t.h1p2}</p>
-              <p className="portada-p">{t.h1p3}</p>
+              <p className="portada-frase">{t.h1p1}</p>
+              <p className="portada-apunte">{t.h1p1b}</p>
+            </>,
+            <>
+              <p className="portada-frase">
+                {t.h1p2} <b>{t.h1p2b}</b>
+              </p>
               <div className="portada-cierre">
                 <PillCTA onClick={abrirConsulta} variant="cream" label={t.hcta} curLabel={t.cbook} />
                 <p className="hero-micro">
                   {ofertaViva
-                    ? `${eur(SESION.precioOferta!)} las ${SESION.plazasOferta} primeras · después, ${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`
-                    : `${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`}
+                    ? `${eur(SESION.precioOferta!)} las ${SESION.plazasOferta} primeras · después, ${eur(SESION.precio!)}`
+                    : `${eur(SESION.precio!)}`}
                 </p>
               </div>
             </>,
@@ -210,6 +214,49 @@ export default function Home() {
       {/* LA MARQUESINA DE DOCE NÚMEROS ESTABA AQUÍ, y se ha quitado.
           Ocupaba el sitio más caro de la página —entre el titular y el primer
           bloque de verdad— y no daba ni un motivo para seguir bajando. */}
+
+      {/* ── EL DOLOR ─────────────────────────────────────────
+          Anclado: la sección se queda quieta y cada frase se lee sola. Es el
+          mejor texto que tiene la web y como lista pasaba desapercibido. */}
+      <Anclado rotulo={t.p_lab} lineas={dolor} cierre={t.p_punch} />
+
+      {/* ── QUÉ ES ESTO ──────────────────────────────────────
+          El bloque que faltaba, y llevaba faltando desde el principio: en toda
+          la web no había una sola frase que dijera QUÉ ES la numerología
+          transgeneracional. Se hablaba de lo que hace —«de dónde viene lo que
+          se repite»— pero nunca de qué es, con lo cual quien llegaba sin saberlo
+          seguía sin saberlo después de bajar la página entera.
+
+          Va aquí, justo detrás del dolor, porque ése es el orden de una
+          conversación: primero «a ver si te suena» y después «esto tiene
+          nombre». Al revés es un folleto. */}
+      <div className="claro bloque-limpio">
+        <div className="limpio-dentro">
+          <div className="limpio-texto">
+            <Reveal className="titular-seccion limpio-h">{t.q_h}</Reveal>
+            <Reveal delay={80}>
+              <p className="limpio-p">{t.q_p1}</p>
+            </Reveal>
+            <Reveal delay={140}>
+              <p className="limpio-p">{t.q_p2}</p>
+            </Reveal>
+          </div>
+          {/* La foto, sin esquinas redondeadas y sin tarjeta: el radio es lo que
+              convierte una imagen en una ficha, y en esta página ya no hay
+              fichas. Y en vertical, que es como está tomada — recortada a
+              panorámica se quedaba en dos caras y se perdía justo lo que
+              cuenta: la fila repitiéndose hacia el fondo. */}
+          <Reveal delay={180} className="limpio-foto">
+            <Foto
+              src={FOTOS.generaciones}
+              alt="Una fila de hombres de distintas edades, uno detrás de otro, en la misma postura y con las mismas manos sobre la mesa, repitiéndose hacia el fondo"
+              ratio="4/5"
+              radius="0"
+              sizes="(max-width:900px) 100vw, 40vw"
+            />
+          </Reveal>
+        </div>
+      </div>
 
       {/* ── TU NÚMERO ────────────────────────────────────────
           Aquí la web da antes de pedir: la cuenta es de verdad, es la misma
@@ -236,42 +283,6 @@ export default function Home() {
           de una página de venta, y quien está decidiendo si se gasta 111 € no
           necesita descansar: necesita el siguiente motivo. Las buenas —el árbol
           en la pizarra y la cuenta a mano— vuelven donde prueban algo. */}
-
-      {/* ── EL DOLOR ─────────────────────────────────────────
-          Anclado: la sección se queda quieta y cada frase se lee sola. Es el
-          mejor texto que tiene la web y como lista pasaba desapercibido. */}
-      <Anclado rotulo={t.p_lab} lineas={dolor} cierre={t.p_punch} />
-
-      {/* ── POR QUÉ PASA ─────────────────────────────────────── */}
-      <div className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: PAD }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 'clamp(32px,5vw,84px)', alignItems: 'center' }}>
-          <Reveal>
-            <div data-par="-.04">
-              <Foto
-                src={FOTOS.generaciones}
-                alt="Una fila de hombres de distintas edades, uno detrás de otro, en la misma postura y con las mismas manos sobre la mesa, repitiéndose hacia el fondo"
-                ratio="4/5"
-                radius="var(--radio)"
-                sizes="(max-width:900px) 100vw, 42vw"
-              />
-            </div>
-          </Reveal>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(20px,2.4vw,28px)' }}>
-            <Reveal>
-              <Rotulo>{t.b_lab}</Rotulo>
-            </Reveal>
-            <Reveal delay={70} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '14ch' }}>
-              {t.b_h}
-            </Reveal>
-            <Reveal delay={140}>
-              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '40ch' }}>{t.b_p1}</p>
-            </Reveal>
-            <Reveal delay={200}>
-              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.65, color: 'var(--tx)', maxWidth: '40ch', borderLeft: '2px solid #C89B4A', paddingLeft: 20 }}>{t.b_p2}</p>
-            </Reveal>
-          </div>
-        </div>
-      </div>
 
       {/* ── QUIÉN SOY ─────────────────────────────────────────
           EL RETRATO MANDA, Y EL NOMBRE ES LA PIEZA GRÁFICA.
@@ -344,19 +355,14 @@ export default function Home() {
               </div>
             </Reveal>
 
-            {/* Las seis disciplinas. En cinta continua, como estaban: apiladas
-                ocupaban tres renglones y se leían como una lista de la compra. */}
-            <Reveal delay={280}>
-              <div className="cinta-chips quien-chips">
-                <Marquesina segundos={34}>
-                  {chips.map((c) => (
-                    <span key={c} className="chip">
-                      {c}
-                    </span>
-                  ))}
-                </Marquesina>
-              </div>
-            </Reveal>
+            {/* LA CINTA DE SEIS DISCIPLINAS ESTABA AQUÍ —Derecho, Psicología,
+                Psicosomática, Descodificación, Numerología, Transgeneracional—
+                pasando en bucle como el teletipo de un canal de noticias.
+
+                Fuera. Ya lo cuenta el párrafo de arriba con frases enteras, y
+                seis pastillas girando solas debajo de un retrato es movimiento
+                que no significa nada: la clase de adorno que hace que una web
+                parezca de hace diez años. */}
           </div>
         </div>
       </div>
@@ -456,7 +462,10 @@ export default function Home() {
                 <PillCTA
                   onClick={abrirKabala}
                   variant="dark"
-                  label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
+                  /* Sin el precio dentro: ya está en grande dos líneas más
+                     arriba, y repetido aquí hacía un botón de cuarenta
+                     caracteres que se comía la línea entera. */
+                  label="Reservar la de Kábala"
                   curLabel={t.cbook}
                 />
                 {/* El bloque que explicaba la Kábala ya no está en la portada:

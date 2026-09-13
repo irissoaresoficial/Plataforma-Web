@@ -22,26 +22,21 @@ export const COPY = {
     /* La tercera línea en dorado se ha retirado del titular: ese trabajo lo hace
        ahora la rama dorada del árbol, que aparece sin decir nada. */
     /*
-     * TRES TEXTOS PARA TRES MOMENTOS DEL ÁRBOL.
+     * TRES LÍNEAS EN TODA LA PORTADA, Y NO UNA MÁS.
      *
-     * La portada ya no es un párrafo largo debajo de un titular: es una escena
-     * que avanza cuando la persona baja. Así que el texto se parte en tres
-     * pasos, y cada uno tiene que poder leerse de una pasada mientras el árbol
-     * crece — el párrafo de sesenta palabras que había aquí no se lee, se ve
-     * pasar.
+     * Aquí había tres párrafos. Sobre un vídeo a pantalla completa, un párrafo
+     * no se lee: se ve pasar. Así que cada paso es UNA frase, del tamaño de un
+     * titular, y lo que explica queda para el bloque de debajo, que es donde se
+     * lee de verdad.
      *
-     * Y el orden es el de una conversación de verdad: primero le quito la culpa
-     * (h1p1), después le digo por qué le ha llegado a él (h1p2), y solo al
-     * final le digo qué le doy yo a cambio de su dinero (h1p3). Pedir antes de
-     * eso es pedir a un desconocido.
-     *
-     * Los tres ejemplos son los que pidió Gerson, con su cláusula: sin «nadie
-     * tuvo la culpa» el texto acusa a la familia de quien lee, que es justo lo
-     * que aquí no se hace.
+     * El orden es el de una conversación: primero le quito la culpa, después le
+     * digo por qué le ha llegado a él, y solo al final le digo qué le doy yo a
+     * cambio de su dinero. Pedir antes de eso es pedir a un desconocido.
      */
-    h1p1: 'No es tu carácter. No es mala suerte. Es algo que pasó antes de que tú nacieras y en tu casa nunca se habló: un hijo que no se reconoció, alguien que estuvo preso, una muerte que se calló.',
-    h1p2: 'Nadie tuvo la culpa. Pero nadie lo cerró, y una historia que no se cierra sigue bajando hasta que alguien la mira de frente. Te ha tocado a ti.',
-    h1p3: 'En una consulta te digo qué historia es, en qué generación empezó y qué parte te toca soltar a ti.',
+    h1p1: 'No es tu carácter. No es mala suerte. Es una historia que empezó antes de que tú nacieras.',
+    h1p1b: 'Un hijo que no se reconoció. Alguien que estuvo preso. Una muerte de la que no se volvió a hablar.',
+    h1p2: 'Nadie tuvo la culpa. Pero nadie la cerró, y sigue bajando hasta que alguien la mira.',
+    h1p2b: 'Te ha tocado a ti.',
     h1baja: 'Sigue bajando',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
     hcta: 'Reservar mi consulta', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
@@ -56,6 +51,21 @@ export const COPY = {
     b_h: 'No es tu carácter. Es una historia que nadie cerró.',
     b_p1: 'En toda familia hay algo que no se habló: un amante que nunca se reconoció, una enfermedad psiquiátrica, alguien que estuvo preso. Nadie lo cuenta, y aun así pasa de generación en generación.',
     b_p2: 'Con tu nombre y tu fecha se ve en qué generación empezó, cómo llegó hasta ti y qué parte te toca soltar.',
+    /*
+     * QUÉ ES ESTO. El bloque que faltaba en toda la web.
+     *
+     * Se hablaba de lo que hace —«de dónde viene lo que se repite»— pero en
+     * ninguna parte se decía qué ES la numerología transgeneracional. Quien
+     * llegaba sin saberlo bajaba la página entera y seguía sin saberlo.
+     *
+     * Tiene que caber en una respuesta de bar: qué se usa, qué sale y qué NO
+     * es. Ese último tercio no es relleno: «esto no adivina el futuro» es la
+     * duda número uno de quien llega de un anuncio, y contestarla aquí es lo
+     * que permite que el resto de la página se lea sin sospecha.
+     */
+    q_h: 'Esto se llama numerología transgeneracional.',
+    q_p1: 'Con tu nombre y tu fecha de nacimiento —y las de tu familia, si las sabes— se dibuja el mapa de lo que se ha repetido en tu línea: quién cargó con qué, en qué generación empezó y por dónde te llegó a ti.',
+    q_p2: 'No adivina el futuro. Mira hacia atrás para entender lo que ya te está pasando. La cuenta se hace delante de ti, con números, y la puedes rehacer tú.',
     w_lab: 'Quién soy', w_h: 'Soy Iris. Te ayudo a liberarte de los patrones que no te pertenecen.', w_h2: 'Y a devolverlos a su origen.',
     w_p1: 'Pasé años observando patrones en el mundo corporativo y descifrando qué sucede cuando nadie mira.',
     w_p2: 'En 2010 uní lo mejor de la numerología, la psicosomática clínica, las constelaciones y las terapias integrativas para crear un método práctico y profundo. El objetivo de mi consulta es solo uno: que salgas sabiendo quién eres y qué decisión tomar hoy.',
@@ -131,9 +141,10 @@ export const COPY = {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
     h1a: 'O que na tua família nunca se contou,', h1b: 'estás a pagá-lo tu.',
-    h1p1: 'Não é o teu carácter. Não é falta de sorte. É algo que aconteceu antes de tu nasceres e em tua casa nunca se falou: um filho que não foi reconhecido, alguém que esteve preso, uma morte que se calou.',
-    h1p2: 'Ninguém teve culpa. Mas ninguém a fechou, e uma história que não se fecha continua a descer até que alguém a olha de frente. Calhou-te a ti.',
-    h1p3: 'Numa consulta digo-te que história é, em que geração começou e que parte te toca largar a ti.',
+    h1p1: 'Não é o teu carácter. Não é falta de sorte. É uma história que começou antes de tu nasceres.',
+    h1p1b: 'Um filho que não foi reconhecido. Alguém que esteve preso. Uma morte de que não se voltou a falar.',
+    h1p2: 'Ninguém teve culpa. Mas ninguém a fechou, e continua a descer até que alguém a olha.',
+    h1p2b: 'Calhou-te a ti.',
     h1baja: 'Continua a descer',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
     hcta: 'Marcar a minha consulta', hcta2: 'Ver o meu número, grátis', hbadge: 'Online · ES / PT / EN',
@@ -148,6 +159,9 @@ export const COPY = {
     b_h: 'Não é o teu feitio. É uma história que ninguém fechou.',
     b_p1: 'Em toda a família há algo de que não se falou: um amante que nunca se reconheceu, uma doença psiquiátrica, alguém que esteve preso. Ninguém conta, e mesmo assim passa de geração em geração.',
     b_p2: 'Com o teu nome e a tua data vê-se em que geração começou, como chegou até ti e que parte te toca largar.',
+    q_h: 'Isto chama-se numerologia transgeracional.',
+    q_p1: 'Com o teu nome e a tua data de nascimento —e as da tua família, se as souberes— desenha-se o mapa do que se repetiu na tua linha: quem carregou com quê, em que geração começou e por onde chegou até ti.',
+    q_p2: 'Não adivinha o futuro. Olha para trás para entender o que já te está a acontecer. A conta faz-se à tua frente, com números, e podes refazê-la tu.',
     w_lab: 'Quem sou', w_h: 'Sou a Iris. Ajudo-te a libertares-te dos padrões que não te pertencem.', w_h2: 'E a devolvê-los à sua origem.',
     w_p1: 'Passei anos a observar padrões no mundo corporativo e a decifrar o que acontece quando ninguém olha.',
     w_p2: 'Em 2010 uni o melhor da numerologia, da psicossomática clínica, das constelações e das terapias integrativas para criar um método prático e profundo. O objetivo da minha consulta é só um: que saias a saber quem és e que decisão tomar hoje.',
@@ -214,9 +228,10 @@ export const COPY = {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
     h1a: 'What your family never spoke about,', h1b: 'you are the one paying for.',
-    h1p1: 'It is not your character. It is not bad luck. It is something that happened before you were born and was never spoken about at home: a child never acknowledged, someone who went to prison, a death that was hushed.',
-    h1p2: 'Nobody was to blame. But nobody closed it, and a story that stays open keeps coming down until somebody looks at it. It has landed on you.',
-    h1p3: 'In a session I tell you what that story is, which generation it started in, and what part is yours to let go of.',
+    h1p1: 'It is not your character. It is not bad luck. It is a story that started before you were born.',
+    h1p1b: 'A child never acknowledged. Someone who went to prison. A death nobody spoke of again.',
+    h1p2: 'Nobody was to blame. But nobody closed it, and it keeps coming down until somebody looks.',
+    h1p2b: 'It has landed on you.',
     h1baja: 'Keep scrolling',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
     hcta: 'Book my session', hcta2: 'See my number, free', hbadge: 'Online · ES / PT / EN',
@@ -231,6 +246,9 @@ export const COPY = {
     b_h: 'It is not your character. It is a story nobody closed.',
     b_p1: 'Every family has something nobody talked about: a lover who was never acknowledged, a psychiatric illness, someone who was in prison. No one tells it, and it gets passed down all the same.',
     b_p2: 'With your name and your date you can see which generation it started in, how it reached you, and what is yours to put down.',
+    q_h: 'This is called transgenerational numerology.',
+    q_p1: 'From your name and date of birth \u2014and your family\u2019s, if you know them\u2014 we draw the map of what has repeated down your line: who carried what, which generation it started in, and how it reached you.',
+    q_p2: 'It does not predict the future. It looks back to explain what is already happening to you. The arithmetic is done in front of you, and you can redo it yourself.',
     w_lab: 'Who I am', w_h: 'I am Iris. I help you free yourself from patterns that are not yours.', w_h2: 'And return them to where they came from.',
     w_p1: 'I spent years observing patterns in the corporate world and working out what happens when nobody is looking.',
     w_p2: 'In 2010 I brought together the best of numerology, clinical psychosomatics, constellations and integrative therapies to build a method that is practical and deep. My consultation has one single aim: that you leave knowing who you are and what to decide today.',

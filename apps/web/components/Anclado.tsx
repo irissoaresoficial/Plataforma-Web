@@ -58,9 +58,11 @@ export default function Anclado({
     <div className="arena">
       <div className="anclado-fuera" ref={caja} style={{ ['--anclado-n' as string]: lineas.length }}>
         <div className="anclado-dentro">
-          <div className="banda-dentro anclado-caja">
-            <span className="rotulo">{rotulo}</span>
-
+          <section className="banda-dentro anclado-caja" aria-label={rotulo}>
+            {/* El rótulo en versalitas se ha quitado, como en toda la web: no
+                decía nada que la primera frase no dijera ya, y ponía una línea
+                de ruido delante del mejor texto que tiene la página. Se sigue
+                recibiendo porque es el nombre accesible del bloque. */}
             <div className="anclado-frases">
               {lineas.map((linea, i) => (
                 <Frase key={i} texto={linea} i={i} indice={indice} total={lineas.length} quieto={!!quieto} />
@@ -75,7 +77,7 @@ export default function Anclado({
                 <Marca key={i} i={i} indice={indice} quieto={!!quieto} />
             ))}
             </div>
-          </div>
+          </section>
         </div>
       </div>
 

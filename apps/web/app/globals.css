@@ -260,31 +260,44 @@ select {
   font-family: var(--sans);
 }
 
+/*
+ * ============================================================================
+ * LOS TITULARES, EN LA VOZ DE LA PORTADA
+ * ============================================================================
+ *
+ * Aquí había una serif —Fraunces— en peso fino para todos los titulares de la
+ * web. Era elegante y era la voz equivocada: Gerson la vio en la portada y dijo
+ * «invitación de boda». Y tenía razón. Una serif fina de cuarenta píxeles pide
+ * papel caro y sobre —no una web que tiene que convencer a alguien de que se
+ * gaste ciento once euros esta tarde.
+ *
+ * Ahora la portada es un dibujo a tinta a pantalla completa con tres frases en
+ * una sans apretada encima. Si el resto de la página sigue en serif, la web
+ * tiene dos voces y se nota en el primer scroll: la portada moderna y sobria, y
+ * debajo la web de antes. Así que mandan los titulares de la portada, y esta
+ * regla los pone en toda la casa de una vez.
+ *
+ * QUÉ CAMBIA, EN CONCRETO. La familia (sans en vez de serif), el peso (600 en
+ * vez de 300 — una sans fina a este tamaño se lee desvaída, una serif fina no)
+ * y el apretado (−0,038 em en vez de −0,026: una grotesca necesita más).
+ *
+ * Fraunces no se va de la casa: sigue cargada y sigue siendo la letra de las
+ * citas y de los números grandes, donde una serif SÍ hace algo que una sans no
+ * puede. Lo que deja de ser es la voz por defecto.
+ */
 .display,
 .display-sm,
 .titular-portada,
 .titular-seccion,
 .titular-bloque,
 h1,
-h2 {
-  font-family: var(--serif);
-  font-variation-settings: var(--display-ejes);
-  /* Fraunces trae versalitas y números antiguos; en un titular queremos los
-     números de caja alta, alineados con las mayúsculas. */
+h2,
+h3 {
+  font-family: var(--sans);
   font-variant-numeric: lining-nums;
-  /*
-   * Y EL PESO. El navegador pone `bold` a todo <h1> y <h2> por su cuenta, y
-   * Fraunces en 700 es una letra completamente distinta: gruesa, apretada, de
-   * cartel. En las páginas que escriben su titular a mano —sinergia, membresía—
-   * salía así, mientras que en la portada, que usa la clase del sistema, salía
-   * fino. La misma web con dos voces.
-   *
-   * Aquí se pone el peso de la casa para cualquier titular, lo escriba quien lo
-   * escriba. Quien quiera otro lo pide, pero el que no diga nada sale bien.
-   */
-  font-weight: var(--peso-fino);
-  line-height: 1.12;
-  letter-spacing: var(--esp-seccion);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.038em;
 }
 
 /*
@@ -345,7 +358,7 @@ h2 {
    * sensación de que algo está bien hecho.
    */
   --t-portada: clamp(32px, 3.8vw, 54px);
-  --t-seccion: clamp(27px, 3.1vw, 42px);
+  --t-seccion: clamp(29px, 3.5vw, 50px);
   --t-bloque: clamp(20px, 2.1vw, 26px);
   --t-ficha: clamp(17px, 1.7vw, 20px);
 
@@ -383,9 +396,9 @@ h2 {
 }
 .titular-seccion {
   font-size: var(--t-seccion);
-  font-weight: var(--peso-fino);
-  line-height: 1.16;
-  letter-spacing: var(--esp-seccion);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.038em;
   text-wrap: balance;
 }
 .titular-bloque {
@@ -526,21 +539,24 @@ textarea::placeholder {
 /* La clase vieja de titulares, que todavía usan varias páginas. Pasa a la
    escala nueva para que no haya dos maneras de escribir un titular. */
 .display {
-  font-family: var(--serif);
-  font-weight: var(--peso-fino);
-  letter-spacing: var(--esp-seccion);
-  line-height: 1.07;
+  font-family: var(--sans);
+  font-weight: 600;
+  letter-spacing: -0.038em;
+  line-height: 1.04;
 }
 .display em,
 .display i {
   font-style: italic;
 }
 
-/* La misma letra en tamaño de lectura: peso normal y casi sin apretar. */
+/* Tamaño de lectura: aquí sí se queda la serif. A dieciocho píxeles Fraunces
+   no grita, y es lo que separa una entradilla de un párrafo más. */
 .display-sm {
   font-family: var(--serif);
+  font-variation-settings: var(--display-ejes);
   font-weight: 400;
   letter-spacing: -0.005em;
+  line-height: 1.45;
 }
 
 /* ---- piezas compartidas ---- */
@@ -1430,6 +1446,18 @@ body[data-nav-claro='si'] .sello-color {
   background: rgba(255, 255, 255, 0.82);
   border-bottom: 1px solid var(--linea);
   color: var(--tinta);
+  /* Ver el comentario de Nav.tsx: se aparta al bajar y vuelve al subir. Se
+     mueve con `transform` y no con `top`, que es lo que la mantiene en su
+     propia capa y hace que apartarse no repinte la página entera. */
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease,
+    border-color 0.35s ease, backdrop-filter 0.35s ease;
+  will-change: transform;
+}
+.barra-fuera {
+  transform: translateY(-102%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .barra { transition: none; }
 }
 @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
   .barra {
@@ -2123,18 +2151,11 @@ body[data-nav-claro='si'] .sello-color {
 .tn-titulo {
   margin: 0;
   font-size: var(--t-seccion);
-  font-weight: var(--peso-fino);
-  line-height: 1.08;
-  letter-spacing: var(--esp-seccion);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.038em;
   text-wrap: balance;
   max-width: 19ch;
-}
-/* La parte de la pregunta que pincha. En cursiva y en el tono del texto, no en
-   dorado: el dorado ya lo lleva el rótulo de arriba y dos acentos en la misma
-   caja se anulan. */
-.tn-titulo em {
-  font-style: italic;
-  color: var(--tx-2);
 }
 .tn-texto {
   margin: 0;
@@ -4322,48 +4343,47 @@ body[data-nav-claro='si'] .sello-color {
 .consultas-rejilla {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: clamp(18px, 2.4vw, 32px);
+  /* Más aire que antes: sin caja, lo único que separa las dos columnas es el
+     hueco, así que el hueco tiene que hacer ese trabajo. */
+  gap: clamp(28px, 4.5vw, 72px);
   align-items: stretch;
 }
 
+/*
+ * LAS DOS FICHAS DEJAN DE SER FICHAS.
+ *
+ * Tenían caja: fondo propio, borde, esquinas redondeadas y un filete dorado al
+ * canto de la principal. Eso es el lenguaje de una web de 2018 —y, sobre todo,
+ * es incoherente con una portada que es un dibujo a sangre sin un solo marco.
+ *
+ * Ahora son dos columnas separadas por una raya de un píxel y nada más. Lo que
+ * distingue a la principal ya no es un adorno: es que tiene el precio tachado y
+ * el botón en granate. El contenido hace el trabajo que hacía el borde.
+ */
 .consulta-ficha {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 14px;
-  padding: clamp(26px, 3.4vw, 40px);
-  border-radius: var(--radio);
-  border: 1px solid var(--linea);
-  background: var(--superficie);
-}
-/* La principal: el filete dorado al canto y un fondo un punto más cálido. El
-   color marca, no rellena — la misma regla que el resto de la casa. */
-.consulta-ficha-alta {
-  border-color: var(--linea-2);
-  box-shadow: inset 3px 0 0 var(--acento);
+  gap: 16px;
+  padding: clamp(28px, 3.4vw, 44px) 0 0;
+  border-top: 1px solid var(--linea);
 }
 
 .consulta-chapa {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 13px;
-  border-radius: 100px;
-  background: var(--acento-suave, rgba(200, 155, 74, 0.13));
-  color: #8f6b18;
-  font-size: var(--rotulo-tam);
-  font-weight: var(--rotulo-peso);
-  letter-spacing: var(--rotulo-esp);
-  text-transform: uppercase;
+  /* Las chapas en versalitas —«16 PLAZAS · 16 AÑOS DE CONSULTA», «LA MÁS
+     PROFUNDA»— se han quitado con todos los rótulos pequeños de la web. Lo de
+     las plazas no se pierde: sigue escrito con letras, debajo del precio, que
+     es donde importa. */
+  display: none;
 }
 
 .consulta-nombre {
   margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(22px, 2.3vw, 28px);
-  font-weight: var(--peso-fino);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-family: var(--sans);
+  font-size: clamp(21px, 2vw, 26px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.032em;
   color: var(--tx);
 }
 
@@ -5145,44 +5165,54 @@ body[data-nav-claro='si'] .sello-color {
 /* EL NOMBRE. En versal, muy abierto y en la serif: es la pieza gráfica del
    bloque. El espaciado grande es lo que lo convierte en cartel — apretado
    sería un titular más. */
+/*
+ * EL NOMBRE, EN LA VOZ DE LA CASA.
+ *
+ * Era una serif fina en versales muy espaciadas: un cartel de galería. Bonito
+ * y de otra web. En la sans apretada el nombre sigue siendo lo primero que se
+ * ve —que es su trabajo— pero ya no parece que anuncie una exposición.
+ *
+ * 4,6vw y no 6,2: a 6,2 «SOARES» rebasaba su columna en un portátil de 1440 y
+ * la primera línea salía cortada por la izquierda.
+ */
 .quien-nombre {
   display: block;
-  font-family: var(--serif);
-  font-weight: var(--peso-fino);
-  /* 4,6vw y no 6,2: a 6,2 «SOARES» rebasaba su columna en un portátil de 1440
-     y la primera línea salía cortada por la izquierda. */
-  font-size: clamp(34px, 4.6vw, 68px);
-  line-height: 0.98;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: clamp(36px, 5vw, 74px);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
   color: var(--tx);
 }
 .quien-oficio {
-  display: block;
-  font-size: var(--rotulo-tam);
-  font-weight: var(--rotulo-peso);
-  letter-spacing: var(--rotulo-esp);
-  text-transform: uppercase;
-  color: var(--oro-luz, #e2cda2);
-  margin-bottom: clamp(10px, 1.6vw, 20px);
+  /* «QUIÉN SOY · NUMEROLOGÍA TRANSGENERACIONAL» en versalitas doradas. Fuera,
+     como todos los rótulos pequeños: debajo hay una frase que dice quién es
+     mejor que eso, y arriba está su nombre. */
+  display: none;
 }
 
 .quien-frase {
-  font-family: var(--serif);
-  font-weight: var(--peso-fino);
+  font-family: var(--sans);
+  font-weight: 500;
   font-size: clamp(21px, 2.3vw, 30px);
-  line-height: 1.22;
-  letter-spacing: -0.018em;
+  line-height: 1.16;
+  letter-spacing: -0.03em;
   color: var(--tx);
-  max-width: 20ch;
+  max-width: 22ch;
   text-wrap: balance;
+  margin-top: clamp(14px, 2vw, 24px);
 }
+/* «Y a devolverlos a su origen.» Se queda —remata la frase de arriba— pero sin
+   la cursiva serif dorada, que era el gesto más de invitación de boda que tenía
+   la web. Ahora es la misma letra, en el dorado claro y a media fuerza: se lee
+   como la coda de la frase anterior, que es lo que es. */
 .quien-remate {
   margin: 0;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: clamp(16px, 1.6vw, 20px);
-  line-height: 1.4;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(21px, 2.3vw, 30px);
+  line-height: 1.16;
+  letter-spacing: -0.03em;
   color: var(--oro-luz, #e2cda2);
   max-width: 24ch;
 }
@@ -5751,26 +5781,27 @@ body[data-nav-claro='si'] .sello-color {
 }
 
 /* ==================================================================
-   LA PORTADA: EL ÁRBOL CRECE CUANDO TÚ BAJAS
+   LA PORTADA: EL ÁRBOL A PANTALLA COMPLETA
    ==================================================================
    Ver el comentario largo de components/PortadaArbol.tsx. Aquí solo vive la
-   maqueta: un bloque de casi tres pantallas, una escena pegada que ocupa una, y
-   tres textos que se cruzan en la misma casilla mientras el árbol crece.
+   maqueta: tres pantallas de alto, una escena pegada que ocupa una, el vídeo
+   llenándola de borde a borde y tres textos que se cruzan encima, abajo a la
+   izquierda.
+
+   El texto no está centrado, y es a propósito. El dibujo es simétrico y manda
+   desde el centro; el texto es el contrapeso, y para eso tiene que estar en una
+   esquina. Centrado debajo del árbol el conjunto se lee como una lámina con
+   pie de foto — que es exactamente lo que esta portada NO puede parecer.
    ================================================================== */
 
-/* Casi tres pantallas de alto. Las dos de más NO son relleno: son el recorrido,
-   lo que se «gasta» bajando para que el árbol pase de rama pelada a árbol
-   entero. Con menos, el crecimiento se acaba en un golpe de rueda; con más, se
-   hace largo llegar al siguiente bloque. */
+/* Tres pantallas. Las dos de más no son relleno: son el recorrido, lo que se
+   «gasta» bajando para que el árbol pase de rama pelada a árbol entero. */
 .portada {
   position: relative;
-  min-height: 280svh;
-  /* El papel del dibujo, no el blanco de la web — y no un color fijo: el
-     componente lee la luz del vídeo fotograma a fotograma y la escribe en
-     `--portada-fondo`, así que la página se oscurece y se aclara con la sombra
-     que cruza el dibujo. El valor de aquí es el de reserva: el del primer
-     fotograma, para que la página ya esté del color bueno antes de que el
-     vídeo cargue. */
+  min-height: 300svh;
+  /* El fondo lo escribe el componente: lee la luz del vídeo fotograma a
+     fotograma. El valor de aquí es el de reserva, el del primer fotograma,
+     para que la página ya esté del color bueno antes de que el vídeo cargue. */
   background: var(--portada-fondo, #ebe9e5);
   transition: background-color 0.2s linear;
 }
@@ -5779,92 +5810,73 @@ body[data-nav-claro='si'] .sello-color {
   position: sticky;
   top: 0;
   height: 100svh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(12px, 3svh, 32px);
-  /* Arriba, el hueco de la barra de navegación. Abajo, aire para que el botón
-     nunca quede pegado al borde de la pantalla. */
-  padding: clamp(72px, 9svh, 104px) clamp(16px, 4vw, 48px) clamp(22px, 4svh, 46px);
+  overflow: hidden;
+  isolation: isolate;
 }
 
-/* --- el dibujo -----------------------------------------------------------
-   La caja tiene EXACTAMENTE la proporción del vídeo: manda el alto, el ancho
-   sale solo, y así no hay ni bandas negras ni recorte. */
-.portada-marco {
-  aspect-ratio: 16 / 9;
-  height: min(54svh, 470px);
-  width: auto;
-  max-width: 100%;
-  /*
-   * EL DIBUJO ES LO QUE CEDE CUANDO NO CABE.
-   *
-   * En un portátil de 900 px de alto, el vídeo a su tamaño más el texto del
-   * tercer paso —dos párrafos, el botón y el precio— suman más de una pantalla,
-   * y lo que se salía por abajo era justo el precio. Con `flex-shrink` el
-   * dibujo se encoge lo que haga falta y el texto nunca se toca: de las dos
-   * cosas, la que puede perder cien píxeles sin perder nada es el árbol.
-   *
-   * Al encogerse mantiene su proporción, así que sigue sin recortarse ni
-   * dejar bandas.
-   */
-  flex: 0 1 auto;
-  min-height: 0;
-}
+/* --- el dibujo, de borde a borde ----------------------------------------
+   `cover` recorta, y aquí recortar está medido: el árbol ocupa el 70 % central
+   del fotograma, así que en cualquier pantalla más ancha que 5:4 sobra papel
+   por los lados y no se pierde ni una rama. Por debajo de 5:4 el componente
+   sirve el vídeo vertical, que trae su propio papel. */
 .portada-video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  /* Un pelo por encima del centro: deja el tercio de abajo para el texto sin
+     tocar la copa. */
+  object-position: center 42%;
   display: block;
-  /*
-   * LOS BORDES SE DESVANECEN.
-   *
-   * El dibujo tiene que parecer tinta sobre el papel de la página, no un vídeo
-   * dentro de un marco. Sin esto se ve el rectángulo — y se ve el doble cuando
-   * la sombra del propio vídeo oscurece el centro y deja el borde más claro.
-   *
-   * Son dos degradados cruzados en vez de una viñeta redonda: una viñeta se
-   * come las esquinas y aquí las esquinas es donde hay dibujo. Al navegador que
-   * no entienda `mask-composite` le queda la suma de los dos, que difumina
-   * menos pero no rompe nada.
-   */
-  -webkit-mask-image:
-    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
-    linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
-  mask-image:
-    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
-    linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
+}
+.portada-vertical .portada-video {
+  object-position: center 38%;
+}
+
+/* --- el velo -------------------------------------------------------------
+   Sube desde abajo y es del propio color del papel —el que el bucle acaba de
+   medir— así que no se lee como un filtro puesto encima: se lee como que ahí
+   abajo hay más luz. Sin él, una rama cruzando una letra la parte por la
+   mitad. */
+.portada-velo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--portada-fondo, #ebe9e5) 0%,
+    color-mix(in srgb, var(--portada-fondo, #ebe9e5) 88%, transparent) 22%,
+    color-mix(in srgb, var(--portada-fondo, #ebe9e5) 45%, transparent) 42%,
+    transparent 62%
+  );
 }
 
 /* --- los tres textos -----------------------------------------------------
-   Los tres ocupan la MISMA casilla de la rejilla, así que se cruzan en el sitio
-   en vez de empujarse. Y la caja mide siempre lo que el más alto de los tres:
-   el dibujo de arriba no da ningún salto al cambiar de texto. */
+   Abajo a la izquierda, y los tres en la misma casilla de la rejilla: se cruzan
+   en el sitio en vez de empujarse, y la caja mide siempre lo que el más largo,
+   así que nada da un salto al cambiar. */
 .portada-textos {
+  position: absolute;
+  left: clamp(20px, 5.5vw, 96px);
+  right: clamp(20px, 5.5vw, 96px);
+  bottom: clamp(38px, 8svh, 88px);
   display: grid;
-  width: 100%;
-  max-width: 660px;
-  flex: none;
+  max-width: 41rem;
+  z-index: 2;
 }
 .portada-paso {
   grid-area: 1 / 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  /* Arriba y no centrado. La caja mide siempre lo que el texto más largo —el
-     tercero, con su botón y su precio— así que centrando, los dos primeros
-     quedaban flotando a media altura, muy lejos del árbol. Pegados arriba, el
-     texto empieza SIEMPRE a la misma distancia del dibujo y es el tercero el
-     que crece hacia abajo, hacia el hueco que ya estaba reservado. */
-  justify-content: flex-start;
-  text-align: center;
-  gap: clamp(10px, 1.5svh, 16px);
+  align-items: flex-start;
+  /* Abajo: los tres textos comparten la línea de base, no el centro. Es la
+     línea que el ojo usa para saber que sigue en el mismo sitio. */
+  justify-content: flex-end;
+  gap: clamp(14px, 1.8svh, 22px);
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.55s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
   /* El botón del tercer texto no se puede pulsar mientras está invisible. */
   pointer-events: none;
 }
@@ -5878,61 +5890,65 @@ body[data-nav-claro='si'] .sello-color {
 
 /* --- cómo se lee ---------------------------------------------------------
    Sans apretada y no la serif de la casa. Contra un trazo de tinta tan fino,
-   una serif de cincuenta píxeles compite con el dibujo; una sans cerrada se
-   aparta y deja que mande el árbol, que es lo que aquí tiene que mandar. */
+   una serif grande compite con el dibujo; una sans cerrada se aparta y deja que
+   mande el árbol, que es lo que aquí tiene que mandar. */
 .portada-h1 {
   margin: 0;
   font-family: var(--sans);
-  font-size: clamp(28px, 4vw, 50px);
+  font-size: clamp(32px, 4.6vw, 62px);
   font-weight: 600;
-  line-height: 1.04;
-  letter-spacing: -0.04em;
-  max-width: 18ch;
+  line-height: 0.99;
+  letter-spacing: -0.045em;
   text-wrap: balance;
   color: var(--tinta);
 }
 /* La segunda mitad es la que duele, y va en granate. El dorado está reservado
    entero para la rama que nadie terminó. */
-.portada-h1 b {
+.portada-h1 b,
+.portada-frase b {
   font-weight: 600;
   color: var(--vino);
 }
-.portada-p {
+/* Los otros dos pasos: frases sueltas, no párrafos. Grandes, porque son tres
+   líneas en toda la pantalla y pueden permitírselo. */
+.portada-frase {
   margin: 0;
-  font-size: clamp(16px, 1.35vw, 19px);
-  line-height: 1.6;
-  color: var(--tx-2);
-  max-width: 46ch;
-  text-wrap: pretty;
-}
-.portada-p-fuerte {
+  font-family: var(--sans);
+  font-size: clamp(21px, 2.5vw, 34px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.028em;
+  max-width: 22ch;
+  text-wrap: balance;
   color: var(--tinta);
+}
+.portada-apunte {
+  margin: 0;
+  font-size: clamp(14px, 1.1vw, 16px);
+  line-height: 1.5;
+  color: var(--tx-3);
+  max-width: 34ch;
 }
 .portada-cierre {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  margin-top: clamp(4px, 1.2svh, 12px);
+  margin-top: clamp(2px, 1svh, 10px);
 }
 .portada-cierre .hero-micro {
-  text-align: center;
-  /* Que el precio quepa en un renglón. Partido en dos se lee como letra
-     pequeña de contrato, y aquí es justo lo contrario: es la respuesta a la
-     pregunta que se está haciendo la persona en ese momento. */
-  max-width: 68ch;
+  max-width: 46ch;
 }
 
 /* --- «sigue bajando» -----------------------------------------------------
-   Hace falta: sin esto nadie descubre que el árbol responde, y la portada se
-   queda en una foto. Va en minúscula y sin espaciar —no es uno de los rótulos
-   que se quitaron de la web— y la gota dorada que cae por el hilo dice a dónde
-   hay que ir sin tener que explicarlo. */
+   Hace falta: sin esto nadie descubre que el árbol responde y la portada se
+   queda en una foto. En minúscula y sin espaciar —no es uno de los rótulos que
+   se quitaron de la web— y la gota dorada que cae por el hilo dice a dónde hay
+   que ir sin tener que explicarlo. */
 .portada-baja {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-top: clamp(2px, 1.4svh, 14px);
+  gap: 11px;
   font-size: 12.5px;
   font-weight: 500;
   color: var(--tx-3);
@@ -5941,7 +5957,7 @@ body[data-nav-claro='si'] .sello-color {
   position: relative;
   display: block;
   width: 1px;
-  height: 26px;
+  height: 28px;
   background: rgba(34, 29, 31, 0.14);
   overflow: hidden;
 }
@@ -5951,93 +5967,137 @@ body[data-nav-claro='si'] .sello-color {
   top: 0;
   left: 0;
   width: 1px;
-  height: 10px;
+  height: 11px;
   background: var(--oro);
   animation: portada-gota 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 @keyframes portada-gota {
-  0% { transform: translateY(-12px); opacity: 0; }
+  0% { transform: translateY(-13px); opacity: 0; }
   30% { opacity: 1; }
-  100% { transform: translateY(26px); opacity: 0; }
+  100% { transform: translateY(28px); opacity: 0; }
+}
+
+/* --- la barra, mientras la portada está en pantalla ----------------------
+   Con el vídeo ocupando la pantalla entera, una barra esmerilada blanca es una
+   tira que corta el dibujo por arriba. Mientras se está en la portada se vuelve
+   transparente y la marca flota sobre el papel; en cuanto se sale, vuelve. */
+html[data-portada='si'] .barra {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom-color: transparent;
 }
 
 @media (max-width: 760px) {
   .portada {
-    min-height: 250svh;
+    min-height: 280svh;
   }
-  .portada-escena {
-    gap: clamp(14px, 2.6svh, 26px);
-    padding-top: clamp(66px, 9svh, 96px);
-  }
-  /*
-   * EN VERTICAL EL DIBUJO ENTERO SE QUEDA EN UNA TIRA DE DOS DEDOS.
-   *
-   * A 390 px de ancho, el vídeo completo mide 219 px de alto y el árbol sale
-   * de sello. Así que se recorta por los lados —hasta 5:4, que es justo el
-   * borde del dibujo y ni un milímetro más— y el árbol crece un 42 % sin
-   * perder ni una punta ni, sobre todo, la rama dorada de la derecha.
-   */
-  .portada-marco {
-    aspect-ratio: 5 / 4;
-    height: auto;
-    /* De borde a borde de la pantalla, comiéndose el margen de la escena. Si
-       el vídeo no tiene lados, no hay rectángulo que disimular por los lados:
-       solo queda difuminar arriba y abajo. Y de paso el árbol gana los treinta
-       y dos píxeles que se llevaba el margen. */
-    width: calc(100% + 2 * clamp(16px, 4vw, 48px));
-    margin-inline: calc(-1 * clamp(16px, 4vw, 48px));
+  .portada-textos {
+    bottom: clamp(96px, 15svh, 136px); /* por encima de la pastilla del chat */
     max-width: none;
   }
-  .portada-video {
-    object-fit: cover;
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
-    -webkit-mask-composite: source-over;
-    mask-composite: add;
-  }
   .portada-h1 {
-    max-width: 15ch;
+    font-size: clamp(30px, 8.6vw, 40px);
+  }
+  .portada-frase {
+    font-size: clamp(20px, 5.6vw, 26px);
+    max-width: none;
   }
 }
 
 /* --- quieto --------------------------------------------------------------
    Quien ha pedido que nada se mueva no tiene que bajar tres pantallas para
-   llegar al botón: el bloque se queda del alto de su contenido, el vídeo se
-   queda en su cartel y los tres textos salen apilados de una vez. */
+   llegar al botón: una pantalla, el vídeo en su cartel y los tres textos
+   seguidos. */
 .portada-quieta {
-  min-height: 0;
+  min-height: 100svh;
 }
 .portada-quieta .portada-escena {
-  position: static;
-  height: auto;
-  padding-block: clamp(96px, 14vh, 140px) clamp(56px, 8vh, 90px);
-  gap: clamp(20px, 3vh, 34px);
-}
-.portada-quieta .portada-marco {
-  aspect-ratio: 16 / 9;
-  height: auto;
-  width: 100%;
-  max-width: 880px;
+  position: relative;
+  height: 100svh;
 }
 .portada-quieta .portada-textos {
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 3vh, 32px);
+  gap: clamp(14px, 2svh, 22px);
 }
 .portada-quieta .portada-paso {
   opacity: 1;
   transform: none;
   pointer-events: auto;
+  transition: none;
 }
-.portada-quieta .portada-baja {
+.portada-quieta .portada-baja,
+.portada-quieta .portada-paso[data-i='1'] {
   display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Lo mismo, en CSS puro: así no hay ni un parpadeo entre que se pinta la
+  /* Lo mismo en CSS puro, para que no haya ni un parpadeo entre que se pinta la
      página y el componente se entera de que aquí no se mueve nada. */
-  .portada { min-height: 0; }
-  .portada-escena { position: static; height: auto; }
+  .portada { min-height: 100svh; }
   .portada-paso { opacity: 1; transform: none; pointer-events: auto; transition: none; }
   .portada-baja i::after { animation: none; }
+}
+
+/* ==================================================================
+   EL BLOQUE LIMPIO
+   ==================================================================
+   La regla de la casa a partir de la portada nueva: un titular grande en sans
+   apretada, dos párrafos cortos y aire. Sin tarjeta, sin borde dorado, sin
+   rótulo en versalitas, sin rejilla de fichas.
+
+   Los dos párrafos van en dos columnas y no en una sola de sesenta caracteres:
+   así el bloque ocupa a lo ancho lo mismo que el titular y el conjunto se lee
+   como una página compuesta, no como un texto pegado a la izquierda. Por
+   debajo de 820 px se apilan, que es lo único que se puede hacer.
+   ================================================================== */
+.bloque-limpio {
+  position: relative;
+  z-index: 3;
+  background: var(--bg);
+  padding: clamp(84px, 11vw, 168px) clamp(16px, 4vw, 56px);
+}
+.limpio-dentro {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  /* El texto manda y la foto acompaña: 1,15 a 1 y no mitad y mitad. Con las dos
+     columnas iguales, el titular se parte en cinco renglones y la foto pesa
+     tanto como lo que hay que leer. */
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(32px, 5vw, 80px);
+  align-items: center;
+}
+.limpio-texto {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.2vw, 28px);
+}
+.limpio-h {
+  max-width: 14ch;
+}
+.limpio-p {
+  margin: 0;
+  font-size: var(--t-entrada);
+  line-height: 1.62;
+  color: var(--tx-2);
+  max-width: 44ch;
+  text-wrap: pretty;
+}
+/* La foto, sin esquinas redondeadas y sin tarjeta: el radio es lo que convierte
+   una imagen en una ficha, y en esta página ya no hay fichas. */
+.limpio-foto {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .limpio-dentro {
+    grid-template-columns: 1fr;
+  }
+  /* Apilado, primero se lee y después se mira. Una foto a pantalla completa
+     antes del titular es una portada, y ya hay una arriba. */
+  .limpio-foto {
+    order: 2;
+  }
 }
