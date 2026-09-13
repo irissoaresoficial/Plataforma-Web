@@ -5751,189 +5751,293 @@ body[data-nav-claro='si'] .sello-color {
 }
 
 /* ==================================================================
-   EL ÁRBOL DE FAMILIA QUE SE DIBUJA SOLO
+   LA PORTADA: EL ÁRBOL CRECE CUANDO TÚ BAJAS
    ==================================================================
-   Ver el comentario largo de components/ArbolFamilia.tsx. Aquí sólo vive el
-   movimiento: cada rama es un trazo con su turno, y la que nadie terminó llega
-   la última, en dorado y punteada.
-
-   Todo el movimiento se dispara con una clase —`.arbolf-visto`— así que si
-   algo va lento el árbol sale igual, sólo que antes. Nunca se queda a medias.
+   Ver el comentario largo de components/PortadaArbol.tsx. Aquí solo vive la
+   maqueta: un bloque de casi tres pantallas, una escena pegada que ocupa una, y
+   tres textos que se cruzan en la misma casilla mientras el árbol crece.
    ================================================================== */
-.arbolf {
+
+/* Casi tres pantallas de alto. Las dos de más NO son relleno: son el recorrido,
+   lo que se «gasta» bajando para que el árbol pase de rama pelada a árbol
+   entero. Con menos, el crecimiento se acaba en un golpe de rueda; con más, se
+   hace largo llegar al siguiente bloque. */
+.portada {
   position: relative;
-  width: 100%;
-  display: grid;
-  place-items: center;
-}
-.arbolf svg {
-  width: 100%;
-  height: auto;
-  display: block;
-  overflow: visible;
-}
-
-/* --- las ramas -----------------------------------------------------------
-   El truco de siempre: la línea se dibuja entera pero con el trazo desplazado
-   fuera, y se trae a su sitio. `--largo` lo pone el componente rama a rama,
-   porque una raya de 200 px y una de 20 no pueden tardar lo mismo. */
-.arbolf-ramas path {
-  fill: none;
-  stroke: var(--tinta, #221d1f);
-  stroke-linecap: round;
-  stroke-dasharray: var(--largo);
-  stroke-dashoffset: var(--largo);
-  transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 0.9, 0.5, 1) var(--t, 0ms);
-}
-.arbolf-visto .arbolf-ramas path {
-  stroke-dashoffset: 0;
+  min-height: 280svh;
+  /* El papel del dibujo, no el blanco de la web — y no un color fijo: el
+     componente lee la luz del vídeo fotograma a fotograma y la escribe en
+     `--portada-fondo`, así que la página se oscurece y se aclara con la sombra
+     que cruza el dibujo. El valor de aquí es el de reserva: el del primer
+     fotograma, para que la página ya esté del color bueno antes de que el
+     vídeo cargue. */
+  background: var(--portada-fondo, #ebe9e5);
+  transition: background-color 0.2s linear;
 }
 
-/* Los nudos: cada uno es una persona, y por eso están huecos. */
-.arbolf-nodos circle {
-  fill: var(--papel, #fff);
-  stroke: var(--tinta, #221d1f);
-  stroke-width: 1.3;
-  opacity: 0;
-  transform: scale(0.3);
-  transform-box: fill-box;
-  transform-origin: center;
-  transition:
-    opacity 0.4s ease var(--t, 0ms),
-    transform 0.5s cubic-bezier(0.34, 1.5, 0.64, 1) var(--t, 0ms);
-}
-.arbolf-visto .arbolf-nodos circle {
-  opacity: 1;
-  transform: none;
-}
-
-/* --- LA RAMA QUE NADIE TERMINÓ ------------------------------------------
-   Punteada, no discontinua: son puntos sueltos que no llegan a formar una
-   línea. Es una rama que existe y de la que no queda el trazo. */
-.arbolf-rota path {
-  fill: none;
-  stroke: var(--oro, #a9884f);
-  stroke-linecap: round;
-  stroke-dasharray: 0.1 9;
-  opacity: 0;
-  transition: opacity 0.85s ease var(--t, 0ms);
-}
-.arbolf-visto .arbolf-rota path {
-  opacity: 1;
-}
-
-/* El texto entra cuando el árbol va por la mitad. */
-.arbolf-texto {
-  opacity: 0;
-  transform: translateY(10px);
-  transition:
-    opacity 0.9s ease var(--t, 0ms),
-    transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--t, 0ms);
-}
-.arbolf-visto .arbolf-texto {
-  opacity: 1;
-  transform: none;
-}
-
-/* Quieto: el árbol entero desde el primer fotograma, rama dorada incluida. */
-.arbolf-quieto .arbolf-ramas path,
-.arbolf-quieto .arbolf-nodos circle,
-.arbolf-quieto .arbolf-rota path,
-.arbolf-quieto .arbolf-texto {
-  transition-duration: 0s;
-  transition-delay: 0s;
-}
-@media (prefers-reduced-motion: reduce) {
-  .arbolf-ramas path,
-  .arbolf-nodos circle,
-  .arbolf-rota path,
-  .arbolf-texto {
-    transition-duration: 0s;
-    transition-delay: 0s;
-  }
-}
-
-/* ==================================================================
-   LA PORTADA: EL ÁRBOL Y LA FRASE
-   ==================================================================
-   El árbol arriba, la frase debajo. Centrado, y aquí sí toca: el dibujo es
-   simétrico y sale de un tronco en el centro, así que un texto pegado a la
-   izquierda quedaría descolgado de la única forma que hay en pantalla.
-
-   Y el titular baja de la serif a una sans apretada. Contra un trazo tan fino,
-   una serif de sesenta píxeles compite; una sans cerrada se aparta y deja que
-   mande el árbol.
-   ================================================================== */
-.hero-arbol {
-  position: relative;
-  z-index: 3;
-  width: 100%;
-  max-width: 1060px;
-  margin: 0 auto;
-}
-/* El árbol, más ancho que alto y sin pasarse: por encima de 520 px de alto
-   empuja la frase fuera de la primera pantalla en un portátil. */
-.hero-arbol .arbolf svg {
-  /* Manda el ANCHO, no el alto: el árbol tiene que cruzar la pantalla como en
-     el dibujo, no quedarse en una miniatura en el centro. El tope de altura
-     está para que el botón no se caiga del pliegue en un portátil de 900 px
-     —medido— pero con el lienzo a 1,79:1 casi nunca llega a aplicarse. */
-  width: 100%;
-  max-height: min(38vh, 360px);
-}
-.hero-arbol-texto {
+.portada-escena {
+  position: sticky;
+  top: 0;
+  height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  gap: clamp(14px, 1.8vw, 20px);
-  margin-top: clamp(10px, 2vw, 26px);
+  justify-content: center;
+  gap: clamp(12px, 3svh, 32px);
+  /* Arriba, el hueco de la barra de navegación. Abajo, aire para que el botón
+     nunca quede pegado al borde de la pantalla. */
+  padding: clamp(72px, 9svh, 104px) clamp(16px, 4vw, 48px) clamp(22px, 4svh, 46px);
 }
-.hero-arbol-h1 {
+
+/* --- el dibujo -----------------------------------------------------------
+   La caja tiene EXACTAMENTE la proporción del vídeo: manda el alto, el ancho
+   sale solo, y así no hay ni bandas negras ni recorte. */
+.portada-marco {
+  aspect-ratio: 16 / 9;
+  height: min(54svh, 470px);
+  width: auto;
+  max-width: 100%;
+  /*
+   * EL DIBUJO ES LO QUE CEDE CUANDO NO CABE.
+   *
+   * En un portátil de 900 px de alto, el vídeo a su tamaño más el texto del
+   * tercer paso —dos párrafos, el botón y el precio— suman más de una pantalla,
+   * y lo que se salía por abajo era justo el precio. Con `flex-shrink` el
+   * dibujo se encoge lo que haga falta y el texto nunca se toca: de las dos
+   * cosas, la que puede perder cien píxeles sin perder nada es el árbol.
+   *
+   * Al encogerse mantiene su proporción, así que sigue sin recortarse ni
+   * dejar bandas.
+   */
+  flex: 0 1 auto;
+  min-height: 0;
+}
+.portada-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  /*
+   * LOS BORDES SE DESVANECEN.
+   *
+   * El dibujo tiene que parecer tinta sobre el papel de la página, no un vídeo
+   * dentro de un marco. Sin esto se ve el rectángulo — y se ve el doble cuando
+   * la sombra del propio vídeo oscurece el centro y deja el borde más claro.
+   *
+   * Son dos degradados cruzados en vez de una viñeta redonda: una viñeta se
+   * come las esquinas y aquí las esquinas es donde hay dibujo. Al navegador que
+   * no entienda `mask-composite` le queda la suma de los dos, que difumina
+   * menos pero no rompe nada.
+   */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+  mask-image:
+    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* --- los tres textos -----------------------------------------------------
+   Los tres ocupan la MISMA casilla de la rejilla, así que se cruzan en el sitio
+   en vez de empujarse. Y la caja mide siempre lo que el más alto de los tres:
+   el dibujo de arriba no da ningún salto al cambiar de texto. */
+.portada-textos {
+  display: grid;
+  width: 100%;
+  max-width: 660px;
+  flex: none;
+}
+.portada-paso {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Arriba y no centrado. La caja mide siempre lo que el texto más largo —el
+     tercero, con su botón y su precio— así que centrando, los dos primeros
+     quedaban flotando a media altura, muy lejos del árbol. Pegados arriba, el
+     texto empieza SIEMPRE a la misma distancia del dibujo y es el tercero el
+     que crece hacia abajo, hacia el hueco que ya estaba reservado. */
+  justify-content: flex-start;
+  text-align: center;
+  gap: clamp(10px, 1.5svh, 16px);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  /* El botón del tercer texto no se puede pulsar mientras está invisible. */
+  pointer-events: none;
+}
+.portada-escena[data-paso='0'] .portada-paso[data-i='0'],
+.portada-escena[data-paso='1'] .portada-paso[data-i='1'],
+.portada-escena[data-paso='2'] .portada-paso[data-i='2'] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* --- cómo se lee ---------------------------------------------------------
+   Sans apretada y no la serif de la casa. Contra un trazo de tinta tan fino,
+   una serif de cincuenta píxeles compite con el dibujo; una sans cerrada se
+   aparta y deja que mande el árbol, que es lo que aquí tiene que mandar. */
+.portada-h1 {
   margin: 0;
   font-family: var(--sans);
-  font-size: clamp(27px, 3.6vw, 44px);
+  font-size: clamp(28px, 4vw, 50px);
   font-weight: 600;
-  line-height: 1.08;
-  letter-spacing: -0.038em;
-  max-width: 20ch;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  max-width: 18ch;
   text-wrap: balance;
-  color: var(--tx);
+  color: var(--tinta);
 }
-/* La segunda mitad es la que duele. Va en el mismo tamaño y en granate: el
-   dorado se ha reservado entero para la rama que falta. */
-.hero-arbol-h1 b {
+/* La segunda mitad es la que duele, y va en granate. El dorado está reservado
+   entero para la rama que nadie terminó. */
+.portada-h1 b {
   font-weight: 600;
-  color: var(--vino, #451a25);
+  color: var(--vino);
 }
-.hero-arbol-p {
+.portada-p {
   margin: 0;
-  font-size: var(--t-cuerpo);
-  line-height: 1.65;
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.6;
   color: var(--tx-2);
-  max-width: 58ch;
+  max-width: 46ch;
   text-wrap: pretty;
 }
-.hero-arbol-p2 {
-  color: var(--tx);
+.portada-p-fuerte {
+  color: var(--tinta);
 }
-.hero-arbol-cierre {
+.portada-cierre {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 11px;
-  margin-top: clamp(4px, 1vw, 10px);
+  gap: 10px;
+  margin-top: clamp(4px, 1.2svh, 12px);
 }
-.hero-arbol-cierre .hero-micro {
+.portada-cierre .hero-micro {
   text-align: center;
+  /* Que el precio quepa en un renglón. Partido en dos se lee como letra
+     pequeña de contrato, y aquí es justo lo contrario: es la respuesta a la
+     pregunta que se está haciendo la persona en ese momento. */
+  max-width: 68ch;
 }
 
-@media (max-width: 700px) {
-  /* En vertical el abanico se queda muy pequeño si se limita por altura: aquí
-     manda el ancho y el árbol ocupa la pantalla de lado a lado. */
-  .hero-arbol .arbolf svg {
-    max-height: none;
-    width: 100%;
+/* --- «sigue bajando» -----------------------------------------------------
+   Hace falta: sin esto nadie descubre que el árbol responde, y la portada se
+   queda en una foto. Va en minúscula y sin espaciar —no es uno de los rótulos
+   que se quitaron de la web— y la gota dorada que cae por el hilo dice a dónde
+   hay que ir sin tener que explicarlo. */
+.portada-baja {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: clamp(2px, 1.4svh, 14px);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--tx-3);
+}
+.portada-baja i {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 26px;
+  background: rgba(34, 29, 31, 0.14);
+  overflow: hidden;
+}
+.portada-baja i::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 10px;
+  background: var(--oro);
+  animation: portada-gota 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes portada-gota {
+  0% { transform: translateY(-12px); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(26px); opacity: 0; }
+}
+
+@media (max-width: 760px) {
+  .portada {
+    min-height: 250svh;
   }
-  .hero-arbol-h1 { max-width: 17ch; }
+  .portada-escena {
+    gap: clamp(14px, 2.6svh, 26px);
+    padding-top: clamp(66px, 9svh, 96px);
+  }
+  /*
+   * EN VERTICAL EL DIBUJO ENTERO SE QUEDA EN UNA TIRA DE DOS DEDOS.
+   *
+   * A 390 px de ancho, el vídeo completo mide 219 px de alto y el árbol sale
+   * de sello. Así que se recorta por los lados —hasta 5:4, que es justo el
+   * borde del dibujo y ni un milímetro más— y el árbol crece un 42 % sin
+   * perder ni una punta ni, sobre todo, la rama dorada de la derecha.
+   */
+  .portada-marco {
+    aspect-ratio: 5 / 4;
+    height: auto;
+    /* De borde a borde de la pantalla, comiéndose el margen de la escena. Si
+       el vídeo no tiene lados, no hay rectángulo que disimular por los lados:
+       solo queda difuminar arriba y abajo. Y de paso el árbol gana los treinta
+       y dos píxeles que se llevaba el margen. */
+    width: calc(100% + 2 * clamp(16px, 4vw, 48px));
+    margin-inline: calc(-1 * clamp(16px, 4vw, 48px));
+    max-width: none;
+  }
+  .portada-video {
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
+    -webkit-mask-composite: source-over;
+    mask-composite: add;
+  }
+  .portada-h1 {
+    max-width: 15ch;
+  }
+}
+
+/* --- quieto --------------------------------------------------------------
+   Quien ha pedido que nada se mueva no tiene que bajar tres pantallas para
+   llegar al botón: el bloque se queda del alto de su contenido, el vídeo se
+   queda en su cartel y los tres textos salen apilados de una vez. */
+.portada-quieta {
+  min-height: 0;
+}
+.portada-quieta .portada-escena {
+  position: static;
+  height: auto;
+  padding-block: clamp(96px, 14vh, 140px) clamp(56px, 8vh, 90px);
+  gap: clamp(20px, 3vh, 34px);
+}
+.portada-quieta .portada-marco {
+  aspect-ratio: 16 / 9;
+  height: auto;
+  width: 100%;
+  max-width: 880px;
+}
+.portada-quieta .portada-textos {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vh, 32px);
+}
+.portada-quieta .portada-paso {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.portada-quieta .portada-baja {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Lo mismo, en CSS puro: así no hay ni un parpadeo entre que se pinta la
+     página y el componente se entera de que aquí no se mueve nada. */
+  .portada { min-height: 0; }
+  .portada-escena { position: static; height: auto; }
+  .portada-paso { opacity: 1; transform: none; pointer-events: auto; transition: none; }
+  .portada-baja i::after { animation: none; }
 }

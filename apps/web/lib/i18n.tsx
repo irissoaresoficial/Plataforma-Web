@@ -21,11 +21,28 @@ export const COPY = {
     h1a: 'Lo que en tu familia nunca se contó,', h1b: 'lo estás pagando tú.',
     /* La tercera línea en dorado se ha retirado del titular: ese trabajo lo hace
        ahora la rama dorada del árbol, que aparece sin decir nada. */
-    /* La entrada. Los tres ejemplos son los que pidió Gerson, con su cláusula:
-       sin «nadie tuvo la culpa» el titular acusa a la familia de quien lee, que
-       es justo lo que aquí no se hace. */
-    h1p1: 'No es tu carácter, ni mala suerte. Es algo que pasó antes de que tú nacieras y de lo que en tu casa nunca se habló: un amante que no se reconoció, alguien que estuvo preso, una enfermedad que se calló. Nadie tuvo la culpa. Pero nadie lo cerró, y por eso sigue bajando.',
-    h1p2: 'Te ha tocado a ti. En una consulta te enseño qué historia es, en qué generación empezó y qué parte te toca soltar.',
+    /*
+     * TRES TEXTOS PARA TRES MOMENTOS DEL ÁRBOL.
+     *
+     * La portada ya no es un párrafo largo debajo de un titular: es una escena
+     * que avanza cuando la persona baja. Así que el texto se parte en tres
+     * pasos, y cada uno tiene que poder leerse de una pasada mientras el árbol
+     * crece — el párrafo de sesenta palabras que había aquí no se lee, se ve
+     * pasar.
+     *
+     * Y el orden es el de una conversación de verdad: primero le quito la culpa
+     * (h1p1), después le digo por qué le ha llegado a él (h1p2), y solo al
+     * final le digo qué le doy yo a cambio de su dinero (h1p3). Pedir antes de
+     * eso es pedir a un desconocido.
+     *
+     * Los tres ejemplos son los que pidió Gerson, con su cláusula: sin «nadie
+     * tuvo la culpa» el texto acusa a la familia de quien lee, que es justo lo
+     * que aquí no se hace.
+     */
+    h1p1: 'No es tu carácter. No es mala suerte. Es algo que pasó antes de que tú nacieras y en tu casa nunca se habló: un hijo que no se reconoció, alguien que estuvo preso, una muerte que se calló.',
+    h1p2: 'Nadie tuvo la culpa. Pero nadie lo cerró, y una historia que no se cierra sigue bajando hasta que alguien la mira de frente. Te ha tocado a ti.',
+    h1p3: 'En una consulta te digo qué historia es, en qué generación empezó y qué parte te toca soltar a ti.',
+    h1baja: 'Sigue bajando',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
     hcta: 'Reservar mi consulta', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
     s1: 'personas atendidas', s2: 'desde', s3: 'idiomas',
@@ -114,8 +131,10 @@ export const COPY = {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
     h1a: 'O que na tua família nunca se contou,', h1b: 'estás a pagá-lo tu.',
-    h1p1: 'Não é o teu carácter, nem falta de sorte. É algo que aconteceu antes de tu nasceres e de que em tua casa nunca se falou: um amante que não foi reconhecido, alguém que esteve preso, uma doença que se calou. Ninguém teve culpa. Mas ninguém a fechou, e por isso continua a descer.',
-    h1p2: 'Calhou-te a ti. Numa consulta mostro-te que história é, em que geração começou e que parte te toca largar.',
+    h1p1: 'Não é o teu carácter. Não é falta de sorte. É algo que aconteceu antes de tu nasceres e em tua casa nunca se falou: um filho que não foi reconhecido, alguém que esteve preso, uma morte que se calou.',
+    h1p2: 'Ninguém teve culpa. Mas ninguém a fechou, e uma história que não se fecha continua a descer até que alguém a olha de frente. Calhou-te a ti.',
+    h1p3: 'Numa consulta digo-te que história é, em que geração começou e que parte te toca largar a ti.',
+    h1baja: 'Continua a descer',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
     hcta: 'Marcar a minha consulta', hcta2: 'Ver o meu número, grátis', hbadge: 'Online · ES / PT / EN',
     s1: 'pessoas acompanhadas', s2: 'desde', s3: 'idiomas',
@@ -195,8 +214,10 @@ export const COPY = {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
     h1a: 'What your family never spoke about,', h1b: 'you are the one paying for.',
-    h1p1: 'It is not your character, and it is not bad luck. It is something that happened before you were born and was never spoken about at home: a lover never acknowledged, someone who went to prison, an illness that was hushed. Nobody was to blame. But nobody closed it, so it keeps coming down.',
-    h1p2: 'It has landed on you. In a session I show you what that story is, which generation it started in, and what part is yours to let go of.',
+    h1p1: 'It is not your character. It is not bad luck. It is something that happened before you were born and was never spoken about at home: a child never acknowledged, someone who went to prison, a death that was hushed.',
+    h1p2: 'Nobody was to blame. But nobody closed it, and a story that stays open keeps coming down until somebody looks at it. It has landed on you.',
+    h1p3: 'In a session I tell you what that story is, which generation it started in, and what part is yours to let go of.',
+    h1baja: 'Keep scrolling',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
     hcta: 'Book my session', hcta2: 'See my number, free', hbadge: 'Online · ES / PT / EN',
     s1: 'people seen', s2: 'since', s3: 'languages',

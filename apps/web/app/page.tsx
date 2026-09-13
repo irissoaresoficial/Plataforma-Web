@@ -18,7 +18,7 @@ import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
-import ArbolFamilia from '@/components/ArbolFamilia';
+import PortadaArbol from '@/components/PortadaArbol';
 import { useLang } from '@/lib/i18n';
 import { CONTACTO, FOTOS, KABALA, MEMBRESIA, SESION, aniosDeConsulta, eur } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
@@ -157,48 +157,44 @@ export default function Home() {
       />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
-      {/* Manda el retrato, con dos fichas apoyadas en su borde. El bloque ya no
-          pide una pantalla entera de alto: pedirla empujaba los botones por
-          debajo del borde, así que lo primero que veía quien entraba era un
-          titular enorme y ninguna forma de hacer nada con él. */}
-      <div id="top" className="claro hero-lleno">
-        {/* Los números flotando de fondo se han quitado SÓLO de la portada.
-            Contra un dibujo de trazo tan fino no son ambiente: son ruido, y se
-            leen como manchas encima del árbol. Siguen en los demás bloques,
-            donde el fondo es liso y ahí sí hacen su trabajo. */}
-        <div id="glow" style={{ position: 'absolute', width: 900, height: 900, left: 0, top: 0, margin: '-450px 0 0 -450px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(200,163,92,.16),transparent 66%)', pointerEvents: 'none', transition: 'opacity .6s ease' }} />
+      {/*
+          EL ÁRBOL CRECE CUANDO TÚ BAJAS.
+          --------------------------------------------------------------------
+          Aquí ha habido, por este orden: un retrato con dos fichas al lado, un
+          titular grande en serif con una línea en cursiva dorada —«invitación
+          de boda», dijo Gerson, y tenía razón— y un árbol dibujado con SVG que
+          se pintaba solo al entrar.
 
-        {/*
-            EL ÁRBOL SE DIBUJA, Y ENTONCES SE LEE LA FRASE.
-            ------------------------------------------------------------------
-            Aquí había un titular grande en serif con una línea en cursiva
-            dorada, y era exactamente lo que Gerson dijo: invitación de boda. La
-            portada de una web que vende esto no puede parecer un menú de
-            restaurante caro.
+          Ninguno hacía lo que hace éste: RESPONDER. El vídeo del árbol no se
+          reproduce; avanza al ritmo de la rueda del ratón. Bajas y crece, subes
+          y vuelve atrás. Quien entra tarda dos segundos en darse cuenta de que
+          el dibujo le hace caso, y ese descubrimiento es lo que le hace seguir
+          bajando — que es exactamente lo que esta portada necesita que haga.
 
-            Ahora la portada es un árbol de familia dibujándose en tinta fina,
-            generación a generación, y cuando va por la mitad entra la frase.
-            Al final —después de leerla— aparece una rama que no está dibujada:
-            punteada, en dorado, y no llega a ninguna parte.
+          Y mientras crece, el texto va contando: primero de qué va, después por
+          qué le ha llegado a él, y solo al final —cuando el árbol ya está
+          entero y lleno de oro— el precio y el botón.
 
-            Ésa es la historia que nadie contó, y no hace falta explicarla.
-
-            El titular baja de la serif a una sans apretada. Contra un dibujo de
-            trazo tan fino, una serif de sesenta píxeles compite; una sans
-            cerrada se aparta y deja que mande el árbol, que es lo que aquí
-            tiene que mandar. Y el dorado sale UNA sola vez en toda la pantalla:
-            en la rama que falta. */}
-        <div className="hero-arbol">
-          <ArbolFamilia>
-            <div className="hero-arbol-texto">
-              <h1 className="hero-arbol-h1">
+          El detalle está en components/PortadaArbol.tsx. */}
+      <div id="top">
+        <PortadaArbol
+          pasos={[
+            <>
+              <h1 className="portada-h1">
                 {t.h1a}
                 <br />
                 <b>{t.h1b}</b>
               </h1>
-              <p className="hero-arbol-p">{t.h1p1}</p>
-              <p className="hero-arbol-p hero-arbol-p2">{t.h1p2}</p>
-              <div className="hero-arbol-cierre">
+              <span className="portada-baja">
+                <i />
+                {t.h1baja}
+              </span>
+            </>,
+            <p className="portada-p portada-p-fuerte">{t.h1p1}</p>,
+            <>
+              <p className="portada-p portada-p-fuerte">{t.h1p2}</p>
+              <p className="portada-p">{t.h1p3}</p>
+              <div className="portada-cierre">
                 <PillCTA onClick={abrirConsulta} variant="cream" label={t.hcta} curLabel={t.cbook} />
                 <p className="hero-micro">
                   {ofertaViva
@@ -206,9 +202,9 @@ export default function Home() {
                     : `${eur(SESION.precio!)}. Se reserva hablando, en un minuto.`}
                 </p>
               </div>
-            </div>
-          </ArbolFamilia>
-        </div>
+            </>,
+          ]}
+        />
       </div>
 
       {/* LA MARQUESINA DE DOCE NÚMEROS ESTABA AQUÍ, y se ha quitado.
