@@ -180,9 +180,10 @@ function Frase({
       style={{ opacity: opacidadFinal, y: yFinal, willChange: 'transform, opacity' }}
       transition={{ duration: 0.5, ease: CURVA }}
     >
-      <span className="anclado-num" aria-hidden>
-        {String(i + 1).padStart(2, '0')} <span className="anclado-de">/ {String(total).padStart(2, '0')}</span>
-      </span>
+      {/* El «01 / 04» que iba encima de cada frase se ha quitado. Era letra
+          pequeña —y de la peor clase: la que no dice nada—. Por dónde va ya lo
+          cuenta el carril de la izquierda, que se llena solo, y esas frases no
+          son una lista numerada: son cuatro golpes seguidos. */}
       {texto}
     </motion.p>
   );

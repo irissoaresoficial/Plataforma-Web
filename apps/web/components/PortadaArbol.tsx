@@ -101,12 +101,33 @@ const PERSIGUE = 0.16;
  */
 const ES_VERTICAL = '(max-aspect-ratio: 5/4)';
 
-export default function PortadaArbol({
-  pasos,
-}: {
-  /** Los tres textos, en orden. El primero se ve sin bajar. */
-  pasos: [React.ReactNode, React.ReactNode, React.ReactNode];
-}) {
+/**
+ * Un paso de la portada.
+ *
+ * El primero trae `nodo`: es el titular, y sale ENTERO desde el primer
+ * fotograma. Es lo que ve quien comparte el enlace y quien tiene el móvil en
+ * modo ahorro, así que no puede depender de que nadie mueva nada.
+ *
+ * Los otros dos traen `texto` y se escriben palabra a palabra según se baja.
+ */
+export type PasoPortada = {
+  nodo?: React.ReactNode;
+  texto?: string;
+  /** La última frase, en granate. Es la que remata. */
+  fuerte?: string;
+  /** Sólo el último paso: el botón. */
+  accion?: React.ReactNode;
+};
+
+/** Cuánto scroll tarda una frase en escribirse entera. */
+const VENTANA = 0.15;
+
+/** Parte una frase en palabras conservando los espacios entre ellas. */
+function palabras(txt: string) {
+  return txt.split(' ').filter(Boolean);
+}
+
+export default function PortadaArbol({ pasos }: { pasos: [PasoPortada, PasoPortada, PasoPortada] }) {
   const caja = useRef<HTMLDivElement>(null);
   const escena = useRef<HTMLDivElement>(null);
   const vid = useRef<HTMLVideoElement>(null);
@@ -178,6 +199,7 @@ export default function PortadaArbol({
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       c.classList.add('portada-quieta');
       e.dataset.paso = 'todos';
+      e.querySelectorAll('.pal').forEach((w) => w.classList.add('pal-si'));
       return limpia;
     }
 
@@ -238,6 +260,42 @@ export default function PortadaArbol({
       }
     };
 
+    /*
+     * LA FRASE SE ESCRIBE MIENTRAS BAJAS.
+     *
+     * Cada palabra es un `<span>`. Según avanza el recorrido se les va poniendo
+     * una clase, de la primera a la última, y el CSS las trae de un gris casi
+     * invisible y desenfocado a su sitio. No es un adorno: es lo que hace que
+     * la frase se LEA al ritmo al que se baja, en vez de aparecer de golpe
+     * cuando ya has pasado de largo.
+     *
+     * Se escribe en el DOM, no en el estado de React —sesenta re-renders por
+     * segundo para cambiar una opacidad es el camino corto a que un móvil vaya
+     * a tirones— y sólo se tocan las palabras que cruzan el umbral en ese
+     * fotograma, nunca las veinte de golpe.
+     *
+     * Y funciona en los dos sentidos: al subir se des-escribe sola.
+     */
+    const grupos = Array.from(e.querySelectorAll<HTMLElement>('.portada-paso')).map((n) => ({
+      pal: Array.from(n.querySelectorAll<HTMLElement>('.pal')),
+      vistas: 0,
+    }));
+
+    const escribe = () => {
+      for (let i = 0; i < grupos.length; i++) {
+        const g = grupos[i];
+        if (!g.pal.length) continue;
+        const arranca = i === 0 ? 0 : CORTES[i - 1];
+        const q = Math.min(1, Math.max(0, (suave - arranca) / VENTANA));
+        const n = Math.round(q * g.pal.length);
+        if (n === g.vistas) continue;
+        const a = Math.min(g.vistas, n);
+        const b = Math.max(g.vistas, n);
+        for (let k = a; k < b; k++) g.pal[k].classList.toggle('pal-si', k < n);
+        g.vistas = n;
+      }
+    };
+
     let suave = 0;
     let id = 0;
     let vivo = false;
@@ -265,6 +323,8 @@ export default function PortadaArbol({
 
       const paso = suave >= CORTES[1] ? '2' : suave >= CORTES[0] ? '1' : '0';
       if (e.dataset.paso !== paso) e.dataset.paso = paso;
+
+      escribe();
 
       if (cuenta++ % 3 === 0) tomaLaLuz();
 
@@ -323,7 +383,26 @@ export default function PortadaArbol({
         <div className="portada-textos">
           {pasos.map((p, i) => (
             <div key={i} className="portada-paso" data-i={i}>
-              {p}
+              {p.nodo}
+              {p.texto && (
+                <p className="portada-frase">
+                  {palabras(p.texto).map((w, k) => (
+                    <span key={k} className="pal">
+                      {w}{' '}
+                    </span>
+                  ))}
+                  {p.fuerte && (
+                    <b>
+                      {palabras(p.fuerte).map((w, k) => (
+                        <span key={k} className="pal">
+                          {w}{' '}
+                        </span>
+                      ))}
+                    </b>
+                  )}
+                </p>
+              )}
+              {p.accion}
             </div>
           ))}
         </div>

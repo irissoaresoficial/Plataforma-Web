@@ -287,7 +287,7 @@ export default function Cursos() {
             <h2 style={{ margin: 0, fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em' }}>
               Lo que hay abierto ahora
             </h2>
-            <span style={{ fontSize: 13, color: 'var(--tx-2)' }}>
+            <span style={{ fontSize: 15, color: 'var(--tx-2)' }}>
               {CURSOS.length === 1 ? '1 convocatoria' : `${CURSOS.length} convocatorias`}
             </span>
           </Reveal>
@@ -315,7 +315,7 @@ export default function Cursos() {
           >
             <div className="puente-caja">
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <span className="espaciado" style={{ fontSize: 10, fontWeight: 700, color: 'var(--acento)' }}>La membresía</span>
+                <span className="espaciado" style={{ fontSize: 15, fontWeight: 700, color: 'var(--acento)' }}>La membresía</span>
                 <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em', lineHeight: 1.1, maxWidth: '26ch', textWrap: 'balance' }}>
                   Un curso son dos días. La comunidad es cada mes.
                 </span>
@@ -340,19 +340,19 @@ export default function Cursos() {
                 <Marca tam={52} apilado />
               </Link>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
-                <Link href="/sinergia" style={{ fontSize: 13, color: 'var(--tx-2)' }}>Prueba gratis</Link>
-                <Link href="/membresia" style={{ fontSize: 13, color: 'var(--tx-2)' }}>La membresía</Link>
-                <Link href="/#cita" style={{ fontSize: 13, color: 'var(--tx-2)' }}>Sesión con Iris</Link>
+                <Link href="/sinergia" style={{ fontSize: 15, color: 'var(--tx-2)' }}>Prueba gratis</Link>
+                <Link href="/membresia" style={{ fontSize: 15, color: 'var(--tx-2)' }}>La membresía</Link>
+                <Link href="/#cita" style={{ fontSize: 15, color: 'var(--tx-2)' }}>Sesión con Iris</Link>
               </div>
-              <span style={{ display: 'flex', gap: 14, fontSize: 12, marginBottom: 4 }}>
+              <span style={{ display: 'flex', gap: 14, fontSize: 15, marginBottom: 4 }}>
               <Link href="/legal" style={{ color: 'var(--tx-2)' }}>Aviso legal</Link>
               <Link href="/privacidad" style={{ color: 'var(--tx-2)' }}>Tus datos</Link>
             </span>
-            <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
+            <span style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
                 Los cursos no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
               </span>
             </div>
-            <span style={{ fontSize: 11, color: 'var(--tx-4)' }}>© 2026 · Cursos</span>
+            <span style={{ fontSize: 15, color: 'var(--tx-4)' }}>© 2026 · Cursos</span>
           </div>
         </div>
       </div>

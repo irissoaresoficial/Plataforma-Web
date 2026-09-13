@@ -75,7 +75,7 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
           <span
             style={{
               display: 'block',
-              fontSize: 11,
+              fontSize: 15,
               fontWeight: 600,
               letterSpacing: '.14em',
               textTransform: 'uppercase',

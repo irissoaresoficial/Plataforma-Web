@@ -183,36 +183,61 @@ export default function Home() {
       <div id="top">
         <PortadaArbol
           pasos={[
-            <>
-              <h1 className="portada-h1">
-                {t.h1a}
-                <br />
-                <b>{t.h1b}</b>
-              </h1>
-              {/* «Sigue bajando» era letra pequeña, y la letra pequeña se ha
-                  ido de toda la web. Lo dice mejor sin decirlo: una ranura
-                  hundida en el papel y una gota dorada cayendo por ella. */}
-              <span className="portada-baja" aria-hidden>
-                <i />
-              </span>
-            </>,
-            <>
-              <p className="portada-frase">{t.h1p1}</p>
-              <p className="portada-apunte">{t.h1p1b}</p>
-            </>,
-            <>
-              <p className="portada-frase">
-                {t.h1p2} <b>{t.h1p2b}</b>
-              </p>
-              <div className="portada-cierre">
-                <PillCTA onClick={abrirConsulta} variant="cream" label={t.hcta} curLabel={t.cbook} />
-                <p className="hero-micro">
-                  {ofertaViva
-                    ? `${eur(SESION.precioOferta!)} las ${SESION.plazasOferta} primeras · después, ${eur(SESION.precio!)}`
-                    : `${eur(SESION.precio!)}`}
-                </p>
-              </div>
-            </>,
+            /* El titular sale ENTERO desde el primer fotograma: es lo que ve
+               quien comparte el enlace y quien tiene el móvil en modo ahorro.
+               Los otros dos se escriben palabra a palabra al bajar. */
+            {
+              nodo: (
+                <>
+                  <h1 className="portada-h1">
+                    {t.h1a}
+                    <br />
+                    <b>{t.h1b}</b>
+                  </h1>
+                  {/* «Sigue bajando» era letra pequeña, y la letra pequeña se
+                      ha ido de toda la web. Lo dice mejor sin decirlo: una
+                      ranura hundida en el papel y una gota dorada cayendo. */}
+                  <span className="portada-baja" aria-hidden>
+                    <i />
+                  </span>
+                </>
+              ),
+            },
+            { texto: t.h1p1 },
+            {
+              texto: t.h1p2,
+              fuerte: t.h1p2b,
+              /*
+               * EL BOTÓN DEJA DE SER UNA PASTILLA.
+               *
+               * Era una cápsula granate con la flecha dentro y, debajo, el
+               * precio en letra pequeña. Dos cosas mal: la pastilla es el gesto
+               * de cualquier plantilla, y la letra pequeña ya no existe en esta
+               * web.
+               *
+               * Ahora es la frase y una flecha en un disco que SOBRESALE del
+               * papel. Y sobresale a propósito: la gota que avisa está hundida,
+               * ésta se levanta. Lo que se hunde es contenido, lo que sobresale
+               * es acción — y al pulsarla se hunde, que es lo que hace un botón
+               * de verdad.
+               *
+               * El precio no se pierde: está en la ficha de la consulta con
+               * cuerpo de texto normal, y el chat lo dice en la primera
+               * respuesta.
+               */
+              accion: (
+                <button
+                  type="button"
+                  className="portada-cta"
+                  onClick={abrirConsulta}
+                  data-mag
+                  data-cur-label={t.cbook}
+                >
+                  <span>{t.hcta}</span>
+                  <i aria-hidden>→</i>
+                </button>
+              ),
+            },
           ]}
         />
       </div>
@@ -222,70 +247,59 @@ export default function Home() {
           bloque de verdad— y no daba ni un motivo para seguir bajando. */}
 
       {/* ── HOLA, SOY IRIS ────────────────────────────────────
-          En cuanto el árbol termina de crecer, aparece ella. Y en ese orden,
-          que es el de cualquier conversación que va a acabar en una compra:
-          primero te enseño el problema, después te digo quién soy, qué miro y
-          cómo lo hago, y solo entonces te pido algo.
+          En cuanto el árbol termina de crecer, aparece ella.
 
-          Antes este bloque estaba a mitad de página, detrás de la calculadora
-          y del bloque del dolor. O sea que la persona llevaba cuatro pantallas
-          leyendo a alguien sin nombre.
+          Y aparece EN EL MISMO PAPEL que la portada. La versión anterior era
+          una losa granate con el retrato a media pantalla difuminado por un
+          degradado, tres párrafos y una pastilla dorada: la plantilla de
+          cualquier web de coach de 2016. Aquí no hay velo, no hay losa y no hay
+          pastilla — hay papel, una frase grande y una foto con su canto.
 
-          Y el nombre gigante en versales que había aquí —«IRIS / SOARES» de
-          setenta píxeles— se ha ido: ocupaba el sitio de un titular y no decía
-          nada. Ahora ese sitio lo ocupa el saludo, que dice quién es Y a qué se
-          dedica en la misma línea. Un cartel que además habla. */}
-      <div id="hola" className="vino quien" style={{ position: 'relative', zIndex: 3 }}>
-        <div className="quien-marco">
-          {/* La foto va primero en el orden del documento y a la derecha en el
-              dibujo: en el móvil, que se apila, tiene que verse ANTES que el
-              texto. */}
-          <div className="quien-retrato">
-            <Revelado>
-              <Foto
-                src={FOTOS.hablando}
-                alt="Iris Soares, en su consulta"
-                ratio="4/5"
-                radius="0"
-                llenar
-                sizes="(max-width:900px) 100vw, 46vw"
-                /* El retrato es 9:16 y el marco 4:5, así que hay que decidir
-                   qué se recorta: a 15 % la cabeza respira y lo que se va es
-                   suelo, que no cuenta nada. */
-                objectPosition="center 15%"
-              />
-            </Revelado>
-            <span className="quien-velo" aria-hidden />
-          </div>
-
-          <div className="quien-texto">
+          Y un párrafo, no tres. Lo que miro, cómo lo hago y desde cuándo, en
+          cuatro líneas. Lo demás ya lo cuenta la página entera. */}
+      <div id="hola" className="claro hola">
+        <div className="hola-marco">
+          <div className="hola-texto">
             <Reveal>
-              <h2 className="quien-hola">
+              <h2 className="hola-h">
                 {t.w_hola}
                 <br />
                 <b>{t.w_oficio}</b>
               </h2>
             </Reveal>
-            <Reveal delay={70}>
-              <p className="quien-que">{t.w_que}</p>
+            <Reveal delay={90}>
+              <p className="hola-p">{t.w_que}</p>
             </Reveal>
-            <Reveal delay={130}>
-              <p className="quien-como">{t.w_como}</p>
-            </Reveal>
-            <Reveal delay={190}>
-              <p className="quien-camino">{t.w_camino}</p>
-            </Reveal>
-            <Reveal delay={250}>
-              <div className="quien-cta">
-                <PillCTA onClick={abrirConsulta} variant="gold" label={t.hcta} curLabel={t.cbook} />
-                <p className="hero-micro">
-                  {ofertaViva
-                    ? `${eur(SESION.precioOferta!)} las ${SESION.plazasOferta} primeras · después, ${eur(SESION.precio!)}`
-                    : `${eur(SESION.precio!)}`}
-                </p>
-              </div>
+            <Reveal delay={170}>
+              {/* El mismo botón que la portada: la frase y una flecha en un
+                  disco levantado del papel. Una sola forma de pedir en toda la
+                  página, y se reconoce a la segunda vez que se ve. */}
+              <button
+                type="button"
+                className="portada-cta"
+                onClick={abrirConsulta}
+                data-mag
+                data-cur-label={t.cbook}
+              >
+                <span>{t.hcta}</span>
+                <i aria-hidden>→</i>
+              </button>
             </Reveal>
           </div>
+
+          {/* El retrato, con su canto y sin degradados encima. Un velo que
+              disuelve media cara en el fondo no es elegancia: es tapar una foto
+              que no acaba de encajar. Si la foto vale, se enseña entera. */}
+          <Revelado className="hola-foto">
+            <Foto
+              src={FOTOS.hablando}
+              alt="Iris Soares, en su consulta"
+              ratio="4/5"
+              radius="0"
+              sizes="(max-width:900px) 100vw, 42vw"
+              objectPosition="center 18%"
+            />
+          </Revelado>
         </div>
       </div>
 
@@ -557,25 +571,21 @@ export default function Home() {
           <Reveal delay={80}>
             <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '34ch' }}>{t.c_p}</p>
           </Reveal>
+          {/* El mismo botón que la portada y que el saludo de Iris: una sola
+              forma de pedir en toda la página. Y sin la línea del precio
+              debajo — el precio está en la ficha de la consulta, con cuerpo de
+              texto de verdad, y lo dice el chat en la primera respuesta. */}
           <Reveal delay={150}>
-            <PillCTA onClick={abrirConsulta} variant="gold" label={t.c_btn} curLabel={t.cbook} />
-          </Reveal>
-          {/* El precio también aquí, y no sólo en la ficha de arriba. Este es el
-              último botón de la página: quien llega hasta aquí ha bajado la web
-              entera y lo justo es que no tenga que subir a buscar cuánto cuesta
-              para decidirse. */}
-          <Reveal delay={210}>
-            <span style={{ fontSize: 12, color: 'var(--tx-3)' }}>
-              {ofertaViva ? (
-                <>
-                  {eur(SESION.precioOferta)} en vez de {eur(SESION.precio)} · son {SESION.plazasOferta} plazas
-                </>
-              ) : SESION.precio != null ? (
-                <>{eur(SESION.precio)}</>
-              ) : null}
-              {' · '}
-              {t.c_micro}
-            </span>
+            <button
+              type="button"
+              className="portada-cta portada-cta-oscuro"
+              onClick={abrirConsulta}
+              data-mag
+              data-cur-label={t.cbook}
+            >
+              <span>{t.c_btn}</span>
+              <i aria-hidden>→</i>
+            </button>
           </Reveal>
         </div>
       </div>
@@ -586,7 +596,7 @@ export default function Home() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(190px,1fr))', gap: 32 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <Marca tam={68} apilado />
-              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tx-3)', maxWidth: '28ch' }}>{t.ft_p}</p>
+              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'var(--tx-3)', maxWidth: '28ch' }}>{t.ft_p}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_start}</span>
@@ -605,39 +615,39 @@ export default function Home() {
                   padding: 0,
                   font: 'inherit',
                   textAlign: 'left',
-                  fontSize: 14,
+                  fontSize: 15,
                   color: 'var(--tx-2)',
                   cursor: 'pointer',
                 }}
               >
                 {t.ft_1}
               </button>
-              <Link href="/sinergia" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+              <Link href="/sinergia" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
                 {t.ft_2}
               </Link>
-              <Link href="/cursos" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+              <Link href="/cursos" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
                 {t.ft_3}
               </Link>
-              <Link href="/membresia" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+              <Link href="/membresia" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
                 {t.ft_4}
               </Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--tx-4)' }}>{t.ft_legal}</span>
-              <Link href="/legal" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+              <Link href="/legal" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
                 {t.ft_l1}
               </Link>
-              <Link href="/privacidad" data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+              <Link href="/privacidad" data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
                 {t.ft_l2}
               </Link>
-              <a href={`mailto:${CONTACTO.email}`} data-mag style={{ fontSize: 14, color: 'var(--tx-2)' }}>
+              <a href={`mailto:${CONTACTO.email}`} data-mag style={{ fontSize: 15, color: 'var(--tx-2)' }}>
                 {t.ft_l3}
               </a>
             </div>
           </div>
           <div style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <span style={{ fontSize: 11, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>{t.ft_disc}</span>
-            <span style={{ fontSize: 11, color: 'var(--tx-4)' }}>© 2026 · ES / PT / EN</span>
+            <span style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>{t.ft_disc}</span>
+            <span style={{ fontSize: 15, color: 'var(--tx-4)' }}>© 2026 · ES / PT / EN</span>
           </div>
         </div>
       </div>
