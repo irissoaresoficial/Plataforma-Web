@@ -6468,3 +6468,98 @@ body[data-nav-claro='si'] .sello-color {
   text-align: left;
   cursor: pointer;
 }
+
+/* El cierre, con el vídeo al lado. Es el sitio donde se decide, y lo último
+   que hace falta antes de decidir no es un párrafo más: es oírla. */
+.cierre-marco {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(34px, 5vw, 72px);
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+@media (min-width: 900px) {
+  .cierre-marco {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  }
+}
+.cierre-marco .cierre-uno {
+  margin: 0;
+  max-width: none;
+}
+.cierre-video {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==================================================================
+   QUÉ ES ESTO — TEXTO CENTRADO, POLVO DORADO Y LETRAS QUE SE ESCRIBEN
+   ==================================================================
+   Ver el comentario largo de components/QueEs.tsx. Aquí solo vive la maqueta:
+   el bloque, el lienzo de las partículas por detrás y el texto centrado encima.
+
+   Centrado, y aquí sí toca. En el resto de la página el texto va a la
+   izquierda porque siempre hay algo al lado que hace de contrapeso — una foto,
+   un vídeo, un dibujo. Aquí no hay nada: solo palabras sobre papel. Un texto
+   solo, pegado a la izquierda, deja media pantalla vacía y se lee como un
+   párrafo que se ha quedado descolgado.
+   ================================================================== */
+.quees {
+  position: relative;
+  z-index: 3;
+  background: var(--bg);
+  padding: clamp(110px, 15vw, 220px) clamp(16px, 4vw, 56px);
+  overflow: hidden;
+}
+/* El lienzo va por detrás de todo y no se puede tocar ni seleccionar: es
+   ambiente, no contenido. */
+.quees-polvo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+.quees-dentro {
+  position: relative;
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(22px, 3vw, 36px);
+}
+.quees-h {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(32px, 4.4vw, 62px);
+  font-weight: 600;
+  line-height: 1.0;
+  letter-spacing: -0.045em;
+  color: var(--tinta);
+  max-width: 17ch;
+  text-wrap: balance;
+}
+.quees-parrafos {
+  width: 100%;
+}
+.quees-p {
+  margin: 0;
+  font-size: var(--t-entrada);
+  line-height: 1.62;
+  color: var(--tx-2);
+  max-width: 54ch;
+  margin-inline: auto;
+  text-wrap: pretty;
+}
+/* Quieto: todo puesto desde el primer fotograma. */
+.quees-quieto .pal {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition: none;
+}

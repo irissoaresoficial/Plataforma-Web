@@ -20,6 +20,7 @@ import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
 import PortadaArbol from '@/components/PortadaArbol';
 import VideoPresenta from '@/components/VideoPresenta';
+import QueEs from '@/components/QueEs';
 import { useLang } from '@/lib/i18n';
 import { CONTACTO, FOTOS, MEMBRESIA } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
@@ -291,64 +292,40 @@ export default function Home() {
             </Reveal>
           </div>
 
-          {/*
-              Y AQUÍ HABLA ELLA.
-              ----------------------------------------------------------------
-              La foto quieta se cambia por su vídeo. Es la pieza que conecta
-              toda la página: hasta aquí es una web contando un problema; a
-              partir de aquí es una persona explicando cómo lo mira. Nadie
-              reserva una hora con una foto.
-
-              No arranca solo — es Iris hablando, y un vídeo que se pone a
-              hablar solo se cierra — así que hasta que se pulsa es su retrato
-              con el botón encima. */}
-          <Revelado className="hola-video">
-            <VideoPresenta
-              src="/video/iris-presentacion.mp4"
-              cartel="/images/iris-presentacion-cartel.jpg"
-              etiqueta="Iris se presenta"
+          {/* El retrato, con su canto y sin degradados encima. Aquí va la foto
+              y no el vídeo: en este bloque ella se PRESENTA, y una cara quieta
+              mirándote es exactamente eso. El vídeo está donde toca decidir
+              —justo encima del botón de reservar— porque ahí lo que hace falta
+              es oírla, no verla. */}
+          <Revelado className="hola-foto">
+            <Foto
+              src={FOTOS.hablando}
+              alt="Iris Soares, en su consulta"
+              ratio="4/5"
+              radius="0"
+              sizes="(max-width:900px) 100vw, 42vw"
+              objectPosition="center 18%"
             />
           </Revelado>
         </div>
       </div>
 
       {/* ── QUÉ ES ESTO ──────────────────────────────────────
-          El bloque que faltaba, y llevaba faltando desde el principio: en toda
-          la web no había una sola frase que dijera QUÉ ES la numerología
-          transgeneracional. Se hablaba de lo que hace —«de dónde viene lo que
-          se repite»— pero nunca de qué es, con lo cual quien llegaba sin saberlo
-          seguía sin saberlo después de bajar la página entera.
+          El único sitio de la página donde se dice QUÉ ES esto. Y ahora es solo
+          texto: la foto de las generaciones que iba al lado se ha ido a
+          /numerologia, que es su casa.
 
-          Va aquí, justo detrás del dolor, porque ése es el orden de una
-          conversación: primero «a ver si te suena» y después «esto tiene
-          nombre». Al revés es un folleto. */}
-      <div className="claro bloque-limpio">
-        <div className="limpio-dentro">
-          <div className="limpio-texto">
-            <Reveal className="titular-seccion limpio-h">{t.q_h}</Reveal>
-            <Reveal delay={80}>
-              <p className="limpio-p">{t.q_p1}</p>
-            </Reveal>
-            <Reveal delay={140}>
-              <p className="limpio-p">{t.q_p2}</p>
-            </Reveal>
-          </div>
-          {/* La foto, sin esquinas redondeadas y sin tarjeta: el radio es lo que
-              convierte una imagen en una ficha, y en esta página ya no hay
-              fichas. Y en vertical, que es como está tomada — recortada a
-              panorámica se quedaba en dos caras y se perdía justo lo que
-              cuenta: la fila repitiéndose hacia el fondo. */}
-          <Reveal delay={180} className="limpio-foto">
-            <Foto
-              src={FOTOS.generaciones}
-              alt="Una fila de hombres de distintas edades, uno detrás de otro, en la misma postura y con las mismas manos sobre la mesa, repitiéndose hacia el fondo"
-              ratio="4/5"
-              radius="0"
-              sizes="(max-width:900px) 100vw, 40vw"
-            />
-          </Reveal>
-        </div>
-      </div>
+          Dos motivos, y ninguno es que la foto estuviera mal. Uno: una cara a
+          media pantalla al lado de la explicación se lleva la mirada entera y
+          la explicación se salta, justo aquí, que es donde no puede saltarse.
+          Dos: venía inmediatamente después del bloque de Iris, que también
+          lleva foto — dos fotos seguidas a media pantalla y la página se lee
+          como un catálogo.
+
+          Lo que la acompaña ahora no compite: polvo dorado flotando muy
+          despacio por detrás, y las palabras escribiéndose al ritmo al que se
+          baja. El detalle está en components/QueEs.tsx. */}
+      <QueEs titular={t.q_h} uno={t.q_p1} dos={t.q_p2} />
 
       {/* ── EL REGALO: LA SINERGIA ───────────────────────────
           Aquí estaba la calculadora del número personal, en granate, con su
@@ -426,6 +403,7 @@ export default function Home() {
           escrito en las dos páginas que lo explican —numerología y Kábala—,
           enlazadas desde el pie y desde el propio texto. */}
       <div id="consultas" className="claro bloque-limpio" style={{ scrollMarginTop: 80 }}>
+        <div className="cierre-marco">
         <div className="cierre-uno">
           <Reveal className="titular-seccion cierre-uno-h">{t.cu_h}</Reveal>
           <Reveal delay={80}>
@@ -456,6 +434,29 @@ export default function Home() {
               </Link>
             </p>
           </Reveal>
+        </div>
+
+        {/*
+            EL VÍDEO, JUSTO AQUÍ.
+            ------------------------------------------------------------------
+            Estaba en el bloque de «Hola, soy Iris», y allí sobraba: en ese
+            bloque ella se presenta, y para presentarse basta una cara quieta
+            mirándote.
+
+            Aquí es otra cosa. Éste es el sitio donde la persona decide si paga
+            o no, y lo último que necesita antes de decidir no es leer una frase
+            más: es OÍRLA. Un minuto de alguien hablando hace más por una
+            reserva que tres párrafos.
+
+            No arranca solo —es voz, y un vídeo que se pone a hablar solo se
+            cierra— así que hasta que se pulsa es su retrato con el botón. */}
+        <Revelado className="cierre-video">
+          <VideoPresenta
+            src="/video/iris-presentacion.mp4"
+            cartel="/images/iris-presentacion-cartel.jpg"
+            etiqueta="Iris se presenta"
+          />
+        </Revelado>
         </div>
       </div>
 
