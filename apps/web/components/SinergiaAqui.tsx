@@ -246,6 +246,50 @@ export default function SinergiaAqui({
   return (
     <section id={id} className={`vino sinaqui ${className}`.trim()}>
       <div className="sinaqui-dentro">
+        {/*
+            LOS DOS CÍRCULOS ESTÁN DESDE EL PRIMER MOMENTO.
+            ------------------------------------------------------------------
+            Antes aparecían con el resultado y hasta entonces el bloque era un
+            titular y seis casillas: un formulario. Puestos arriba y vacíos, el
+            bloque YA ES algo antes de que nadie escriba nada — se ve qué va a
+            pasar, y esa es la mitad del motivo para rellenarlo.
+
+            Y al calcular no aparece un dibujo nuevo: se LLENA el que ya estaba.
+            Vacíos no llevan ningún número, que en una web que vende lecturas de
+            verdad no es un detalle.
+
+            Va como `role="img"` con la frase entera: leído en voz alta, «siete
+            tres nueve tú esa persona» no significa nada.
+        */}
+        <div
+          className={`sinaqui-venn${res ? ' sinaqui-venn-lleno' : ''}`}
+          role={res ? 'img' : undefined}
+          aria-hidden={res ? undefined : true}
+          aria-label={
+            res ? `${T.tu}, ${res.a.camino.valor}. ${T.esaPersona}, ${res.b.camino.valor}. Entre los dos, ${res.comun}.` : undefined
+          }
+        >
+          <div className="sinaqui-dibujo">
+            <svg viewBox="0 0 260 140" focusable="false" aria-hidden>
+              <circle cx="98" cy="70" r="58" />
+              <circle cx="162" cy="70" r="58" />
+            </svg>
+            {res && (
+              <>
+                <b className="sinaqui-num sinaqui-num-a">{res.a.camino.valor}</b>
+                <b className="sinaqui-num sinaqui-num-x">{res.comun}</b>
+                <b className="sinaqui-num sinaqui-num-b">{res.b.camino.valor}</b>
+              </>
+            )}
+          </div>
+          {res && (
+            <>
+              <span className="sinaqui-quien sinaqui-quien-a">{T.tu}</span>
+              <span className="sinaqui-quien sinaqui-quien-b">{T.esaPersona}</span>
+            </>
+          )}
+        </div>
+
         <h2 className="sinaqui-h">{T.titulo}</h2>
         <p className="sinaqui-p">{T.entrada}</p>
 
@@ -283,40 +327,6 @@ export default function SinergiaAqui({
         <div className="sinaqui-salida" aria-live="polite" ref={salida}>
           {res && (
             <div className="sinaqui-res" key={`${iso(hecho!.a)}|${iso(hecho!.b)}`}>
-              {/*
-                  LOS DOS CÍRCULOS QUE SE CRUZAN, PERO CON LOS NÚMEROS DENTRO.
-
-                  El dibujo ya estaba en este bloque y no se tira: es lo que la
-                  palabra «sinergia» significa, dibujado. Lo que cambia es que
-                  antes estaba vacío —un adorno— y ahora es el resultado: el
-                  número de cada uno en su lado y el del vínculo en el trozo
-                  común, que es literalmente donde va.
-
-                  Vacío no se pinta nunca. Un número de mentira dentro de estos
-                  círculos, en una web que vende lecturas de verdad, es la peor
-                  idea posible.
-
-                  Va como `role="img"` con la frase entera: leído en voz alta,
-                  «siete tres nueve tú esa persona» no significa nada.
-              */}
-              <div
-                className="sinaqui-venn"
-                role="img"
-                aria-label={`${T.tu}, ${res.a.camino.valor}. ${T.esaPersona}, ${res.b.camino.valor}. Entre los dos, ${res.comun}.`}
-              >
-                <div className="sinaqui-dibujo">
-                  <svg viewBox="0 0 260 140" focusable="false" aria-hidden>
-                    <circle cx="98" cy="70" r="58" />
-                    <circle cx="162" cy="70" r="58" />
-                  </svg>
-                  <b className="sinaqui-num sinaqui-num-a">{res.a.camino.valor}</b>
-                  <b className="sinaqui-num sinaqui-num-x">{res.comun}</b>
-                  <b className="sinaqui-num sinaqui-num-b">{res.b.camino.valor}</b>
-                </div>
-                <span className="sinaqui-quien sinaqui-quien-a">{T.tu}</span>
-                <span className="sinaqui-quien sinaqui-quien-b">{T.esaPersona}</span>
-              </div>
-
               {/* «Lo que se activa entre los dos» es la frase con la que Iris
                   presenta este número en `/sinergia`. Se dice igual aquí: dos
                   nombres distintos para el mismo número es lo que hace que una

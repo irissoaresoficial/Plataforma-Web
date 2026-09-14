@@ -17,10 +17,14 @@
  * es la página dentro de la caja sino el índice de la frase que toca, sacado
  * de cuánto se lleva recorrido.
  *
- * EN EL MÓVIL NO SE ANCLA. Un bloque pegado en un teléfono se pelea con la
- * barra del navegador, que aparece y desaparece al bajar, y el resultado es un
- * salto en cada gesto. Por debajo de 900 px las frases se apilan y ya está: se
- * leen igual de bien y el desplazamiento no sufre.
+ * EN EL MÓVIL TAMBIÉN SE ANCLA, desde que el alto se pide con `svh`. Antes no:
+ * un bloque pegado en un teléfono se peleaba con la barra del navegador, que
+ * aparece y desaparece al bajar y cambia el alto de la ventana a mitad de
+ * gesto. `svh` es el alto CON la barra puesta —el que de verdad se ve— y no
+ * cambia, así que el problema se fue con él.
+ *
+ * Y hacía falta: apiladas, las cuatro frases se veían a la vez con distintas
+ * opacidades, como una hoja mal impresa. Una cada vez es lo que pegan.
  */
 
 import { motion, useReducedMotion, useTransform } from 'framer-motion';
@@ -118,66 +122,34 @@ function Frase({
    * un borrón de cuatro frases encima de otra, como una hoja mal impresa.
    * Sólo se ve la de turno; que hay cuatro lo dicen el carril y el «03 / 04».
    */
-  const opacidad = useTransform(indice, (n) => (n === i ? 1 : 0));
-  const y = useTransform(indice, (n) => (n === i ? 0 : n > i ? -16 : 16));
+  const opa = useTransform(indice, (n) => (n === i ? 1 : 0));
+  const y = useTransform(indice, (n) => (n === i ? 0 : n > i ? -22 : 22));
+  /* Y en React, para poder marcarla en el DOM y que el CSS la desenfoque. */
+  const [esMiTurno, setEsMiTurno] = useState(i === 0);
+  useEffect(() => indice.on('change', (n) => setEsMiTurno(Math.round(n) === i)), [indice, i]);
 
   /*
-   * Y ADEMÁS, CADA FRASE SE ANIMA POR SU CUENTA AL SUBIR POR LA PANTALLA.
+   * YA NO HAY DOS CAMINOS: MANDA SIEMPRE EL ÍNDICE.
    *
-   * En el móvil no hay anclaje —un bloque pegado se pelea con la barra del
-   * navegador, que aparece y desaparece al bajar— así que las cuatro frases se
-   * apilaban y se quedaban ahí, quietas, como una lista de la compra. El mejor
-   * texto de la web pasando sin que pase nada.
+   * Aquí se decidía entre «anclado» (una frase cada vez, escritorio) y «suelto»
+   * (las cuatro seguidas, móvil) según el ancho de la pantalla. Se ha ido el
+   * segundo: el CSS ancla el bloque también en el móvil desde que usa `svh`, y
+   * con las cuatro frases en la misma celda sólo tiene sentido una manera de
+   * encenderlas.
    *
-   * Esto ata cada frase a SU PROPIA posición en la ventana: entra apagada y
-   * desde abajo, y se enciende del todo al llegar al tercio superior. En el
-   * escritorio no estorba, y es la gracia de resolverlo así: mientras el bloque
-   * está anclado las frases no se mueven de la pantalla, su progreso propio ya
-   * está al final y este factor vale 1. Manda el índice, igual que antes.
+   * El atributo `data-turno` es para el CSS: la que no toca se desenfoca en vez
+   * de limitarse a apagarse, para que la saliente y la entrante no se lean como
+   * un temblor en el mismo sitio.
    */
-  const propia = useRef<HTMLParagraphElement>(null);
-  const entrada = useProgreso(propia, ['start 0.92', 'start 0.34']);
-  const opacidadEntrada = useTransform(entrada, [0, 1], [0.12, 1]);
-  const yEntrada = useTransform(entrada, [0, 1], [26, 0]);
-
-  /*
-   * Cuál de las dos manda depende de si el bloque está anclado, y eso lo decide
-   * el ancho de la pantalla.
-   *
-   * Multiplicar las dos, que fue lo primero que probé, no vale: sin anclaje el
-   * índice se queda clavado en la primera frase, así que las otras tres valen
-   * cero y cero por lo que sea sigue siendo cero. Se veía una frase y tres
-   * huecos, que es exactamente el fallo que había antes.
-   *
-   * Empieza en `true` porque el servidor no sabe el ancho de nadie: pinta la
-   * versión anclada, y el navegador corrige en el primer instante, antes de que
-   * a este bloque le haya dado tiempo a entrar en pantalla.
-   */
-  const [anclado, setAnclado] = useState(true);
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 900px)');
-    const mirar = () => setAnclado(mq.matches);
-    mirar();
-    mq.addEventListener('change', mirar);
-    return () => mq.removeEventListener('change', mirar);
-  }, []);
-
-  const opacidadFinal = useTransform([opacidad, opacidadEntrada], ([porIndice, porEntrada]: number[]) =>
-    anclado ? porIndice : porEntrada,
-  );
-  const yFinal = useTransform([y, yEntrada], ([porIndice, porEntrada]: number[]) =>
-    anclado ? porIndice : porEntrada,
-  );
-
   if (quieto) {
     return <p className="anclado-frase" style={{ opacity: i === 0 ? 1 : 0.5 }}>{texto}</p>;
   }
 
   return (
     <motion.p
-      ref={propia}
       className="anclado-frase"
-      style={{ opacity: opacidadFinal, y: yFinal, willChange: 'transform, opacity' }}
+      data-turno={esMiTurno ? 'si' : 'no'}
+      style={{ opacity: opa, y, willChange: 'transform, opacity, filter' }}
       transition={{ duration: 0.5, ease: CURVA }}
     >
       {/* El «01 / 04» que iba encima de cada frase se ha quitado. Era letra

@@ -132,62 +132,50 @@
    Sobre el granate el relieve se invierte respecto al de `TuNumero`: la sombra
    tiene que ser mucho más negra y la luz casi nada, o el hueco se lee como un
    recuadro blanco pegado encima en vez de como un hueco. */
+/*
+ * LAS CASILLAS DEJAN DE SER CAJAS.
+ * ---------------------------------------------------------------------------
+ * Eran seis rectángulos con relieve hundido, y sobre granate, en un móvil con
+ * el brillo bajo, no se veían: «lo rojo no se entiende qué es». Se les puso
+ * fondo negro y un filete, y se veían — pero seguían pareciendo un formulario
+ * de banco en mitad de una página que no tiene ni una caja en ningún otro
+ * sitio.
+ *
+ * Ahora no hay caja: hay un número grande y una raya dorada debajo. Es la
+ * manera más vieja que existe de decir «escribe aquí» —un hueco en una línea de
+ * puntos— y sigue siendo la más clara. Y al entrar en el campo la raya se
+ * enciende del todo, así que siempre se sabe dónde está el cursor.
+ */
 .sinaqui-input {
-  width: clamp(58px, 9vw, 74px);
+  width: clamp(52px, 9vw, 72px);
   box-sizing: border-box;
-  padding: 14px 8px;
+  padding: 6px 2px 9px;
   border: 0;
-  border-radius: 14px;
-  /*
-   * SE TIENE QUE VER QUE AQUÍ SE ESCRIBE.
-   *
-   * Estaban del mismo color que el bloque, con solo un relieve hundido muy
-   * suave. En un móvil, con el brillo bajo y sobre granate oscuro, no se veían:
-   * Gerson abrió la página y lo que dijo fue «lo rojo no se entiende qué es».
-   * Tenía razón — el relieve solo funciona cuando hay luz de sobra, y media
-   * gente entra a esta web de noche y en la calle.
-   *
-   * Así que además del hueco hay un hueco DE VERDAD: la casilla es más oscura
-   * que el bloque, no del mismo tono, y lleva un filete dorado tenue alrededor.
-   * Sigue sin ser una caja con borde grueso, pero ya no hay que adivinar dónde
-   * se escribe.
-   */
-  background: rgba(0, 0, 0, 0.26);
-  box-shadow:
-    inset 0 0 0 1px rgba(226, 205, 162, 0.22),
-    inset 3px 3px 9px rgba(0, 0, 0, 0.42);
+  border-bottom: 2px solid rgba(226, 205, 162, 0.26);
+  border-radius: 0;
+  background: none;
   color: var(--tx);
   font-family: inherit;
-  font-size: 22px;
+  font-size: clamp(26px, 7vw, 34px);
   font-weight: 500;
+  letter-spacing: -0.02em;
   text-align: center;
-  letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
   outline: none;
-  transition: box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.35s ease, color 0.35s ease;
 }
 /* El año necesita el doble de sitio que el día o el mes, y ese ancho distinto
    es lo que dice cuál es cuál sin necesidad de rotularlo. */
 .sinaqui-input-anio {
-  width: clamp(92px, 14vw, 116px);
+  width: clamp(92px, 16vw, 122px);
 }
-/* El marcador, más claro que antes. `--tx-3` sobre un hueco oscurecido se caía
-   por debajo de lo que se lee en la calle. */
 .sinaqui-input::placeholder {
-  color: rgba(226, 205, 162, 0.5);
+  color: rgba(226, 205, 162, 0.34);
   font-weight: 400;
   opacity: 1;
 }
-/* EL FOCO NO ES UN BORDE: ES UN ANILLO SOBRE EL RELIEVE.
-   Un `border` cambiaría el tamaño de la caja y haría saltar la fila entera al
-   entrar en un campo. El anillo va en la misma propiedad que el relieve, así
-   que se suma sin mover ni un píxel — y va dorado y a dos píxeles porque quien
-   navega con el teclado necesita saber dónde está. */
 .sinaqui-input:focus-visible {
-  box-shadow:
-    inset 0 0 0 1px rgba(226, 205, 162, 0.22),
-    inset 3px 3px 9px rgba(0, 0, 0, 0.42),
-    0 0 0 2px var(--acento);
+  border-bottom-color: var(--acento);
 }
 
 /* --- el botón y el aviso --------------------------------------------------
@@ -404,4 +392,39 @@
   .sinaqui-input {
     transition: none;
   }
+}
+
+
+/* ==================================================================
+   EL DIBUJO, DESDE EL PRIMER MOMENTO
+   ==================================================================
+   Los dos círculos ya no esperan al resultado: están arriba desde que se abre
+   la página, vacíos y a media luz. Así el bloque YA ES algo antes de que nadie
+   escriba nada — se ve qué va a pasar, y ése es medio motivo para rellenarlo.
+
+   Y al calcular no aparece un dibujo nuevo: se enciende el que ya estaba. Los
+   círculos suben de intensidad, la lente se tiñe y los números entran.
+   ================================================================== */
+.sinaqui-venn {
+  margin-bottom: clamp(6px, 1.4vw, 16px);
+}
+.sinaqui-venn circle {
+  transition: stroke-opacity 0.7s ease, fill-opacity 0.7s ease;
+}
+.sinaqui-venn:not(.sinaqui-venn-lleno) circle {
+  stroke-opacity: 0.34;
+  fill-opacity: 0;
+}
+/* Los números entran desde dentro, como si el círculo los revelara. */
+.sinaqui-venn-lleno .sinaqui-num {
+  animation: sinaqui-entra 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sinaqui-venn-lleno .sinaqui-num-x { animation-delay: 0.12s; }
+.sinaqui-venn-lleno .sinaqui-num-b { animation-delay: 0.2s; }
+@keyframes sinaqui-entra {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sinaqui-venn-lleno .sinaqui-num { animation: none; }
 }

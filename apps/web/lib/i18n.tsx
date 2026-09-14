@@ -33,9 +33,23 @@ export const COPY = {
      * digo por qué le ha llegado a él, y solo al final le digo qué le doy yo a
      * cambio de su dinero. Pedir antes de eso es pedir a un desconocido.
      */
-    h1p1: 'No es tu carácter. Empezó antes de que tú nacieras.',
-    h1p2: 'Nadie tuvo la culpa. Pero nadie la cerró.',
-    h1p2b: 'Te ha tocado a ti.',
+    /*
+     * LAS DOS FRASES QUE DUELEN.
+     *
+     * «No es tu carácter, empezó antes de que nacieras» era verdad y no dolía:
+     * describe un fenómeno. Nadie se reconoce en un fenómeno.
+     *
+     * La primera ahora nombra a personas concretas —tu madre, tu abuela— y
+     * termina en la frase exacta que se ha dicho a sí misma la persona que está
+     * leyendo. Ahí es donde se levanta la vista.
+     *
+     * Y la segunda no explica nada: pone la factura encima de la mesa. «Otros
+     * treinta años» es un número que se siente en el cuerpo, y deja UNA salida,
+     * que además es justo lo que hay debajo: el botón.
+     */
+    h1p1: 'Tu madre lo vivió. Tu abuela también. Y tú jurabas que a ti no te iba a pasar.',
+    h1p2: 'Puedes aguantarlo otros treinta años.',
+    h1p2b: 'O mirarlo una vez.',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
     hcta: 'Reservar mi consulta', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
     s1: 'personas atendidas', s2: 'desde', s3: 'idiomas',
@@ -73,7 +87,10 @@ export const COPY = {
      * que se repite en una familia ya tiene a alguien en la cabeza. No hay que
      * convencerle de nada, sólo nombrarlo.
      */
-    sg_h: 'Se te ha venido alguien a la cabeza.',
+    /* Un titular que no duele no es un titular. «Se te ha venido alguien a la
+        cabeza» describe lo que le pasa a quien lee; esto nombra lo que le PASA
+        con esa persona, que es lo que de verdad le escuece. */
+    sg_h: 'Con esa persona siempre acabáis en lo mismo.',
     sg_p: 'Tu fecha y la suya. Nada más.',
     sg_cta: 'Verlo ahora',
     /*
@@ -110,7 +127,12 @@ export const COPY = {
      */
     w_hola: 'Hola. Soy Iris,',
     w_oficio: 'numeróloga transgeneracional.',
-    w_que: 'Miro lo que se repite en tu familia y lo cuento con números. Desde 2010.',
+    /* Termina en «esto tiene nombre», que es la entradilla literal del bloque
+        de debajo: «Se llama numerología transgeneracional». El saludo deja de
+        ser una ficha suelta y se convierte en la primera mitad de una frase que
+        acaba en el siguiente titular. Y fuera el «desde 2010»: una fecha no
+        convence a nadie que todavía no sabe qué le estás vendiendo. */
+    w_que: 'Yo no lo interpreto. Lo cuento con números: tu nombre, tu fecha y las de tu línea. Y esto tiene nombre.',
     w_p1: 'Pasé años observando patrones en el mundo corporativo y descifrando qué sucede cuando nadie mira.',
     w_p2: 'En 2010 uní lo mejor de la numerología, la psicosomática clínica, las constelaciones y las terapias integrativas para crear un método práctico y profundo. El objetivo de mi consulta es solo uno: que salgas sabiendo quién eres y qué decisión tomar hoy.',
     w1: 'Derecho', w2: 'Psicología', w3: 'Psicosomática', w4: 'Descodificación', w5: 'Numerología', w6: 'Transgeneracional',
@@ -185,9 +207,9 @@ export const COPY = {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
     h1a: 'O que na tua família nunca se contou,', h1b: 'estás a pagá-lo tu.',
-    h1p1: 'Não é o teu carácter. Começou antes de tu nasceres.',
-    h1p2: 'Ninguém teve culpa. Mas ninguém a fechou.',
-    h1p2b: 'Calhou-te a ti.',
+    h1p1: 'A tua mãe viveu-o. A tua avó também. E tu juravas que a ti não te ia acontecer.',
+    h1p2: 'Podes aguentá-lo mais trinta anos.',
+    h1p2b: 'Ou olhar para ele uma vez.',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
     hcta: 'Marcar a minha consulta', hcta2: 'Ver o meu número, grátis', hbadge: 'Online · ES / PT / EN',
     s1: 'pessoas acompanhadas', s2: 'desde', s3: 'idiomas',
@@ -203,7 +225,7 @@ export const COPY = {
     b_p2: 'Com o teu nome e a tua data vê-se em que geração começou, como chegou até ti e que parte te toca largar.',
     q_h: 'Isto chama-se numerologia transgeracional.',
     q_p1: 'O teu nome e a tua data guardam o que aconteceu na tua família. Em números vê-se o padrão: o que se repete e desde quando.',
-    sg_h: 'Veio-te alguém à cabeça.',
+    sg_h: 'Com essa pessoa acabam sempre no mesmo.',
     sg_p: 'A tua data e a dela. Nada mais.',
     sg_cta: 'Ver agora',
     cu_h: 'Vamos olhar para a tua.',
@@ -214,7 +236,7 @@ export const COPY = {
     w_lab: 'Quem sou', w_h: 'Sou a Iris. Ajudo-te a libertares-te dos padrões que não te pertencem.', w_h2: 'E a devolvê-los à sua origem.',
     w_hola: 'Olá. Sou a Iris,',
     w_oficio: 'numeróloga transgeracional.',
-    w_que: 'Olho para o que se repete na tua família e conto-o com números. Desde 2010.',
+    w_que: 'Eu não o interpreto. Conto-o com números: o teu nome, a tua data e as da tua linha. E isto tem nome.',
     w_p1: 'Passei anos a observar padrões no mundo corporativo e a decifrar o que acontece quando ninguém olha.',
     w_p2: 'Em 2010 uni o melhor da numerologia, da psicossomática clínica, das constelações e das terapias integrativas para criar um método prático e profundo. O objetivo da minha consulta é só um: que saias a saber quem és e que decisão tomar hoje.',
     w1: 'Direito', w2: 'Psicologia', w3: 'Psicossomática', w4: 'Descodificação', w5: 'Numerologia', w6: 'Transgeracional',
@@ -280,9 +302,9 @@ export const COPY = {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
     h1a: 'What your family never spoke about,', h1b: 'you are the one paying for.',
-    h1p1: 'It is not your character. It started before you were born.',
-    h1p2: 'Nobody was to blame. But nobody closed it.',
-    h1p2b: 'It has landed on you.',
+    h1p1: 'Your mother lived it. Your grandmother too. And you swore it would not happen to you.',
+    h1p2: 'You can carry it another thirty years.',
+    h1p2b: 'Or look at it once.',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
     hcta: 'Book my session', hcta2: 'See my number, free', hbadge: 'Online · ES / PT / EN',
     s1: 'people seen', s2: 'since', s3: 'languages',
@@ -298,7 +320,7 @@ export const COPY = {
     b_p2: 'With your name and your date you can see which generation it started in, how it reached you, and what is yours to put down.',
     q_h: 'This is called transgenerational numerology.',
     q_p1: 'Your name and your date hold what happened in your family. In numbers the pattern shows: what repeats, and since when.',
-    sg_h: 'Somebody just came to mind.',
+    sg_h: 'With that person it always ends the same way.',
     sg_p: 'Your date and theirs. Nothing else.',
     sg_cta: 'See it now',
     cu_h: 'Let us look at yours.',
@@ -309,7 +331,7 @@ export const COPY = {
     w_lab: 'Who I am', w_h: 'I am Iris. I help you free yourself from patterns that are not yours.', w_h2: 'And return them to where they came from.',
     w_hola: 'Hello. I am Iris,',
     w_oficio: 'a transgenerational numerologist.',
-    w_que: 'I look at what repeats in your family and work it out with numbers. Since 2010.',
+    w_que: 'I do not interpret it. I work it out with numbers: your name, your date and your line\u2019s. And it has a name.',
     w_p1: 'I spent years observing patterns in the corporate world and working out what happens when nobody is looking.',
     w_p2: 'In 2010 I brought together the best of numerology, clinical psychosomatics, constellations and integrative therapies to build a method that is practical and deep. My consultation has one single aim: that you leave knowing who you are and what to decide today.',
     w1: 'Law', w2: 'Psychology', w3: 'Psychosomatics', w4: 'Decoding', w5: 'Numerology', w6: 'Transgenerational',
