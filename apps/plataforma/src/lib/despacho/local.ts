@@ -23,14 +23,31 @@ const LS_AVISOS = "es33.avisos-vistos.v1";
 /* --------------------------------------------------------------- el disco */
 
 /**
- * Leer y escribir una lista. Se envuelve en `try` como en el resto de la casa:
- * en navegación privada, o con el almacenamiento lleno, esto lanza — y una
- * pantalla que revienta por no poder guardar una nota es peor que una nota que
- * no se guarda.
+ * Leer y escribir una lista.
+ *
+ * ESCRIBIR se envuelve en `try` como en el resto de la casa: en navegación
+ * privada, o con el almacenamiento lleno, esto lanza — y una pantalla que
+ * revienta por no poder guardar una nota es peor que una nota que no se guarda.
+ *
+ * LEER NO SE TRAGA EL FALLO, Y ÉSA ES LA DIFERENCIA QUE HAY QUE VER.
+ *
+ * Hay dos maneras de que una lectura salga mal, y no significan lo mismo:
+ *
+ *  · lo guardado está roto, o no está → la lista vacía es la verdad: todavía no
+ *    hay nada escrito. Eso sí se traga, y con razón.
+ *  · el almacenamiento no deja ni mirar → la lista vacía es MENTIRA. Le está
+ *    diciendo a Iris «no tienes clientes» cuando lo cierto es «no he podido
+ *    saberlo». Eso es lo que dejaba los avisos mudos: se rompía la lectura y la
+ *    campana enseñaba exactamente lo mismo que un día tranquilo.
+ *
+ * Así que el acceso al disco va FUERA del `try` y lanza; quien llama decide qué
+ * enseñar. Quien lo recoge es `components/despacho/Avisos.tsx`.
  */
 function lee<T>(clave: string): T[] {
+  // Fuera del `try` a propósito: si esto lanza, tiene que salir de aquí.
+  const crudo = localStorage.getItem(clave);
   try {
-    const v = JSON.parse(localStorage.getItem(clave) || "[]");
+    const v = JSON.parse(crudo || "[]");
     return Array.isArray(v) ? (v as T[]) : [];
   } catch {
     return [];

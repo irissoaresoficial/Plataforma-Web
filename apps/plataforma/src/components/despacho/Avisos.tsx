@@ -32,6 +32,23 @@
  *
  * Lo que se ve dentro sale de `lib/despacho/avisos.ts`, que es quien decide qué
  * merece ser un aviso. Aquí sólo se pinta y se recuerda cuáles se han callado.
+ *
+ * Y UNA COSA MÁS, QUE ES POR LA QUE ESTO SE TUVO QUE ARREGLAR.
+ *
+ * Antes, leer era `void recargar()` y `recargar` no tenía red debajo. Si la
+ * lectura fallaba —y la manera normal de que falle no es que se caiga internet,
+ * es que Firestore conteste «permission-denied» porque las reglas no están
+ * publicadas o la ficha de usuario no está activa— la promesa se rompía sola,
+ * la lista se quedaba vacía, y la campana enseñaba EXACTAMENTE lo mismo que
+ * cuando de verdad no hay nada que decir: nada. Ni punto, ni frase, ni error en
+ * la consola. Medido: con la lectura rota, `{hayPunto:false, texto:""}` y cero
+ * errores en consola.
+ *
+ * Eso es el peor fallo que puede tener un avisador, porque su estado bueno y su
+ * estado roto se ven igual. Ahora una lectura que falla:
+ *  · no borra lo último que se leyó bien —lo de hace un minuto sigue sirviendo—,
+ *  · enciende el punto, porque «no sé lo que tienes» es algo que hay que mirar,
+ *  · y dentro lo dice con palabras, y dice qué hay que tocar para arreglarlo.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -45,6 +62,7 @@ import {
   citas as repoCitas,
   clientes as repoClientes,
   facturas as repoFacturas,
+  guardadoEnLaNube,
   type Aviso,
 } from "@/lib/despacho";
 import { IcoAviso } from "../Iconos";
@@ -57,21 +75,56 @@ const COLOR: Record<Aviso["tono"], string> = {
   frio: "var(--text-4)",
 };
 
+/**
+ * Por qué no se ha podido leer, dicho como se lo diría a Iris.
+ *
+ * Firestore contesta con códigos («permission-denied»), y un código en pantalla
+ * no le sirve a nadie que no sea yo. Cada uno se traduce a la frase que dice qué
+ * pasa Y qué hay que tocar, porque estos tres fallos no los arregla mirar: los
+ * arregla alguien entrando en la consola de Firebase.
+ */
+function porQueNoSePudo(e: unknown): string {
+  const codigo = String((e as { code?: string })?.code || "");
+  const texto = String((e as { message?: string })?.message || e || "");
+  if (codigo.includes("permission-denied") || /permission/i.test(texto)) {
+    return "La base de datos no me deja leer tus datos. Falta publicar los permisos de Firestore, o tu usuario todavía no está dado de alta como activo.";
+  }
+  if (codigo.includes("unauthenticated")) {
+    return "La sesión ha caducado. Sal y vuelve a entrar.";
+  }
+  if (codigo.includes("unavailable") || /network|offline|failed to fetch/i.test(texto)) {
+    return "No llego a la base de datos. Puede ser tu conexión: vuelve a entrar en un momento.";
+  }
+  return texto ? `No he podido leerlo: ${texto}` : "No he podido leer tus datos.";
+}
+
 export default function Avisos() {
   const { view, setView, setClienteAbierto, setFocoFicha, setFacturaAbierta } = useApp();
   const [lista, setLista] = useState<Aviso[]>([]);
+  /** Null = la última lectura fue bien. Una frase = no se pudo leer, y por qué. */
+  const [fallo, setFallo] = useState<string | null>(null);
   const [abierto, setAbierto] = useState(false);
   const caja = useRef<HTMLDivElement>(null);
   const quieto = useReducedMotion();
 
   const recargar = useCallback(async () => {
-    const [citas, clientes, facturas, vistos] = await Promise.all([
-      repoCitas.listar(),
-      repoClientes.listar(),
-      repoFacturas.listar(),
-      repoAvisos.vistos(),
-    ]);
-    setLista(calculaAvisos({ citas, clientes, facturas, vistos }));
+    try {
+      const [citas, clientes, facturas, vistos] = await Promise.all([
+        repoCitas.listar(),
+        repoClientes.listar(),
+        repoFacturas.listar(),
+        repoAvisos.vistos(),
+      ]);
+      setLista(calculaAvisos({ citas, clientes, facturas, vistos }));
+      setFallo(null);
+    } catch (e) {
+      /* La lista NO se vacía a propósito: si hace un minuto había tres cosas,
+         siguen siendo verdad. Lo que cambia es que ahora se dice, arriba del
+         todo, que lo que se ve puede estar viejo. */
+      setFallo(porQueNoSePudo(e));
+      // Y en la consola queda el error entero, que es donde lo voy a buscar yo.
+      console.error("[avisos] no se han podido leer los datos", e);
+    }
   }, []);
 
   /*
@@ -119,13 +172,28 @@ export default function Avisos() {
     setAbierto((a) => !a);
   };
 
+  /* Callar también escribe, y escribir también puede que no se pueda. Si no se
+     puede, se dice: sin esto, el aviso se quedaba en pantalla después de pulsar
+     la × y parecía que el botón no funcionaba. */
   const callar = async (a: Aviso) => {
-    await repoAvisos.marcar([{ id: a.id, sello: a.sello }]);
+    try {
+      await repoAvisos.marcar([{ id: a.id, sello: a.sello }]);
+    } catch (e) {
+      setFallo(porQueNoSePudo(e));
+      console.error("[avisos] no se ha podido marcar como visto", e);
+      return;
+    }
     await recargar();
   };
 
   const callarTodos = async () => {
-    await repoAvisos.marcar(lista.map(({ id, sello }) => ({ id, sello })));
+    try {
+      await repoAvisos.marcar(lista.map(({ id, sello }) => ({ id, sello })));
+    } catch (e) {
+      setFallo(porQueNoSePudo(e));
+      console.error("[avisos] no se han podido marcar como vistos", e);
+      return;
+    }
     await recargar();
     setAbierto(false);
   };
@@ -148,13 +216,24 @@ export default function Avisos() {
   };
 
   const hay = lista.length;
+  /* El punto se enciende también cuando no se ha podido leer. «No sé lo que
+     tienes» es una cosa que hay que mirar, igual que una sesión de hoy. */
+  const marca = hay > 0 || !!fallo;
 
   return (
     <div ref={caja} style={css("position:relative;flex:none;")}>
       <button
         onClick={alternar}
-        title="Avisos"
-        aria-label={hay === 0 ? "Avisos: no hay ninguno" : hay === 1 ? "1 aviso" : `${hay} avisos`}
+        title={fallo ? "Avisos: no he podido leerlos" : "Avisos"}
+        aria-label={
+          fallo
+            ? "Avisos: no he podido leerlos"
+            : hay === 0
+              ? "Avisos: no hay ninguno"
+              : hay === 1
+                ? "1 aviso"
+                : `${hay} avisos`
+        }
         aria-haspopup="dialog"
         aria-expanded={abierto}
         style={css(
@@ -167,7 +246,7 @@ export default function Avisos() {
         )}
       >
         <IcoAviso size={17} />
-        {hay > 0 && (
+        {marca && (
           <span
             aria-hidden="true"
             style={css(
@@ -201,17 +280,62 @@ export default function Avisos() {
                 "box-shadow:var(--shadow-lg);padding:var(--pad-card-sm);text-align:left;"
             )}
           >
-            <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s3);")}>
-              {hay === 0 ? "Avisos" : hay === 1 ? "Una cosa" : `${hay} cosas`}
+            <div style={css(rotulo(fallo ? "var(--red)" : "var(--gold)") + "margin-bottom:var(--s3);")}>
+              {fallo ? "No he podido mirar" : hay === 0 ? "Avisos" : hay === 1 ? "Una cosa" : `${hay} cosas`}
             </div>
 
-            {hay === 0 ? (
+            {/* El fallo va ARRIBA y por delante de todo: si lo que hay debajo
+                puede estar viejo, eso se sabe antes de leerlo, no después. */}
+            {fallo && (
+              <div
+                style={css(
+                  "display:flex;gap:var(--s2);align-items:flex-start;padding:var(--s3);margin-bottom:var(--s3);" +
+                    "border:1px solid var(--red-border);border-radius:var(--r-sm);background:var(--red-soft);"
+                )}
+              >
+                <span aria-hidden="true" style={css(punto("var(--red)") + "margin-top:8px;")} />
+                <div style={css("flex:1;min-width:0;")}>
+                  <p style={css("margin:0;font-size:var(--t-body);line-height:1.45;color:var(--text);text-wrap:pretty;")}>
+                    {fallo}
+                  </p>
+                  {hay > 0 && (
+                    <p style={css(NOTA + "margin:6px 0 0;line-height:1.45;")}>
+                      Lo de aquí abajo es lo último que sí pude leer. Puede que ya no sea de ahora.
+                    </p>
+                  )}
+                  <button onClick={() => void recargar()} style={css(BOTON_PLANO + "margin-top:var(--s2);")}>
+                    Volver a intentarlo
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {fallo && hay === 0 ? null : hay === 0 ? (
               /* Nunca «sin datos»: qué se va a encontrar aquí cuando lo haya.
                  Es lo único que convierte un hueco en una promesa. */
-              <p style={css(APOYO + "margin:0;")}>
-                No hay nada esperándote. Cuando tengas algo que no puedas olvidar —una sesión hoy, una nota sin escribir, una
-                factura sin emitir— te lo digo aquí.
-              </p>
+              <>
+                <p style={css(APOYO + "margin:0;")}>
+                  No hay nada esperándote. Cuando tengas algo que no puedas olvidar —una sesión hoy, una nota sin escribir, una
+                  factura sin emitir— te lo digo aquí.
+                </p>
+                {/*
+                 * Y AQUÍ SE DICE LA OTRA MANERA DE QUE ESTO SALGA VACÍO SIEMPRE.
+                 *
+                 * Sin Firebase, la plataforma lee el disco de ESTE navegador. Las
+                 * sesiones que alguien pide por la web no se guardan ahí: se
+                 * guardan en la nube. Así que el aviso más importante que tiene
+                 * esto —«han pedido sesión»— no puede llegar nunca, y la campana
+                 * se queda en silencio para siempre sin que nada parezca roto.
+                 * Es la causa número uno de «las notificaciones no dan», y no se
+                 * arregla mirando: se arregla poniendo las claves en Vercel.
+                 */}
+                {!guardadoEnLaNube && (
+                  <p style={css(NOTA + "margin:var(--s3) 0 0;line-height:1.45;")}>
+                    Ojo: esta plataforma no está conectada a la base de datos, así que sólo ve lo que hayas escrito tú en este
+                    mismo navegador. Las sesiones que te pidan desde la web no van a aparecer aquí hasta que se conecte.
+                  </p>
+                )}
+              </>
             ) : (
               lista.map((a, i) => (
                 <div
