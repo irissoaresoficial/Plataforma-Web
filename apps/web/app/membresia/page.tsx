@@ -81,7 +81,7 @@ export default function Membresia() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta="Avísame" ctaHref="#avisar" />
+      <Nav cta="Apuntarme" ctaHref="#avisar" />
 
       {/* ═══════════════════════════════════════════════ LA ÚNICA PANTALLA */}
       <div className="vino com-hero">
@@ -143,11 +143,20 @@ export default function Membresia() {
 
               Lo que sí hay que decir es qué gana quien entre primero. Eso no es
               defenderse: es dar un motivo. */}
-          {/* La única frase que cuenta de qué va, escrita palabra a palabra.
-              En una página de veinte palabras, que la frase se escriba es
-              literalmente todo el movimiento que hay que ver. */}
-          <Aparece modo="letras" retraso={3} className="com-linea" as="p">
-            Un grupo pequeño. Cada mes, una parte de tu historia familiar.
+          {/*
+              AQUÍ IBA «Un grupo pequeño. Cada mes, una parte de tu historia
+              familiar.» y se ha ido: decisión de Gerson, «quita eso del grupo
+              pequeño».
+
+              Y tenía razón por un motivo de venta, no de estilo: «un grupo
+              pequeño» es lo que uno se dice a sí mismo para justificar que
+              todavía no hay nadie. A quien llega, la palabra «pequeño» no le
+              promete exclusividad — le sugiere que esto está a medias.
+
+              En su sitio va lo único que hay que entender de esta pantalla, y
+              va en grande porque es lo que se viene a hacer aquí. */}
+          <Aparece modo="letras" retraso={3} className="com-lista" as="p">
+            Lista de espera
           </Aparece>
 
           <Aparece retraso={4}>
@@ -169,13 +178,12 @@ export default function Membresia() {
                   caja de cristal no se ve como que está delante de nada. Con el
                   aro asomando por detrás sí. */}
               <span className="com-aro" aria-hidden />
-              <p className="com-caja-titulo">Te aviso antes que a nadie</p>
               <LeadForm
                 origen="membresia"
                 detalle="Aviso de apertura de la comunidad"
-                cta="Avísame"
+                cta="Únete a la lista de espera"
                 variant="dark"
-                successTitle="Hecho. Te aviso yo."
+                successTitle="Ya estás en la lista."
                 successText="Te escribo yo antes de abrir, y te pregunto qué quieres trabajar dentro."
                 privacidad="Sólo lo guardo para avisarte de esto. Te sales cuando quieras."
                 pedirNombre={false}

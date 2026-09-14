@@ -191,7 +191,7 @@ export default function LeadForm({
           VERSALITAS, y en un teléfono eso son dos renglones de mayúsculas
           espaciadas encima de una casilla — más letra en el rótulo que en el
           dato. Lo mismo en cuatro palabras. */}
-      {pedirWhatsapp && campo('whatsapp', 'WhatsApp · te aviso antes', 'tel', whatsapp, setWhatsapp, '+34 600 00 00 00', 'tel')}
+      {pedirWhatsapp && campo('whatsapp', 'Tu WhatsApp, si prefieres', 'tel', whatsapp, setWhatsapp, '+34 600 00 00 00', 'tel')}
 
       <button
         type="submit"
@@ -210,7 +210,10 @@ export default function LeadForm({
         {err}
       </span>
 
-      <span style={{ fontSize: 'var(--t-nota)', lineHeight: 1.6, color: 'var(--tx-3)' }}>{privacidad}</span>
+      {/* La nota de privacidad, al cuerpo del texto y no al escalón de abajo.
+          Es la frase que quita el miedo a dejar el correo: ponerla más pequeña
+          que todo lo demás es ponerla donde no se lee. */}
+      <span style={{ fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-3)' }}>{privacidad}</span>
     </form>
   );
 }
