@@ -144,7 +144,26 @@ export const COPY = {
      * «Ya sabes que no se va a ir solo» no informa de nada: repite en voz alta
      * lo que la persona lleva media página pensando. Eso es lo que mueve.
      */
-    cu_h: 'Ya sabes que no se va a ir solo.',
+    /*
+     * CUARTA VERSIÓN, Y AQUÍ LA REGLA ES OTRA: QUE SUENE A ALGUIEN HABLANDO.
+     *
+     * Han caído tres: «Vamos a mirar la tuya» (pronombre sin dueño), «Ya sabes
+     * que no se va a ir solo» y la del bloque que se cortó. La segunda la
+     * defendí diciendo que «repite en voz alta lo que la persona lleva media
+     * página pensando», y era falso: nadie dice «ya sabes que no se va a ir
+     * solo». Es una frase con estructura de eslogan —le dice al otro lo que
+     * sabe— y esa vuelta de tuerca es justo lo que delata que hay alguien
+     * escribiendo. Gerson: «nadie habla así».
+     *
+     * La prueba es sencilla y me la voy a aplicar siempre: leerla en alto y
+     * preguntarse si alguien la diría en una cocina. «Esto no se pasa con el
+     * tiempo» sí. Es lo que se dice de un dolor que no cede, y es exactamente
+     * lo que esta página lleva siete pantallas demostrando: que el patrón
+     * vuelve cada vez que crees haberlo dejado atrás.
+     *
+     * Y encaja con lo de arriba sin repetir ni una palabra.
+     */
+    cu_h: 'Esto no se pasa con el tiempo.',
     cu_p: 'Online, con tu historia ya preparada antes de vernos.',
     cu_num: 'Qué es la numerología transgeneracional',
     cu_kab: 'Qué es la Kábala',
@@ -193,7 +212,7 @@ export const COPY = {
      * se cree. Es la única prueba que esta página va a tener, y no necesita
      * ninguna cifra ni ningún testimonio para sostenerse.
      */
-    w_que: 'A lo largo de muchos años y de muchas consultas entendí una cosa: lo que se repite no empieza en quien lo sufre. Viene de atrás. Y se puede leer.',
+    w_que: 'A lo largo de muchos años y de muchas consultas entendí una cosa: lo que se repite no empieza en quien lo sufre. Viene de atrás. Y se ve en los números.',
     w_p1: 'Pasé años observando patrones en el mundo corporativo y descifrando qué sucede cuando nadie mira.',
     w_p2: 'En 2010 uní lo mejor de la numerología, la psicosomática clínica, las constelaciones y las terapias integrativas para crear un método práctico y profundo. El objetivo de mi consulta es solo uno: que salgas sabiendo quién eres y qué decisión tomar hoy.',
     w1: 'Derecho', w2: 'Psicología', w3: 'Psicosomática', w4: 'Descodificación', w5: 'Numerología', w6: 'Transgeneracional',
@@ -295,7 +314,7 @@ export const COPY = {
     sg_h: 'Com essa pessoa acabam sempre no mesmo.',
     sg_p: 'A tua data e a dela. Nada mais.',
     sg_cta: 'Ver agora',
-    cu_h: 'Já sabes que não vai desaparecer sozinho.',
+    cu_h: 'Isto não passa com o tempo.',
     cu_p: 'Online, com a tua história já preparada antes de nos vermos.',
     cu_num: 'O que é a numerologia transgeracional',
     cu_kab: 'O que é a Kábala',
@@ -305,7 +324,7 @@ export const COPY = {
     w_lab: 'Quem sou', w_h: 'Sou a Iris. Ajudo-te a libertares-te dos padrões que não te pertencem.', w_h2: 'E a devolvê-los à sua origem.',
     w_hola: 'Olá. Sou a Iris,',
     w_oficio: 'numeróloga transgeracional.',
-    w_que: 'Ao longo de muitos anos e de muitas consultas percebi uma coisa: o que se repete não começa em quem o sofre. Vem de trás. E pode ler-se.',
+    w_que: 'Ao longo de muitos anos e de muitas consultas percebi uma coisa: o que se repete não começa em quem o sofre. Vem de trás. E vê-se nos números.',
     w_p1: 'Passei anos a observar padrões no mundo corporativo e a decifrar o que acontece quando ninguém olha.',
     w_p2: 'Em 2010 uni o melhor da numerologia, da psicossomática clínica, das constelações e das terapias integrativas para criar um método prático e profundo. O objetivo da minha consulta é só um: que saias a saber quem és e que decisão tomar hoje.',
     w1: 'Direito', w2: 'Psicologia', w3: 'Psicossomática', w4: 'Descodificação', w5: 'Numerologia', w6: 'Transgeracional',
@@ -392,7 +411,7 @@ export const COPY = {
     sg_h: 'With that person it always ends the same way.',
     sg_p: 'Your date and theirs. Nothing else.',
     sg_cta: 'See it now',
-    cu_h: 'You already know it will not go away on its own.',
+    cu_h: 'This does not pass with time.',
     cu_p: 'Online, with your story prepared before we meet.',
     cu_num: 'What transgenerational numerology is',
     cu_kab: 'What Kabbalah is',

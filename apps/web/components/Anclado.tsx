@@ -30,6 +30,7 @@
 import { motion, useReducedMotion, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { CURVA, useProgreso } from './movimiento';
+import Orbitas from './Orbitas';
 
 export default function Anclado({
   rotulo,
@@ -62,6 +63,15 @@ export default function Anclado({
     <div className="arena">
       <div className="anclado-fuera" ref={caja} style={{ ['--anclado-n' as string]: lineas.length }}>
         <div className="anclado-dentro">
+          {/* DEBAJO DE LA FRASE HABÍA MEDIO METRO DE PAPEL LISO.
+              El bloque se queda pegado en pantalla y sólo tiene una frase
+              dentro: en la captura de Gerson se ve la frase arriba a la
+              izquierda y setecientos píxeles de nada. Y ahí el vacío no es
+              respiración: como el bloque ESTÁ QUIETO —a eso juega—, si además
+              no hay nada que mirar parece que la página se ha colgado.
+              Los anillos no son adorno: son un ciclo, que es literalmente lo
+              que dice la frase de encima. */}
+          <Orbitas />
           <section className="banda-dentro anclado-caja" aria-label={rotulo}>
             {/* El rótulo en versalitas se ha quitado, como en toda la web: no
                 decía nada que la primera frase no dijera ya, y ponía una línea

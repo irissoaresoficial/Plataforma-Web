@@ -247,7 +247,7 @@ export default function Home() {
               accion: (
                 <button
                   type="button"
-                  className="portada-cta"
+                  className="portada-cta cta-solida"
                   onClick={abrirConsulta}
                   data-mag
                   data-cur-label={t.cbook}
@@ -303,7 +303,7 @@ export default function Home() {
                   página, y se reconoce a la segunda vez que se ve. */}
               <button
                 type="button"
-                className="portada-cta"
+                className="portada-cta cta-solida"
                 onClick={abrirConsulta}
                 data-mag
                 data-cur-label={t.cbook}
@@ -319,7 +319,31 @@ export default function Home() {
               mirándote es exactamente eso. El vídeo está donde toca decidir
               —justo encima del botón de reservar— porque ahí lo que hace falta
               es oírla, no verla. */}
-          <Revelado className="hola-foto">
+          {/*
+              AQUÍ EL BLOQUE SE MUEVE CON LA RUEDA, Y NO ES ADORNO.
+
+              Antes la foto entraba con un barrido y se quedaba quieta: el
+              bloque de Iris era el único tramo largo de la página en el que no
+              pasaba nada mientras se bajaba. Gerson: «la parte de soy Iris
+              quiero que sea más interactivo, que juegue bien con el scrolling».
+
+              Lo que hace ahora son DOS cosas que trabajan juntas:
+
+               · El texto se queda pegado (`.hola-texto` es sticky) mientras la
+                 foto sigue subiendo. Durante unos cuantos cientos de píxeles
+                 quien lee tiene la frase delante y a Iris pasando al lado. En
+                 una presentación eso es exactamente lo que se quiere: que la
+                 cara acompañe al texto en vez de competir con él.
+               · Y la foto va en paralaje —se desplaza más despacio que la
+                 página, 70 px de un extremo al otro del recorrido—, así que no
+                 sube «con» el scroll sino un poco por detrás. Es lo que da la
+                 sensación de profundidad sin que haya nada en 3D.
+
+              El paralaje se apaga solo con `prefers-reduced-motion`, y el
+              sticky se apaga por debajo de 900 px: en una columna, pegar el
+              texto significa taparle la foto a quien baja.
+          */}
+          <Paralaje cantidad={70} className="hola-foto">
             <Foto
               src={FOTOS.hablando}
               alt="Iris Soares, en su consulta"
@@ -328,7 +352,7 @@ export default function Home() {
               sizes="(max-width:900px) 100vw, 42vw"
               objectPosition="center 18%"
             />
-          </Revelado>
+          </Paralaje>
         </div>
       </div>
 

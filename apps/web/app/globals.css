@@ -5491,12 +5491,27 @@ body[data-nav-claro='si'] .sello-color {
        imagen. Vuelve dentro del margen. */
   }
 }
+/* EL TEXTO SE QUEDA Y LA FOTO PASA.
+   El bloque de Iris era el tramo largo de la página en el que no ocurría nada
+   al bajar: dos columnas quietas. Pegando el texto, durante unos cuantos
+   cientos de píxeles quien lee tiene la frase delante y a Iris pasando al
+   lado — que en una presentación es lo que se quiere: que la cara acompañe al
+   texto en vez de competir con él.
+   `align-self: start` hace falta porque la rejilla centra sus hijos por
+   defecto, y un hijo estirado no puede pegarse a nada. */
 .hola-texto {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: clamp(20px, 2.6vw, 34px);
   min-width: 0;
+  position: sticky;
+  top: clamp(96px, 18vh, 190px);
+  align-self: start;
+}
+@media (max-width: 899px) {
+  /* En una sola columna, pegar el texto es taparle la foto a quien baja. */
+  .hola-texto { position: static; }
 }
 
 /* El saludo es el titular y es la pieza gráfica. «Hola. Soy Iris» y no «Iris
@@ -6260,13 +6275,35 @@ body[data-nav-claro='si'] .sello-color {
    Abajo a la izquierda, y los tres en la misma casilla de la rejilla: se cruzan
    en el sitio en vez de empujarse, y la caja mide siempre lo que el más largo,
    así que nada da un salto al cambiar. */
+/* ===================================================================
+   LAS TRES FRASES DE LA PORTADA, EN LA MISMA CAJA
+   ===================================================================
+   Lo que había: los tres textos anclados ABAJO, con el primero a 62 px y los
+   otros dos a 28. Dos cosas mal a la vez, y las dos se ven sin medir nada:
+
+    · Del titular a la segunda frase el tamaño caía a menos de la mitad. No es
+      una jerarquía — es que parecen de dos webs distintas.
+    · Y como el bloque colgaba del borde de abajo, cuanto más corto era el
+      texto MÁS ABAJO empezaba. Así que al pasar de una frase a otra la
+      primera línea saltaba de sitio. «Cambia de tamaño y queda por abajo»,
+      exactamente.
+
+   Ahora la caja tiene un alto fijo y está pegada abajo, pero el texto crece
+   HACIA ABAJO desde el borde de arriba de esa caja. O sea: la primera línea
+   de las tres frases cae en el mismo píxel, midan lo que midan. Y las tres
+   van al mismo cuerpo, que es `--t-h1`: son la misma cosa —una línea de la
+   historia— y no hay ninguna razón para que una pese la mitad que otra.
+   =================================================================== */
 .portada-textos {
   position: absolute;
   left: clamp(20px, 5.5vw, 96px);
   right: clamp(20px, 5.5vw, 96px);
   bottom: clamp(38px, 8svh, 88px);
   display: grid;
-  max-width: 41rem;
+  /* El alto que necesita la frase más larga: tres renglones y el botón. Es lo
+     que fija la línea de arriba y hace que nada se mueva. */
+  min-height: clamp(226px, 38svh, 350px);
+  max-width: 44rem;
   z-index: 2;
 }
 .portada-paso {
@@ -6274,9 +6311,8 @@ body[data-nav-claro='si'] .sello-color {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /* Abajo: los tres textos comparten la línea de base, no el centro. Es la
-     línea que el ojo usa para saber que sigue en el mismo sitio. */
-  justify-content: flex-end;
+  /* Desde arriba, no desde abajo. Ver el comentario de la caja. */
+  justify-content: flex-start;
   gap: clamp(14px, 1.8svh, 22px);
   opacity: 0;
   transform: translateY(16px);
@@ -6326,10 +6362,14 @@ body[data-nav-claro='si'] .sello-color {
 .portada-frase {
   margin: 0;
   font-family: var(--sans);
-  font-size: var(--t-lead);
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.028em;
+  /* EL MISMO CUERPO QUE EL TITULAR. Estaba en `--t-lead` —28 px contra 62— y
+     eso no es jerarquía, es otra web. Las tres frases de la portada son la
+     misma cosa dicha tres veces seguidas; tienen que pesar igual. */
+  font-size: var(--t-h1);
+  font-weight: 600;
+  line-height: 0.99;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
   color: var(--tinta);
 }
 
@@ -6535,11 +6575,17 @@ body[data-nav-claro='si'] .sello-color {
     bottom: clamp(96px, 15svh, 136px); /* por encima de la pastilla del chat */
     max-width: none;
   }
-  .portada-h1 {
-    font-size: var(--t-h1);
-  }
+  /* AQUÍ SE VOLVÍA A ROMPER LA ALINEACIÓN, Y JUSTO EN EL MÓVIL.
+     Estas dos reglas repetían el tamaño del titular y bajaban la frase a
+     `--t-lead`. Medido a 390 px después de arreglar el escritorio: titular
+     34 px, frases 19. O sea, arreglado el ordenador y roto el teléfono, que es
+     donde Gerson lo mira.
+     Las dos sobran: los tokens de la escala son `clamp`, así que ya se encogen
+     solos, y repetir el mismo valor dentro de un `@media` sólo sirve para que
+     un día alguien cambie uno y se olvide del otro. Queda lo único que sí es
+     propio del móvil: soltar el ancho máximo. */
+  .portada-h1,
   .portada-frase {
-    font-size: var(--t-lead);
     max-width: none;
   }
 }
@@ -7272,4 +7318,76 @@ body[data-nav-claro='si'] .sello-color {
 }
 .num-cinta-bloque > div:first-child {
   padding-inline: clamp(16px, 4vw, 56px);
+}
+
+/* ==================================================================
+   LAS ÓRBITAS
+   ==================================================================
+   Van DETRÁS de la frase del dolor y llenan el medio metro de papel liso que
+   quedaba debajo. Muy tenues a propósito: lo que se lee es la frase; esto sólo
+   tiene que confirmar que el bloque —que está quieto— sigue vivo.
+   ================================================================== */
+.orbitas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.orbitas svg {
+  /* Más ancho que alto y desbordando por los lados: los anillos tienen que
+     salirse de la pantalla. Un círculo entero y centrado es un logotipo; un
+     trozo de círculo que se va por el borde es un espacio. */
+  width: min(140vh, 118%);
+  aspect-ratio: 1;
+  overflow: visible;
+}
+.orbitas circle {
+  fill: none;
+  stroke: var(--oro, #a9884f);
+  stroke-width: 0.7;
+  opacity: 0.19;
+  transform-origin: 200px 200px;
+}
+/* La marca del anillo: un trocito de trazo más vivo que da la vuelta. Es lo
+   que hace que se note que gira — un círculo liso girando no se ve girar. */
+.orbitas .orb-marca {
+  stroke-dasharray: 22 900;
+  stroke-width: 1.5;
+  opacity: 0.4;
+}
+.orbitas .orb-centro {
+  fill: var(--oro, #a9884f);
+  stroke: none;
+  opacity: 0.5;
+}
+.orbitas .orb-mota {
+  fill: var(--oro, #a9884f);
+  stroke: none;
+  opacity: 0.32;
+}
+
+/* Vueltas largas: el efecto que se busca es «esto respira», no «esto se
+   mueve». Cada anillo a su ritmo, y el mediano al revés, para que nunca se
+   alineen dos veces igual y no se lea como un reloj. */
+.orbitas .orb-lento { animation: orb-gira 88s linear infinite; transform-origin: 200px 200px; }
+.orbitas .orb-medio { animation: orb-gira 61s linear infinite reverse; transform-origin: 200px 200px; }
+.orbitas .orb-rapido { animation: orb-gira 39s linear infinite; transform-origin: 200px 200px; }
+.orbitas .orb-mota-a { animation: orb-sube 27s ease-in-out infinite; }
+.orbitas .orb-mota-b { animation: orb-sube 34s ease-in-out infinite 6s; }
+@keyframes orb-gira {
+  to { transform: rotate(360deg); }
+}
+@keyframes orb-sube {
+  0%, 100% { transform: translateY(0); opacity: 0.32; }
+  50% { transform: translateY(-42px); opacity: 0.1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Se quedan. El dibujo es el mismo; lo que se va es el giro. */
+  .orbitas .orb-lento,
+  .orbitas .orb-medio,
+  .orbitas .orb-rapido,
+  .orbitas .orb-mota { animation: none; }
 }
