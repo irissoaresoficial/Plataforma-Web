@@ -7247,29 +7247,20 @@ body[data-nav-claro='si'] .sello-color {
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 .cinta-marco::-webkit-scrollbar { display: none; }
-/* La capa del empuje. Vacía de estilo a propósito: lo único que lleva es el
-   `transform` que le escribe el rAF, y tenerla separada del carril es lo que
-   permite que el empuje de la rueda y la deriva del CSS se sumen en vez de
-   pisarse. */
-.cinta-empuje {
-  width: max-content;
-  will-change: transform;
-}
+/* UNA SOLA CAPA, Y LA MUEVE JAVASCRIPT.
+   Antes eran dos: un `@keyframes` para la deriva y una capa aparte para el
+   empuje del scroll, que se sumaban. Y se rompía — la cinta aparecía empezando
+   a la mitad de la pantalla con medio metro de blanco a la izquierda— porque
+   el empuje no daba la vuelta: al SUBIR, la posición crece, el carril se va a
+   la derecha y deja al aire el hueco de antes de la primera ficha.
+   Dos capas independientes no se pueden envolver: para saber si toca dar la
+   vuelta hay que mirar la SUMA, y ninguna de las dos la conoce. Así que ahora
+   hay una sola posición, con la deriva y el empuje dentro, y se envuelve con
+   un módulo del ancho de una copia. Ver components/Cinta.tsx. */
 .cinta-carril {
   display: flex;
   width: max-content;
-  animation: cinta-gira var(--cinta-vuelta, 46s) linear infinite;
-}
-@keyframes cinta-gira {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
-}
-/* Se para para poder leerla: al pasar por encima, y al llegar con el
-   tabulador a cualquier cosa de dentro. Una cinta que no se para es una cinta
-   de la que no se lee nada. */
-.cinta:hover .cinta-carril,
-.cinta:focus-within .cinta-carril {
-  animation-play-state: paused;
+  will-change: transform;
 }
 .cinta-fila {
   display: flex;
@@ -7312,8 +7303,8 @@ body[data-nav-claro='si'] .sello-color {
 }
 @media (prefers-reduced-motion: reduce) {
   /* Quieta, y se recorre con el dedo. Es lo que pide quien marca esa casilla:
-     no «más despacio», sino que no se mueva solo. */
-  .cinta-carril { animation: none; }
+     no «más despacio», sino que no se mueva solo. El componente ni siquiera
+     arranca su bucle en ese caso, así que aquí sólo queda el enganche. */
   .cinta-marco { scroll-snap-type: x mandatory; }
   .cinta-pieza { scroll-snap-align: start; }
 }

@@ -453,10 +453,13 @@ export default function Home() {
           <Aparece as="h2" className="titular-seccion cierre2-h" retraso={1}>
             {t.cu_h}
           </Aparece>
+          {/* AQUÍ IBA «Online, con tu historia ya preparada antes de vernos.»
+              y se ha ido. Entre «Déjame mirarlo contigo» y el botón, esa línea
+              no hacía más que enfriar: el titular es una mano tendida y lo
+              siguiente que se leía era una nota de logística. El cómo y el
+              cuándo se cuentan en /numerologia y los dice el chat en su primera
+              respuesta — aquí sobra. */}
           <Aparece retraso={2}>
-            <p className="cierre2-p">{t.cu_p}</p>
-          </Aparece>
-          <Aparece retraso={3}>
             <button
               type="button"
               className="portada-cta cta-solida cierre2-cta"
@@ -472,7 +475,7 @@ export default function Home() {
           {/* Las dos puertas para quien quiera leer antes de hablar. Siguen
               pesando menos que el botón —no son doradas ni llevan relleno— pero
               ya tienen tamaño de cosa que se toca. */}
-          <Aparece retraso={4} className="cierre2-puertas">
+          <Aparece retraso={3} className="cierre2-puertas">
             <Link href="/numerologia" className="cierre2-puerta" data-mag data-cur-label="Ver">
               <span className="cierre2-puerta-h">{t.cu_num}</span>
               <span className="cierre2-puerta-p">{t.cu_num_p}</span>
