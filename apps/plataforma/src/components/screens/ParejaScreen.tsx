@@ -13,7 +13,7 @@ export default function ParejaScreen() {
   const { r, re, p, setP, comparar, pr, comp } = useApp();
   /* Va aquí arriba, antes del `return` de más abajo: un hook no puede quedarse
      sin llamar según lo que haya en pantalla. */
-  const { exporta, sinDialogo, trasPulsar, ayuda, guiaApple, cierraGuia } = useExportar();
+  const { exporta, sinDialogo, trasPulsar, ayuda, guiaApple, cierraGuia, enApp, aSafari } = useExportar();
   // La comparativa cruza estructuras, planos y cuentas, y todo eso sale de la
   // fecha de nacimiento. Una empresa no la tiene, así que no hay nada que
   // cruzar: mejor decirlo que dejar la pantalla en blanco.
@@ -162,7 +162,7 @@ botonPrincipal(listo) + "margin-top:20px;"
                 {trasPulsar}
               </span>
             )}
-            {guiaApple && <GuiaApple alCerrar={cierraGuia} />}
+            {guiaApple && <GuiaApple alCerrar={cierraGuia} enApp={enApp} aSafari={aSafari} />}
           </div>
           <div
             style={css(

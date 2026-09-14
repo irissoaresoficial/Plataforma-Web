@@ -111,7 +111,7 @@ export default function FacturasScreen() {
 
   /* Descargar la factura es imprimir, igual que el estudio: misma pieza, mismo
      aviso si el navegador no abre el diálogo. */
-  const { exporta, sinDialogo, trasPulsar, ayuda, guiaApple, cierraGuia } = useExportar();
+  const { exporta, sinDialogo, trasPulsar, ayuda, guiaApple, cierraGuia, enApp, aSafari } = useExportar();
   const [lista, setLista] = useState<Factura[]>([]);
   const [gente, setGente] = useState<Cliente[]>([]);
   const [abierta, setAbierta] = useState<Factura | null>(null);
@@ -593,7 +593,7 @@ export default function FacturasScreen() {
                   {trasPulsar}
                 </p>
               )}
-              {guiaApple && <GuiaApple alCerrar={cierraGuia} />}
+              {guiaApple && <GuiaApple alCerrar={cierraGuia} enApp={enApp} aSafari={aSafari} />}
               {mensaje && (
                 <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-2);")}>
                   {mensaje}

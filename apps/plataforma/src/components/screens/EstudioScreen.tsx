@@ -30,7 +30,7 @@ export default function EstudioScreen() {
      que toca según el aparato. Los tres botones de exportar de la plataforma
      —estudio, pareja y factura— usan esta misma pieza, para que en la tablet
      los tres digan lo mismo en vez de quedarse callados dos de ellos. */
-  const { exporta, sinDialogo, trasPulsar, ayuda, ayudaCabeceras, guiaApple, cierraGuia } = useExportar();
+  const { exporta, sinDialogo, trasPulsar, ayuda, ayudaCabeceras, guiaApple, cierraGuia, enApp, aSafari } = useExportar();
 
   /*
    * LOS APUNTES DEL IDIOMA SE PIDEN ANTES DE ARMAR EL ESTUDIO.
@@ -210,17 +210,27 @@ export default function EstudioScreen() {
          * funciona siempre y conviene tenerla a la vista. */}
         {/* Lo primero que pregunta cualquiera al exportar, así que va en la
          * barra y no escondido en una ayuda. */}
-        <span
-          style={css(
-            "flex-basis:100%;display:inline-flex;align-items:flex-start;gap:7px;font-size:var(--t-mini);line-height:1.45;color:var(--gold);background:var(--gold-soft);border-radius:var(--r-sm);padding:7px 10px;"
-          )}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{ flex: "none", marginTop: 1 }} aria-hidden="true">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 8h.01M11 12h1v4h1" />
-          </svg>
-          {ayudaCabeceras}
-        </span>
+        {/* SÓLO SI HAY ALGO QUE DECIR.
+            En un aparato de Apple `ayudaCabeceras` vale `null` a propósito —el
+            truco de quitar los encabezados vive DENTRO del diálogo de
+            impresión, y en el iPad no hay diálogo—, pero la caja se pintaba
+            igual: una barra dorada con su icono, su fondo y su hueco, y ni una
+            palabra dentro. Se ve perfectamente en la captura del iPad. Un
+            cartel vacío no es neutro: parece que algo no ha terminado de
+            cargar, justo al lado del botón que se acaba de pulsar. */}
+        {ayudaCabeceras && (
+          <span
+            style={css(
+              "flex-basis:100%;display:inline-flex;align-items:flex-start;gap:7px;font-size:var(--t-mini);line-height:1.45;color:var(--gold);background:var(--gold-soft);border-radius:var(--r-sm);padding:7px 10px;"
+            )}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{ flex: "none", marginTop: 1 }} aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 8h.01M11 12h1v4h1" />
+            </svg>
+            {ayudaCabeceras}
+          </span>
+        )}
         {/* En un aparato de Apple la ruta de Compartir no es el plan B: muchas
             veces es el único. Por eso la ayuda que se enseña depende de dónde
             se está, en vez de ser la misma frase para todos. */}
@@ -235,7 +245,7 @@ export default function EstudioScreen() {
             {trasPulsar}
           </span>
         )}
-        {guiaApple && <GuiaApple alCerrar={cierraGuia} />}
+        {guiaApple && <GuiaApple alCerrar={cierraGuia} enApp={enApp} aSafari={aSafari} />}
         {/* Mientras se descargan los apuntes del idioma. Son 292 KB y en una
             conexión lenta se nota; sin decir nada, el documento se quedaría un
             momento en español y parecería que el selector no funciona. */}

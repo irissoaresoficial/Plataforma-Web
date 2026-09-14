@@ -102,6 +102,35 @@ export function enAplicacion(): boolean {
 }
 
 /**
+ * ABRIR ESTA MISMA PÁGINA EN UNA PESTAÑA NORMAL DEL NAVEGADOR.
+ *
+ * Es la salida del único caso que no tiene arreglo por otro lado: la plataforma
+ * guardada en la pantalla de inicio del iPad. Ahí Safari se queda sin barra, y
+ * sin barra no hay botón de Compartir — o sea que la guía de tres pasos que
+ * enseñamos apunta a un botón QUE NO EXISTE. `window.print()` tampoco hace nada
+ * y tampoco da error. Es un callejón sin salida completo.
+ *
+ * `window.open` con `_blank` desde una aplicación guardada en la pantalla de
+ * inicio sale a Safari de verdad, con su barra y su botón de Compartir. Desde
+ * ahí el camino de siempre funciona.
+ *
+ * TIENE QUE IR DENTRO DEL GESTO, igual que `print()`: abrir una ventana es de
+ * las cosas que un navegador sólo permite mientras se está atendiendo el toque.
+ * Por eso esta función no es asíncrona y no puede llegar a serlo.
+ */
+export function abreEnPestana(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    /* `noopener` porque la pestaña nueva no tiene por qué poder tocar a ésta, y
+       sin él la hija hereda una referencia a `window.opener`. */
+    const w = window.open(window.location.href, "_blank", "noopener");
+    return w !== null;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * En el iPad y el iPhone el diálogo puede no llegar a abrirse, y hay un caso en
  * el que NO SE ABRE NUNCA por mucho que el código esté bien: cuando la
  * plataforma se ha guardado en la pantalla de inicio y se abre como si fuera una
@@ -200,6 +229,12 @@ export function useExportar() {
 
   const cierraGuia = useCallback(() => setEstado("listo"), []);
 
+  /* La salida de emergencia, atada al gesto igual que la impresión. Se ofrece
+     en la guía, no en la barra: quien está en Safari normal no la necesita. */
+  const aSafari = useCallback(() => {
+    abreEnPestana();
+  }, []);
+
   return {
     exporta,
     /* Rojo: ha fallado de verdad. */
@@ -210,7 +245,22 @@ export function useExportar() {
     guiaApple: estado === "guia",
     cierraGuia,
     apple,
+    /*
+     * `enApp` SE CALCULABA Y NO SE USABA EN NINGÚN SITIO. Ese era el fallo.
+     *
+     * Es decir: el código sabía perfectamente que la plataforma estaba abierta
+     * como aplicación desde la pantalla de inicio —el único caso en el que
+     * guardar el PDF es literalmente imposible por el camino que enseñamos— y
+     * con ese dato en la mano no hacía nada. La persona recibía los tres pasos
+     * de siempre, cuyo paso 1 dice «toca Compartir en la barra de Safari»
+     * apuntando a una barra que ahí no existe.
+     *
+     * Ahora la guía lo lee y cambia: primero el botón que saca a Safari, y los
+     * tres pasos después, que es cuando se pueden seguir.
+     */
     enApp,
+    /** Sacar esta misma página a una pestaña normal del navegador. */
+    aSafari,
     ayuda: apple ? AYUDA_IMPRIMIR_APPLE : AYUDA_IMPRIMIR,
     /*
      * El truco de quitar los encabezados vive DENTRO del diálogo de impresión, y

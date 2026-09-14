@@ -29,7 +29,7 @@
  */
 
 import { css } from "@/lib/css";
-import { PAD, TITULO, APOYO, BOTON_NORMAL } from "@/lib/ui";
+import { PAD, TITULO, APOYO, BOTON_NORMAL, botonPrincipal } from "@/lib/ui";
 
 /**
  * La tarjeta, escrita entera y no como `TARJETA` con un `border-color` detrás.
@@ -135,7 +135,21 @@ const PASOS: { icono: React.ReactNode; texto: React.ReactNode }[] = [
   },
 ];
 
-export default function GuiaApple({ alCerrar }: { alCerrar: () => void }) {
+export default function GuiaApple({
+  alCerrar,
+  enApp = false,
+  aSafari,
+}: {
+  alCerrar: () => void;
+  /**
+   * La plataforma está abierta como aplicación, desde el icono de la pantalla
+   * de inicio. Cambia la guía entera: ahí no hay barra de Safari, así que el
+   * paso 1 —«toca Compartir en la barra»— apunta a algo que no existe.
+   */
+  enApp?: boolean;
+  /** Sacar esta misma página a una pestaña normal de Safari. */
+  aSafari?: () => void;
+}) {
   return (
     <section
       /* `role="dialog"` no: no atrapa el foco ni tapa la pantalla, y decir que
@@ -148,9 +162,28 @@ export default function GuiaApple({ alCerrar }: { alCerrar: () => void }) {
     >
       <h3 style={css(TITULO + "margin:0;")}>Cómo guardar el PDF en el iPad</h3>
       <p style={css(APOYO + "margin:0;")}>
-        Safari en el iPad no abre el diálogo de impresión: no es cosa de la plataforma y no se puede hacer desde aquí.
-        Éste es el camino, y el PDF sale exactamente igual de maquetado.
+        {enApp
+          ? "Tienes la plataforma abierta desde el icono de la pantalla de inicio, y ahí Safari no enseña su barra. Sin barra no hay botón de Compartir y no hay manera de guardar el PDF: primero hay que salir a Safari."
+          : "Safari en el iPad no abre el diálogo de impresión: no es cosa de la plataforma y no se puede hacer desde aquí. Éste es el camino, y el PDF sale exactamente igual de maquetado."}
       </p>
+
+      {/* EL BOTÓN QUE FALTABA.
+          El código ya sabía que estábamos dentro de la aplicación de la
+          pantalla de inicio —lo calculaba y no lo usaba en ninguna parte— y aun
+          así enseñaba los tres pasos de siempre, cuyo primer paso manda tocar
+          un botón que en esa pantalla NO EXISTE. Aquí se sale a Safari, que es
+          lo único que hay que hacer antes de poder seguir la guía. */}
+      {enApp && aSafari && (
+        <button
+          onClick={aSafari}
+          style={css(
+            botonPrincipal() + "align-self:flex-start;display:inline-flex;align-items:center;gap:9px;"
+          )}
+        >
+          <IconoCompartir tam={17} />
+          Abrir esto en Safari
+        </button>
+      )}
 
       <ol style={css("margin:var(--s2) 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:var(--s3);")}>
         {PASOS.map((p, i) => (
