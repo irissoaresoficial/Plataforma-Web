@@ -21,7 +21,13 @@ import Aparece from '@/components/Aparece';
 import { Palabras, Marquesina, Paralaje, Revelado, Entra } from '@/components/movimiento';
 import TuNumero from '@/components/TuNumero';
 import Anclado from '@/components/Anclado';
-import Testimonios from '@/components/Testimonios';
+/* AQUÍ SE IMPORTABA `Testimonios` Y NO SE PINTABA EN NINGUNA PARTE.
+   El componente estaba terminado, la lista `TESTIMONIOS` de content/site.ts
+   estaba vacía, y el import llevaba meses colgando sin dibujar un solo píxel.
+   Gerson ha decidido el 14 de septiembre que la portada NO lleva casos de
+   clientes ni testimonios — «no es necesario» —, así que la línea se va. El
+   «qué he hecho» de la página se cuenta con su recorrido, que es verdad y no
+   depende de que nadie escriba nada. */
 import Lanzamiento from '@/components/Lanzamiento';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
