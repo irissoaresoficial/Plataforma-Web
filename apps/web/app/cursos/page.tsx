@@ -220,21 +220,47 @@ export default function Cursos() {
             {/* Aquí iba el rótulo «CURSOS Y TALLERES EN DIRECTO» en versalitas.
                 Fuera, como los otros siete de la web: no decía nada que el
                 titular no diga ya, y ponía una línea de ruido delante. */}
-            <Aparece as="h1" modo="letras" className="cur-h1">
+            {/* LA CHAPA DE ARRIBA, CON EL PUNTO QUE LATE.
+                Es la misma pieza que corona la página de la comunidad, y eso es
+                lo que se buscaba: dos páginas distintas que se reconocen como de
+                la misma casa. Aquí no dice «próximamente» — dice el día, que es
+                el dato por el que se entra a esta página. */}
+            {proximo && !falta(proximo.fechas) && (
+              <Aparece className="cur-chapa">
+                <i aria-hidden />
+                {proximo.fechas}
+              </Aparece>
+            )}
+
+            <Aparece as="h1" modo="letras" className="cur-h1" retraso={1}>
               Dos días que cambian la conversación en tu casa.
             </Aparece>
-            <Aparece retraso={1}>
+            <Aparece retraso={2}>
               <p className="cur-entrada">
                 En directo y con tu caso encima de la mesa: sales sabiendo hacer las cuentas tú, no con apuntes.
               </p>
             </Aparece>
 
-            {/* LOS DATOS, EN UNA TIRA. Cada uno se dibuja sólo si existe, así
-                que un curso al que le falte el horario no deja un hueco raro:
-                deja de tener esa línea. */}
+            {/*
+                LOS DATOS, EN UNA FICHA HUNDIDA, Y NO EN UNA LISTA PELADA.
+
+                Antes eran tres parejas `dt`/`dd` sueltas, una debajo de otra:
+                CUÁNDO, HORARIO, SON, cada rótulo en versalitas del mismo tamaño
+                que el dato. En un teléfono eso no se lee como la ficha de un
+                curso — se lee como un formulario a medio rellenar, que es
+                literalmente lo que Gerson vio.
+
+                Ahora es una sola pieza hundida en la pared, con el rótulo a la
+                izquierda y el dato a la derecha, separados por una raya de un
+                píxel. La regla de la casa: lo que se hunde es contenido. Y de
+                paso se lee como lo que es —la entrada de un curso— en vez de
+                como una lista.
+
+                Cada línea se dibuja sólo si existe: a un curso al que le falte
+                el horario le falta esa línea, no le sale un hueco raro. */}
             {proximo && (
-              <Aparece retraso={2}>
-                <dl className="cur-datos">
+              <Aparece retraso={3}>
+                <dl className="cur-ficha">
                   {!falta(proximo.fechas) && (
                     <div><dt>Cuándo</dt><dd>{proximo.fechas}</dd></div>
                   )}
@@ -252,24 +278,33 @@ export default function Cursos() {
                 el precio se lee como un dato más; pegado al botón es la última
                 cosa que se mira antes de pulsar, que es donde tiene que estar. */}
             {proximo && (
-              <Aparece retraso={3}>
+              <Aparece retraso={4}>
                 <div className="cur-cerrar">
                   {proximo.precio != null && (
                     <span className="cur-precio">
                       <b>{eur(proximo.precio)}</b>
-                      {proximo.precioAntes != null && <s>{eur(proximo.precioAntes)}</s>}
+                      {proximo.precioAntes != null && (
+                        <span className="cur-precio-antes">
+                          <s>{eur(proximo.precioAntes)}</s>
+                          {/* El porcentaje sale de los dos números, no escrito a
+                              mano: el día que cambie el precio, el descuento
+                              cambia solo y no hay manera de que la página
+                              anuncie una rebaja que no existe. */}
+                          <b>−{Math.round(((proximo.precioAntes - proximo.precio) / proximo.precioAntes) * 100)} %</b>
+                        </span>
+                      )}
                     </span>
                   )}
-                  <a href={`#${proximo.id}`} data-mag data-cur-label="Ver" className="pill pill-cream">
+                  <a href={`#${proximo.id}`} data-mag data-cur-label="Ver" className="portada-cta cta-solida cur-boton">
                     <span>Ver el curso y apuntarme</span>
-                    <span className="pill-arrow">↓</span>
+                    <i aria-hidden>↓</i>
                   </a>
                 </div>
               </Aparece>
             )}
 
             {proximo?.fechaISO && (
-              <Aparece retraso={4}>
+              <Aparece retraso={5}>
                 <div className="cur-reloj">
                   <CuentaAtras fechaISO={proximo.fechaISO} abiertoDesdeISO={proximo.inscripcionDesdeISO} compacto />
                 </div>

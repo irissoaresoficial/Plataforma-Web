@@ -74,9 +74,20 @@ export default function LeadForm({
   const uid = useId();
 
   const dark = variant === 'dark';
-  const inputStyle: React.CSSProperties = dark
-    ? { background: 'var(--linea)', border: '1px solid var(--linea-2)', color: 'var(--tx)' }
-    : { background: '#FFFFFF', border: '1px solid var(--linea)', color: 'var(--tx)' };
+  /*
+   * EL COLOR DE LOS CAMPOS SE HA IDO A LA HOJA DE ESTILOS, Y HACÍA FALTA.
+   *
+   * Aquí había un `style` en línea: sobre fondo oscuro, `background: var(--linea)`.
+   * Dentro de un bloque `.vino`, `--linea` es blanco al 16 % sobre granate — o
+   * sea, casi el granate. En la pantalla de la comunidad eso daba tres cuadros
+   * del color de la pared, que es exactamente lo que Gerson señaló en la foto.
+   *
+   * Y lo peor no era el color: era que un `style` en línea GANA a cualquier
+   * regla del CSS. Se podía escribir el arreglo en `globals.css` todas las veces
+   * que se quisiera y no iba a aplicarse nunca. Por eso se va de aquí: los
+   * colores de los campos se deciden en un sitio, y ese sitio es `.field-input`
+   * y sus variantes por bloque.
+   */
 
   const enviar = async () => {
     if (pedirNombre && nombre.trim().length < 2) return setErr('Escribe tu nombre.');
@@ -157,7 +168,6 @@ export default function LeadForm({
           setErr('');
         }}
         className="field-input"
-        style={inputStyle}
       />
     </div>
   );
@@ -175,9 +185,13 @@ export default function LeadForm({
       {campo('email', 'Tu correo', 'email', email, setEmail, 'tucorreo@ejemplo.com', 'email')}
       {/* «(opcional)» a secas es una invitación a saltárselo, y el WhatsApp es
           por donde Iris avisa de verdad. Decir PARA QUÉ sirve sube el relleno
-          sin mentir sobre si hace falta — que es lo que haría quitar la
-          palabra y luego no exigirlo. */}
-      {pedirWhatsapp && campo('whatsapp', 'WhatsApp · si prefieres que te avise por ahí', 'tel', whatsapp, setWhatsapp, '+34 600 00 00 00', 'tel')}
+          sin mentir sobre si hace falta.
+
+          Pero decía «WhatsApp · si prefieres que te avise por ahí» EN
+          VERSALITAS, y en un teléfono eso son dos renglones de mayúsculas
+          espaciadas encima de una casilla — más letra en el rótulo que en el
+          dato. Lo mismo en cuatro palabras. */}
+      {pedirWhatsapp && campo('whatsapp', 'WhatsApp · te aviso antes', 'tel', whatsapp, setWhatsapp, '+34 600 00 00 00', 'tel')}
 
       <button
         type="submit"

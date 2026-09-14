@@ -102,10 +102,26 @@ export const COPY = {
      * cuánto?». El precio vive en las dos páginas que explican qué se compra, y
      * el chat lo dice en su primera respuesta.
      */
-    cu_h: 'Vamos a mirar la tuya.',
-    cu_p: 'Online, con tu historia ya preparada.',
-    cu_num: 'Qué es la numerología transgeneracional →',
-    cu_kab: 'Qué es la Kábala →',
+    /*
+     * Y LA FRASE TIENE QUE DOLER, NO PRESENTAR.
+     *
+     * Decía «Vamos a mirar la tuya.» y tenía dos fallos a la vez. Uno de
+     * gramática: «la tuya» ¿qué? Se apoyaba en el bloque de arriba, y quien
+     * llega aquí de un salto —o quien ha bajado rápido— lee un pronombre sin
+     * dueño. Y otro peor: es una frase de agenda, no de dolor. Cuenta lo que va
+     * a pasar en la sesión, cuando lo que toca aquí es nombrar por qué se pide.
+     *
+     * «Ya sabes que no se va a ir solo» no informa de nada: repite en voz alta
+     * lo que la persona lleva media página pensando. Eso es lo que mueve.
+     */
+    cu_h: 'Ya sabes que no se va a ir solo.',
+    cu_p: 'Online, con tu historia ya preparada antes de vernos.',
+    cu_num: 'Qué es la numerología transgeneracional',
+    cu_kab: 'Qué es la Kábala',
+    /* Lo que se lee debajo del nombre de cada puerta, ahora que son dos fichas
+       y no dos enlaces sueltos: sin esto, «Kábala» es una palabra a secas. */
+    cu_num_p: 'De dónde sale lo que se repite, y el precio.',
+    cu_kab_p: 'El árbol, las diez puertas y el precio.',
     w_lab: 'Quién soy', w_h: 'Soy Iris. Te ayudo a liberarte de los patrones que no te pertenecen.', w_h2: 'Y a devolverlos a su origen.',
     /*
      * EL SALUDO, EN CUANTO TERMINA EL ÁRBOL.
@@ -164,7 +180,13 @@ export const COPY = {
     f_q10: '¿Hace falta preparar algo antes?', f_a10: 'Tu fecha de nacimiento y tu nombre completo de nacimiento. Si tienes a mano las fechas de tus padres y abuelos, mejor: es donde aparece lo que se repite.',
     f_q11: '¿Y si necesito cambiar la cita?', f_a11: 'Se cambia, y sin coste: escribe a irissoaresoficial@gmail.com y se busca otro hueco. Lo único, avísame con 24 horas — con menos, esa hora ya no se la puedo dar a nadie y se da por dada.',
     f_q12: '¿Puedo regalar una sesión?', f_a12: 'Sí. Escríbeme y lo montamos: la persona elige el día que le venga bien.',
-    c_h: 'Vamos a mirarlo juntos.', c_p: 'Online, y con tu historia ya preparada antes de vernos.',
+    /* EL ÚLTIMO TITULAR DE LA PÁGINA, Y NO PUEDE SER EL MISMO QUE EL DE ARRIBA.
+       Decía «Vamos a mirarlo juntos.» a dos pantallas de «Vamos a mirar la
+       tuya.»: el mismo verbo, el mismo tono y el mismo botón dos veces. Repetir
+       una llamada no la hace más fuerte, la gasta. Aquí va lo que no se ha
+       dicho en toda la página y es lo que de verdad duele de esto: que lo que
+       no se mira no se queda quieto — pasa a quien viene detrás. */
+    c_h: 'Lo que tú no mires, lo mira quien venga detrás.', c_p: 'Empecemos por tu fecha.',
     c_btn: 'Reservar mi consulta', c_micro: 'Se reserva hablando · un minuto',
     ft_p: 'Iris Soares. Entender de dónde viene lo que se repite, y dejar de repetirlo.',
     ft_start: 'Empezar', ft_1: 'Sesión con Iris', ft_2: 'Prueba gratis', ft_3: 'Cursos y talleres', ft_4: 'La membresía',
@@ -228,10 +250,12 @@ export const COPY = {
     sg_h: 'Com essa pessoa acabam sempre no mesmo.',
     sg_p: 'A tua data e a dela. Nada mais.',
     sg_cta: 'Ver agora',
-    cu_h: 'Vamos olhar para a tua.',
-    cu_p: 'Online, com a tua história já preparada.',
-    cu_num: 'O que é a numerologia transgeracional →',
-    cu_kab: 'O que é a Kábala →',
+    cu_h: 'Já sabes que não vai desaparecer sozinho.',
+    cu_p: 'Online, com a tua história já preparada antes de nos vermos.',
+    cu_num: 'O que é a numerologia transgeracional',
+    cu_kab: 'O que é a Kábala',
+    cu_num_p: 'De onde vem o que se repete, e o preço.',
+    cu_kab_p: 'A árvore, as dez portas e o preço.',
     q_p2: 'Não adivinha o futuro. Olha para trás para entender o que já te está a acontecer. A conta faz-se à tua frente, com números, e podes refazê-la tu.',
     w_lab: 'Quem sou', w_h: 'Sou a Iris. Ajudo-te a libertares-te dos padrões que não te pertencem.', w_h2: 'E a devolvê-los à sua origem.',
     w_hola: 'Olá. Sou a Iris,',
@@ -268,7 +292,7 @@ export const COPY = {
     f_q10: 'É preciso preparar alguma coisa?', f_a10: 'A tua data de nascimento e o teu nome completo de nascimento. Se tiveres as datas dos pais e avós, melhor ainda.',
     f_q11: 'E se precisar de mudar a marcação?', f_a11: 'Muda-se, e sem custo: escreve para irissoaresoficial@gmail.com e procura-se outro horário. Só uma coisa, avisa com 24 horas — com menos, essa hora já não a posso dar a ninguém e conta como dada.',
     f_q12: 'Posso oferecer uma sessão?', f_a12: 'Sim. Escreve-me e tratamos disso: a pessoa escolhe o dia que lhe der jeito.',
-    c_h: 'Vamos olhar para isto juntos.', c_p: 'Online, e com a tua história já preparada antes de nos vermos.',
+    c_h: 'O que tu não olhares, olha-o quem vier a seguir.', c_p: 'Comecemos pela tua data.',
     c_btn: 'Marcar a minha consulta', c_micro: 'Marca-se a conversar · um minuto',
     ft_p: 'Iris Soares. Perceber de onde vem o que se repete, e deixar de o repetir.',
     ft_start: 'Começar', ft_1: 'Sessão com a Iris', ft_2: 'Testar grátis', ft_3: 'Cursos e workshops', ft_4: 'A membresia',
@@ -323,10 +347,12 @@ export const COPY = {
     sg_h: 'With that person it always ends the same way.',
     sg_p: 'Your date and theirs. Nothing else.',
     sg_cta: 'See it now',
-    cu_h: 'Let us look at yours.',
+    cu_h: 'You already know it will not go away on its own.',
     cu_p: 'Online, with your story prepared before we meet.',
-    cu_num: 'What transgenerational numerology is →',
-    cu_kab: 'What Kabbalah is →',
+    cu_num: 'What transgenerational numerology is',
+    cu_kab: 'What Kabbalah is',
+    cu_num_p: 'Where the repetition comes from, and the price.',
+    cu_kab_p: 'The tree, the ten gates and the price.',
     q_p2: 'It does not predict the future. It explains the present.',
     w_lab: 'Who I am', w_h: 'I am Iris. I help you free yourself from patterns that are not yours.', w_h2: 'And return them to where they came from.',
     w_hola: 'Hello. I am Iris,',
@@ -363,7 +389,7 @@ export const COPY = {
     f_q10: 'Do I need to prepare anything?', f_a10: 'Your date of birth and your full name at birth. If you have your parents and grandparents dates to hand, even better: that is where the repetitions show up.',
     f_q11: 'What if I need to move the appointment?', f_a11: 'It gets moved, at no cost: write to irissoaresoficial@gmail.com and we find another slot. One thing: give me 24 hours — with less than that I can no longer offer the slot to anyone, so it counts as taken.',
     f_q12: 'Can I gift a session?', f_a12: 'Yes. Write to me and we will set it up: the person picks the day that suits them.',
-    c_h: 'Let us look at it together.', c_p: 'Online, with your story already prepared before we meet.',
+    c_h: 'What you do not look at, the next one will.', c_p: 'Let us start with your date.',
     c_btn: 'Book my session', c_micro: 'Booked by chatting · one minute',
     ft_p: 'Iris Soares. Understanding where the repetition comes from, and stopping it.',
     ft_start: 'Start', ft_1: 'Session with Iris', ft_2: 'Try it free', ft_3: 'Courses and workshops', ft_4: 'The membership',

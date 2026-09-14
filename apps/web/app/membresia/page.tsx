@@ -90,7 +90,23 @@ export default function Membresia() {
             con nada, y a 0,7 —lo que usa la portada clara— no se verían. */}
         <CampoNumeros intensidad={1.7} densidad={130_000} />
 
+        {/*
+            DE UNA COLUMNA CENTRADA A DOS, Y NO ES CAPRICHO.
+
+            Todo iba centrado en una sola columna: sello, chapa, titular, dos
+            líneas y la caja. Centrar TODO tiene un efecto que se nota sin saber
+            nombrarlo — no hay jerarquía. Si las seis cosas están en el mismo
+            eje, ninguna manda, y la página se lee como una plantilla de
+            «próximamente» de las que vienen de serie. Eso es lo que quería decir
+            Gerson con «la UI es muy sencilla».
+
+            Ahora son dos: a la izquierda quién es y de qué va —alineado a la
+            izquierda, que es como se lee un texto— y a la derecha lo único que
+            se puede hacer. En el móvil se apila, y ahí sí queda una columna:
+            con 390 px de ancho no hay otra cosa que hacer, pero el texto sigue
+            alineado a la izquierda y no centrado. */}
         <div className="com-dentro">
+          <div className="com-izq">
           {/* La flor de lis, arriba del todo. Esta página no lleva la barra con
               la marca —es una pantalla sola— así que sin el sello no había nada
               que dijera de quién es la comunidad hasta el titular. */}
@@ -137,6 +153,7 @@ export default function Membresia() {
           <Aparece retraso={4}>
             <p className="com-condicion">Las primeras deciden conmigo qué se trabaja dentro.</p>
           </Aparece>
+          </div>
 
           {/* --------------------------------------------------- LA CAJA
               El formulario va dentro de una caja de cristal, centrada, y es lo
@@ -145,8 +162,13 @@ export default function Membresia() {
               que se vea sin leer nada. */}
           {/* La caja se acerca, no sube: es lo único que se puede hacer aquí y
               entra con un gesto distinto al del texto. */}
-          <Aparece modo="escala" retraso={5}>
+          <Aparece modo="escala" retraso={5} className="com-der">
             <div id="avisar" className="com-caja">
+              {/* El aro dorado detrás de la caja. Es lo único decorativo de la
+                  página y hace un trabajo concreto: sobre un granate liso, una
+                  caja de cristal no se ve como que está delante de nada. Con el
+                  aro asomando por detrás sí. */}
+              <span className="com-aro" aria-hidden />
               <p className="com-caja-titulo">Te aviso antes que a nadie</p>
               <LeadForm
                 origen="membresia"

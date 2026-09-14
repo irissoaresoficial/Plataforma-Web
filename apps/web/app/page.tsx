@@ -395,16 +395,41 @@ export default function Home() {
           el chat en la primera respuesta, y quien quiera verlo antes lo tiene
           escrito en las dos páginas que lo explican —numerología y Kábala—,
           enlazadas desde el pie y desde el propio texto. */}
-      <div id="consultas" className="claro bloque-limpio" style={{ scrollMarginTop: 80 }}>
-        <div className="cierre-uno">
-          <Aparece className="titular-seccion cierre-uno-h">{t.cu_h}</Aparece>
-          <Aparece retraso={1}>
-            <p className="cierre-uno-p">{t.cu_p}</p>
+      {/*
+          Y AQUÍ HABÍA TEXTO SOBRE BLANCO. NADA MÁS.
+
+          Un titular, una línea gris y dos enlaces dorados, pegados a la
+          izquierda en medio de una pantalla en blanco. En el móvil de Gerson se
+          veía exactamente así: un hueco. No es que estuviera mal maquetado — es
+          que no había maqueta. Y este bloque es el momento en que se decide la
+          única compra de la página.
+
+          Lo que hay ahora:
+           · la sala se oscurece un punto (fondo arena en vez de papel) para que
+             el cierre no sea la misma pared que el resto,
+           · las cifras de la casa flotando detrás, como en la portada,
+           · una raya dorada que SE DIBUJA al bajar —de ancho cero a 76 px—, que
+             es lo que separa un bloque compuesto de un bloque escrito,
+           · y las dos puertas, que eran dos enlaces sueltos, ahora son dos
+             fichas con nombre, una línea de qué hay dentro y una flecha que se
+             mueve. Un enlace dorado suelto en el móvil no se ve como una puerta:
+             se ve como una palabra en otro color. */}
+      <div id="consultas" className="cierre2" style={{ scrollMarginTop: 80 }}>
+        <CampoNumeros intensidad={0.55} />
+        <div className="cierre2-dentro">
+          {/* La raya crece con `--p`, el número de 0 a 1 que escribe `Aparece`.
+              No es un adorno que se enciende: se estira mientras se baja. */}
+          <Aparece className="cierre2-raya" />
+          <Aparece as="h2" className="titular-seccion cierre2-h" retraso={1}>
+            {t.cu_h}
           </Aparece>
           <Aparece retraso={2}>
+            <p className="cierre2-p">{t.cu_p}</p>
+          </Aparece>
+          <Aparece retraso={3}>
             <button
               type="button"
-              className="portada-cta"
+              className="portada-cta cta-solida cierre2-cta"
               onClick={abrirConsulta}
               data-mag
               data-cur-label={t.cbook}
@@ -413,18 +438,21 @@ export default function Home() {
               <i aria-hidden>→</i>
             </button>
           </Aparece>
-          {/* Y las dos puertas para quien quiera leer antes de hablar. Como
-              enlaces y no como botones: pesan menos que la acción de arriba, que
-              es la que interesa. */}
-          <Aparece retraso={3}>
-            <p className="cierre-uno-puertas">
-              <Link href="/numerologia" data-mag>
-                {t.cu_num}
-              </Link>
-              <Link href="/kabala" data-mag>
-                {t.cu_kab}
-              </Link>
-            </p>
+
+          {/* Las dos puertas para quien quiera leer antes de hablar. Siguen
+              pesando menos que el botón —no son doradas ni llevan relleno— pero
+              ya tienen tamaño de cosa que se toca. */}
+          <Aparece retraso={4} className="cierre2-puertas">
+            <Link href="/numerologia" className="cierre2-puerta" data-mag data-cur-label="Ver">
+              <span className="cierre2-puerta-h">{t.cu_num}</span>
+              <span className="cierre2-puerta-p">{t.cu_num_p}</span>
+              <i aria-hidden>→</i>
+            </Link>
+            <Link href="/kabala" className="cierre2-puerta" data-mag data-cur-label="Ver">
+              <span className="cierre2-puerta-h">{t.cu_kab}</span>
+              <span className="cierre2-puerta-p">{t.cu_kab_p}</span>
+              <i aria-hidden>→</i>
+            </Link>
           </Aparece>
         </div>
       </div>

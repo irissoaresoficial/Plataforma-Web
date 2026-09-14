@@ -779,8 +779,24 @@ textarea::placeholder {
   max-width: 100%;
   box-sizing: border-box;
   /* Los colores van aquí y no en cada pantalla: estaban escritos a mano campo
-     por campo, y bastaba con olvidar uno para tener un cuadro de otro color. */
-  background: var(--bg);
+     por campo, y bastaba con olvidar uno para tener un cuadro de otro color.
+
+     Y ES `--superficie`, NO `--bg`. `--bg` es la pared del bloque, así que un
+     campo pintado con `--bg` tiene EXACTAMENTE el color de lo que tiene detrás:
+     en la pantalla del taller —bloque arena— salían tres huecos color arena
+     sobre pared arena, separados de ella sólo por un borde tenue. Medido: cero
+     de distancia entre los dos colores.
+
+     `--superficie` es lo contrario de la pared en cada bloque: arena sobre
+     papel, papel sobre arena, y un velo claro sobre granate. Un campo así queda
+     SIEMPRE hundido en su pared, que es la regla de la casa — lo que se hunde es
+     contenido — y ya no hay forma de que coincida con lo que tiene detrás.
+
+     La trampa: una pieza que se pinte a sí misma con `--superficie` convierte la
+     superficie en su propia pared, y el problema vuelve un piso más abajo. Le
+     pasaba a la ficha de reserva del curso. Se arregla donde pasa, redefiniendo
+     `--superficie` en esa pieza, y no volviendo aquí a poner un color fijo. */
+  background: var(--superficie);
   border: 1px solid var(--linea);
   color: var(--tx);
   font-family: inherit;
@@ -793,6 +809,25 @@ textarea::placeholder {
 .field-input:focus {
   border-color: var(--acento-2, #b8924f);
   box-shadow: 0 0 0 3px rgba(184, 146, 79, 0.16);
+}
+/* SOBRE GRANATE, UN CAMPO NO PUEDE SER DEL COLOR DE LA PARED.
+   `background: var(--bg)` dentro de un bloque `.vino` es el granate mismo: el
+   campo desaparecía y sólo quedaba un borde tenue, que en un teléfono a media
+   luz no se ve. Es el mismo fallo que tenía la sinergia y se arregla igual —
+   aclarando el hueco y subiendo el borde hasta que se lea como un hueco.
+   Vale para cualquier formulario que caiga en un bloque oscuro, no sólo para el
+   de la comunidad. */
+.vino .field-input {
+  background: rgba(251, 246, 238, 0.09);
+  border-color: rgba(226, 205, 162, 0.32);
+  color: #fff;
+}
+.vino .field-input::placeholder {
+  color: rgba(226, 205, 162, 0.42);
+}
+.vino .field-input:focus {
+  border-color: var(--oro-luz);
+  box-shadow: 0 0 0 3px rgba(226, 205, 162, 0.18);
 }
 
 /* ---- el chat escribe ---- */
@@ -1426,6 +1461,11 @@ body[data-nav-claro='si'] .sello-color {
   border-radius: var(--radio);
   background: var(--superficie);
   border: 1px solid var(--linea);
+  /* Esta ficha se pinta A SÍ MISMA con la superficie del bloque, así que dentro
+     de ella la superficie ya no es una superficie: es la pared. Sin esta línea,
+     los dos campos de reserva salían exactamente del color de la ficha. Se
+     redefine aquí y lo que haya dentro se entera solo. */
+  --superficie: var(--papel);
 }
 .modal-reserva strong {
   display: block;
@@ -4130,21 +4170,59 @@ body[data-nav-claro='si'] .sello-color {
   padding: clamp(104px, 14vh, 150px) clamp(16px, 4vw, 44px) clamp(24px, 4vh, 40px);
   overflow: hidden;
 }
+/* HUECO ABAJO PARA LA PASTILLA DEL CHAT.
+   En la foto del móvil de Gerson, la pastilla de «Reservar» —que va fija en la
+   esquina de abajo— estaba justo encima del botón «Avísame». Es decir: el único
+   botón que tiene esta página, tapado. Da igual lo bien maquetado que esté todo
+   lo demás si la acción está debajo de otra cosa.
+   El contenido va centrado, así que con dejarle sitio abajo el bloque entero
+   sube y el botón sale de la zona de la pastilla. */
+@media (max-width: 899px) {
+  .com-hero { padding-bottom: clamp(112px, 17vh, 156px); }
+}
 
 /* Centrado, y estrecho. Un «próximamente» no es una página de venta: es un
    cartel. Alineado a la izquierda y a 720 px de ancho se leía como el principio
    de un artículo que se ha quedado a medias — y era literalmente eso. */
+/* ---------------------------------------------------------------------------
+   Y DE UNA COLUMNA CENTRADA SE PASÓ A DOS.
+
+   Estaba todo en el mismo eje: sello, chapa, titular, dos líneas y la caja del
+   correo. Centrar TODO tiene un efecto que se nota sin saber nombrarlo: no hay
+   jerarquía. Si las seis cosas están alineadas igual, ninguna manda, y la
+   página se lee como una plantilla de «próximamente» de las que vienen de
+   serie. Eso es lo que quería decir Gerson con «la UI es muy sencilla».
+
+   A la izquierda quién es y de qué va; a la derecha lo único que se puede
+   hacer. Por debajo de 900 px se apila —no hay sitio para otra cosa— pero el
+   texto se queda alineado a la izquierda, que es como se lee un texto.
+   --------------------------------------------------------------------------- */
 .com-dentro {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 560px;
+  max-width: 1060px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(30px, 5vw, 72px);
+  align-items: center;
+}
+.com-izq {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
+  text-align: left;
   gap: clamp(16px, 2.2vw, 22px);
+  min-width: 0;
+}
+.com-der { min-width: 0; }
+@media (max-width: 899px) {
+  .com-dentro {
+    grid-template-columns: 1fr;
+    gap: clamp(26px, 5vw, 36px);
+    max-width: 560px;
+  }
 }
 
 /* --- el aviso de obras ---------------------------------------------------
@@ -4152,7 +4230,7 @@ body[data-nav-claro='si'] .sello-color {
    es una web caída, es una comunidad abriéndose. El punto dice «esto está
    pasando ahora», que es exactamente el mensaje. */
 .com-obras {
-  align-self: center;
+  align-self: flex-start;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -4181,17 +4259,26 @@ body[data-nav-claro='si'] .sello-color {
   .com-obras i { animation: none; }
 }
 
+/* EN LA MISMA LETRA QUE EL RESTO DE LA WEB.
+   Iba en Fraunces, la serif. Cuando toda la casa pasó a titulares en Instrument
+   Sans, esta pantalla se quedó atrás: un titular con serifas en medio de una web
+   que ya no las usa no se lee como un detalle, se lee como una página vieja. Y
+   eso es la mitad de lo que Gerson llamó «poco moderno».
+   La cursiva dorada de la segunda línea se queda: UNA línea con otra voz, entre
+   texto que va todo igual, es contraste. Dos serían dos tipografías. */
 .com-titular {
   margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(34px, 5.4vw, 60px);
-  font-weight: var(--peso-fino);
-  line-height: 1.04;
-  letter-spacing: -0.028em;
+  font-size: clamp(36px, 5.6vw, 62px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.038em;
   text-wrap: balance;
 }
 .com-titular em {
+  font-family: var(--serif);
   font-style: italic;
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.02em;
   color: var(--oro-luz);
 }
 
@@ -4227,28 +4314,89 @@ body[data-nav-claro='si'] .sello-color {
    Cuando sólo hay una acción, meterla en su propia caja no es decoración: es lo
    que hace que se vea sin haber leído nada. */
 .com-caja {
+  position: relative;
   width: 100%;
-  max-width: 420px;
-  margin-top: clamp(10px, 2vw, 20px);
-  padding: clamp(20px, 3vw, 28px) clamp(18px, 2.6vw, 26px) clamp(22px, 3vw, 28px);
-  border-radius: 22px;
-  background: rgba(251, 246, 238, 0.05);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(251, 246, 238, 0.13);
-  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(251, 246, 238, 0.08);
+  max-width: 430px;
+  margin: 0 auto;
+  padding: clamp(24px, 3.2vw, 32px) clamp(20px, 2.8vw, 28px) clamp(24px, 3.2vw, 30px);
+  border-radius: 24px;
+  background: rgba(251, 246, 238, 0.06);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(251, 246, 238, 0.15);
+  box-shadow: 0 40px 90px -34px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(251, 246, 238, 0.1);
   text-align: left;
   scroll-margin-top: 90px;
 }
+/* El aro dorado que asoma por detrás. Sobre un granate liso una caja de cristal
+   no se lee como que está DELANTE de algo —no hay nada detrás que tapar—, así
+   que el cristal no cuenta. El aro le da algo que tapar. */
+.com-aro {
+  position: absolute;
+  z-index: -1;
+  top: -7%;
+  left: 50%;
+  translate: -50% 0;
+  width: min(114%, 430px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  /* Muy tenue a propósito. A 0,22 el aro se leía como un círculo dibujado
+     encima del texto de al lado en vez de como una luz al fondo. */
+  border: 1px solid rgba(226, 205, 162, 0.14);
+  background: radial-gradient(circle at 50% 30%, rgba(226, 205, 162, 0.12), transparent 60%);
+  pointer-events: none;
+}
 .com-caja-titulo {
-  margin: 0 0 14px;
-  font-family: var(--serif);
-  font-size: clamp(18px, 1.9vw, 22px);
-  font-weight: var(--peso-fino);
+  margin: 0 0 18px;
+  font-size: clamp(19px, 2vw, 23px);
+  font-weight: 600;
   line-height: 1.25;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
   color: #fff;
-  text-align: center;
+}
+
+/* --- LOS CAMPOS DE LAS DOS CAJAS DE CRISTAL -------------------------------
+   La de la comunidad y la del taller: las dos son una tarjeta translúcida sobre
+   granate, y las dos tenían el mismo fallo que se veía en la foto del móvil —
+   huecos casi del color de la pared, separados de ella sólo por un borde tenue.
+   En una pantalla a media luz no se distinguen. Es lo mismo que le pasaba a la
+   sinergia, y se arregla igual.
+
+   Dentro de un cristal ni siquiera vale aclarar el hueco: el cristal ya es un
+   velo claro, así que el campo y la tarjeta acaban siendo dos velos del mismo
+   color, uno encima del otro. Medido: 9 % de blanco dentro de 5 % de blanco.
+
+   Se van las cajas. Queda un renglón grande con una raya dorada debajo, que se
+   enciende al escribir. Un campo subrayado no puede confundirse con la pared:
+   no compite con ella, se apoya en ella. */
+.com-caja .field-input,
+.tal-caja .field-input {
+  border: 0;
+  border-bottom: 2px solid rgba(226, 205, 162, 0.26);
+  border-radius: 0;
+  background: none;
+  padding: 8px 2px 10px;
+  font-size: var(--t-cuerpo);
+  color: #fff;
+}
+.com-caja .field-input::placeholder,
+.tal-caja .field-input::placeholder {
+  color: rgba(226, 205, 162, 0.38);
+}
+.com-caja .field-input:focus,
+.tal-caja .field-input:focus {
+  border-bottom-color: var(--oro-luz);
+  box-shadow: none;
+}
+.com-caja .rotulo-dato,
+.tal-caja .rotulo-dato {
+  color: rgba(226, 205, 162, 0.72);
+}
+/* El botón, ancho entero. Es la única acción de la página: dejarlo del ancho de
+   su texto, con hueco a la derecha, lo hacía parecer opcional. */
+.com-caja .pill {
+  width: 100%;
+  justify-content: center;
 }
 
 /* --- el pie, dentro de la misma pantalla --------------------------------- */
@@ -5632,30 +5780,82 @@ body[data-nav-claro='si'] .sello-color {
   max-width: 42ch;
 }
 
-/* Los datos, en tira. Rótulo pequeño arriba y el dato debajo: en una línea
-   corrida —«Cuándo 26 y 27 de septiembre Horario 10:00…»— hay que leerla entera
-   para encontrar lo que se busca. */
-.cur-datos {
-  margin: clamp(2px, 0.6vw, 6px) 0 0;
+/* --- la chapa con el día -------------------------------------------------
+   La misma pieza que corona la página de la comunidad: aro fino, punto dorado
+   que late y una línea de texto. Que las dos páginas empiecen con el mismo
+   objeto es lo que las hace de la misma casa. */
+.cur-chapa {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px 7px 13px;
+  border: 1px solid rgba(169, 136, 79, 0.4);
+  border-radius: 100px;
+  background: rgba(169, 136, 79, 0.07);
+  font-size: var(--rotulo-tam);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--oro-tinta, #7d5f1e);
+  white-space: nowrap;
+}
+.cur-chapa i {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--acento);
+  animation: com-late 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cur-chapa i { animation: none; }
+}
+
+/* --- la ficha del curso ---------------------------------------------------
+   AQUÍ HABÍA TRES PAREJAS `dt`/`dd` SUELTAS, una debajo de otra, con el rótulo
+   en versalitas del mismo tamaño que el dato. En un teléfono eso no se lee como
+   la entrada de un curso: se lee como un formulario a medio rellenar.
+
+   Ahora es una sola pieza hundida en la pared —lo que se hunde es contenido, la
+   regla de la casa— con el rótulo a la izquierda, el dato a la derecha y una
+   raya de un píxel entre líneas. Se lee de un vistazo porque los tres datos
+   están alineados en la misma columna, que es lo que no pasaba antes. */
+.cur-ficha {
+  margin: clamp(4px, 1vw, 10px) 0 0;
+  width: 100%;
+  max-width: 460px;
+  padding: clamp(6px, 1vw, 10px) clamp(16px, 2vw, 22px);
+  border-radius: 18px;
+  background: var(--papel);
+  box-shadow:
+    inset 4px 4px 10px rgba(69, 26, 37, 0.06),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.9);
+}
+.cur-ficha div {
   display: flex;
-  flex-wrap: wrap;
-  gap: clamp(14px, 2vw, 26px);
-  padding-top: clamp(12px, 1.6vw, 18px);
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: clamp(11px, 1.4vw, 14px) 0;
   border-top: 1px solid var(--linea);
 }
-.cur-datos div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.cur-datos dt {
-  font-size: 15px;
+.cur-ficha div:first-child { border-top: 0; }
+.cur-ficha dt {
+  flex: none;
+  font-size: var(--rotulo-tam);
   font-weight: 600;
-  letter-spacing: .13em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--tx-3);
 }
-.cur-datos dd {
+.cur-ficha dd {
   margin: 0;
-  font-size: var(--t-mini);
-  color: var(--tx);
+  font-size: var(--t-cuerpo);
   font-weight: 500;
+  line-height: 1.35;
+  color: var(--tx);
+  text-align: right;
+  text-wrap: pretty;
 }
 
 /* El precio pegado al botón. Suelto se lee como un dato más; aquí es lo último
@@ -5685,6 +5885,31 @@ body[data-nav-claro='si'] .sello-color {
   font-size: var(--t-mini);
   color: var(--tx-3);
   text-decoration-thickness: 1px;
+}
+/* El precio de antes y el porcentaje, apilados al lado de la cifra grande. En
+   la misma línea que el precio, el «−43 %» se leía como parte del número. */
+.cur-precio-antes {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+.cur-precio-antes b {
+  font-size: var(--t-nota);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--oro-tinta, #7d5f1e);
+  background: rgba(169, 136, 79, 0.14);
+  border-radius: 100px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+/* El botón es el mismo de la portada: en toda la web hay UNA forma de pedir.
+   Antes era una `pill pill-cream`, que es otro botón distinto para hacer lo
+   mismo — y eso, en una web que se sostiene sobre una sola acción, enseña a no
+   reconocerla. */
+.cur-boton {
+  flex: none;
 }
 .cur-reloj { margin-top: 2px; }
 
@@ -6455,6 +6680,219 @@ body[data-nav-claro='si'] .sello-color {
 }
 .cierre-uno-puertas a:hover {
   border-bottom-color: currentColor;
+}
+
+/* ==================================================================
+   EL CIERRE DE LA PORTADA, SEGUNDA VERSIÓN
+   ==================================================================
+   Lo de arriba (.cierre-uno) era texto sobre blanco: titular, línea gris y dos
+   enlaces dorados pegados a la izquierda. En un teléfono eso no es un bloque de
+   cierre, es un hueco — y es justo donde se decide la única compra de la
+   página. Se queda ahí porque lo usa /kabala dentro de `.cierre-marco`.
+
+   Lo que hace a éste distinto, por orden de importancia:
+
+    1. LA SALA CAMBIA DE COLOR. Fondo arena en vez de papel. Un cierre que se
+       pinta igual que los seis bloques anteriores no se lee como un final: se
+       lee como el séptimo bloque.
+    2. HAY PROFUNDIDAD. Las cifras de la casa flotando detrás y un halo dorado
+       muy abierto desde arriba. Lo mismo que hace la portada, para que el
+       principio y el final de la página se reconozcan.
+    3. LA RAYA SE DIBUJA. Crece de 0 a 76 px con `--p`, el número que escribe
+       `Aparece` según cuánto ha entrado el bloque. Un adorno que se enciende de
+       golpe es un adorno; uno que se estira con la rueda es composición.
+    4. LAS DOS PUERTAS SON FICHAS. Eran dos enlaces dorados sueltos, y en un
+       móvil un enlace dorado suelto no parece una puerta: parece una palabra en
+       otro color. Ahora tienen nombre, una línea de qué hay dentro, una flecha
+       que se mueve, y el tamaño de algo que se toca con el pulgar.
+   ================================================================== */
+.cierre2 {
+  position: relative;
+  z-index: 3;
+  overflow: hidden;
+  background: var(--arena);
+  color: var(--tx);
+  padding: clamp(84px, 11vw, 160px) clamp(16px, 4vw, 56px);
+}
+/* El halo. Muy abierto y muy bajo de opacidad: tiene que notarse que la esquina
+   de arriba está más caliente, no verse un círculo. */
+.cierre2::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 62% 48% at 50% 0%, rgba(169, 136, 79, 0.15), transparent 62%);
+  pointer-events: none;
+}
+.cierre2-dentro {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(18px, 2.4vw, 26px);
+}
+.cierre2-raya {
+  width: calc(var(--p, 1) * 76px);
+  height: 2px;
+  border-radius: 2px;
+  background: var(--acento);
+  /* `Aparece` ya le pone la opacidad y el empujón desde abajo a todo lo que
+     envuelve. Lo que se añade aquí es el ancho: con los tres a la vez la raya
+     no entra, se dibuja de izquierda a derecha mientras se baja. */
+}
+.cierre2-h {
+  max-width: 17ch;
+}
+.cierre2-p {
+  margin: 0;
+  font-size: var(--t-entrada);
+  line-height: 1.6;
+  color: var(--tx-2);
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+.cierre2-cta {
+  margin-top: clamp(4px, 1vw, 10px);
+}
+
+/* ==================================================================
+   EL BOTÓN SÓLIDO
+   ==================================================================
+   `.portada-cta` es texto grande y un círculo en relieve al lado. Funciona en
+   la portada, encima del árbol, donde todo está en silencio y cualquier cosa
+   que tenga forma de botón rompe la foto.
+
+   Donde NO funciona es en el último bloque de la página y en el cartel de un
+   curso: ahí ya no se está mirando, se está decidiendo, y un texto con un
+   circulito al lado no se lee como «esto se pulsa». Se lee como un titular más.
+
+   Así que en esos dos sitios el mismo botón se rellena: granate macizo, letra
+   crema y la flecha en dorado dentro. Es exactamente el botón que ya está en la
+   cabecera de todas las páginas, así que no es un objeto nuevo que aprender —
+   es el de siempre, en grande y donde toca.
+   ================================================================== */
+.cta-solida {
+  padding: clamp(15px, 1.6vw, 19px) clamp(16px, 1.8vw, 22px) clamp(15px, 1.6vw, 19px) clamp(24px, 2.6vw, 34px);
+  border-radius: 100px;
+  background: var(--vino);
+  color: #fbf6ee;
+  font-size: clamp(17px, 1.5vw, 21px);
+  box-shadow: 0 16px 34px -16px rgba(69, 26, 37, 0.5);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.cta-solida:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 44px -18px rgba(69, 26, 37, 0.58);
+}
+/* Pulsado se hunde, como todo lo que se pulsa en esta web. */
+.cta-solida:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 18px -12px rgba(69, 26, 37, 0.5);
+}
+/* Dentro del botón relleno ya no hace falta el subrayado que se dibuja: el
+   relleno ya dice que se pulsa, y las dos cosas a la vez son ruido. */
+.cta-solida > span::after { content: none; }
+.cta-solida > i {
+  width: clamp(38px, 3.2vw, 44px);
+  height: clamp(38px, 3.2vw, 44px);
+  color: var(--vino);
+  background: var(--oro-luz);
+  box-shadow: none;
+}
+.cta-solida:hover > i {
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-solida { transition: none; }
+  .cta-solida:hover { transform: none; }
+}
+
+/* --- las dos puertas ------------------------------------------------------ */
+.cierre2-puertas {
+  width: 100%;
+  margin-top: clamp(14px, 2.6vw, 30px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 1.8vw, 18px);
+}
+.cierre2-puerta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 108px;
+  padding: clamp(16px, 2vw, 22px) clamp(44px, 5vw, 54px) clamp(16px, 2vw, 22px) clamp(16px, 2vw, 22px);
+  border-radius: 18px;
+  text-align: left;
+  color: var(--tx);
+  /* Sale de la pared, poco. La regla de la casa: lo que se hunde es contenido y
+     lo que sobresale es acción — y esto es una acción, sólo que menor que el
+     botón de arriba, así que el relieve es la mitad. */
+  background: var(--arena);
+  box-shadow:
+    4px 4px 12px rgba(69, 26, 37, 0.07),
+    -4px -4px 12px rgba(255, 255, 255, 0.75);
+  transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cierre2-puerta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    7px 7px 20px rgba(69, 26, 37, 0.1),
+    -7px -7px 20px rgba(255, 255, 255, 0.9);
+}
+/* Pulsada se hunde, como todo lo que se pulsa en esta web. */
+.cierre2-puerta:active {
+  transform: translateY(0);
+  box-shadow:
+    inset 3px 3px 8px rgba(69, 26, 37, 0.09),
+    inset -3px -3px 8px rgba(255, 255, 255, 0.8);
+}
+.cierre2-puerta-h {
+  font-size: var(--t-cuerpo);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.cierre2-puerta-p {
+  font-size: var(--t-nota);
+  line-height: 1.45;
+  color: var(--tx-3);
+}
+.cierre2-puerta i {
+  position: absolute;
+  top: 50%;
+  right: clamp(14px, 1.8vw, 20px);
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 15px;
+  font-style: normal;
+  color: var(--oro-tinta, #7d5f1e);
+  background: rgba(169, 136, 79, 0.1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+}
+.cierre2-puerta:hover i {
+  transform: translateX(3px);
+  background: rgba(169, 136, 79, 0.2);
+}
+@media (max-width: 640px) {
+  /* Una debajo de otra. A dos columnas en 390 px cada ficha se queda en 165 px
+     de ancho y el nombre se parte en cuatro renglones. */
+  .cierre2-puertas { grid-template-columns: 1fr; }
+  .cierre2-puerta { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cierre2-puerta,
+  .cierre2-puerta i { transition: none; }
+  .cierre2-puerta:hover { transform: none; }
 }
 
 /* ==================================================================
