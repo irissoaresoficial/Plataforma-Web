@@ -5524,8 +5524,8 @@ body[data-nav-claro='si'] .sello-color {
   font-family: var(--sans);
   font-weight: 600;
   font-size: var(--t-h1);
-  line-height: 0.97;
-  letter-spacing: -0.045em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   color: var(--tinta);
   text-wrap: balance;
 }
@@ -6302,7 +6302,7 @@ body[data-nav-claro='si'] .sello-color {
   display: grid;
   /* El alto que necesita la frase más larga: tres renglones y el botón. Es lo
      que fija la línea de arriba y hace que nada se mueva. */
-  min-height: clamp(226px, 38svh, 350px);
+  min-height: clamp(262px, 42svh, 396px);
   max-width: 44rem;
   z-index: 2;
 }
@@ -6332,13 +6332,22 @@ body[data-nav-claro='si'] .sello-color {
    Sans apretada y no la serif de la casa. Contra un trazo de tinta tan fino,
    una serif grande compite con el dibujo; una sans cerrada se aparta y deja que
    mande el árbol, que es lo que aquí tiene que mandar. */
+/* EL APRIETE, UN PUNTO MENOS. Y LA INTERLÍNEA, UN PUNTO MÁS.
+   Estaba a -0.045em con interlínea 0.99 — o sea, las letras pegadas entre sí y
+   los renglones pegados entre ellos. A 62 px eso no se lee «apretado y
+   elegante»: se lee «Nadietelocontó», con las palabras fundiéndose unas con
+   otras, y encima con las tildes de un renglón rozando el de abajo. En la
+   captura se ve perfectamente en «Pero está escrito en tu / fecha y en tu
+   nombre».
+   -0.03em sigue siendo un titular apretado —que es la voz de la casa— pero las
+   palabras vuelven a separarse. Y 1.05 de interlínea deja pasar las tildes. */
 .portada-h1 {
   margin: 0;
   font-family: var(--sans);
   font-size: var(--t-h1);
   font-weight: 600;
-  line-height: 0.99;
-  letter-spacing: -0.045em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   text-wrap: balance;
   color: var(--tinta);
 }
@@ -6367,8 +6376,8 @@ body[data-nav-claro='si'] .sello-color {
      misma cosa dicha tres veces seguidas; tienen que pesar igual. */
   font-size: var(--t-h1);
   font-weight: 600;
-  line-height: 0.99;
-  letter-spacing: -0.045em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   text-wrap: balance;
   color: var(--tinta);
 }

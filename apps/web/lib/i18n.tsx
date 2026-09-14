@@ -77,7 +77,25 @@ export const COPY = {
      * te lo contó, pero se puede leer. Ahí es donde entra Iris, y ahí es donde
      * la página deja de hablar del problema y empieza a hablar del método.
      */
-    h1p1: 'Y cada vez que crees que lo has dejado atrás, vuelve.',
+    /*
+     * Y ÉSTA NO SE ENTENDÍA, Y ES EL MISMO FALLO POR TERCERA VEZ.
+     *
+     * «Y cada vez que crees que lo has dejado atrás, vuelve.» Ese «lo» no tiene
+     * dueño. Funciona si vienes de leer la frase de arriba y la tienes fresca;
+     * y en una portada que va cambiando de frase mientras bajas, la de arriba
+     * YA NO ESTÁ EN PANTALLA. Se lee una frase sola que habla de algo que no se
+     * ha nombrado.
+     *
+     * Es exactamente el defecto que ya corregí en el cierre de la portada y en
+     * el bloque de la consulta. La regla que me falta aplicar: cada frase de la
+     * portada tiene que entenderse SOLA, porque cada una se lee sola.
+     *
+     * La nueva no usa ningún pronombre y además nombra los tres sitios donde
+     * duele —trabajo, pareja, dinero—, que son justo los tres que desarrolla el
+     * bloque de debajo. Así la portada deja de ser tres frases seguidas y pasa
+     * a ser un índice de lo que viene.
+     */
+    h1p1: 'Y se repite. En el trabajo, en la pareja, en el dinero.',
     h1p2: 'Nadie te lo contó.',
     h1p2b: 'Pero está escrito en tu fecha y en tu nombre.',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
@@ -163,7 +181,31 @@ export const COPY = {
      *
      * Y encaja con lo de arriba sin repetir ni una palabra.
      */
-    cu_h: 'Esto no se pasa con el tiempo.',
+    /*
+     * QUINTA VERSIÓN, Y AQUÍ CAMBIA LA REGLA ENTERA.
+     *
+     * Las cuatro anteriores eran todas lo mismo: más dolor. «Vamos a mirar la
+     * tuya», «Ya sabes que no se va a ir solo», «Esto no se pasa con el
+     * tiempo». Yo seguía buscando la frase que más apretara, porque la orden
+     * que tenía era «todos los títulos deben dar al dolor del cliente».
+     *
+     * Y estaba aplicándola donde no toca. Gerson: «el CTA debe ser que el
+     * usuario sepa que Iris le quiere ayudar».
+     *
+     * Tiene toda la razón, y el motivo es de estructura, no de gusto. A este
+     * bloque se llega después de SIETE PANTALLAS de dolor: el árbol, las
+     * cuatro frases del anclado, el remate, la definición. La persona ya está
+     * convencida de que tiene un problema — ése es el trabajo que hizo el resto
+     * de la página. Apretar una vez más aquí no añade nada y encima deja a
+     * alguien solo delante de un botón.
+     *
+     * Lo que falta en este punto exacto es la otra mitad: que hay alguien al
+     * otro lado dispuesto a mirarlo contigo. Por eso el titular deja de ser una
+     * afirmación sobre el problema y pasa a ser UNA PERSONA HABLANDO: «Déjame
+     * mirarlo contigo.» Es una mano, no un diagnóstico. Y pasa la prueba de la
+     * cocina sin despeinarse.
+     */
+    cu_h: 'Déjame mirarlo contigo.',
     cu_p: 'Online, con tu historia ya preparada antes de vernos.',
     cu_num: 'Qué es la numerología transgeneracional',
     cu_kab: 'Qué es la Kábala',
@@ -293,7 +335,7 @@ export const COPY = {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
     h1a: 'O que na tua família nunca se contou,', h1b: 'estás a pagá-lo tu.',
-    h1p1: 'E sempre que julgas tê-lo deixado para trás, volta.',
+    h1p1: 'E repete-se. No trabalho, na relação, no dinheiro.',
     h1p2: 'Ninguém to contou.',
     h1p2b: 'Mas está escrito na tua data e no teu nome.',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
@@ -314,7 +356,7 @@ export const COPY = {
     sg_h: 'Com essa pessoa acabam sempre no mesmo.',
     sg_p: 'A tua data e a dela. Nada mais.',
     sg_cta: 'Ver agora',
-    cu_h: 'Isto não passa com o tempo.',
+    cu_h: 'Deixa-me olhar para isto contigo.',
     cu_p: 'Online, com a tua história já preparada antes de nos vermos.',
     cu_num: 'O que é a numerologia transgeracional',
     cu_kab: 'O que é a Kábala',
@@ -390,7 +432,7 @@ export const COPY = {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
     h1a: 'What your family never spoke about,', h1b: 'you are the one paying for.',
-    h1p1: 'And every time you think you have left it behind, it comes back.',
+    h1p1: 'And it repeats. At work, in your relationship, with money.',
     h1p2: 'Nobody ever told you.',
     h1p2b: 'But it is written in your date and your name.',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
@@ -411,7 +453,7 @@ export const COPY = {
     sg_h: 'With that person it always ends the same way.',
     sg_p: 'Your date and theirs. Nothing else.',
     sg_cta: 'See it now',
-    cu_h: 'This does not pass with time.',
+    cu_h: 'Let me look at it with you.',
     cu_p: 'Online, with your story prepared before we meet.',
     cu_num: 'What transgenerational numerology is',
     cu_kab: 'What Kabbalah is',
