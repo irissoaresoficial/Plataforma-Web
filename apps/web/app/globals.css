@@ -5831,12 +5831,47 @@ body[data-nav-claro='si'] .sello-color {
   transition: background-color 0.2s linear;
 }
 
+/*
+ * EL ÁRBOL ESTÁ SIEMPRE, AUNQUE EL VÍDEO NO LLEGUE NUNCA.
+ * ---------------------------------------------------------------------------
+ * Gerson abrió la web en su iPhone, con LTE y el móvil al 7 %, y le salió la
+ * portada EN BLANCO: el papel crema y el titular encima, sin árbol. El vídeo no
+ * había cargado — pasa con poca cobertura, con el ahorro de batería puesto y
+ * con la reproducción automática restringida— y el cartel tampoco, porque lo
+ * pone el JavaScript al arrancar y hasta entonces no hay nada.
+ *
+ * Poner una imagen que se ve SIEMPRE y no depende de nada: ni de JavaScript, ni
+ * de que el vídeo cargue, ni de que el navegador deje reproducir. Es el primer
+ * fotograma del propio vídeo, así que cuando el vídeo llega, encaja encima sin
+ * que se note el relevo.
+ *
+ * Y va en el escenario, no en el `<video>`: un `poster` solo se ve mientras el
+ * vídeo no ha pintado, y si el vídeo se queda a medias —cargado pero sin
+ * fotograma— el poster ya se ha ido. Esto está detrás y no se va nunca.
+ */
 .portada-escena {
   position: sticky;
   top: 0;
   height: 100svh;
   overflow: hidden;
   isolation: isolate;
+  background-image: url('/images/arbol-scroll-cartel.jpg');
+  background-size: cover;
+  background-position: center 42%;
+  background-repeat: no-repeat;
+}
+.portada-vertical .portada-escena {
+  background-image: url('/images/arbol-vertical-cartel.jpg');
+  background-position: center 38%;
+}
+/* Hasta que el componente decide qué vídeo toca, manda la forma de la pantalla:
+   así la imagen correcta está puesta desde el primer pintado y no hay ni un
+   fotograma con el recorte equivocado. */
+@media (max-aspect-ratio: 5/4) {
+  .portada-escena {
+    background-image: url('/images/arbol-vertical-cartel.jpg');
+    background-position: center 38%;
+  }
 }
 
 /* --- el dibujo, de borde a borde ----------------------------------------

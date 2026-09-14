@@ -33,8 +33,8 @@ export const COPY = {
      * digo por qué le ha llegado a él, y solo al final le digo qué le doy yo a
      * cambio de su dinero. Pedir antes de eso es pedir a un desconocido.
      */
-    h1p1: 'No es tu carácter. No es mala suerte. Es una historia que empezó antes de que tú nacieras.',
-    h1p2: 'Nadie tuvo la culpa. Pero nadie la cerró, y sigue bajando hasta que alguien la mira.',
+    h1p1: 'No es tu carácter. Empezó antes de que tú nacieras.',
+    h1p2: 'Nadie tuvo la culpa. Pero nadie la cerró.',
     h1p2b: 'Te ha tocado a ti.',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
     hcta: 'Reservar mi consulta', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
@@ -62,8 +62,8 @@ export const COPY = {
      * que permite que el resto de la página se lea sin sospecha.
      */
     q_h: 'Se llama numerología transgeneracional.',
-    q_p1: 'Tu nombre y tu fecha guardan lo que ha ido pasando en tu familia. Puestos en números, el patrón se ve: qué se repite, en qué generación empezó y por dónde te llegó a ti.',
-    q_p2: 'No adivina el futuro. Explica el presente. Y la cuenta se hace delante de ti.',
+    q_p1: 'Tu nombre y tu fecha guardan lo que pasó en tu familia. En números se ve el patrón: qué se repite y desde cuándo.',
+    q_p2: 'No adivina el futuro. Explica el presente.',
     /*
      * EL REGALO.
      *
@@ -74,7 +74,7 @@ export const COPY = {
      * convencerle de nada, sólo nombrarlo.
      */
     sg_h: 'Se te ha venido alguien a la cabeza.',
-    sg_p: 'Tu fecha y la suya. Sale qué hay entre vosotros dos y por qué os pasa lo que os pasa. Sin dejar el correo.',
+    sg_p: 'Tu fecha y la suya. Nada más.',
     sg_cta: 'Verlo ahora',
     /*
      * EL CIERRE DE LA PORTADA: UN BOTÓN.
@@ -86,7 +86,7 @@ export const COPY = {
      * el chat lo dice en su primera respuesta.
      */
     cu_h: 'Vamos a mirar la tuya.',
-    cu_p: 'Online, con tu historia ya preparada antes de vernos. Sales sabiendo de dónde viene lo que se repite y qué decisión te toca tomar.',
+    cu_p: 'Online, con tu historia ya preparada.',
     cu_num: 'Qué es la numerología transgeneracional →',
     cu_kab: 'Qué es la Kábala →',
     w_lab: 'Quién soy', w_h: 'Soy Iris. Te ayudo a liberarte de los patrones que no te pertenecen.', w_h2: 'Y a devolverlos a su origen.',
@@ -110,7 +110,7 @@ export const COPY = {
      */
     w_hola: 'Hola. Soy Iris,',
     w_oficio: 'numeróloga transgeneracional.',
-    w_que: 'Miro lo que en tu familia se repite y nadie sabe explicar. No lo interpreto ni lo adivino: lo cuento con números —tu nombre, tu fecha y las de tu línea— y te lo enseño hecho, delante de ti. Llevo en esto desde 2010, en español, portugués e inglés.',
+    w_que: 'Miro lo que se repite en tu familia y lo cuento con números. Desde 2010.',
     w_p1: 'Pasé años observando patrones en el mundo corporativo y descifrando qué sucede cuando nadie mira.',
     w_p2: 'En 2010 uní lo mejor de la numerología, la psicosomática clínica, las constelaciones y las terapias integrativas para crear un método práctico y profundo. El objetivo de mi consulta es solo uno: que salgas sabiendo quién eres y qué decisión tomar hoy.',
     w1: 'Derecho', w2: 'Psicología', w3: 'Psicosomática', w4: 'Descodificación', w5: 'Numerología', w6: 'Transgeneracional',
@@ -185,8 +185,8 @@ export const COPY = {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
     h1a: 'O que na tua família nunca se contou,', h1b: 'estás a pagá-lo tu.',
-    h1p1: 'Não é o teu carácter. Não é falta de sorte. É uma história que começou antes de tu nasceres.',
-    h1p2: 'Ninguém teve culpa. Mas ninguém a fechou, e continua a descer até que alguém a olha.',
+    h1p1: 'Não é o teu carácter. Começou antes de tu nasceres.',
+    h1p2: 'Ninguém teve culpa. Mas ninguém a fechou.',
     h1p2b: 'Calhou-te a ti.',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
     hcta: 'Marcar a minha consulta', hcta2: 'Ver o meu número, grátis', hbadge: 'Online · ES / PT / EN',
@@ -202,19 +202,19 @@ export const COPY = {
     b_p1: 'Em toda a família há algo de que não se falou: um amante que nunca se reconheceu, uma doença psiquiátrica, alguém que esteve preso. Ninguém conta, e mesmo assim passa de geração em geração.',
     b_p2: 'Com o teu nome e a tua data vê-se em que geração começou, como chegou até ti e que parte te toca largar.',
     q_h: 'Isto chama-se numerologia transgeracional.',
-    q_p1: 'O teu nome e a tua data guardam o que foi acontecendo na tua família. Postos em números, o padrão vê-se: o que se repete, em que geração começou e por onde chegou até ti.',
+    q_p1: 'O teu nome e a tua data guardam o que aconteceu na tua família. Em números vê-se o padrão: o que se repete e desde quando.',
     sg_h: 'Veio-te alguém à cabeça.',
-    sg_p: 'A tua data e a dela. Sai o que há entre vocês os dois e porque vos acontece o que vos acontece. Sem deixar o email.',
+    sg_p: 'A tua data e a dela. Nada mais.',
     sg_cta: 'Ver agora',
     cu_h: 'Vamos olhar para a tua.',
-    cu_p: 'Online, com a tua história já preparada antes de nos vermos. Sais a saber de onde vem o que se repete e que decisão te toca tomar.',
+    cu_p: 'Online, com a tua história já preparada.',
     cu_num: 'O que é a numerologia transgeracional →',
     cu_kab: 'O que é a Kábala →',
     q_p2: 'Não adivinha o futuro. Olha para trás para entender o que já te está a acontecer. A conta faz-se à tua frente, com números, e podes refazê-la tu.',
     w_lab: 'Quem sou', w_h: 'Sou a Iris. Ajudo-te a libertares-te dos padrões que não te pertencem.', w_h2: 'E a devolvê-los à sua origem.',
     w_hola: 'Olá. Sou a Iris,',
     w_oficio: 'numeróloga transgeracional.',
-    w_que: 'Olho para o que na tua família se repete e ninguém sabe explicar. Não o interpreto nem o adivinho: conto-o com números —o teu nome, a tua data e as da tua linha— e mostro-to feito, à tua frente. Faço isto desde 2010, em espanhol, português e inglês.',
+    w_que: 'Olho para o que se repete na tua família e conto-o com números. Desde 2010.',
     w_p1: 'Passei anos a observar padrões no mundo corporativo e a decifrar o que acontece quando ninguém olha.',
     w_p2: 'Em 2010 uni o melhor da numerologia, da psicossomática clínica, das constelações e das terapias integrativas para criar um método prático e profundo. O objetivo da minha consulta é só um: que saias a saber quem és e que decisão tomar hoje.',
     w1: 'Direito', w2: 'Psicologia', w3: 'Psicossomática', w4: 'Descodificação', w5: 'Numerologia', w6: 'Transgeracional',
@@ -280,8 +280,8 @@ export const COPY = {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
     h1a: 'What your family never spoke about,', h1b: 'you are the one paying for.',
-    h1p1: 'It is not your character. It is not bad luck. It is a story that started before you were born.',
-    h1p2: 'Nobody was to blame. But nobody closed it, and it keeps coming down until somebody looks.',
+    h1p1: 'It is not your character. It started before you were born.',
+    h1p2: 'Nobody was to blame. But nobody closed it.',
     h1p2b: 'It has landed on you.',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
     hcta: 'Book my session', hcta2: 'See my number, free', hbadge: 'Online · ES / PT / EN',
@@ -297,19 +297,19 @@ export const COPY = {
     b_p1: 'Every family has something nobody talked about: a lover who was never acknowledged, a psychiatric illness, someone who was in prison. No one tells it, and it gets passed down all the same.',
     b_p2: 'With your name and your date you can see which generation it started in, how it reached you, and what is yours to put down.',
     q_h: 'This is called transgenerational numerology.',
-    q_p1: 'Your name and your date hold what has been happening in your family. Put into numbers, the pattern shows: what repeats, which generation it started in, and how it reached you.',
+    q_p1: 'Your name and your date hold what happened in your family. In numbers the pattern shows: what repeats, and since when.',
     sg_h: 'Somebody just came to mind.',
-    sg_p: 'Your date and theirs. It shows what is between the two of you and why the same thing keeps happening. No email needed.',
+    sg_p: 'Your date and theirs. Nothing else.',
     sg_cta: 'See it now',
     cu_h: 'Let us look at yours.',
-    cu_p: 'Online, with your story prepared before we meet. You leave knowing where the repetition comes from and what decision is yours to make.',
+    cu_p: 'Online, with your story prepared before we meet.',
     cu_num: 'What transgenerational numerology is →',
     cu_kab: 'What Kabbalah is →',
-    q_p2: 'It does not predict the future. It looks back to explain what is already happening to you. The arithmetic is done in front of you, and you can redo it yourself.',
+    q_p2: 'It does not predict the future. It explains the present.',
     w_lab: 'Who I am', w_h: 'I am Iris. I help you free yourself from patterns that are not yours.', w_h2: 'And return them to where they came from.',
     w_hola: 'Hello. I am Iris,',
     w_oficio: 'a transgenerational numerologist.',
-    w_que: 'I look at what repeats in your family and nobody can explain. I do not interpret it and I do not guess it: I work it out with numbers — your name, your date and your line\u2019s — and I show you the workings. I have been doing this since 2010, in Spanish, Portuguese and English.',
+    w_que: 'I look at what repeats in your family and work it out with numbers. Since 2010.',
     w_p1: 'I spent years observing patterns in the corporate world and working out what happens when nobody is looking.',
     w_p2: 'In 2010 I brought together the best of numerology, clinical psychosomatics, constellations and integrative therapies to build a method that is practical and deep. My consultation has one single aim: that you leave knowing who you are and what to decide today.',
     w1: 'Law', w2: 'Psychology', w3: 'Psychosomatics', w4: 'Decoding', w5: 'Numerology', w6: 'Transgenerational',

@@ -138,10 +138,24 @@
   padding: 14px 8px;
   border: 0;
   border-radius: 14px;
-  background: var(--bg);
+  /*
+   * SE TIENE QUE VER QUE AQUÍ SE ESCRIBE.
+   *
+   * Estaban del mismo color que el bloque, con solo un relieve hundido muy
+   * suave. En un móvil, con el brillo bajo y sobre granate oscuro, no se veían:
+   * Gerson abrió la página y lo que dijo fue «lo rojo no se entiende qué es».
+   * Tenía razón — el relieve solo funciona cuando hay luz de sobra, y media
+   * gente entra a esta web de noche y en la calle.
+   *
+   * Así que además del hueco hay un hueco DE VERDAD: la casilla es más oscura
+   * que el bloque, no del mismo tono, y lleva un filete dorado tenue alrededor.
+   * Sigue sin ser una caja con borde grueso, pero ya no hay que adivinar dónde
+   * se escribe.
+   */
+  background: rgba(0, 0, 0, 0.26);
   box-shadow:
-    inset 3px 3px 8px rgba(0, 0, 0, 0.34),
-    inset -3px -3px 8px rgba(255, 255, 255, 0.06);
+    inset 0 0 0 1px rgba(226, 205, 162, 0.22),
+    inset 3px 3px 9px rgba(0, 0, 0, 0.42);
   color: var(--tx);
   font-family: inherit;
   font-size: 22px;
@@ -157,9 +171,11 @@
 .sinaqui-input-anio {
   width: clamp(92px, 14vw, 116px);
 }
+/* El marcador, más claro que antes. `--tx-3` sobre un hueco oscurecido se caía
+   por debajo de lo que se lee en la calle. */
 .sinaqui-input::placeholder {
-  color: var(--tx-3);
-  font-weight: 300;
+  color: rgba(226, 205, 162, 0.5);
+  font-weight: 400;
   opacity: 1;
 }
 /* EL FOCO NO ES UN BORDE: ES UN ANILLO SOBRE EL RELIEVE.
@@ -169,8 +185,8 @@
    navega con el teclado necesita saber dónde está. */
 .sinaqui-input:focus-visible {
   box-shadow:
-    inset 3px 3px 8px rgba(0, 0, 0, 0.34),
-    inset -3px -3px 8px rgba(255, 255, 255, 0.06),
+    inset 0 0 0 1px rgba(226, 205, 162, 0.22),
+    inset 3px 3px 9px rgba(0, 0, 0, 0.42),
     0 0 0 2px var(--acento);
 }
 
@@ -194,8 +210,11 @@
   gap: 14px;
   margin-top: clamp(28px, 3.6vw, 42px);
 }
+/* A la mitad de opacidad, sobre granate, el botón apagado no se leía: parecía
+   que la página estaba rota, no que faltaran las fechas. Se sube a 0,72 — sigue
+   apagado a la vista, pero se lee. */
 .sinaqui-acciones .portada-cta:disabled {
-  opacity: 0.5;
+  opacity: 0.72;
   cursor: default;
 }
 .sinaqui-acciones .portada-cta:disabled > i {

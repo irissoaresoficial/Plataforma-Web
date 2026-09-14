@@ -31,7 +31,6 @@ import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/C
 import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
 import PortadaArbol from '@/components/PortadaArbol';
-import VideoPresenta from '@/components/VideoPresenta';
 import QueEs from '@/components/QueEs';
 import SinergiaAqui from '@/components/SinergiaAqui';
 import { useLang } from '@/lib/i18n';
@@ -397,7 +396,6 @@ export default function Home() {
           escrito en las dos páginas que lo explican —numerología y Kábala—,
           enlazadas desde el pie y desde el propio texto. */}
       <div id="consultas" className="claro bloque-limpio" style={{ scrollMarginTop: 80 }}>
-        <div className="cierre-marco">
         <div className="cierre-uno">
           <Aparece className="titular-seccion cierre-uno-h">{t.cu_h}</Aparece>
           <Aparece retraso={1}>
@@ -429,30 +427,12 @@ export default function Home() {
             </p>
           </Aparece>
         </div>
-
-        {/*
-            EL VÍDEO, JUSTO AQUÍ.
-            ------------------------------------------------------------------
-            Estaba en el bloque de «Hola, soy Iris», y allí sobraba: en ese
-            bloque ella se presenta, y para presentarse basta una cara quieta
-            mirándote.
-
-            Aquí es otra cosa. Éste es el sitio donde la persona decide si paga
-            o no, y lo último que necesita antes de decidir no es leer una frase
-            más: es OÍRLA. Un minuto de alguien hablando hace más por una
-            reserva que tres párrafos.
-
-            No arranca solo —es voz, y un vídeo que se pone a hablar solo se
-            cierra— así que hasta que se pulsa es su retrato con el botón. */}
-        <Revelado className="cierre-video">
-          <VideoPresenta
-            src="/video/iris-presentacion.mp4"
-            cartel="/images/iris-presentacion-cartel.jpg"
-            etiqueta="Iris se presenta"
-          />
-        </Revelado>
-        </div>
       </div>
+
+      {/* EL VÍDEO DE IRIS NO VA AQUÍ. Ni aquí ni en el bloque de «Hola, soy
+          Iris», donde también estuvo. Va en el apartado del curso y en ningún
+          otro sitio — se ha pedido tres veces y las tres lo puse donde no era.
+          Aquí queda el texto y el botón, y ya está. */}
 
       {/* ── DUDAS ────────────────────────────────────────────── */}
       <div id="dudas" className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD }}>
