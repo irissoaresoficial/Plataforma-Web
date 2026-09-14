@@ -84,19 +84,27 @@
   gap: 8px;
 }
 
-/* En pantalla estrecha las dos columnas no caben: la frase pasa encima de sus
-   casillas y las dos filas se alinean a la izquierda entre ellas. */
+/* En pantalla estrecha las dos columnas no caben, así que la frase pasa encima
+   de sus casillas.
+
+   Y VAN CENTRADAS, no a la izquierda. Estaban a la izquierda y el resultado era
+   el que se ve en la foto de Gerson: el dibujo centrado, el titular centrado,
+   la línea de debajo centrada, LAS DOS FRASES Y LAS SEIS CASILLAS A LA
+   IZQUIERDA, y el botón otra vez centrado. Cinco piezas y tres ejes distintos.
+   Eso no se lee como una decisión, se lee como que algo se ha descolocado.
+   Este bloque es una composición centrada de arriba abajo: lo de dentro también
+   lo es. */
 @media (max-width: 560px) {
   .sinaqui-fechas {
     grid-template-columns: 1fr;
-    justify-items: start;
-    justify-content: stretch;
+    justify-items: center;
+    justify-content: center;
     gap: 8px;
     width: 100%;
     max-width: 340px;
   }
   .sinaqui-dice {
-    text-align: left;
+    text-align: center;
   }
   .sinaqui-casillas + .sinaqui-dice {
     margin-top: 12px;

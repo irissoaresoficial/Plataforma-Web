@@ -138,7 +138,26 @@ export const COPY = {
     /* Un titular que no duele no es un titular. «Se te ha venido alguien a la
         cabeza» describe lo que le pasa a quien lee; esto nombra lo que le PASA
         con esa persona, que es lo que de verdad le escuece. */
-    sg_h: 'Con esa persona siempre acabáis en lo mismo.',
+    /*
+     * Y OTRA VEZ EL PRONOMBRE HUÉRFANO. Van cuatro.
+     *
+     * «Con esa persona siempre acabáis en lo mismo.» ¿Qué persona? No se ha
+     * nombrado a nadie. Yo la escribí pensando que quien llega aquí viene de
+     * leer sobre lo que se repite en una familia y «ya tiene a alguien en la
+     * cabeza» — eso está escrito en el comentario de abajo—. Es un supuesto,
+     * y encima uno que se cae solo: la mitad de la gente llega a este bloque
+     * bajando a saltos, sin haber leído lo de arriba.
+     *
+     * La frase nueva no señala a nadie: LO DESCRIBE, y al describirlo hace que
+     * la persona aparezca sola en la cabeza de quien lee. «Siempre la misma
+     * discusión, con la misma persona» no necesita nada delante, y es la
+     * escena más reconocible que hay — todo el mundo tiene una.
+     *
+     * Y pega más fuerte que la anterior porque nombra el HECHO (la discusión)
+     * en vez del vínculo. Un vínculo es una idea; una discusión que se repite
+     * se recuerda con el cuerpo.
+     */
+    sg_h: 'Siempre la misma discusión, con la misma persona.',
     sg_p: 'Tu fecha y la suya. Nada más.',
     sg_cta: 'Verlo ahora',
     /*
@@ -353,7 +372,7 @@ export const COPY = {
     b_p2: 'Com o teu nome e a tua data vê-se em que geração começou, como chegou até ti e que parte te toca largar.',
     q_h: 'Isto chama-se numerologia transgeracional.',
     q_p1: 'O teu nome e a tua data guardam o que aconteceu na tua família. Em números vê-se o padrão: o que se repete e desde quando.',
-    sg_h: 'Com essa pessoa acabam sempre no mesmo.',
+    sg_h: 'Sempre a mesma discussão, com a mesma pessoa.',
     sg_p: 'A tua data e a dela. Nada mais.',
     sg_cta: 'Ver agora',
     cu_h: 'Deixa-me olhar para isto contigo.',
@@ -450,7 +469,7 @@ export const COPY = {
     b_p2: 'With your name and your date you can see which generation it started in, how it reached you, and what is yours to put down.',
     q_h: 'This is called transgenerational numerology.',
     q_p1: 'Your name and your date hold what happened in your family. In numbers the pattern shows: what repeats, and since when.',
-    sg_h: 'With that person it always ends the same way.',
+    sg_h: 'The same argument, always, with the same person.',
     sg_p: 'Your date and theirs. Nothing else.',
     sg_cta: 'See it now',
     cu_h: 'Let me look at it with you.',
