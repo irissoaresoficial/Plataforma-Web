@@ -372,24 +372,43 @@ export default function PortadaArbol({ pasos }: { pasos: [PasoPortada, PasoPorta
         {/* Sin `src` en el servidor: lo pone el efecto según la forma de la
             pantalla, para que nadie se descargue el vídeo que no va a ver.
             Hasta entonces manda el cartel. */}
-        <video
-          ref={vid}
-          className="portada-video"
-          poster="/images/arbol-scroll-cartel.jpg"
-          muted
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          aria-hidden
-          tabIndex={-1}
-        />
+        {/*
+            EL LIENZO: EL SITIO DONDE VIVE EL DIBUJO.
+            ------------------------------------------------------------------
+            Antes el vídeo y el velo colgaban sueltos del escenario, y el cartel
+            era el fondo del escenario entero. Con eso, el dibujo ocupaba SIEMPRE
+            toda la pantalla y el texto iba encima, tapándolo.
 
-        {/* Un velo de papel que sube desde abajo. El dibujo es tinta finísima
-            sobre crema y el texto va encima: sin esto, una rama cruzando una
-            letra la parte por la mitad. Es un degradado del propio color del
-            papel —el que el bucle acaba de medir— así que no se ve como un
-            filtro puesto encima: se ve como que ahí abajo hay más luz. */}
-        <span className="portada-velo" aria-hidden />
+            En un ordenador eso funciona: hay sitio de sobra a la izquierda, el
+            árbol queda a la derecha y no se pisan. En un teléfono no hay «a la
+            izquierda» — el texto cae justo encima de las ramas, y en la foto de
+            Gerson se ve «nunca se contó» partido por una rama. Además quedaba
+            media pantalla vacía arriba y otra media abajo.
+
+            Metiéndolo todo en un marco propio, ese marco puede ser la pantalla
+            entera en el ordenador y sólo la mitad de arriba en el teléfono, sin
+            tocar nada más. El cartel se muda aquí con él: tiene que recortarse
+            con el mismo marco que el vídeo, no con el escenario. */}
+        <div className="portada-lienzo">
+          <video
+            ref={vid}
+            className="portada-video"
+            poster="/images/arbol-scroll-cartel.jpg"
+            muted
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            aria-hidden
+            tabIndex={-1}
+          />
+
+          {/* Un velo de papel que sube desde abajo. El dibujo es tinta finísima
+              sobre crema y el texto va encima: sin esto, una rama cruzando una
+              letra la parte por la mitad. Es un degradado del propio color del
+              papel —el que el bucle acaba de medir— así que no se ve como un
+              filtro puesto encima: se ve como que ahí abajo hay más luz. */}
+          <span className="portada-velo" aria-hidden />
+        </div>
 
         {/* Los tres textos ocupan la MISMA casilla de una rejilla, así que se
             cruzan en el sitio en vez de empujarse. */}

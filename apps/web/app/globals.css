@@ -6214,12 +6214,34 @@ body[data-nav-claro='si'] .sello-color {
   height: 100svh;
   overflow: hidden;
   isolation: isolate;
+}
+
+/* ===================================================================
+   EL LIENZO: DONDE VIVE EL DIBUJO
+   ===================================================================
+   En el ordenador es la pantalla entera y el texto va encima, que es como se
+   diseñó y como funciona: hay sitio de sobra a la izquierda, el árbol cae a la
+   derecha y no se pisan.
+
+   En un teléfono no existe «a la izquierda». El texto caía justo encima de las
+   ramas —en la foto de Gerson se ve «nunca se contó» partido por una rama— y
+   encima quedaba media pantalla vacía arriba y otra media abajo. Por eso abajo,
+   en el bloque de los 1000 px, este marco pasa a ocupar sólo la mitad de arriba
+   y el texto baja a la mitad de abajo, sobre papel limpio.
+
+   El cartel vive aquí y no en el escenario: tiene que recortarse con el mismo
+   marco que el vídeo. Si se queda en el escenario, en el teléfono el dibujo
+   sigue ocupándolo todo por detrás del texto. */
+.portada-lienzo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   background-image: url('/images/arbol-scroll-cartel.jpg');
   background-size: cover;
   background-position: center 42%;
   background-repeat: no-repeat;
 }
-.portada-vertical .portada-escena {
+.portada-vertical .portada-lienzo {
   background-image: url('/images/arbol-vertical-cartel.jpg');
   background-position: center 38%;
 }
@@ -6227,7 +6249,7 @@ body[data-nav-claro='si'] .sello-color {
    así la imagen correcta está puesta desde el primer pintado y no hay ni un
    fotograma con el recorte equivocado. */
 @media (max-aspect-ratio: 5/4) {
-  .portada-escena {
+  .portada-lienzo {
     background-image: url('/images/arbol-vertical-cartel.jpg');
     background-position: center 38%;
   }
@@ -6576,12 +6598,86 @@ body[data-nav-claro='si'] .sello-color {
   100% { transform: translateY(24px); opacity: 0; }
 }
 
+/* ===================================================================
+   MÓVIL Y TABLET: EL DIBUJO ARRIBA, EL TEXTO DEBAJO
+   ===================================================================
+   Idea de Gerson, y es la correcta: «es ilógico que esté así, yo lo haría texto
+   abajo, vídeo arriba».
+
+   Por qué la maqueta del ordenador no sirve aquí. En una pantalla ancha el
+   texto ocupa la mitad izquierda y el árbol cae a la derecha: comparten
+   pantalla sin tocarse. En un teléfono no hay mitad izquierda — el texto cae
+   ENCIMA de las ramas, y en la foto se ve «nunca se contó» cortado por una
+   rama que le pasa por el medio. Y para que el texto se leyera había que
+   taparle el dibujo con un velo, así que el árbol tampoco se veía. Los dos
+   perdían.
+
+   Separados, cada uno tiene lo suyo entero: el dibujo se ve de borde a borde
+   en la mitad de arriba —con su propio recorte, sin nada encima— y el texto se
+   lee sobre papel limpio abajo. De paso desaparece el medio metro vacío que
+   quedaba arriba y abajo, porque ahora el hueco lo ocupa el dibujo.
+
+   Se aplica hasta 1000 px, no hasta 760: un iPad en vertical son 768 y tenía
+   exactamente el mismo problema.
+   =================================================================== */
+@media (max-width: 1000px) {
+  .portada-escena {
+    display: grid;
+    /*
+     * EL TEXTO MIDE LO QUE MIDE, Y EL DIBUJO SE COME EL RESTO.
+     *
+     * Primero lo puse al revés —el dibujo a 54svh fijo y el texto en `1fr`— y
+     * medido en un iPad vertical dejaba 350 px de papel vacío debajo de la
+     * frase. Es el mismo hueco que había antes, movido de sitio.
+     *
+     * Con `1fr auto` la fila del texto mide exactamente lo que ocupa la frase
+     * más larga con su botón, y el dibujo se queda con TODO lo que sobre. Así
+     * no puede quedar hueco: si la pantalla es más alta, lo que crece es el
+     * árbol. Y como las tres frases comparten celda, esa fila mide siempre
+     * igual — la primera línea sigue cayendo en el mismo píxel, que es lo que
+     * costó arreglar.
+     */
+    grid-template-rows: 1fr auto;
+  }
+  .portada-lienzo {
+    position: relative;
+    inset: auto;
+    grid-row: 1;
+    height: auto;
+    /* Un suelo, por si alguien entra con el teclado abierto o en una pantalla
+       muy baja: el dibujo no puede quedarse en una rendija. */
+    min-height: 40svh;
+  }
+  /* El velo ya no hace falta y estorba: servía para que el texto se leyera
+     sobre el dibujo, y ahora el texto no está encima. Dejarlo sólo aclara el
+     tercio de abajo del árbol sin ninguna razón. */
+  .portada-velo { display: none; }
+
+  .portada-textos {
+    position: static;
+    grid-row: 2;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    /* El alto mínimo lo ponía la caja para que las tres frases empezaran en la
+       misma línea. Aquí lo pone la propia rejilla —la fila 2 mide lo mismo
+       siempre—, así que sobra y además obligaría a la portada a crecer. */
+    min-height: 0;
+    padding: clamp(22px, 4svh, 40px) clamp(20px, 5.5vw, 44px) clamp(104px, 15svh, 140px);
+    max-width: none;
+  }
+  /* Y dentro de esa fila, el texto se pega arriba: así la primera línea de las
+     tres frases sigue cayendo en el mismo píxel, que es lo de siempre. */
+  .portada-paso {
+    justify-content: flex-start;
+  }
+}
+
 @media (max-width: 760px) {
   .portada {
     min-height: 280svh;
   }
   .portada-textos {
-    bottom: clamp(96px, 15svh, 136px); /* por encima de la pastilla del chat */
     max-width: none;
   }
   /* AQUÍ SE VOLVÍA A ROMPER LA ALINEACIÓN, Y JUSTO EN EL MÓVIL.
