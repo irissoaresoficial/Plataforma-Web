@@ -39,15 +39,28 @@ export const COPY = {
      * «No es tu carácter, empezó antes de que nacieras» era verdad y no dolía:
      * describe un fenómeno. Nadie se reconoce en un fenómeno.
      *
-     * La primera ahora nombra a personas concretas —tu madre, tu abuela— y
-     * termina en la frase exacta que se ha dicho a sí misma la persona que está
-     * leyendo. Ahí es donde se levanta la vista.
+     * Después decía «Tu madre lo vivió. Tu abuela también.» y ganó concreción a
+     * cambio de algo que no compensa: SE CERRÓ. Decisión de Gerson, y tiene
+     * razón —«lo limitas mucho a su madre o su abuela»—. Nombrar a dos mujeres
+     * concretas deja fuera a cualquiera que no reconozca ahí su historia: quien
+     * lo lleva por parte de padre, quien no conoció a su madre, quien la tiene
+     * bien y arrastra lo mismo igual, y la mitad de los hombres que entran. En
+     * la primera pantalla de la web, cada persona que no se ve retratada es una
+     * pestaña que se cierra.
+     *
+     * Lo que no se puede perder al abrirla es el presente. La versión de antes
+     * dolía por «y tú jurabas que a ti no te iba a pasar» —el tiempo verbal—,
+     * no por los parentescos. Así que la frase nueva se queda con eso y suelta
+     * lo otro: no dice de quién viene, dice QUE NO LO EMPEZASTE TÚ, que SE
+     * REPITE y que aun así te está ocurriendo HOY. Lo primero le quita la culpa,
+     * lo segundo nombra el patrón —que es lo que se vende aquí— y lo tercero no
+     * la deja irse a pensar que es cosa del pasado de su familia.
      *
      * Y la segunda no explica nada: pone la factura encima de la mesa. «Otros
      * treinta años» es un número que se siente en el cuerpo, y deja UNA salida,
      * que además es justo lo que hay debajo: el botón.
      */
-    h1p1: 'Tu madre lo vivió. Tu abuela también. Y tú jurabas que a ti no te iba a pasar.',
+    h1p1: 'No lo empezaste tú. Pero se repite, y te está pasando hoy.',
     h1p2: 'Puedes aguantarlo otros treinta años.',
     h1p2b: 'O mirarlo una vez.',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
@@ -229,7 +242,7 @@ export const COPY = {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
     h1a: 'O que na tua família nunca se contou,', h1b: 'estás a pagá-lo tu.',
-    h1p1: 'A tua mãe viveu-o. A tua avó também. E tu juravas que a ti não te ia acontecer.',
+    h1p1: 'Não foste tu que começaste. Mas repete-se, e está a acontecer-te hoje.',
     h1p2: 'Podes aguentá-lo mais trinta anos.',
     h1p2b: 'Ou olhar para ele uma vez.',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
@@ -326,7 +339,7 @@ export const COPY = {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
     h1a: 'What your family never spoke about,', h1b: 'you are the one paying for.',
-    h1p1: 'Your mother lived it. Your grandmother too. And you swore it would not happen to you.',
+    h1p1: 'You did not start it. But it repeats, and it is happening to you today.',
     h1p2: 'You can carry it another thirty years.',
     h1p2b: 'Or look at it once.',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
