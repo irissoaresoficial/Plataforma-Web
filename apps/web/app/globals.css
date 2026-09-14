@@ -385,6 +385,23 @@ h3 {
    * que se trataba.
    */
   --t-nota: 15px;
+  /*
+   * `--t-mini` EXISTE AHORA, Y VALE LO MISMO QUE LA NOTA.
+   *
+   * Seis declaraciones pedían `font-size: var(--t-mini)` y esa variable no
+   * estaba definida en NINGUNA parte del proyecto. Sin valor y sin recambio,
+   * la declaración es inválida al calcularse y el elemento se queda con el
+   * tamaño de su padre — que es por lo que el precio tachado de Talleres se
+   * medía a 17 px, el tamaño del bloque de al lado, y no a un tamaño suyo.
+   *
+   * Podría borrarse de los seis sitios. Se define en su lugar, y valiendo lo
+   * mismo que `--t-nota`, por una razón: mientras la variable no exista, nadie
+   * ve el error —todo parece funcionar— y el día que alguien la defina con un
+   * valor bajo aparecen seis piezas de letra pequeña de golpe en la web. Con
+   * esto, `--t-mini` es un nombre más de la nota, no una puerta trasera al
+   * tamaño 13.
+   */
+  --t-mini: var(--t-nota);
   --alto-texto: 1.72;
 }
 

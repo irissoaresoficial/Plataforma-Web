@@ -35,7 +35,21 @@ export default function Informe({ e }: { e: Estudio }) {
         display: 'none',
         background: '#fff',
         color: INK,
-        fontFamily: "'Satoshi',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif",
+        /*
+         * LA LETRA DE LA CASA, NO UNA QUE NO EXISTE.
+         *
+         * Aquí ponía `'Satoshi'`, y Satoshi NO ESTÁ EN EL PROYECTO: no se carga
+         * en `app/layout.tsx` ni hay un `@font-face` en ninguna parte. O sea que
+         * el navegador se la saltaba entera y caía al siguiente de la lista.
+         * Resultado medido: este informe —el papel que la persona se descarga y
+         * se lleva— se imprimía en ARIAL. La única pieza de la web que acaba en
+         * las manos de un cliente, en la letra por defecto del sistema.
+         *
+         * Se pide por el token de la casa, que es la fuente que el proyecto ya
+         * está cargando. Así el día que cambie la tipografía de la web, este
+         * papel cambia con ella y no hay que acordarse de venir aquí.
+         */
+        fontFamily: 'var(--sans)',
         WebkitFontSmoothing: 'antialiased',
         lineHeight: 1.5,
       }}
@@ -60,7 +74,9 @@ export default function Informe({ e }: { e: Estudio }) {
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.12em', textTransform: 'uppercase', color: GOLD, marginBottom: 14 }}>
           {conQuien ? `Contigo y ${conQuien}` : 'Tu estudio'}
         </div>
-        <h1 style={{ margin: 0, fontFamily: "'Instrument Serif',Georgia,serif", fontSize: 42, fontWeight: 400, letterSpacing: '-.02em', lineHeight: 1.06, maxWidth: '18ch' }}>
+        {/* Lo mismo que arriba: pedía `'Instrument Serif'`, que tampoco está
+            cargada, y el titular del informe salía en Georgia. */}
+        <h1 style={{ margin: 0, fontFamily: 'var(--serif)', fontSize: 42, fontWeight: 400, letterSpacing: '-.02em', lineHeight: 1.06, maxWidth: '18ch' }}>
           Lo que se activa entre {e.a.nombrePila} y {e.b.nombrePila}.
         </h1>
       </section>
