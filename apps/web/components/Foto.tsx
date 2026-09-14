@@ -64,7 +64,7 @@ export default function Foto({
           <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: '#A33B3B', border: '1px solid #A33B3B', borderRadius: 100, padding: '4px 11px' }}>
             Foto pendiente
           </span>
-          <code style={{ fontSize: 11, color: 'var(--tx-3)' }}>{src.replace('/images/', '')}</code>
+          <code style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-3)' }}>{src.replace('/images/', '')}</code>
         </div>
       ) : (
         <Image
@@ -88,7 +88,7 @@ export default function Foto({
             position: 'absolute',
             left: 16,
             bottom: 14,
-            fontSize: 11,
+            fontSize: 'var(--t-nota)',
             fontWeight: 600,
             letterSpacing: '.06em',
             textTransform: 'uppercase',

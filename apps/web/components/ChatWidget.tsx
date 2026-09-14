@@ -663,7 +663,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
   const bubbleWrap = (me: boolean): React.CSSProperties => ({ display: 'flex', justifyContent: me ? 'flex-end' : 'flex-start' });
   const bubbleStyle = (me: boolean): React.CSSProperties => ({
     maxWidth: '82%',
-    fontSize: 15,
+    fontSize: 'var(--t-nota)',
     lineHeight: 1.5,
     padding: '11px 14px',
     borderRadius: me ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
@@ -723,14 +723,14 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
           <span style={{ position: 'absolute', right: -1, bottom: -1, width: 11, height: 11, borderRadius: '50%', background: '#7CC48A', border: '2px solid var(--bg)' }} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
-          <span style={{ fontSize: 15, fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
+          <span style={{ fontSize: 'var(--t-nota)', fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
           {/* «Agente de IA · agenda en directo» explica qué es esto, y en el
               escritorio vale la pena. En el móvil es lo que hacía la pastilla de
               276 px de ancho —siete de cada diez de la pantalla— así que ahí se
               cae y queda la foto, la palabra y la flecha. */}
-          <span className="chat-sub" style={{ fontSize: 15, fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
+          <span className="chat-sub" style={{ fontSize: 'var(--t-nota)', fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
         </div>
-        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 'var(--peso-medio)', flexShrink: 0 }}>
+        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--t-nota)', fontWeight: 'var(--peso-medio)', flexShrink: 0 }}>
           →
         </span>
       </button>
@@ -772,8 +772,8 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
             <Image src={LOGO_COLOR} alt="" width={40} height={40} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, minWidth: 0 }}>
-            <span style={{ fontSize: 15, fontWeight: 700 }}>{t.ch_title}</span>
-            <span style={{ fontSize: 15, color: 'var(--tx-3)' }}>{done ? t.ch_done : t.ch_sub}</span>
+            <span style={{ fontSize: 'var(--t-nota)', fontWeight: 700 }}>{t.ch_title}</span>
+            <span style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-3)' }}>{done ? t.ch_done : t.ch_sub}</span>
           </div>
           <span style={{ fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)', border: '1px solid rgba(200,155,74,.4)', borderRadius: 100, padding: '4px 8px', flexShrink: 0 }}>
             IA
@@ -829,14 +829,14 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
               <button type="button" onClick={() => setCalOffset((o) => Math.max(0, o - 1))} aria-label="Mes anterior" className="chat-mes">
                 ‹
               </button>
-              <span style={{ fontSize: 15, fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', textTransform: 'capitalize' }}>{calMonth}</span>
+              <span style={{ fontSize: 'var(--t-nota)', fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', textTransform: 'capitalize' }}>{calMonth}</span>
               <button type="button" onClick={() => setCalOffset((o) => Math.min(6, o + 1))} aria-label="Mes siguiente" className="chat-mes">
                 ›
               </button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 3 }}>
               {calWeekdays.map((w, i) => (
-                <span key={i} style={{ textAlign: 'center', fontSize: 15, fontWeight: 700, letterSpacing: '.06em', color: 'var(--tx-4)' }}>
+                <span key={i} style={{ textAlign: 'center', fontSize: 'var(--t-nota)', fontWeight: 700, letterSpacing: '.06em', color: 'var(--tx-4)' }}>
                   {w}
                 </span>
               ))}
@@ -866,7 +866,7 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
                 </button>
               ))}
             </div>
-            <span style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--tx-3)' }}>{t.ch_cal}</span>
+            <span style={{ fontSize: 'var(--t-nota)', lineHeight: 1.5, color: 'var(--tx-3)' }}>{t.ch_cal}</span>
           </div>
         )}
 
@@ -994,13 +994,13 @@ const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref)
                 submit(draft);
               }
             }}
-            style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', fontSize: 15, color: 'var(--tx)', padding: '6px 0' }}
+            style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', fontSize: 'var(--t-nota)', color: 'var(--tx)', padding: '6px 0' }}
           />
           <button type="button" onClick={() => submit(draft)} aria-label="Enviar" className="chat-enviar">
             →
           </button>
         </div>
-        <div style={{ padding: '0 17px 13px', fontSize: 15, lineHeight: 1.6, color: 'var(--tx-4)' }}>{t.ch_priv}</div>
+        <div style={{ padding: '0 17px 13px', fontSize: 'var(--t-nota)', lineHeight: 1.6, color: 'var(--tx-4)' }}>{t.ch_priv}</div>
       </div>
     </>
   );

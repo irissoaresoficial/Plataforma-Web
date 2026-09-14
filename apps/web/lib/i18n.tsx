@@ -60,9 +60,26 @@ export const COPY = {
      * treinta años» es un número que se siente en el cuerpo, y deja UNA salida,
      * que además es justo lo que hay debajo: el botón.
      */
-    h1p1: 'No lo empezaste tú. Pero se repite, y te está pasando hoy.',
-    h1p2: 'Puedes aguantarlo otros treinta años.',
-    h1p2b: 'O mirarlo una vez.',
+    /*
+     * TERCERA VERSIÓN, Y ÉSTA SÍ SE SIENTE.
+     *
+     * «Puedes aguantarlo otros treinta años. O mirarlo una vez.» era un
+     * ultimátum con una simetría bonita —treinta años contra una vez— y ése era
+     * justo el problema: se nota el oficio. Alguien la escribió. Y una frase
+     * que se nota escrita no duele, se admira; y admirar es lo contrario de
+     * reconocerse.
+     *
+     * Lo que sí duele no es una elección, es una escena: la cosa que vuelve
+     * justo cuando creías haberla dejado atrás. Eso no hay que explicarlo —
+     * quien lo ha vivido levanta la vista en la palabra «vuelve».
+     *
+     * Y el tercer golpe deja de ser un ultimátum y pasa a ser la promesa: nadie
+     * te lo contó, pero se puede leer. Ahí es donde entra Iris, y ahí es donde
+     * la página deja de hablar del problema y empieza a hablar del método.
+     */
+    h1p1: 'Y cada vez que crees que lo has dejado atrás, vuelve.',
+    h1p2: 'Nadie te lo contó.',
+    h1p2b: 'Pero está escrito en tu fecha y en tu nombre.',
     hsub: 'Te enseño de dónde viene lo que se repite. Y cómo se corta.',
     hcta: 'Reservar mi consulta', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
     s1: 'personas atendidas', s2: 'desde', s3: 'idiomas',
@@ -161,7 +178,22 @@ export const COPY = {
         ser una ficha suelta y se convierte en la primera mitad de una frase que
         acaba en el siguiente titular. Y fuera el «desde 2010»: una fecha no
         convence a nadie que todavía no sabe qué le estás vendiendo. */
-    w_que: 'Yo no lo interpreto. Lo cuento con números: tu nombre, tu fecha y las de tu línea. Y esto tiene nombre.',
+    /*
+     * CÓMO SE PRESENTA, EN SU VOZ.
+     *
+     * Decía «Yo no lo interpreto. Lo cuento con números… Y esto tiene nombre.»
+     * Es una frase de método: explica QUÉ hace y no dice nada de por qué habría
+     * que creerla. Y encima terminaba en un puente —«esto tiene nombre»— que
+     * empujaba a la definición de abajo en vez de dejar peso aquí.
+     *
+     * Gerson dio la voz exacta: «di algo como: a lo largo de muchos años y
+     * muchas consultas entendí…». Eso hace tres cosas a la vez que la otra no
+     * hacía ninguna: dice que lleva tiempo, dice que ha visto muchos casos, y
+     * pone lo que sabe como algo que APRENDIÓ mirando, no como una doctrina que
+     * se cree. Es la única prueba que esta página va a tener, y no necesita
+     * ninguna cifra ni ningún testimonio para sostenerse.
+     */
+    w_que: 'A lo largo de muchos años y de muchas consultas entendí una cosa: lo que se repite no empieza en quien lo sufre. Viene de atrás. Y se puede leer.',
     w_p1: 'Pasé años observando patrones en el mundo corporativo y descifrando qué sucede cuando nadie mira.',
     w_p2: 'En 2010 uní lo mejor de la numerología, la psicosomática clínica, las constelaciones y las terapias integrativas para crear un método práctico y profundo. El objetivo de mi consulta es solo uno: que salgas sabiendo quién eres y qué decisión tomar hoy.',
     w1: 'Derecho', w2: 'Psicología', w3: 'Psicosomática', w4: 'Descodificación', w5: 'Numerología', w6: 'Transgeneracional',
@@ -242,9 +274,9 @@ export const COPY = {
     n1: 'Como funciona', n2: 'Ver o meu número', n3: 'Cursos', n4: 'Membresia', book: 'Marcar', free: 'Grátis',
     kick: 'Numerologia transgeracional · online desde 2010',
     h1a: 'O que na tua família nunca se contou,', h1b: 'estás a pagá-lo tu.',
-    h1p1: 'Não foste tu que começaste. Mas repete-se, e está a acontecer-te hoje.',
-    h1p2: 'Podes aguentá-lo mais trinta anos.',
-    h1p2b: 'Ou olhar para ele uma vez.',
+    h1p1: 'E sempre que julgas tê-lo deixado para trás, volta.',
+    h1p2: 'Ninguém to contou.',
+    h1p2b: 'Mas está escrito na tua data e no teu nome.',
     hsub: 'Mostro-te de onde vem o que se repete. E como se corta.',
     hcta: 'Marcar a minha consulta', hcta2: 'Ver o meu número, grátis', hbadge: 'Online · ES / PT / EN',
     s1: 'pessoas acompanhadas', s2: 'desde', s3: 'idiomas',
@@ -273,7 +305,7 @@ export const COPY = {
     w_lab: 'Quem sou', w_h: 'Sou a Iris. Ajudo-te a libertares-te dos padrões que não te pertencem.', w_h2: 'E a devolvê-los à sua origem.',
     w_hola: 'Olá. Sou a Iris,',
     w_oficio: 'numeróloga transgeracional.',
-    w_que: 'Eu não o interpreto. Conto-o com números: o teu nome, a tua data e as da tua linha. E isto tem nome.',
+    w_que: 'Ao longo de muitos anos e de muitas consultas percebi uma coisa: o que se repete não começa em quem o sofre. Vem de trás. E pode ler-se.',
     w_p1: 'Passei anos a observar padrões no mundo corporativo e a decifrar o que acontece quando ninguém olha.',
     w_p2: 'Em 2010 uni o melhor da numerologia, da psicossomática clínica, das constelações e das terapias integrativas para criar um método prático e profundo. O objetivo da minha consulta é só um: que saias a saber quem és e que decisão tomar hoje.',
     w1: 'Direito', w2: 'Psicologia', w3: 'Psicossomática', w4: 'Descodificação', w5: 'Numerologia', w6: 'Transgeracional',
@@ -339,9 +371,9 @@ export const COPY = {
     n1: 'How it works', n2: 'See my number', n3: 'Courses', n4: 'Membership', book: 'Book', free: 'Free',
     kick: 'Transgenerational numerology · online since 2010',
     h1a: 'What your family never spoke about,', h1b: 'you are the one paying for.',
-    h1p1: 'You did not start it. But it repeats, and it is happening to you today.',
-    h1p2: 'You can carry it another thirty years.',
-    h1p2b: 'Or look at it once.',
+    h1p1: 'And every time you think you have left it behind, it comes back.',
+    h1p2: 'Nobody ever told you.',
+    h1p2b: 'But it is written in your date and your name.',
     hsub: 'I show you where the repetition comes from. And how to cut it.',
     hcta: 'Book my session', hcta2: 'See my number, free', hbadge: 'Online · ES / PT / EN',
     s1: 'people seen', s2: 'since', s3: 'languages',

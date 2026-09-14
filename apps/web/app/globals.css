@@ -342,7 +342,7 @@ h3 {
    * abierto—: así se lee como una anotación al margen y no como un titular
    * pequeño peleándose con el titular de verdad.
    */
-  --rotulo-tam: 15px;
+  --rotulo-tam: var(--t-nota);
   --rotulo-peso: 500;
   --rotulo-esp: 0.01em;
 
@@ -357,10 +357,51 @@ h3 {
    * deja sitio para que respire lo de al lado, que es de donde sale la
    * sensación de que algo está bien hecho.
    */
-  --t-portada: clamp(32px, 3.8vw, 54px);
-  --t-seccion: clamp(29px, 3.5vw, 50px);
-  --t-bloque: clamp(20px, 2.1vw, 26px);
-  --t-ficha: clamp(17px, 1.7vw, 20px);
+  /* =====================================================================
+     LA ESCALA. NUEVE ESCALONES, Y NI UNO MÁS.
+     =====================================================================
+     Antes de esto había CIENTO VEINTICINCO tamaños escritos a mano en esta
+     hoja, y entre ellos DIECINUEVE `clamp` distintos para la misma cosa: «un
+     titular». Diecinueve. `clamp(30px,3.9vw,47px)` en un sitio,
+     `clamp(33px,4.6vw,66px)` en otro, `clamp(31px,4.4vw,54px)` en un tercero.
+     Ninguno de esos tres números significaba nada: eran el resultado de que
+     alguien —yo— ajustara a ojo cada bloque por separado.
+
+     Eso se ve sin saber nombrarlo. Dos titulares que deberían pesar igual
+     pesan distinto, y la página entera parece hecha a trozos por gente que no
+     hablaba entre sí. Es de lo primero que dijo Gerson: «no varíes tanto los
+     tamaños, aplica reglas específicas que sean lo mismo para cada cosa».
+
+     A partir de aquí, CADA COSA TIENE UN ESCALÓN Y SÓLO UNO:
+
+       h1      el titular de una página. Uno por página.
+       h2      el titular de una sección.
+       h3      el titular de un bloque o de una ficha.
+       lead    la frase grande que acompaña a un titular, y los botones grandes.
+       entrada la línea de entrada bajo un titular, y los precios tachados.
+       cuerpo  texto corrido.
+       nota    el escalón de abajo. NO es letra pequeña: son 16 px.
+       cifra   un precio o un número que es el protagonista de su bloque.
+       icono   los glifos que no son texto: la ×, la flecha, el +.
+
+     Son `clamp`, así que el mismo token vale para el móvil y para el
+     escritorio. Por eso desaparecen los `@media` que redefinían tamaños: con
+     un clamp bien puesto, esa regla sobra.
+     ===================================================================== */
+  --t-h1: clamp(34px, 5vw, 62px);
+  --t-h2: clamp(27px, 3.4vw, 44px);
+  --t-h3: clamp(20px, 1.9vw, 25px);
+  --t-lead: clamp(19px, 2.2vw, 28px);
+  --t-cifra: clamp(38px, 4.6vw, 56px);
+  --t-cifra-xl: clamp(52px, 8vw, 96px);
+  --t-icono: 20px;
+
+  /* Los tres nombres de antes siguen existiendo y apuntan a la escala: hay
+     código repartido que los pide, y un alias cuesta una línea. */
+  --t-portada: var(--t-h1);
+  --t-seccion: var(--t-h2);
+  --t-bloque: var(--t-h3);
+  --t-ficha: var(--t-entrada);
 
   /* El apriete crece con el tamaño, pero sin pasarse: apretar de más también
      se nota, y se lee como apelotonado en vez de como elegante. */
@@ -370,8 +411,8 @@ h3 {
 
   /* Texto corrido. Un pelín más grande y con más interlínea: es lo que hace
      que un párrafo se lea tranquilo en vez de apretado. */
-  --t-entrada: clamp(16px, 1.15vw, 19px);
-  --t-cuerpo: clamp(15px, 1.05vw, 17px);
+  --t-entrada: clamp(17px, 1.2vw, 20px);
+  --t-cuerpo: clamp(16px, 1.05vw, 17px);
   /*
    * NO HAY LETRA PEQUEÑA. Ni una, en toda la web.
    *
@@ -384,7 +425,7 @@ h3 {
    * un gris más apagado. Pero se lee sin acercarse a la pantalla, que es de lo
    * que se trataba.
    */
-  --t-nota: 15px;
+  --t-nota: 16px;
   /*
    * `--t-mini` EXISTE AHORA, Y VALE LO MISMO QUE LA NOTA.
    *
@@ -596,7 +637,7 @@ textarea::placeholder {
   align-items: center;
   gap: 12px;
   border-radius: 100px;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 700;
   padding: 6px 6px 6px 22px;
   transition: gap 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
@@ -644,7 +685,7 @@ textarea::placeholder {
 .btn-outline-dark {
   display: inline-flex;
   align-items: center;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 600;
   border: 1px solid var(--linea-2, #dbccb4);
   padding: 13px 20px;
@@ -660,7 +701,7 @@ textarea::placeholder {
 }
 
 .nav-cta {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 700;
   padding: 11px 18px;
   border-radius: 100px;
@@ -775,7 +816,7 @@ textarea::placeholder {
   background: none;
   border: 0;
   font: inherit;
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx-3);
   cursor: pointer;
   text-align: center;
@@ -819,7 +860,7 @@ textarea::placeholder {
   font-family: inherit;
   border-radius: var(--radio-chico);
   padding: 15px 16px;
-  font-size: 15px;
+  font-size: var(--t-nota);
   outline: none;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -1091,7 +1132,7 @@ textarea::placeholder {
   color: var(--acento);
 }
 .hero-ficha-txt span {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   line-height: 1.3;
   letter-spacing: -0.012em;
@@ -1158,12 +1199,12 @@ body[data-nav-claro='si'] .sello-color {
 .texto-legal h3 {
   font-family: var(--serif);
   font-weight: 600;
-  font-size: 17px;
+  font-size: var(--t-cuerpo);
   margin: 28px 0 8px;
 }
 .texto-legal p,
 .texto-legal li {
-  font-size: 17px;
+  font-size: var(--t-cuerpo);
   line-height: 1.75;
   color: var(--tx-2);
   max-width: 62ch;
@@ -1251,7 +1292,7 @@ body[data-nav-claro='si'] .sello-color {
   border: 1px solid var(--linea);
   background: var(--bg);
   color: var(--tx-2);
-  font-size: 20px;
+  font-size: var(--t-icono);
   line-height: 1;
   cursor: pointer;
 }
@@ -1314,7 +1355,7 @@ body[data-nav-claro='si'] .sello-color {
   padding: 16px;
 }
 .modal-video-hueco span {
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx-3);
 }
 
@@ -1371,7 +1412,7 @@ body[data-nav-claro='si'] .sello-color {
   color: var(--tx-3);
 }
 .modal-datos strong {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 600;
   overflow-wrap: anywhere;
 }
@@ -1394,7 +1435,7 @@ body[data-nav-claro='si'] .sello-color {
   border: none;
   border-bottom: 2px solid transparent;
   padding: 10px 12px;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 600;
   color: var(--tx-3);
   cursor: pointer;
@@ -1402,7 +1443,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .modal-pestanas button em {
   font-style: normal;
-  font-size: 15px;
+  font-size: var(--t-nota);
   opacity: 0.65;
 }
 .modal-pestanas button.activa {
@@ -1423,22 +1464,22 @@ body[data-nav-claro='si'] .sello-color {
 }
 .modal-num {
   font-family: var(--serif);
-  font-size: 17px;
+  font-size: var(--t-cuerpo);
   color: var(--acento-2);
 }
 .modal-check {
   color: var(--acento-2);
-  font-size: 15px;
+  font-size: var(--t-nota);
 }
 .modal-fila strong {
   display: block;
-  font-size: 16px;
+  font-size: var(--t-nota);
   font-weight: 600;
   margin-bottom: 3px;
 }
 .modal-fila p {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--t-nota);
   line-height: 1.6;
   color: var(--tx-2);
 }
@@ -1461,11 +1502,11 @@ body[data-nav-claro='si'] .sello-color {
 }
 .modal-pie strong {
   font-family: var(--serif);
-  font-size: 26px;
+  font-size: var(--t-h3);
   line-height: 1.1;
 }
 .modal-pie span {
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx-3);
 }
 .modal-pie > *:only-child {
@@ -1487,12 +1528,12 @@ body[data-nav-claro='si'] .sello-color {
 .modal-reserva strong {
   display: block;
   font-family: var(--serif);
-  font-size: 19px;
+  font-size: var(--t-entrada);
   margin-bottom: 4px;
 }
 .modal-reserva p {
   margin: 0 0 14px;
-  font-size: 15px;
+  font-size: var(--t-nota);
   line-height: 1.55;
   color: var(--tx-2);
 }
@@ -1548,7 +1589,7 @@ body[data-nav-claro='si'] .sello-color {
   flex-shrink: 0;
 }
 .barra-cta {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 600;
   padding: 10px 18px;
   border: none;
@@ -1709,7 +1750,7 @@ body[data-nav-claro='si'] .sello-color {
   align-items: center;
   gap: 9px;
   flex: none;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   color: var(--oro-tinta, #7d5f1e);
   white-space: nowrap;
@@ -1780,7 +1821,7 @@ body[data-nav-claro='si'] .sello-color {
   background: transparent;
   border-radius: 100px;
   padding: 7px 14px;
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx-2);
   cursor: pointer;
   transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
@@ -1797,7 +1838,7 @@ body[data-nav-claro='si'] .sello-color {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  font-size: 15px;
+  font-size: var(--t-nota);
 }
 .menu-legal a {
   color: var(--tx-3);
@@ -1846,7 +1887,7 @@ body[data-nav-claro='si'] .sello-color {
     overflow-y: auto;
   }
   .menu-lista a {
-    font-size: clamp(28px, 8vw, 38px);
+    font-size: var(--t-h2);
   }
   .menu-pie {
     flex-direction: column;
@@ -1897,7 +1938,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .cuenta-cifras strong {
   font-family: var(--serif);
-  font-size: 21px;
+  font-size: var(--t-h3);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.015em;
@@ -1905,7 +1946,7 @@ body[data-nav-claro='si'] .sello-color {
   font-variant-numeric: tabular-nums;
 }
 .cuenta-cifras span {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 600;
   letter-spacing: var(--rotulo-esp);
   text-transform: uppercase;
@@ -1954,7 +1995,7 @@ body[data-nav-claro='si'] .sello-color {
   color: var(--acento);
 }
 .curso-fecha {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   color: var(--tx-2);
   border: 1px solid var(--linea-2);
@@ -2021,7 +2062,7 @@ body[data-nav-claro='si'] .sello-color {
   white-space: nowrap;
 }
 .curso-datos dd {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   margin: 0;
   text-align: right;
@@ -2098,7 +2139,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .chip-cinta {
   flex: none;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 400;
   color: var(--tx-2);
   border: 1px solid var(--linea-2);
@@ -2156,7 +2197,7 @@ body[data-nav-claro='si'] .sello-color {
   align-items: baseline;
   /* Bajada de 76 a 56 px y afinada. Una cifra a 76 px en una web sobria no
      es un dato: es un cartel. A 56 se lee igual de bien y deja de gritar. */
-  font-size: clamp(34px, 4vw, 56px);
+  font-size: var(--t-h2);
   font-weight: var(--peso-fino);
   line-height: 1.12;
   letter-spacing: -0.04em;
@@ -2326,7 +2367,7 @@ body[data-nav-claro='si'] .sello-color {
   box-shadow: var(--nm-hondo);
   color: var(--tx);
   font-family: inherit;
-  font-size: 22px;
+  font-size: var(--t-h3);
   font-weight: 500;
   text-align: center;
   letter-spacing: 0.02em;
@@ -2497,7 +2538,7 @@ body[data-nav-claro='si'] .sello-color {
   box-shadow: var(--nm-hondo);
 }
 .tn-flecha-arriba {
-  font-size: 24px;
+  font-size: var(--t-icono);
   line-height: 1;
   color: var(--acento);
   animation: tn-sube 2.6s cubic-bezier(0.45, 0, 0.15, 1) infinite;
@@ -2593,7 +2634,7 @@ body[data-nav-claro='si'] .sello-color {
   padding-left: clamp(14px, 3vw, 44px);
   /* Más grande que un titular normal: ahora es lo ÚNICO que hay en pantalla,
      y a tamaño de sección se quedaba pequeña en medio de tanto aire. */
-  font-size: clamp(28px, 7.4vw, 40px);
+  font-size: var(--t-h2);
   font-weight: 600;
   line-height: 1.18;
   letter-spacing: var(--esp-seccion);
@@ -2734,7 +2775,7 @@ body[data-nav-claro='si'] .sello-color {
     min-height: calc(var(--anclado-n) * 78vh);
   }
   .anclado-frase {
-    font-size: clamp(34px, 4.6vw, 62px);
+    font-size: var(--t-h2);
     max-width: 20ch;
   }
   .anclado-carril {
@@ -2875,7 +2916,7 @@ body[data-nav-claro='si'] .sello-color {
   flex: none;
   /* El número de un paso es una referencia, no el contenido. Estaba a 52 px
      compitiendo con el título que tiene al lado. */
-  font-size: clamp(20px, 2vw, 26px);
+  font-size: var(--t-h3);
   font-weight: var(--peso-fino);
   line-height: 1.2;
   letter-spacing: -0.01em;
@@ -3030,7 +3071,7 @@ body[data-nav-claro='si'] .sello-color {
   border: 1px solid var(--linea);
 }
 .lanz-casilla strong {
-  font-size: clamp(28px, 4.2vw, 50px);
+  font-size: var(--t-h2);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.03em;
@@ -3143,7 +3184,7 @@ body[data-nav-claro='si'] .sello-color {
   min-height: 200px;
 }
 .mb-capa-num {
-  font-size: 26px;
+  font-size: var(--t-h3);
   font-weight: var(--peso-fino);
   letter-spacing: -0.022em;
   /* No es adorno: dice en qué mes va cada capa, y ese orden es medio argumento
@@ -3209,7 +3250,7 @@ body[data-nav-claro='si'] .sello-color {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  font-size: clamp(14px, 1.5vw, 17px);
+  font-size: var(--t-cuerpo);
   line-height: 1.3;
   font-weight: var(--peso-fino);
   letter-spacing: -0.01em;
@@ -3244,7 +3285,7 @@ body[data-nav-claro='si'] .sello-color {
   flex-wrap: wrap;
 }
 .pv-cifra b {
-  font-size: clamp(58px, 8.5vw, 104px);
+  font-size: var(--t-cifra-xl);
   font-weight: var(--peso-fino);
   line-height: 0.88;
   /* El dorado de TEXTO, no el decorativo. El decorativo sobre papel se queda
@@ -3253,7 +3294,7 @@ body[data-nav-claro='si'] .sello-color {
   font-variant-numeric: tabular-nums;
 }
 .pv-al {
-  font-size: 17px;
+  font-size: var(--t-cuerpo);
   color: var(--tx-2);
 }
 .pv-antes {
@@ -3262,11 +3303,11 @@ body[data-nav-claro='si'] .sello-color {
   gap: 10px;
 }
 .pv-antes s {
-  font-size: 20px;
+  font-size: var(--t-icono);
   color: var(--tx-3);
 }
 .pv-badge {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: var(--peso-medio);
   letter-spacing: 0.02em;
   /* Relleno sólido, no borde: es el único distintivo de la página que puede
@@ -3294,7 +3335,7 @@ body[data-nav-claro='si'] .sello-color {
   background: var(--bg);
 }
 .pv-cuentas b {
-  font-size: clamp(19px, 2.1vw, 25px);
+  font-size: var(--t-h3);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.028em;
@@ -3302,7 +3343,7 @@ body[data-nav-claro='si'] .sello-color {
   font-variant-numeric: tabular-nums;
 }
 .pv-cuentas span {
-  font-size: 15px;
+  font-size: var(--t-nota);
   line-height: 1.35;
   color: var(--tx-3);
 }
@@ -3375,18 +3416,18 @@ body[data-nav-claro='si'] .sello-color {
   line-height: 1;
 }
 .testi-cuenta b {
-  font-size: 26px;
+  font-size: var(--t-h3);
   font-weight: var(--peso-fino);
   letter-spacing: -0.02em;
   color: var(--tx);
 }
 .testi-cuenta i {
   font-style: normal;
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx-4);
 }
 .testi-cuenta > span {
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx-3);
 }
 
@@ -3401,7 +3442,7 @@ body[data-nav-claro='si'] .sello-color {
   border: 1px solid var(--linea-2);
   background: transparent;
   color: var(--tx);
-  font-size: 16px;
+  font-size: var(--t-nota);
   cursor: pointer;
   transition: border-color 0.3s ease, background 0.3s ease, opacity 0.3s ease;
 }
@@ -3463,7 +3504,7 @@ body[data-nav-claro='si'] .sello-color {
   padding: 3px 9px;
   border: 1px dashed var(--linea-2);
   border-radius: var(--radio-pildora);
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -3521,7 +3562,7 @@ body[data-nav-claro='si'] .sello-color {
   place-items: center;
   background: var(--bg);
   border: 1px solid var(--linea-2);
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: var(--peso-medio);
   color: var(--acento);
 }
@@ -3532,12 +3573,12 @@ body[data-nav-claro='si'] .sello-color {
   min-width: 0;
 }
 .testi-quien b {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: var(--peso-medio);
   letter-spacing: -0.01em;
 }
 .testi-usuario {
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx-3);
 }
 .testi-marca {
@@ -3556,7 +3597,7 @@ body[data-nav-claro='si'] .sello-color {
   overflow-wrap: anywhere;
 }
 .testi-cuando {
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx-4);
 }
 
@@ -3650,7 +3691,7 @@ body[data-nav-claro='si'] .sello-color {
   width: 44px;
   height: 44px;
   border: none;
-  font-size: 19px;
+  font-size: var(--t-entrada);
   /* El botón mide 44 para el dedo, pero se le quita el hueco que eso le
      robaría al título de al lado. */
   margin: -8px -8px -8px 0;
@@ -3659,7 +3700,7 @@ body[data-nav-claro='si'] .sello-color {
   width: 44px;
   height: 44px;
   border: 1px solid var(--linea-2);
-  font-size: 15px;
+  font-size: var(--t-nota);
 }
 .chat-cerrar:hover,
 .chat-mes:hover {
@@ -3672,7 +3713,7 @@ body[data-nav-claro='si'] .sello-color {
   place-items: center;
   border-radius: var(--radio-chico);
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   cursor: pointer;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -3703,7 +3744,7 @@ body[data-nav-claro='si'] .sello-color {
   border-radius: var(--radio-chico);
   padding: 11px 14px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 400;
   line-height: 1.35;
   cursor: pointer;
@@ -3722,7 +3763,7 @@ body[data-nav-claro='si'] .sello-color {
   border-radius: 100px;
   padding: 12px 16px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   cursor: pointer;
   min-height: 44px;
@@ -3748,7 +3789,7 @@ body[data-nav-claro='si'] .sello-color {
   min-height: 44px;
   padding: 0 26px 0 12px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: var(--tx);
   background-color: var(--superficie);
   border: 1px solid var(--linea-2);
@@ -3784,7 +3825,7 @@ body[data-nav-claro='si'] .sello-color {
   display: grid;
   place-items: center;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--t-nota);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -3817,7 +3858,12 @@ body[data-nav-claro='si'] .sello-color {
    --------------------------------------------------------------------------- */
 .precio-antes {
   margin-left: 9px;
-  font-size: 0.72em;
+  /* Era `0.72em`, y un `em` NO ES UN TAMAÑO: es una proporción del padre. El
+     mismo número da 40 px colgando de una cifra grande y 14 colgando de una
+     pequeña — medido en /cursos: 14 px, letra pequeña colada por la puerta de
+     atrás justo en la línea que dice cuánto te ahorras. Con un escalón de la
+     escala vale lo mismo esté donde esté. */
+  font-size: var(--t-entrada);
   font-weight: var(--peso-fino);
   color: var(--tx-3);
   text-decoration-thickness: 1px;
@@ -3847,7 +3893,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 
 .oferta-badge {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: var(--peso-medio);
   letter-spacing: 0.03em;
   /* Relleno sólido: al lado de una cifra de 56 px, un borde fino desaparece. */
@@ -3866,7 +3912,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .oferta-fila b {
   font-family: var(--serif);
-  font-size: clamp(42px, 6vw, 58px);
+  font-size: var(--t-cifra);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.03em;
@@ -3874,7 +3920,7 @@ body[data-nav-claro='si'] .sello-color {
   font-variant-numeric: tabular-nums;
 }
 .oferta-fila s {
-  font-size: 20px;
+  font-size: var(--t-icono);
   font-weight: var(--peso-fino);
   color: var(--tx-3);
   text-decoration-thickness: 1px;
@@ -3884,7 +3930,7 @@ body[data-nav-claro='si'] .sello-color {
 
 /* Lo que se recuerda al cerrar la página no es el 43 %: son los 300 €. */
 .oferta-ahorro {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: var(--peso-medio);
   color: var(--acento);
 }
@@ -3909,7 +3955,7 @@ body[data-nav-claro='si'] .sello-color {
   display: flex;
   align-items: flex-start;
   gap: 11px;
-  font-size: 15px;
+  font-size: var(--t-nota);
   line-height: 1.45;
   color: var(--tx-2);
 }
@@ -4003,7 +4049,7 @@ body[data-nav-claro='si'] .sello-color {
 
 .cartel-titulo {
   font-family: var(--serif);
-  font-size: clamp(21px, 2.5vw, 32px);
+  font-size: var(--t-h3);
   font-weight: var(--peso-fino);
   line-height: 1.06;
   letter-spacing: -0.022em;
@@ -4016,7 +4062,7 @@ body[data-nav-claro='si'] .sello-color {
   align-items: center;
   gap: 8px;
   margin-top: 3px;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.86);
 }
@@ -4160,7 +4206,7 @@ body[data-nav-claro='si'] .sello-color {
   flex-wrap: wrap;
 }
 .menu-pagina a {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   color: var(--tx-2);
 }
@@ -4285,7 +4331,7 @@ body[data-nav-claro='si'] .sello-color {
    texto que va todo igual, es contraste. Dos serían dos tipografías. */
 .com-titular {
   margin: 0;
-  font-size: clamp(36px, 5.6vw, 62px);
+  font-size: var(--t-h1);
   font-weight: 600;
   line-height: 1.02;
   letter-spacing: -0.038em;
@@ -4321,7 +4367,7 @@ body[data-nav-claro='si'] .sello-color {
   margin: 0;
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(16px, 1.5vw, 19px);
+  font-size: var(--t-entrada);
   line-height: 1.5;
   color: var(--oro-luz);
 }
@@ -4365,7 +4411,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .com-caja-titulo {
   margin: 0 0 18px;
-  font-size: clamp(19px, 2vw, 23px);
+  font-size: var(--t-h3);
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.025em;
@@ -4436,7 +4482,7 @@ body[data-nav-claro='si'] .sello-color {
   gap: 18px;
 }
 .com-pie a {
-  font-size: 15px;
+  font-size: var(--t-nota);
   color: rgba(251, 246, 238, 0.55);
 }
 .com-pie a:hover {
@@ -4511,13 +4557,16 @@ body[data-nav-claro='si'] .sello-color {
    a bajar mejor que cualquier flecha.
    ================================================================== */
 @media (max-width: 600px) {
-  /* El rótulo en versal, un punto más pequeño y con menos aire entre letras.
-     Es el elemento que peor lleva el móvil: a 10 px con 0,17 em de espaciado,
-     «Numerología transgeneracional · online desde 2010» mide 370 px y la
-     pantalla da 358. No es un capricho de milímetros — partido en dos
-     renglones se lee como un párrafo suelto encima del titular. */
+  /* AQUÍ SE BAJABA EL RÓTULO A 15 px EN EL MÓVIL, y por esa puerta se colaba
+     la letra pequeña que llevamos meses persiguiendo: el token general vale
+     `var(--t-nota)` —16 px— y esta línea lo pisaba en la mitad de las
+     pantallas del mundo. Medido en las nueve rutas: `.com-obras`,
+     `.tal-chapa`, `.curso-eyebrow`, `.rotulo-dato` y `.cuenta-rotulo`, todos a
+     15 px, y ninguno de ellos por culpa de su propia regla.
+     El motivo original era real —el rótulo más largo de la web no cabía en
+     358 px— pero ese rótulo ya no existe: los ocho rótulos en versalitas se
+     quitaron de la web. Sólo queda el espaciado, que sí hace falta apretar. */
   :root {
-    --rotulo-tam: 15px;
     --rotulo-esp: 0.01em;
   }
 
@@ -4588,8 +4637,6 @@ body[data-nav-claro='si'] .sello-color {
    pantalla —que es lo que tiene que ser— y ocupa tres. */
 @media (max-width: 380px) {
   :root {
-    --t-portada: clamp(27px, 7.4vw, 54px);
-    --rotulo-tam: 15px;
     --rotulo-esp: 0.01em;
   }
 }
@@ -4669,7 +4716,7 @@ body[data-nav-claro='si'] .sello-color {
 .consulta-nombre {
   margin: 0;
   font-family: var(--sans);
-  font-size: clamp(21px, 2vw, 26px);
+  font-size: var(--t-h3);
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.032em;
@@ -4695,7 +4742,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .consulta-precio b {
   font-family: var(--serif);
-  font-size: clamp(38px, 4.4vw, 54px);
+  font-size: var(--t-cifra);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.03em;
@@ -4703,7 +4750,7 @@ body[data-nav-claro='si'] .sello-color {
   font-variant-numeric: tabular-nums;
 }
 .consulta-precio s {
-  font-size: 19px;
+  font-size: var(--t-entrada);
   color: var(--tx-3);
   text-decoration-thickness: 1px;
   font-variant-numeric: tabular-nums;
@@ -4879,7 +4926,7 @@ body[data-nav-claro='si'] .sello-color {
 .arbol-cifra {
   text-anchor: middle;
   font-family: var(--serif);
-  font-size: 21px;
+  font-size: var(--t-h3);
   fill: var(--oro-luz, #e2cda2);
   font-variant-numeric: tabular-nums;
   pointer-events: none;
@@ -4887,7 +4934,7 @@ body[data-nav-claro='si'] .sello-color {
 .arbol-nombre {
   text-anchor: middle;
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   letter-spacing: 0.04em;
   fill: rgba(251, 246, 238, 0.62);
@@ -4951,7 +4998,7 @@ body[data-nav-claro='si'] .sello-color {
    hebreo del Tikun cae aquí sin romper nada, que es la gracia. */
 .kab-num {
   font-family: var(--serif);
-  font-size: clamp(28px, 3vw, 38px);
+  font-size: var(--t-h2);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.02em;
@@ -5059,7 +5106,7 @@ body[data-nav-claro='si'] .sello-color {
   gap: clamp(16px, 2vw, 26px) !important;
 }
 .hero-solo .titular-portada {
-  font-size: clamp(31px, 4.4vw, 54px);
+  font-size: var(--t-h1);
   line-height: 1.03;
 }
 .hero-solo .hero-botones {
@@ -5218,7 +5265,7 @@ body[data-nav-claro='si'] .sello-color {
   backdrop-filter: blur(12px);
   color: #fbf6ee;
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 500;
   line-height: 1;
   cursor: pointer;
@@ -5324,7 +5371,7 @@ body[data-nav-claro='si'] .sello-color {
   display: none;
 }
 .susurro-de-viejo {
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -5332,7 +5379,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .susurro p {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--t-nota);
   line-height: 1.5;
   color: var(--tx-2);
   text-wrap: pretty;
@@ -5461,7 +5508,7 @@ body[data-nav-claro='si'] .sello-color {
   margin: 0;
   font-family: var(--sans);
   font-weight: 600;
-  font-size: clamp(33px, 4.6vw, 66px);
+  font-size: var(--t-h1);
   line-height: 0.97;
   letter-spacing: -0.045em;
   color: var(--tinta);
@@ -5525,7 +5572,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .cookies-txt {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--t-nota);
   line-height: 1.55;
   color: #3d3531;
   text-wrap: pretty;
@@ -5542,7 +5589,7 @@ body[data-nav-claro='si'] .sello-color {
 .cookies-botones button {
   flex: 1;
   font: inherit;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-weight: 600;
   padding: 10px 14px;
   border-radius: 100px;
@@ -5644,7 +5691,7 @@ body[data-nav-claro='si'] .sello-color {
 .tal-titular {
   margin: 0;
   font-family: var(--serif);
-  font-size: clamp(31px, 4.6vw, 52px);
+  font-size: var(--t-h1);
   font-weight: var(--peso-fino);
   line-height: 1.06;
   letter-spacing: -0.026em;
@@ -5707,7 +5754,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .tal-dia {
   font-family: var(--serif);
-  font-size: clamp(19px, 2.2vw, 25px);
+  font-size: var(--t-h3);
   color: var(--oro-luz);
   text-transform: capitalize;
 }
@@ -5733,7 +5780,7 @@ body[data-nav-claro='si'] .sello-color {
 .tal-caja-titulo {
   margin: 0 0 14px;
   font-family: var(--serif);
-  font-size: clamp(18px, 1.9vw, 22px);
+  font-size: var(--t-h3);
   font-weight: var(--peso-fino);
   line-height: 1.25;
   letter-spacing: -0.015em;
@@ -5782,7 +5829,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .cur-h1 {
   margin: 0;
-  font-size: clamp(30px, 3.9vw, 47px);
+  font-size: var(--t-h1);
   font-weight: var(--peso-fino);
   line-height: 1.04;
   letter-spacing: -.03em;
@@ -5891,7 +5938,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .cur-precio b {
   font-family: var(--serif);
-  font-size: clamp(30px, 3.4vw, 40px);
+  font-size: var(--t-cifra);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -.02em;
@@ -5992,7 +6039,7 @@ body[data-nav-claro='si'] .sello-color {
   transform: scale(1.07);
 }
 .vpres-txt {
-  font-size: clamp(15px, 1.5vw, 18px);
+  font-size: var(--t-cuerpo);
   font-weight: 600;
   letter-spacing: -0.01em;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
@@ -6252,7 +6299,7 @@ body[data-nav-claro='si'] .sello-color {
 .portada-h1 {
   margin: 0;
   font-family: var(--sans);
-  font-size: clamp(32px, 4.6vw, 62px);
+  font-size: var(--t-h1);
   font-weight: 600;
   line-height: 0.99;
   letter-spacing: -0.045em;
@@ -6268,14 +6315,21 @@ body[data-nav-claro='si'] .sello-color {
 }
 /* Los otros dos pasos: frases sueltas, no párrafos. Grandes, porque son dos
    líneas en toda la pantalla y pueden permitírselo. */
+/* LAS TRES FRASES DE LA PORTADA COMPARTEN CAJA.
+   Antes el titular ocupaba las 41rem del contenedor y la frase se cortaba a
+   24ch — o sea, empezaban en la misma vertical y terminaban en dos sitios
+   distintos, y al pasar de una a otra el bloque de texto cambiaba de forma.
+   Es lo que Gerson llamó «alinéalas todas»: no es que estuvieran torcidas, es
+   que no medían lo mismo. Ahora el ancho lo pone el contenedor y las tres caen
+   dentro del mismo rectángulo, que es lo que hace que se lean como una sola
+   cosa que va cambiando en vez de como tres carteles distintos. */
 .portada-frase {
   margin: 0;
   font-family: var(--sans);
-  font-size: clamp(21px, 2.5vw, 34px);
+  font-size: var(--t-lead);
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: -0.028em;
-  max-width: 24ch;
   color: var(--tinta);
 }
 
@@ -6336,7 +6390,7 @@ body[data-nav-claro='si'] .sello-color {
   background: none;
   cursor: pointer;
   font-family: var(--sans);
-  font-size: clamp(19px, 1.9vw, 26px);
+  font-size: var(--t-lead);
   font-weight: 600;
   letter-spacing: -0.03em;
   color: var(--vino);
@@ -6369,7 +6423,7 @@ body[data-nav-claro='si'] .sello-color {
   height: clamp(46px, 4vw, 56px);
   border-radius: 50%;
   font-style: normal;
-  font-size: 19px;
+  font-size: var(--t-entrada);
   line-height: 1;
   color: var(--vino);
   background: var(--relieve, var(--bg));
@@ -6482,10 +6536,10 @@ body[data-nav-claro='si'] .sello-color {
     max-width: none;
   }
   .portada-h1 {
-    font-size: clamp(30px, 8.6vw, 40px);
+    font-size: var(--t-h1);
   }
   .portada-frase {
-    font-size: clamp(20px, 5.6vw, 26px);
+    font-size: var(--t-lead);
     max-width: none;
   }
 }
@@ -6749,7 +6803,7 @@ body[data-nav-claro='si'] .sello-color {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: clamp(18px, 2.4vw, 26px);
+  gap: clamp(14px, 1.8vw, 20px);
 }
 .cierre2-raya {
   width: calc(var(--p, 1) * 76px);
@@ -6796,7 +6850,7 @@ body[data-nav-claro='si'] .sello-color {
   border-radius: 100px;
   background: var(--vino);
   color: #fbf6ee;
-  font-size: clamp(17px, 1.5vw, 21px);
+  font-size: var(--t-entrada);
   box-shadow: 0 16px 34px -16px rgba(69, 26, 37, 0.5);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
 }
@@ -6890,7 +6944,7 @@ body[data-nav-claro='si'] .sello-color {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  font-size: 15px;
+  font-size: var(--t-nota);
   font-style: normal;
   color: var(--oro-tinta, #7d5f1e);
   background: rgba(169, 136, 79, 0.1);
@@ -6943,7 +6997,7 @@ body[data-nav-claro='si'] .sello-color {
 .num-tit {
   margin: 0;
   font-family: var(--sans);
-  font-size: clamp(19px, 1.8vw, 23px);
+  font-size: var(--t-h3);
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.032em;
@@ -6968,7 +7022,7 @@ body[data-nav-claro='si'] .sello-color {
 .num-precio b {
   font-family: var(--serif);
   font-variation-settings: var(--display-ejes);
-  font-size: clamp(38px, 4.4vw, 54px);
+  font-size: var(--t-cifra);
   font-weight: var(--peso-fino);
   line-height: 1;
   letter-spacing: -0.03em;
@@ -7081,7 +7135,7 @@ body[data-nav-claro='si'] .sello-color {
 .quees-h {
   margin: 0;
   font-family: var(--sans);
-  font-size: clamp(32px, 4.4vw, 62px);
+  font-size: var(--t-h1);
   font-weight: 600;
   line-height: 1.0;
   letter-spacing: -0.045em;
@@ -7107,4 +7161,115 @@ body[data-nav-claro='si'] .sello-color {
   transform: none;
   filter: none;
   transition: none;
+}
+
+/* ==================================================================
+   LA CINTA: LA FILA QUE NO SE ACABA
+   ==================================================================
+   El bloque «qué sale de tu nombre y de tu fecha» era una rejilla de cuatro
+   columnas con cinco piezas dentro. Cinco entre cuatro deja una sola en la
+   segunda fila y tres huecos al lado — medio metro de blanco, que es lo que se
+   ve en la captura. Y aunque hubieran sido cuatro, una rejilla pide que se lea
+   entera, y nadie lee cinco párrafos seguidos mientras decide si compra.
+
+   Cómo no se acaba: el contenido va dos veces y el carril se mueve de 0 a
+   −50 %. Al llegar ahí está enseñando el principio de la segunda copia, que es
+   igual que el de la primera, así que el salto no se ve. Sin JavaScript: lo
+   mueve el compositor, no gasta batería y no se entrecorta.
+   ================================================================== */
+.cinta {
+  position: relative;
+  width: 100%;
+}
+/* Los bordes se desvanecen, que es lo que dice «esto sigue» sin escribirlo.
+   La máscara va en el marco y no en el carril: sobre el carril se movería con
+   él y el degradado viajaría por la pantalla. */
+.cinta-marco {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.cinta-marco::-webkit-scrollbar { display: none; }
+/* La capa del empuje. Vacía de estilo a propósito: lo único que lleva es el
+   `transform` que le escribe el rAF, y tenerla separada del carril es lo que
+   permite que el empuje de la rueda y la deriva del CSS se sumen en vez de
+   pisarse. */
+.cinta-empuje {
+  width: max-content;
+  will-change: transform;
+}
+.cinta-carril {
+  display: flex;
+  width: max-content;
+  animation: cinta-gira var(--cinta-vuelta, 46s) linear infinite;
+}
+@keyframes cinta-gira {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+/* Se para para poder leerla: al pasar por encima, y al llegar con el
+   tabulador a cualquier cosa de dentro. Una cinta que no se para es una cinta
+   de la que no se lee nada. */
+.cinta:hover .cinta-carril,
+.cinta:focus-within .cinta-carril {
+  animation-play-state: paused;
+}
+.cinta-fila {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* La raya al canto en vez de una tarjeta. Cinco tarjetas con su sombra y su
+   canto redondo serían cinco objetos; cinco columnas separadas por un pelo son
+   una sola cosa con cinco partes, que es lo que de verdad es. */
+.cinta-pieza {
+  flex: none;
+  width: clamp(232px, 25vw, 288px);
+  padding: 4px clamp(20px, 2.4vw, 34px);
+  border-left: 1px solid var(--linea);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.cinta-rotulo {
+  font-size: var(--t-nota);
+  font-weight: 600;
+  letter-spacing: var(--rotulo-esp);
+  color: var(--oro-tinta, #7d5f1e);
+}
+.cinta-titulo {
+  margin: 0;
+  font-size: var(--t-h3);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.024em;
+  text-wrap: balance;
+}
+.cinta-texto {
+  margin: 0;
+  font-size: var(--t-cuerpo);
+  line-height: 1.6;
+  color: var(--tx-2);
+  text-wrap: pretty;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Quieta, y se recorre con el dedo. Es lo que pide quien marca esa casilla:
+     no «más despacio», sino que no se mueva solo. */
+  .cinta-carril { animation: none; }
+  .cinta-marco { scroll-snap-type: x mandatory; }
+  .cinta-pieza { scroll-snap-align: start; }
+}
+
+/* La cinta va de borde a borde de la pantalla, así que su bloque no puede
+   llevar el hueco lateral de los demás: recortada a 1180 px se lee como una
+   tabla que se ha desbordado, y llegando a los dos bordes se lee como algo que
+   sigue. El titular sí mantiene el hueco, por su cuenta. */
+.num-cinta-bloque {
+  padding-inline: 0;
+}
+.num-cinta-bloque > div:first-child {
+  padding-inline: clamp(16px, 4vw, 56px);
 }

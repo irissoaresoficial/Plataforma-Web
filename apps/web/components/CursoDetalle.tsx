@@ -75,7 +75,7 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
           <span
             style={{
               display: 'block',
-              fontSize: 15,
+              fontSize: 'var(--t-nota)',
               fontWeight: 600,
               letterSpacing: '.14em',
               textTransform: 'uppercase',
@@ -96,7 +96,7 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
               <Hueco lineas={2} alto={15} etiqueta="Falta la frase" />
             </div>
           ) : (
-            <p style={{ margin: '0 0 22px', fontSize: 17, lineHeight: 1.55, color: 'var(--tx-2)' }}>{curso.claim}</p>
+            <p style={{ margin: '0 0 22px', fontSize: 'var(--t-cuerpo)', lineHeight: 1.55, color: 'var(--tx-2)' }}>{curso.claim}</p>
           )}
 
           {/* El vídeo donde ella lo cuenta con su voz: es lo que más vende.

@@ -123,8 +123,8 @@ export default function LeadForm({
           padding: 20,
         }}
       >
-        <span style={{ fontSize: 16, fontWeight: 600, color: dark ? '#7CC48A' : '#2F5D50' }}>{successTitle}</span>
-        <span style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--tx-2)' }}>{successText}</span>
+        <span style={{ fontSize: 'var(--t-nota)', fontWeight: 600, color: dark ? '#7CC48A' : '#2F5D50' }}>{successTitle}</span>
+        <span style={{ fontSize: 'var(--t-nota)', lineHeight: 1.55, color: 'var(--tx-2)' }}>{successText}</span>
         {/* El correo va con el enlace para que Stripe no lo vuelva a pedir. Y
             sobre todo para poder casar el pago con la persona: sin esto hay una
             lista de correos por un lado y una lista de cobros por otro, y
@@ -206,11 +206,11 @@ export default function LeadForm({
 
       {/* El error se anuncia solo. Antes aparecía en pantalla y punto: quien
           navega a ciegas se quedaba esperando a que pasara algo. */}
-      <span role="alert" style={{ fontSize: 15, color: dark ? '#E08585' : '#A33B3B' }}>
+      <span role="alert" style={{ fontSize: 'var(--t-nota)', color: dark ? '#E08585' : '#A33B3B' }}>
         {err}
       </span>
 
-      <span style={{ fontSize: 15, lineHeight: 1.6, color: 'var(--tx-3)' }}>{privacidad}</span>
+      <span style={{ fontSize: 'var(--t-nota)', lineHeight: 1.6, color: 'var(--tx-3)' }}>{privacidad}</span>
     </form>
   );
 }

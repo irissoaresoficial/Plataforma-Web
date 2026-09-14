@@ -43,7 +43,7 @@ export default function Marca({
           <Image src={claro ? LOGO : LOGO_COLOR} alt="" width={tam} height={tam} onError={() => setOk(false)} style={{ ...comun, opacity: 0.92 }} />
         ))}
       {texto && (
-        <span style={{ fontSize: 15, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.2em', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 'var(--t-nota)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.2em', whiteSpace: 'nowrap' }}>
           Iris Soares
         </span>
       )}

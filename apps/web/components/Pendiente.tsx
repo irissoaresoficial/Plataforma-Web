@@ -6,7 +6,7 @@ export default function Pendiente({ children = PENDIENTE }: { children?: React.R
     <span
       style={{
         display: 'inline-block',
-        fontSize: 15,
+        fontSize: 'var(--t-nota)',
         fontWeight: 700,
         letterSpacing: '.06em',
         textTransform: 'uppercase',

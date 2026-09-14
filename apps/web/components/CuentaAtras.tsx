@@ -100,14 +100,14 @@ export default function CuentaAtras({
           transform="rotate(-90 62 62)"
           style={{ stroke: 'var(--acento-2)', transition: 'stroke-dashoffset 1s linear' }}
         />
-        <text x="62" y="59" textAnchor="middle" style={{ fill: 'var(--tx)', fontFamily: 'var(--serif)', fontSize: 32 }}>
+        <text x="62" y="59" textAnchor="middle" style={{ fill: 'var(--tx)', fontFamily: 'var(--serif)', fontSize: 'var(--t-cifra)' }}>
           {dias === null ? '––' : dias}
         </text>
         {/* Ojo: aquí el número NO son píxeles, son unidades del dibujo. El
             lienzo mide 124 de ancho y se pinta a un tamaño u otro según donde
             esté, así que la letra crece con el círculo. Subirlo a 15 la sacaba
             fuera del aro. */}
-        <text x="62" y="79" textAnchor="middle" style={{ fill: 'var(--tx-3)', fontSize: 11, letterSpacing: '.14em' }}>
+        <text x="62" y="79" textAnchor="middle" style={{ fill: 'var(--tx-3)', fontSize: 'var(--t-nota)', letterSpacing: '.14em' }}>
           {dias === 1 ? 'DÍA' : 'DÍAS'}
         </text>
       </svg>

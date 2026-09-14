@@ -503,7 +503,7 @@ export default function Home() {
                       className="duda-boton"
                     >
                       <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: 'var(--esp-bloque)', textAlign: 'left' }}>{q}</span>
-                      <span aria-hidden style={{ fontSize: 18, color: 'var(--acento)', flexShrink: 0 }}>{on ? '−' : '+'}</span>
+                      <span aria-hidden style={{ fontSize: 'var(--t-icono)', color: 'var(--acento)', flexShrink: 0 }}>{on ? '−' : '+'}</span>
                     </button>
                     <div id={`duda-${i}`} role="region" hidden={!on} style={{ overflow: 'hidden', transition: 'max-height .55s cubic-bezier(.16,1,.3,1),opacity .4s ease', maxHeight: on ? 240 : 0, opacity: on ? 1 : 0 }}>
                       <p style={{ margin: '0 0 24px', fontSize: 'var(--t-cuerpo)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '48ch' }}>{a}</p>
@@ -516,33 +516,21 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── CIERRE ───────────────────────────────────────────── */}
-      <div id="cita" className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', padding: 'clamp(90px,12vw,170px) clamp(16px,4vw,56px)' }}>
-        <div style={{ maxWidth: 880, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 26 }}>
-          <Aparece className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
-            {t.c_h}
-          </Aparece>
-          <Aparece retraso={1}>
-            <p style={{ margin: 0, fontSize: 'var(--t-cuerpo)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '34ch' }}>{t.c_p}</p>
-          </Aparece>
-          {/* El mismo botón que la portada y que el saludo de Iris: una sola
-              forma de pedir en toda la página. Y sin la línea del precio
-              debajo — el precio está en la ficha de la consulta, con cuerpo de
-              texto de verdad, y lo dice el chat en la primera respuesta. */}
-          <Aparece retraso={2}>
-            <button
-              type="button"
-              className="portada-cta portada-cta-oscuro"
-              onClick={abrirConsulta}
-              data-mag
-              data-cur-label={t.cbook}
-            >
-              <span>{t.c_btn}</span>
-              <i aria-hidden>→</i>
-            </button>
-          </Aparece>
-        </div>
-      </div>
+      {/*
+          EL BLOQUE DE CIERRE SE HA IDO ENTERO.
+          ---------------------------------------------------------------------
+          Era una pantalla de granate detrás de las dudas: un titular, una línea
+          y el botón «Reservar mi consulta» — el QUINTO de la página, con las
+          mismas palabras exactas que los cuatro anteriores. Gerson: «esa parte
+          NO SIRVE PARA NADA», y la auditoría del relato había llegado a lo
+          mismo por su cuenta: se pedía lo mismo cinco veces, y la quinta no
+          ofrecía nada que no ofreciera la primera.
+
+          Repetir una petición no la hace más fuerte: la gasta. La página cierra
+          ahora en las dudas y en el pie, y la única petición de verdad vive en
+          el bloque de la consulta, que es donde la persona ya sabe qué compra.
+          Las claves `c_h`, `c_p` y `c_btn` se quedan en i18n.tsx: no cuestan
+          nada y las usa el chat. */}
 
       {/* ── PIE: el mapa de la web ───────────────────────────── */}
       <div className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(44px,6vw,72px) clamp(16px,4vw,56px) 30px' }}>
@@ -550,7 +538,7 @@ export default function Home() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(190px,1fr))', gap: 32 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <Marca tam={68} apilado />
-              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'var(--tx-3)', maxWidth: '28ch' }}>{t.ft_p}</p>
+              <p style={{ margin: 0, fontSize: 'var(--t-nota)', lineHeight: 1.6, color: 'var(--tx-3)', maxWidth: '28ch' }}>{t.ft_p}</p>
             </div>
             {/*
                 LOS LINKS DE INTERÉS.
@@ -607,8 +595,8 @@ export default function Home() {
             </div>
           </div>
           <div style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <span style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>{t.ft_disc}</span>
-            <span style={{ fontSize: 15, color: 'var(--tx-4)' }}>© 2026 · ES / PT / EN</span>
+            <span style={{ fontSize: 'var(--t-nota)', lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>{t.ft_disc}</span>
+            <span style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-4)' }}>© 2026 · ES / PT / EN</span>
           </div>
         </div>
       </div>

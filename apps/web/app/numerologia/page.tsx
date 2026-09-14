@@ -8,6 +8,7 @@ import Cortina from '@/components/Cortina';
    la rueda: si paras de bajar, para. Explicado en components/Aparece.tsx. */
 import Aparece from '@/components/Aparece';
 import Foto from '@/components/Foto';
+import Cinta from '@/components/Cinta';
 import TuNumero from '@/components/TuNumero';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
@@ -42,31 +43,31 @@ const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
 
 /** Qué sale de la cuenta. Nada de esto es de adorno: son las cinco cosas que la
  *  plataforma calcula de verdad para cada persona. */
-const QUE_SALE: { n: string; t: string; p: string }[] = [
+const QUE_SALE: { rotulo: string; titulo: string; texto: string }[] = [
   {
-    n: 'Tu número',
-    t: 'Camino de vida',
-    p: 'Sale de tu fecha de nacimiento: se reducen por separado el día, el mes y el año, y después se suman. Es el terreno en el que juegas toda la vida.',
+    rotulo: 'Tu número',
+    titulo: 'Camino de vida',
+    texto: 'Sale de tu fecha de nacimiento: se reducen por separado el día, el mes y el año, y después se suman. Es el terreno en el que juegas toda la vida.',
   },
   {
-    n: 'Tu nombre',
-    t: 'Expresión, alma y personalidad',
-    p: 'Cada letra tiene un número. Con el nombre entero sale lo que se te da de fábrica; con solo las vocales, lo que quieres de verdad; con solo las consonantes, lo que los demás ven de ti.',
+    rotulo: 'Tu nombre',
+    titulo: 'Expresión, alma y personalidad',
+    texto: 'Cada letra tiene un número. Con el nombre entero sale lo que se te da de fábrica; con solo las vocales, lo que quieres de verdad; con solo las consonantes, lo que los demás ven de ti.',
   },
   {
-    n: 'Los tramos',
-    t: 'Realizaciones y ciclos',
-    p: 'La vida no va en línea recta: va por tramos, y cada uno tiene su asunto. Saber en cuál estás cambia lo que merece la pena intentar este año.',
+    rotulo: 'Los tramos',
+    titulo: 'Realizaciones y ciclos',
+    texto: 'La vida no va en línea recta: va por tramos, y cada uno tiene su asunto. Saber en cuál estás cambia lo que merece la pena intentar este año.',
   },
   {
-    n: 'Lo difícil',
-    t: 'Desafíos y deudas',
-    p: 'Los números que salen de las restas —y los kármicos, el 13, el 14, el 16, el 19 y el 26— señalan lo que se te va a repetir hasta que lo mires.',
+    rotulo: 'Lo difícil',
+    titulo: 'Desafíos y deudas',
+    texto: 'Los números que salen de las restas —y los kármicos, el 13, el 14, el 16, el 19 y el 26— señalan lo que se te va a repetir hasta que lo mires.',
   },
   {
-    n: 'Tu línea',
-    t: 'La herencia',
-    p: 'Con las fechas de tus padres y tus abuelos se ve qué número viene de dónde. Es la parte transgeneracional: lo que no empezó en ti.',
+    rotulo: 'Tu línea',
+    titulo: 'La herencia',
+    texto: 'Con las fechas de tus padres y tus abuelos se ve qué número viene de dónde. Es la parte transgeneracional: lo que no empezó en ti.',
   },
 ];
 
@@ -120,6 +121,36 @@ export default function Numerologia() {
         </div>
       </div>
 
+      {/*
+          EL ORDEN HA CAMBIADO, Y ES EL ARREGLO MÁS IMPORTANTE DE ESTA PÁGINA.
+
+          Antes venía primero la calculadora y después «qué sale». O sea: se le
+          ponía delante una máquina de calcular a alguien que todavía no sabía
+          qué se calcula ni para qué. Una calculadora sin contexto es un
+          juguete; la misma calculadora después de haber leído qué sale de ahí
+          es una prueba.
+
+          Ahora: qué es → qué sale de la cuenta → la cuenta, hecha delante →
+          qué NO es → el precio. Cada bloque contesta a la pregunta que deja
+          abierta el anterior.
+      */}
+      {/* ── QUÉ SALE ─────────────────────────────────────────
+          Cinco piezas, en columnas. Es lo que la plataforma calcula de verdad
+          para cada persona; ni una de las cinco está de adorno. */}
+      <div className="claro bloque-limpio num-cinta-bloque">
+        <div style={{ maxWidth: 1180, margin: '0 auto 0', paddingInline: 'clamp(0px,1vw,10px)' }}>
+          <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '15ch', marginBottom: 'clamp(26px,3.2vw,44px)' }}>
+            Qué sale de tu nombre y de tu fecha.
+          </Aparece>
+        </div>
+        {/* La cinta va a TODO EL ANCHO DE LA PANTALLA, fuera del contenedor.
+            Recortada a 1180 px se lee como una tabla que se ha salido; llegando
+            a los dos bordes se lee como lo que es: algo que sigue. */}
+        <Aparece>
+          <Cinta piezas={QUE_SALE} />
+        </Aparece>
+      </div>
+
       {/* ── LA CUENTA, HECHA DELANTE ─────────────────────────
           La calculadora vive aquí y no en la portada. Es la misma cuenta de la
           que habla el texto de arriba: enseñarla en el momento en que se acaba
@@ -131,28 +162,6 @@ export default function Numerologia() {
         <Aparece modo="escala" className="banda-dentro">
           <TuNumero />
         </Aparece>
-      </div>
-
-      {/* ── QUÉ SALE ─────────────────────────────────────────
-          Cinco piezas, en columnas. Es lo que la plataforma calcula de verdad
-          para cada persona; ni una de las cinco está de adorno. */}
-      <div className="claro bloque-limpio">
-        <div style={{ maxWidth: 1180, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(32px,4vw,58px)' }}>
-          <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '15ch' }}>
-            Qué sale de tu nombre y de tu fecha.
-          </Aparece>
-          <div className="num-rejilla">
-            {QUE_SALE.map((q, i) => (
-              /* Un escalón por ficha: las cinco entran en cascada y la
-                 rejilla se lee de arriba abajo, no de golpe. */
-              <Aparece key={q.t} retraso={i} className="num-ficha">
-                <span className="num-etiqueta">{q.n}</span>
-                <h2 className="num-tit">{q.t}</h2>
-                <p className="num-txt">{q.p}</p>
-              </Aparece>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* ── QUÉ NO ES ────────────────────────────────────────

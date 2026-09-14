@@ -49,7 +49,7 @@ export default function PaginaTexto({
         </p>
         <div className="texto-legal">{children}</div>
 
-        <div style={{ marginTop: 'clamp(44px,6vw,72px)', paddingTop: 24, borderTop: '1px solid var(--linea)', fontSize: 15, color: 'var(--tx-2)' }}>
+        <div style={{ marginTop: 'clamp(44px,6vw,72px)', paddingTop: 24, borderTop: '1px solid var(--linea)', fontSize: 'var(--t-nota)', color: 'var(--tx-2)' }}>
           ¿Alguna duda con esto? Escribe a{' '}
           <a href={`mailto:${CONTACTO.email}`} style={{ color: 'var(--acento)' }}>{CONTACTO.email}</a>.
         </div>
