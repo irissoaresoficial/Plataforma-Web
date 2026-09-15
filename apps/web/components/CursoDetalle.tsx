@@ -99,26 +99,37 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
             <p style={{ margin: '0 0 22px', fontSize: 'var(--t-cuerpo)', lineHeight: 1.55, color: 'var(--tx-2)' }}>{curso.claim}</p>
           )}
 
-          {/* El vídeo donde ella lo cuenta con su voz: es lo que más vende.
-              Cuando no lo hay, el hueco NO guarda el sitio de un 16:9. Guardarlo
-              dejaba medio metro de vacío nada más abrir la ficha y empujaba el
-              temario —lo único que de verdad cuenta lo que se compra— por debajo
-              del borde. Sin vídeo: una franja de dos renglones y a seguir. */}
-          <div className={curso.videoUrl ? 'modal-video' : 'modal-video-sin'}>
-            {curso.videoUrl ? (
+          {/*
+              EL VÍDEO, SI LO HAY. Y SI NO LO HAY, NADA.
+
+              Aquí había un cartel de obra: un aro rojo con «VÍDEO PENDIENTE» y
+              debajo «aquí va el vídeo en el que Iris presenta este curso».
+              Gerson lo vio en el móvil y lo mandó quitar, y tenía razón por un
+              motivo que va más allá de este recuadro.
+
+              Un aviso de «pendiente» es una nota PARA NOSOTROS que se estaba
+              enseñando a quien está a punto de pagar 397 €. Lo que lee esa
+              persona no es «falta un vídeo»: lee «esto está a medio montar». Y
+              lo lee justo encima del precio, que es el peor sitio de toda la
+              ficha para sembrar esa duda.
+
+              Estos carteles valen mientras se construye, para que nada se
+              olvide. En la web publicada, un hueco vacío no se anuncia: se
+              calla. El vídeo en el que Iris presenta esto ya está arriba, en el
+              encabezado de la propia página.
+
+              Si algún día un curso trae su vídeo propio, se rellena `videoUrl`
+              en `content/site.ts` y aparece aquí solo. */}
+          {curso.videoUrl && (
+            <div className="modal-video">
               <iframe
                 src={curso.videoUrl}
                 title="Iris presenta el curso"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            ) : (
-              <div className="modal-video-hueco">
-                <Pendiente>Vídeo pendiente</Pendiente>
-                <span>Aquí va el vídeo en el que Iris presenta este curso.</span>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* EL PRECIO, ANTES DEL TEMARIO Y NO METIDO EN LA REJILLA DE DATOS.
               Era la cuarta celda de un cuadro de cuatro, del tamaño del
