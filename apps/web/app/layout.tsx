@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { Fraunces, Instrument_Sans } from 'next/font/google';
 import { LangProvider } from '@/lib/i18n';
 import Medicion from '@/components/Medicion';
+import Ficha from '@/components/Ficha';
+import { SITIO } from '@/lib/seo';
+import { CONTACTO } from '@/content/site';
 import './globals.css';
 /* El sistema de aparición al bajar (`components/Aparece.tsx`). Va DESPUÉS de la
    hoja global a propósito: en un empate de especificidad tiene que ganar el
@@ -73,16 +76,104 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://escueladesabiduria33.com'),
   title: 'Iris Soares · Numerología Transgeneracional',
   description: 'Deja de repetir una vida que no elegiste. Consultas, membresía y formación en el método IRIS.',
-  /* El dominio canónico. Con www y sin www sirviendo lo mismo, Google trata dos
-     direcciones como dos páginas iguales y reparte el crédito entre las dos.
-     Esto le dice cuál es la buena. */
+  /*
+   * EL CANONICAL DE LA PORTADA. Y AQUÍ HUBO UN AGUJERO DE LOS CAROS.
+   *
+   * Esto ya estaba, con su comentario explicando lo de www y sin www. Lo que no
+   * se vio es que en el layout RAÍZ se hereda hacia abajo. O sea que /cursos,
+   * /taller, /numerologia, /kabala, /sinergia y /membresia servían todas:
+   *
+   *     <link rel="canonical" href="https://escueladesabiduria33.com">
+   *
+   * Un canonical es una nota firmada que dice «no me indexes a mí, la buena es
+   * ésa». Las seis páginas de contenido le estaban pidiendo a Google que las
+   * tratara como copias de la portada. Una web puede pasarse meses sin aparecer
+   * en las búsquedas por esto sin que nadie entienda el motivo.
+   *
+   * Ahora cada ruta declara la suya en su propio `layout.tsx`, con
+   * `paginaMeta()`. Esta línea vale sólo para la portada, que es lo único que
+   * pretendía decir desde el principio.
+   */
   alternates: { canonical: '/' },
+
+  /*
+   * LO QUE SE VE AL PEGAR EL ENLACE EN WHATSAPP.
+   *
+   * Next ya componía `og:title` y `og:description` a partir del título y la
+   * descripción de arriba, y la imagen sale sola de `app/opengraph-image.png`.
+   * Lo que faltaba es esto:
+   *
+   *   · `type` y `locale`: es lo que hace que WhatsApp y Facebook traten esto
+   *     como una página en español y no como algo sin identificar;
+   *   · `siteName`, el nombre que sale encima del título en la ficha. Sin él
+   *     sale el dominio pelado, que parece un enlace reenviado por alguien;
+   *   · `url`, para que la ficha se guarde a nombre de la dirección limpia
+   *     aunque el enlace que se comparta lleve `?utm_source=instagram` detrás.
+   */
+  openGraph: {
+    type: 'website',
+    locale: 'es_ES',
+    siteName: 'Escuela de Sabiduría 33',
+    title: 'Iris Soares · Numerología Transgeneracional',
+    description: 'Deja de repetir una vida que no elegiste. Consultas, membresía y formación en el método IRIS.',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://escueladesabiduria33.com',
+  },
+
+  /* Qué puede hacer Google con esto. `max-image-preview: large` decide si en el
+     móvil sale la foto grande o un sello del tamaño de una uña, y en una web
+     que vende algo visual eso cambia cuánta gente entra. */
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${display.variable} ${texto.variable}`}>
       <body>
+        {/*
+            QUIÉN ES LA CASA Y QUIÉN ES IRIS, ESCRITO PARA GOOGLE.
+
+            Va en el layout raíz porque es lo único que es verdad en todas las
+            páginas: la escuela y la persona que la lleva son las mismas se
+            entre por donde se entre. Lo de cada página —el curso, la consulta,
+            el taller— está en el layout de su carpeta.
+
+            Es lo que hace que, al buscar «Iris Soares», Google pueda montar la
+            tarjeta de la derecha con el nombre, el oficio y el enlace, en vez
+            de enseñar un resultado azul más.
+
+            SÓLO VA LO QUE ESTÁ CONFIRMADO. No hay redes sociales aquí porque
+            no están en `content/site.ts`: el campo que las llevaría —`sameAs`—
+            es justo el que más pesa para que Google ate el perfil de Instagram
+            con esta web, así que en cuanto Gerson pase los enlaces, se añade y
+            se nota. Inventarlos ahora, no.
+        */}
+        <Ficha
+          datos={{
+            '@graph': [
+              {
+                '@type': 'Organization',
+                '@id': `${SITIO}#escuela`,
+                name: 'Escuela de Sabiduría 33',
+                url: SITIO,
+                email: CONTACTO.email,
+                founder: { '@id': `${SITIO}#iris` },
+              },
+              {
+                '@type': 'Person',
+                '@id': `${SITIO}#iris`,
+                name: 'Iris Soares',
+                jobTitle: 'Numeróloga transgeneracional',
+                url: SITIO,
+                worksFor: { '@id': `${SITIO}#escuela` },
+                knowsAbout: ['Numerología', 'Numerología transgeneracional', 'Kábala'],
+              },
+            ],
+          }}
+        />
         <LangProvider>{children}</LangProvider>
         {/* La medición va en el layout y no en cada página porque el cartel del
             consentimiento tiene que salir se entre por donde se entre — también
