@@ -66,7 +66,7 @@
  * se llama desde `calcular()` y ya está.
  */
 
-import Link from 'next/link';
+import LeadForm from './LeadForm';
 import { useMemo, useRef, useState } from 'react';
 import { estudio } from '@/lib/numerologia';
 import { useLang } from '@/lib/i18n';
@@ -87,6 +87,10 @@ export type TextosSinergia = {
   tu: string;
   esaPersona: string;
   entera: string;
+  /** El titular del bloque que pide el correo, debajo del resultado. */
+  correoH: string;
+  /** Lo que dice el botón de ese bloque. */
+  correoCta: string;
 };
 
 /*
@@ -156,6 +160,8 @@ export default function SinergiaAqui({
     tu: 'Tú',
     esaPersona: 'Esa persona',
     entera: 'Ver la lectura entera de los dos',
+    correoH: 'Te mando la lectura entera de los dos.',
+    correoCta: 'Mándamela al correo',
     ...textos,
   };
 
@@ -342,21 +348,37 @@ export default function SinergiaAqui({
               </ul>
 
               {/*
-                  LA FECHA VIAJA CON EL ENLACE.
-                  Quien quiere la lectura entera acaba de escribir su fecha aquí.
-                  Pedírsela otra vez en la página siguiente es la señal más clara
-                  de que a nadie le importaba lo que acaba de hacer. `/sinergia`
-                  lee d/m/a de la dirección y llega con la primera casilla puesta.
-                  Va en la dirección y no en el almacenamiento del navegador
-                  porque aquí no se guarda nada, y eso hay que cumplirlo.
+                  LA LECTURA ENTERA SE MANDA POR CORREO, AQUÍ MISMO.
+
+                  Aquí había un enlace a `/sinergia` que llevaba la primera fecha
+                  en la dirección. Y aun así, al llegar, había que volver a
+                  escribir la otra fecha, el nombre y el correo. Gerson: «si le
+                  doy clic me manda a rellenar otra vez los datos».
+
+                  El coste es doble. Para quien lee, es empezar de cero justo
+                  después de haber terminado algo. Y para el negocio es peor:
+                  esa persona acaba de dar DOS FECHAS DE NACIMIENTO —el dato más
+                  difícil de conseguir que hay— y se iba sin dejar un correo. El
+                  trabajo estaba hecho y no se recogía.
+
+                  Una casilla y un botón. Y con el aviso viajan las dos fechas y
+                  el número del vínculo, así que lo que le llega a Iris no es un
+                  correo suelto: es un correo con la pareja de fechas ya
+                  calculada. Eso es una conversación que empieza sabiendo algo.
               */}
-              <Link
-                className="sinaqui-entera"
-                data-mag
-                href={`/sinergia?d=${Number(hecho!.a.dia)}&m=${Number(hecho!.a.mes)}&a=${Number(hecho!.a.anio)}`}
-              >
-                {T.entera} →
-              </Link>
+              <div className="sinaqui-correo">
+                <p className="sinaqui-correo-h">{T.correoH}</p>
+                <LeadForm
+                  origen="sinergia-portada"
+                  detalle={`Sinergia ${iso(hecho!.a)} + ${iso(hecho!.b)} · vínculo ${res.comun} (${res.nombreVinculo})`}
+                  cta={T.correoCta}
+                  pedirNombre={false}
+                  variant="dark"
+                  successTitle="Hecho. Te llega en un momento."
+                  successText="La lectura entera de los dos, con las dos fechas que acabas de poner."
+                  privacidad="Sólo lo uso para mandarte esto."
+                />
+              </div>
             </div>
           )}
         </div>

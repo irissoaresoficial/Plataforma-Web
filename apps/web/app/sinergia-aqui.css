@@ -423,16 +423,89 @@
   stroke-opacity: 0.34;
   fill-opacity: 0;
 }
-/* Los números entran desde dentro, como si el círculo los revelara. */
+/* Los números entran desde dentro, como si el círculo los revelara.
+   ===========================================================================
+   ESTE `@keyframes` SE LLAMABA `sinaqui-entra`, IGUAL QUE EL DEL RESULTADO,
+   Y ROMPÍA EL BLOQUE ENTERO.
+   ===========================================================================
+   Los nombres de las animaciones son globales y no se ordenan por
+   especificidad: si hay dos con el mismo nombre, MANDA LA ÚLTIMA, para todo el
+   que la use. Así que el bloque del resultado —que pedía `sinaqui-entra`
+   esperando un `translateY(14px)`— acababa recibiendo el `translate(-50%,-50%)`
+   que necesitan los números, que van colocados en absoluto.
+
+   Medido en un móvil de 390 px: el resultado salía 179 px a la izquierda —la
+   mitad exacta de sus 358 de ancho— con medio texto fuera de la pantalla y el
+   botón «Verlo ahora» encima. Es lo que fotografió Gerson.
+
+   Lo metí yo al arreglar las casillas de este mismo bloque. La regla que me
+   faltaba: un `@keyframes` es un nombre global, así que se nombra por lo que
+   anima, no por dónde está. */
 .sinaqui-venn-lleno .sinaqui-num {
-  animation: sinaqui-entra 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sinaqui-num-entra 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .sinaqui-venn-lleno .sinaqui-num-x { animation-delay: 0.12s; }
 .sinaqui-venn-lleno .sinaqui-num-b { animation-delay: 0.2s; }
-@keyframes sinaqui-entra {
+@keyframes sinaqui-num-entra {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
   .sinaqui-venn-lleno .sinaqui-num { animation: none; }
+}
+
+
+/* ==================================================================
+   EL CORREO, AQUÍ MISMO
+   ==================================================================
+   Aquí había un enlace: «Ver la lectura entera de los dos →», que llevaba a
+   /sinergia con la primera fecha puesta en la dirección. Y aun así había que
+   volver a escribir la otra, el nombre y el correo. Gerson: «si le doy clic me
+   manda a rellenar otra vez los datos».
+
+   Tenía razón, y el coste es doble. Para quien lee es empezar de cero después
+   de haber terminado algo. Y para el negocio es peor: esa persona acaba de dar
+   DOS FECHAS DE NACIMIENTO —el dato más difícil de conseguir que hay— y se iba
+   sin dejar un correo. El trabajo estaba hecho y no se recogía.
+
+   Ahora la lectura entera se manda por correo: una casilla, un botón, y las dos
+   fechas y el número del vínculo viajan con el aviso. Un clic y el dato está en
+   la plataforma de Iris.
+   ================================================================== */
+.sinaqui-correo {
+  margin: clamp(28px, 3.6vw, 40px) auto 0;
+  max-width: 420px;
+  padding-top: clamp(24px, 3vw, 32px);
+  border-top: 1px solid var(--linea);
+  text-align: left;
+}
+.sinaqui-correo-h {
+  margin: 0 0 clamp(14px, 1.8vw, 18px);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.028em;
+  color: var(--tx);
+  text-align: center;
+  text-wrap: balance;
+}
+/* Los campos, como en la caja de la comunidad: un renglón subrayado y no una
+   caja del color de la pared. Sobre granate es la única forma de que se vea. */
+.sinaqui-correo .field-input {
+  border: 0;
+  border-bottom: 2px solid rgba(226, 205, 162, 0.26);
+  border-radius: 0;
+  background: none;
+  padding: 8px 2px 10px;
+  font-size: var(--t-cuerpo);
+  color: #fff;
+}
+.sinaqui-correo .field-input::placeholder { color: rgba(226, 205, 162, 0.38); }
+.sinaqui-correo .field-input:focus {
+  border-bottom-color: var(--oro-luz);
+  box-shadow: none;
+}
+.sinaqui-correo .pill {
+  width: 100%;
+  justify-content: center;
 }
