@@ -330,8 +330,21 @@
   left: 72.3%;
 }
 
+/* LA ETIQUETA DEL VÍNCULO: «Espejo», «Roce que enseña».
+   Estaba dentro del titular, detrás de dos puntos, haciendo un trabajo que no
+   es el suyo: nombrar no es explicar. Aquí arriba nombra lo que se va a leer,
+   que es exactamente para lo que sirve, y el titular queda libre para decir
+   algo que se entienda solo. */
+.sinaqui-etiqueta {
+  display: block;
+  margin-top: clamp(24px, 3vw, 34px);
+  color: var(--oro-luz, var(--acento));
+}
+
 .sinaqui-vinculo {
-  margin: clamp(24px, 3vw, 34px) auto 0;
+  /* El margen de arriba se lo ha llevado la etiqueta, que ahora va delante.
+     Dejarlo aquí también abría un hueco doble entre el dibujo y el texto. */
+  margin: 7px auto 0;
   font-size: var(--t-bloque);
   font-weight: 600;
   line-height: 1.14;

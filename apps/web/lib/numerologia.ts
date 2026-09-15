@@ -245,37 +245,100 @@ const FAMILIA = (n: number) => ([1, 5, 7].includes(n) ? 'mental' : [2, 4, 8].inc
 
 export type Vinculo = 'espejo' | 'maestra' | 'complemento' | 'tension';
 
-export const VINCULOS: Record<Vinculo, { nombre: string; lineas: string[] }> = {
+/** Lo que significa un número, en las palabras de `SENTIDO`. */
+const quees = (n: number) => SENTIDO[n]?.frase || '';
+
+/**
+ * LO QUE SE LE CUENTA A ALGUIEN QUE NO SABE NADA.
+ *
+ * ESTO ESTABA ESCRITO PARA QUIEN YA SABE NUMEROLOGÍA, Y ESE NO ES QUIEN LLEGA.
+ * Gerson lo leyó entero y no entendió nada, y tenía razón hasta en lo peor: se
+ * contradecía en pantalla. Con dos personas de 3, el dibujo enseña «3 · 6 · 3»,
+ * el titular anunciaba «es un 6» y la primera línea decía «tenéis el mismo
+ * número». Quien lee busca ese número igual, se encuentra un 6 en medio y ahí
+ * se le acabó la lectura.
+ *
+ * Los otros tres fallos eran de la misma familia:
+ *
+ *   · LOS NÚMEROS NO SE EXPLICABAN NUNCA. Salían tres cifras desnudas. Y lo
+ *     absurdo es que `SENTIDO` ya traduce cada una a algo de la vida —«cuidar:
+ *     hacerse cargo, la casa, la familia»— y aquí no se usaba ni una vez.
+ *   · «Lo que se activa entre los dos», «el punto ciego», «la fuerza está
+ *     duplicada»: eso se dice entre quienes ya saben de esto. Fuera, no.
+ *   · Y cada bloque cerraba con una pregunta al aire —«¿quién de los dos repite
+ *     el patrón primero?»— que deja a la persona igual que estaba. Una pregunta
+ *     sin respuesta no es profundidad: es dejar el trabajo a medias.
+ *
+ * AHORA CADA VÍNCULO DICE TRES COSAS, SIEMPRE EN ESTE ORDEN, que es el orden en
+ * que se entiende algo: de dónde salen los números y qué significan · qué pasa
+ * entre esas dos personas por eso · y qué se nota en el día a día.
+ *
+ * LO QUE NO HA CAMBIADO ES LA NUMEROLOGÍA. Qué significa cada número y qué
+ * vínculo sale de cada combinación es exactamente lo que ya estaba: no hay ni
+ * una correspondencia nueva. Lo único que cambia es cómo se cuenta.
+ *
+ * Y POR QUÉ `lineas` ES UNA FUNCIÓN Y NO UNA LISTA. Porque explicar de verdad
+ * obliga a decir los números dentro de la frase, y una lista fija no los
+ * conoce. `estudio()` las resuelve antes de devolverlas, así que quien las usa
+ * —la portada, `/sinergia` y el PDF— sigue recibiendo el mismo `string[]` de
+ * siempre y mejora en los tres sitios a la vez.
+ */
+export const VINCULOS: Record<
+  Vinculo,
+  {
+    /** La etiqueta corta. Sirve de rótulo, no de explicación. */
+    nombre: string;
+    /** La frase que sustituye a la etiqueta cuando hay sitio para una frase. */
+    titular: string;
+    lineas: (a: number, b: number, comun: number) => string[];
+  }
+> = {
   espejo: {
     nombre: 'Espejo',
-    lineas: [
-      'Tenéis el mismo número: lo que te molesta de esa persona también es tuyo.',
-      'La fuerza está duplicada, y el punto ciego también.',
-      '¿Quién de los dos repite el patrón primero?',
+    titular: 'Sois el mismo número: eso une y ciega a la vez.',
+    lineas: (a, _b, comun) => [
+      `Tu fecha de nacimiento suma ${a}, y la de esa persona también. Los dos habéis venido a lo mismo: ${quees(a)}.`,
+      `Juntos sumáis ${comun}, y eso es lo que la relación os pide: ${quees(comun)}.`,
+      'Por eso os entendéis sin hablar. Y por eso lo que te saca de quicio de esa persona lo haces tú igual, aunque no lo veas.',
+      'Lo que ninguno de los dos quiere mirar no lo mira nadie: no hay quien avise.',
     ],
   },
   maestra: {
     nombre: 'Relación que enseña',
-    lineas: [
-      'Lo que se activa entre los dos es justo el número de uno de vosotros: ahí hay algo que aprender.',
-      'Uno enseña sin querer y el otro aprende sin darse cuenta.',
-      '¿Qué te pide esta persona que ya te pedía otra antes?',
+    titular: 'Uno de los dos marca el tono, y casi nunca es quien se cree.',
+    lineas: (a, b, comun) => [
+      `Tu fecha suma ${a} —${quees(a)}— y la de esa persona ${b} —${quees(b)}—.`,
+      `Juntas dan ${comun}, que es justo ${comun === a ? 'tu número' : 'el suyo'}. Todo lo que pasa entre vosotros se juega ahí: ${quees(comun)}.`,
+      /* ESTO ESTABA AL REVÉS. Decía «el terreno es el de esa persona» y acto
+         seguido «tú le estás enseñando algo». Si el número del vínculo es el
+         suyo, quien marca el tono es ella, y quien tiene deberes eres tú. Al
+         revés, igual. Un texto que se contradice consigo mismo dos renglones
+         después es peor que uno que no se entiende: éste sí se entiende, y lo
+         que se entiende está mal. */
+      comun === a
+        ? 'El tono lo marcas tú, sin haberlo pedido: esa persona está aprendiendo de algo que a ti te sale solo.'
+        : 'El tono lo marca esa persona: lo que te remueve de ella es justo lo que a ti te toca aprender.',
+      'Fíjate si esto ya te pasaba con alguien de antes. Casi siempre viene de más atrás.',
     ],
   },
   complemento: {
     nombre: 'Complemento',
-    lineas: [
-      'Vuestros números van en la misma dirección: donde uno se cansa, el otro empuja.',
-      'El riesgo es la comodidad: repartirse los papeles y dejar de crecer.',
-      '¿Qué dejas de hacer tú porque ya lo hace la otra persona?',
+    titular: 'Encajáis fácil. Y justo ahí está el riesgo.',
+    lineas: (a, b, comun) => [
+      `Tu fecha suma ${a} —${quees(a)}— y la de esa persona ${b} —${quees(b)}—. No es el mismo número, pero tiran para el mismo lado.`,
+      `Juntas dan ${comun}, y eso es lo que la relación os pide: ${quees(comun)}.`,
+      'Por eso os repartís el trabajo sin hablarlo: donde tú te cansas, esa persona empuja.',
+      'Lo que hay que vigilar no es que os peleéis. Es que dejes de hacer cosas porque ya las hace la otra.',
     ],
   },
   tension: {
     nombre: 'Roce que enseña',
-    lineas: [
-      'Vuestros números empujan en direcciones distintas: el roce es información, no un fallo.',
-      'Lo que te saca de quicio señala justo lo que te toca aprender.',
-      '¿Qué se repetía ya en tu familia antes de esta relación?',
+    titular: 'Choca, y no es culpa de ninguno de los dos.',
+    lineas: (a, b, comun) => [
+      `Tu fecha suma ${a} —${quees(a)}— y la de esa persona ${b} —${quees(b)}—. Son dos formas de vivir que no encajan solas.`,
+      `Juntas dan ${comun}, y eso es lo que la relación os pide a los dos: ${quees(comun)}.`,
+      'De ahí el roce. No es que uno lo esté haciendo mal: es que os estáis pidiendo cosas distintas.',
+      'Y lo que más te saca de quicio de esa persona suele ser justo lo que a ti te falta.',
     ],
   },
 };
@@ -347,7 +410,10 @@ export type Estudio = {
   etiqueta: string;
   comun: number;
   vinculo: Vinculo;
+  /** La etiqueta corta: «Espejo». Para rótulos y para la ficha de Iris. */
   nombreVinculo: string;
+  /** La misma idea dicha como frase, para donde hay sitio para una frase. */
+  titularVinculo: string;
   lineas: string[];
   repeticiones: Repeticion[];
   fecha: string;
@@ -377,7 +443,10 @@ export function estudio(
     comun,
     vinculo,
     nombreVinculo: VINCULOS[vinculo].nombre,
-    lineas: VINCULOS[vinculo].lineas,
+    titularVinculo: VINCULOS[vinculo].titular,
+    /* Se resuelven aquí, con los números ya calculados, para que todo el que
+       las use siga recibiendo texto plano y no tenga que saber de esto. */
+    lineas: VINCULOS[vinculo].lineas(a.camino.valor, b.camino.valor, comun),
     repeticiones: repeticiones(a, b, etiqueta),
     fecha: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }),
   };

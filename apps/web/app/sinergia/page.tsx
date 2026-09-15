@@ -397,6 +397,14 @@ export default function Sinergia() {
                       </div>
                       <span style={{ fontSize: 'var(--t-nota)', fontWeight: 700, border: '1px solid rgba(200,155,74,.5)', color: 'var(--acento)', borderRadius: 100, padding: '7px 13px' }}>{res.nombreVinculo}</span>
                     </div>
+                    {/* La frase que traduce la píldora. «Espejo» dentro de un
+                        aro dorado queda muy bien y no explica nada: es una
+                        etiqueta, y quien llega aquí no ha oído esa palabra en
+                        su vida aplicada a dos fechas. El mismo arreglo que se
+                        hizo en la portada, por el mismo motivo. */}
+                    <p style={{ fontSize: 'var(--t-h3)', fontWeight: 600, lineHeight: 1.25, letterSpacing: '-.015em', margin: 0 }}>
+                      {res.titularVinculo}
+                    </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 'var(--t-nota)', lineHeight: 1.55, color: 'var(--tx-2)' }}>
                       {res.lineas.map((l, i) => (
                         <div key={i} style={{ display: 'flex', gap: 9 }}>

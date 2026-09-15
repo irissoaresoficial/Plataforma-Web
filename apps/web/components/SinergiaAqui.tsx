@@ -149,17 +149,20 @@ const iso = (f: Fecha) =>
  * que convierte un correo que se lee una vez en una segunda visita.
  */
 function correoDeLaPortada(r: {
-  a: { camino: { valor: number } };
-  b: { camino: { valor: number } };
-  comun: number;
-  nombreVinculo: string;
+  titularVinculo: string;
   lineas: string[];
 }): { asunto: string; parrafos: string[] } {
   return {
-    asunto: `Lo vuestro es un ${r.comun}: ${r.nombreVinculo}`,
+    /* El asunto decía «Lo vuestro es un 6: Roce que enseña» — un número que
+       esa persona no sabe leer y una etiqueta que no ha oído en su vida, en el
+       único renglón que decide si el correo se abre. Ahora el asunto es la
+       misma frase que acaba de leer en pantalla: la reconoce y la entiende. */
+    asunto: r.titularVinculo,
     parrafos: [
       'Aquí tienes por escrito lo que te ha salido, para que puedas volver a leerlo con calma.',
-      `Tu camino es un ${r.a.camino.valor}. El de esa persona, un ${r.b.camino.valor}. Lo que se activa entre los dos es un ${r.comun}: ${r.nombreVinculo}.`,
+      /* Las líneas ya explican de dónde sale cada número y qué significa: ese
+         es su primer trabajo desde que se reescribieron. Repetirlo antes en un
+         párrafo propio era decir dos veces lo mismo con peores palabras. */
       ...r.lineas,
       'Esto sale sólo de las dos fechas. Con los dos nombres completos salen cuatro cosas más: lo que cada uno vino a hacer, lo que se hereda, lo que se viene repitiendo y en qué se os nota a los dos. Eso te lo calculo en escueladesabiduria33.com/sinergia.',
     ],
@@ -381,13 +384,27 @@ export default function SinergiaAqui({
         <div className="sinaqui-salida" aria-live="polite" ref={salida}>
           {res && (
             <div className="sinaqui-res" key={`${iso(hecho!.a)}|${iso(hecho!.b)}`}>
-              {/* «Lo que se activa entre los dos» es la frase con la que Iris
-                  presenta este número en `/sinergia`. Se dice igual aquí: dos
-                  nombres distintos para el mismo número es lo que hace que una
-                  persona crea que son dos cosas. */}
-              <h3 className="sinaqui-vinculo">
-                Lo que se activa entre los dos es un {res.comun}: {res.nombreVinculo}.
-              </h3>
+              {/*
+                  AQUÍ PONÍA «Lo que se activa entre los dos es un 6: Espejo.»
+
+                  Tres problemas en una sola línea, y Gerson se los comió los
+                  tres de golpe: «ahí lo estaba leyendo y no entendí».
+
+                  Uno: «lo que se activa entre los dos» se dice entre quienes ya
+                  saben de esto. Dos: «un 6» no significa nada para quien acaba
+                  de llegar, y el 6 no se explicaba ni antes ni después. Y tres,
+                  el peor: con dos personas de 3 el dibujo enseña «3 · 6 · 3» y
+                  la línea de debajo decía «tenéis el mismo número» — quien lee
+                  busca ese número igual, ve un 6 en medio y ya no vuelve.
+
+                  Ahora el número está sólo donde se puede ver, que es el
+                  dibujo, y aquí va una frase que se entiende sola. La etiqueta
+                  —«Espejo»— pasa a rótulo encima: sirve para nombrar lo que
+                  acabas de leer, no para explicarlo. Ese era todo su trabajo y
+                  se le estaba pidiendo otro.
+              */}
+              <span className="rotulo-dato sinaqui-etiqueta">{res.nombreVinculo}</span>
+              <h3 className="sinaqui-vinculo">{res.titularVinculo}</h3>
 
               <ul className="sinaqui-lineas">
                 {res.lineas.map((l) => (
