@@ -2,10 +2,14 @@
  * Envía un correo captado a /api/lead. Devuelve si se ha guardado de verdad,
  * para que los formularios no digan "guardado" cuando no lo está.
  */
+import type { LeadSource } from './booking';
+
 export async function sendLead(payload: {
   email: string;
   nombre?: string;
-  origen: string;
+  /* Uno de los tres que el servidor conoce, y no un texto cualquiera. El motivo
+     está escrito entero junto a `LEAD_SOURCES`, en `booking.ts`. */
+  origen: LeadSource;
   detalle?: string;
   whatsapp?: string;
   lang?: string;

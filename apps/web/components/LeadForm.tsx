@@ -21,6 +21,7 @@
 
 import { useId, useState } from 'react';
 import { sendLead } from '@/lib/sendLead';
+import type { LeadSource } from '@/lib/booking';
 import { CONTACTO } from '@/content/site';
 import { medir } from '@/lib/medir';
 
@@ -36,10 +37,24 @@ export default function LeadForm({
   pedirNombre = true,
   pedirWhatsapp = false,
   variant = 'dark',
+  asunto,
+  parrafos,
   pagoUrl = '',
   pagoCta = 'Pagar y reservar mi plaza',
 }: {
-  origen: string;
+  /**
+   * QUÉ HA PASADO, NO DÓNDE. Y sólo uno de los tres que el servidor conoce.
+   *
+   * Esto era un `string` suelto, y así estuvieron DOS formularios rotos a la
+   * vez sin que nadie se enterara: el del taller mandaba «taller» y el de la
+   * sinergia de la portada «sinergia-portada». Ninguno de los dos existe para
+   * el servidor, así que los dos contestaban 400 y las dos pantallas decían «no
+   * he podido guardarlo» a personas que ya habían rellenado el formulario.
+   *
+   * De dónde vino se cuenta en `detalle`, que es texto libre. Aquí va el tipo,
+   * y ahora el compilador para el despliegue si se inventa otro.
+   */
+  origen: LeadSource;
   detalle?: string;
   cta: string;
   successTitle: string;
@@ -48,6 +63,18 @@ export default function LeadForm({
   pedirNombre?: boolean;
   pedirWhatsapp?: boolean;
   variant?: 'dark' | 'light';
+  /**
+   * EL CORREO YA ESCRITO PARA QUIEN LO VA A ABRIR.
+   *
+   * Sólo lo llena la sinergia, y sólo ella lo necesita: su acuse de recibo ES
+   * el resultado. Sin esto, el Apps Script cae al texto de reserva y lo que
+   * llega no es la lectura que se ha prometido en pantalla.
+   *
+   * Un curso o la lista de espera no mandan nada de esto: no tienen nada que
+   * explicar, se apuntan y ya.
+   */
+  asunto?: string;
+  parrafos?: string[];
   /**
    * Enlace de pago de Stripe. Si viene, después de guardar el correo el
    * formulario no termina: enseña el botón de pagar.
@@ -95,7 +122,15 @@ export default function LeadForm({
     setErr('');
     setSending(true);
     const partes = [detalle, whatsapp.trim() ? `WhatsApp: ${whatsapp.trim()}` : ''].filter(Boolean);
-    const ok = await sendLead({ email, nombre, origen, detalle: partes.join(' · '), whatsapp: whatsapp.trim() });
+    const ok = await sendLead({
+      email,
+      nombre,
+      origen,
+      detalle: partes.join(' · '),
+      whatsapp: whatsapp.trim(),
+      asunto,
+      parrafos,
+    });
     setSending(false);
     if (ok) {
       /* Un correo dejado no es una venta, pero sí es la señal más barata que

@@ -124,6 +124,48 @@ const completa = (f: Fecha) => Boolean(f.dia && f.mes && f.anio);
 const iso = (f: Fecha) =>
   `${f.anio}-${String(Number(f.mes)).padStart(2, '0')}-${String(Number(f.dia)).padStart(2, '0')}`;
 
+/**
+ * EL CORREO QUE SE LLEVA ESA PERSONA.
+ *
+ * Y POR QUÉ NO SE REUTILIZA `correoSinergia()`, QUE YA EXISTE. Esa función es la
+ * de `/sinergia` y escribe con los nombres: «Iris, tu camino es un 3», «lo que
+ * te pasa con tu madre». Aquí no hay nombres —este bloque pide dos fechas y
+ * nada más, que es justo lo que lo hace usable— así que ese texto saldría con
+ * huecos («Hola ,») y hablando de repeticiones que, con los nombres vacíos, son
+ * basura. Está avisado en la cabecera de este archivo.
+ *
+ * Así que se escribe lo que SÍ sale de dos fechas, que es exactamente lo que la
+ * persona acaba de ver en pantalla: su número, el de la otra, el del vínculo y
+ * las tres líneas. Ni una frase inventada: las líneas salen de `VINCULOS` tal
+ * cual, porque son lecturas que vende una profesional.
+ *
+ * SIN ESTO NO LLEGA NADA, y ese es el motivo de que exista. El Apps Script
+ * manda el resultado leyendo `parrafos`; si no vienen, cae a un texto de
+ * reserva que no es la lectura. Una pantalla que promete un correo y manda otra
+ * cosa gasta la única oportunidad que había con esa persona.
+ *
+ * El último párrafo no es firma ni relleno: es lo único que esta pantalla no
+ * puede dar. Con los dos nombres salen cuatro cosas más, y decirlo aquí es lo
+ * que convierte un correo que se lee una vez en una segunda visita.
+ */
+function correoDeLaPortada(r: {
+  a: { camino: { valor: number } };
+  b: { camino: { valor: number } };
+  comun: number;
+  nombreVinculo: string;
+  lineas: string[];
+}): { asunto: string; parrafos: string[] } {
+  return {
+    asunto: `Lo vuestro es un ${r.comun}: ${r.nombreVinculo}`,
+    parrafos: [
+      'Aquí tienes por escrito lo que te ha salido, para que puedas volver a leerlo con calma.',
+      `Tu camino es un ${r.a.camino.valor}. El de esa persona, un ${r.b.camino.valor}. Lo que se activa entre los dos es un ${r.comun}: ${r.nombreVinculo}.`,
+      ...r.lineas,
+      'Esto sale sólo de las dos fechas. Con los dos nombres completos salen cuatro cosas más: lo que cada uno vino a hacer, lo que se hereda, lo que se viene repitiendo y en qué se os nota a los dos. Eso te lo calculo en escueladesabiduria33.com/sinergia.',
+    ],
+  };
+}
+
 export default function SinergiaAqui({
   id = 'sinergia',
   className = '',
@@ -160,7 +202,13 @@ export default function SinergiaAqui({
     tu: 'Tú',
     esaPersona: 'Esa persona',
     entera: 'Ver la lectura entera de los dos',
-    correoH: 'Te mando la lectura entera de los dos.',
+    /* «Te mando la lectura ENTERA de los dos» era mentira y no por poco: la
+       entera lleva los dos nombres y sale en `/sinergia`, con cuatro cosas más
+       que desde aquí no se pueden calcular. Prometer de más en el sitio exacto
+       donde alguien te deja su correo es la forma más cara de quedar mal: ese
+       correo llega, no trae lo prometido, y esa persona ya no abre el segundo.
+       Lo que va ahora dice lo que hay y da un motivo para quererlo. */
+    correoH: 'Te lo mando por escrito, que esto no se entiende de una sola lectura.',
     correoCta: 'Mándamela al correo',
     ...textos,
   };
@@ -368,14 +416,27 @@ export default function SinergiaAqui({
               */}
               <div className="sinaqui-correo">
                 <p className="sinaqui-correo-h">{T.correoH}</p>
+                {/* AQUÍ PONÍA `origen="sinergia-portada"` Y ESO NO EXISTE.
+                    El servidor sólo acepta tres orígenes y rechaza el resto con
+                    un 400, así que este formulario no guardó nunca nada: quien
+                    dejaba su correo veía en rojo «no he podido guardarlo»
+                    después de haber escrito DOS fechas de nacimiento. Justo lo
+                    que este bloque existía para evitar.
+                    Y meter «sinergia-portada» en la lista de orígenes habría
+                    sido peor: el Apps Script pregunta por `=== 'sinergia'` para
+                    arrancar la secuencia y para mandar el resultado, así que el
+                    correo habría entrado sin fallar y sin recibir nada nunca.
+                    De dónde vino se cuenta en `detalle`, que es texto libre.
+                    Está explicado entero junto a `LEAD_SOURCES`. */}
                 <LeadForm
-                  origen="sinergia-portada"
-                  detalle={`Sinergia ${iso(hecho!.a)} + ${iso(hecho!.b)} · vínculo ${res.comun} (${res.nombreVinculo})`}
+                  origen="sinergia"
+                  detalle={`Portada · ${iso(hecho!.a)} + ${iso(hecho!.b)} · vínculo ${res.comun} (${res.nombreVinculo})`}
+                  {...correoDeLaPortada(res)}
                   cta={T.correoCta}
                   pedirNombre={false}
                   variant="dark"
                   successTitle="Hecho. Te llega en un momento."
-                  successText="La lectura entera de los dos, con las dos fechas que acabas de poner."
+                  successText="Los dos números, el del vínculo y lo que se activa entre los dos."
                   privacidad="Sólo lo uso para mandarte esto."
                 />
               </div>

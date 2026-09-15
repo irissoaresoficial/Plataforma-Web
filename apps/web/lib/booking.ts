@@ -91,7 +91,46 @@ export type Lead = {
   parrafos?: string[];
 };
 
+/**
+ * LOS ÚNICOS ORÍGENES QUE EXISTEN. Y HAY QUE LEER ESTO ANTES DE AÑADIR UNO.
+ *
+ * Esta lista no es una etiqueta para saber de dónde vino un correo: es una
+ * llave que abre puertas distintas en el Apps Script, y todas comparan el texto
+ * EXACTO.
+ *
+ *   · `sinergia` es el único que arranca la secuencia de cinco correos y el
+ *     único al que se le manda el resultado. El script pregunta
+ *     `lead.origen === 'sinergia'` en tres sitios distintos.
+ *   · `membresia` y `curso` son los únicos que tienen escrito su acuse de
+ *     recibo. El script hace `textos[lead.origen]` y, si no encuentra nada,
+ *     `return` — sin error y sin correo.
+ *
+ * Por eso un origen inventado hace dos daños, y el segundo es el que no se ve.
+ * `parseLead` lo rechaza con un 400 y el formulario enseña «no he podido
+ * guardarlo»: eso al menos SE NOTA. Pero si alguien lo «arregla» metiéndolo en
+ * esta lista sin tocar el script, el lead entra, no falla nada, y esa persona
+ * no recibe nunca ni su resultado ni la secuencia. Cambiar un fallo ruidoso por
+ * uno silencioso es ir hacia atrás.
+ *
+ * Así que la regla es: DE DÓNDE vino se cuenta en `detalle`, que es texto libre
+ * y no lo lee ninguna condición. En `origen` va sólo QUÉ ha pasado, y sólo una
+ * de estas tres. Para añadir una cuarta hay que escribirle antes su texto en
+ * `acuseDeRecibo` y su nombre en `notificarIrisLead`, dentro de `reservas.gs`.
+ */
 export const LEAD_SOURCES = ['sinergia', 'membresia', 'curso'] as const;
+
+/**
+ * EL TIPO QUE IMPIDE QUE ESTO VUELVA A PASAR.
+ *
+ * `origen` era un `string` en el formulario, así que escribir «taller» o
+ * «sinergia-portada» compilaba tan tranquilo y fallaba en producción, delante
+ * de una persona que ya había rellenado el formulario y que no vuelve. Los dos
+ * estuvieron rotos a la vez y ninguna prueba lo vio, porque en local tampoco
+ * hay Firebase ni Apps Script y todo falla igual por otro motivo.
+ *
+ * Con esto, un origen que no exista para el servidor no llega ni a compilar.
+ */
+export type LeadSource = (typeof LEAD_SOURCES)[number];
 
 export function parseLead(input: unknown): { lead: Lead | null; error: string } {
   if (!input || typeof input !== 'object') return { lead: null, error: 'payload' };

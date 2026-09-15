@@ -151,8 +151,18 @@ export default function Taller() {
               <p className="tal-caja-titulo">
                 {hayFecha ? 'Guarda tu plaza' : 'Te aviso yo del día'}
               </p>
+              {/* AQUÍ PONÍA `origen="taller"` Y NO EXISTÍA.
+                  El servidor sólo conoce tres orígenes —`sinergia`, `membresia`
+                  y `curso`— y rechaza cualquier otro con un 400. O sea que este
+                  formulario llevaba roto desde que se escribió: la persona
+                  rellenaba, pulsaba, y le salía en rojo «no he podido
+                  guardarlo». Nunca se guardó ni uno.
+                  Un taller gratuito ES un curso para todo lo que pasa después
+                  —mismo acuse de recibo, mismo aviso a Iris—, así que va como
+                  `curso`, y que es el taller lo dice `detalle`, que es texto
+                  libre y no lo lee ninguna condición. */}
               <LeadForm
-                origen="taller"
+                origen="curso"
                 detalle={hayFecha ? `Taller gratuito · ${dia} ${TALLER.hora}` : 'Taller gratuito · lista de espera'}
                 cta={hayFecha ? 'Guardar mi plaza' : 'Avísame del día'}
                 variant="dark"
