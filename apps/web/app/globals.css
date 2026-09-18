@@ -1465,6 +1465,66 @@ body[data-nav-claro='si'] .sello-color {
   color: var(--tx-2);
 }
 
+/* ─────────────────── EL PROGRAMA, PARTIDO EN DOS TIEMPOS ───────────────────
+   La jornada de Iris tiene dos mitades con dos caras: por la mañana se explica
+   y por la tarde se leen cartas de verdad. Eso es lo que separa este curso de
+   un vídeo grabado, y en una lista corrida quedaba enterrado entre dos bloques
+   de temario. */
+.modal-tiempo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.modal-tiempo + .modal-tiempo {
+  margin-top: 26px;
+}
+.modal-tiempo-h {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--linea);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+/* «Se explica» / «Se practica». Dos palabras que hacen el trabajo de un
+   párrafo: dicen de qué va la mitad del día sin que haya que leer los bloques.
+   Van en el color de acento y no en gris para que se lean como una etiqueta y
+   no como el final de la frase de al lado. */
+.modal-tiempo-h span {
+  font-size: var(--t-cuerpo);
+  font-weight: 500;
+  color: var(--acento);
+}
+
+/* Los apartados de dentro de cada bloque. Con guion, y NO con el mismo punto
+   que usan «para quién es» y «qué te llevas»: la misma marca para «esto se ve»
+   y para «esto te lo llevas» hace que ninguna de las dos signifique nada. */
+.modal-puntos {
+  list-style: none;
+  margin: 9px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.modal-puntos li {
+  position: relative;
+  padding-left: 17px;
+  font-size: var(--t-nota);
+  line-height: 1.55;
+  color: var(--tx-2);
+}
+.modal-puntos li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--acento-2);
+}
+
 .modal-pie {
   flex-shrink: 0;
   border-top: 1px solid var(--linea);

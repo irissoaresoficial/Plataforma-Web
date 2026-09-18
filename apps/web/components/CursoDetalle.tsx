@@ -156,11 +156,15 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
           )}
 
           <div className="modal-datos">
-            {[
+            {/* «Cómo se da» sólo sale si está puesto. Quien duda entre dos
+                cursos mira esto antes que el temario, y no estaba en ninguna
+                parte de la ficha. */}
+            {([
               ['Cuándo', curso.fechas],
               ['Horario', curso.horario],
               ['Duración', curso.duracion],
-            ].map(([k, v]) => (
+              ...(curso.modalidad ? [['Cómo se da', curso.modalidad]] : []),
+            ] as [string, string][]).map(([k, v]) => (
               <div key={k as string}>
                 <span>{k}</span>
                 <strong>{v === null || falta(v as string) ? <Pendiente /> : (v as string)}</strong>
@@ -183,16 +187,64 @@ export default function CursoDetalle({ curso, abierto, onCerrar }: { curso: Curs
           </div>
 
           <div className="modal-lista">
+            {/*
+                EL PROGRAMA, PARTIDO EN MAÑANA Y TARDE.
+
+                Era una lista corrida de bloques numerados, y con el temario de
+                Iris eso se quedaba corto por dos sitios. Uno: sus bloques
+                llevan apartados dentro, y aplanarlos convertía catorce cosas
+                distintas en catorce renglones iguales. Y dos, el importante:
+                la jornada tiene dos mitades con dos caras — la mañana se
+                explica y la tarde se leen cartas de verdad, incluida la de
+                quien esté en la sala.
+
+                Eso último es lo que separa este curso de un vídeo grabado, y
+                en una lista seguida no se veía: quedaba enterrado entre
+                «tipos de carta» y «claves de interpretación». Puesto como dos
+                tiempos del día, además, contesta sin decirlo la pregunta que
+                se hace todo el que va a pagar dos días enteros: «¿y qué se
+                hace ahí tantas horas?».
+
+                La numeración sigue siendo continua de un tiempo al otro —01 a
+                05, no 01-03 y otra vez 01-02— porque es un programa seguido y
+                no dos cursos. */}
             {pestana === 'programa' &&
-              curso.bloques.map((b, i) => (
-                <div key={i} className="modal-fila">
-                  <span className="modal-num">{String(i + 1).padStart(2, '0')}</span>
-                  <div>
-                    <strong>{falta(b.t) ? <Pendiente /> : b.t}</strong>
-                    <p>{falta(b.d) ? <Pendiente /> : b.d}</p>
+              (['manana', 'tarde'] as const).map((momento) => {
+                const suyos = curso.bloques.filter((b) => (b.momento || 'manana') === momento);
+                if (!suyos.length) return null;
+                return (
+                  <div key={momento} className="modal-tiempo">
+                    <p className="modal-tiempo-h">
+                      {momento === 'manana' ? 'Por la mañana' : 'Por la tarde'}
+                      <span>{momento === 'manana' ? 'Se explica' : 'Se practica'}</span>
+                    </p>
+                    {suyos.map((b) => (
+                      <div key={b.t} className="modal-fila">
+                        <span className="modal-num">
+                          {String(curso.bloques.indexOf(b) + 1).padStart(2, '0')}
+                        </span>
+                        <div>
+                          <strong>{falta(b.t) ? <Pendiente /> : b.t}</strong>
+                          <p>{falta(b.d) ? <Pendiente /> : b.d}</p>
+                          {/* Los apartados de dentro. Con guion y no con punto
+                              redondo: los puntos ya los llevan las otras dos
+                              pestañas para decir «esto te lo llevas», y usar la
+                              misma marca para «esto se ve» y para «esto te lo
+                              llevas» es lo que hace que ninguna de las dos
+                              signifique nada. */}
+                          {b.puntos?.length ? (
+                            <ul className="modal-puntos">
+                              {b.puntos.map((p) => (
+                                <li key={p}>{p}</li>
+                              ))}
+                            </ul>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             {pestana === 'quien' &&
               curso.paraQuien.map((x, i) => (
                 <div key={i} className="modal-fila">

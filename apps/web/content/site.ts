@@ -401,6 +401,18 @@ export type Curso = {
   horario: string;
   /** "2 tardes · 6 h en directo" */
   duracion: string;
+  /**
+   * CÓMO SE DA: «Online», «Presencial», «Online y presencial».
+   *
+   * Es un dato de venta y no un detalle: quien duda entre dos cursos mira esto
+   * antes que el temario. Vacío = no se enseña la celda, y así una web sin el
+   * dato no afirma nada.
+   *
+   * OJO SI ALGÚN DÍA DICE «presencial»: hace falta también la ciudad. «Online
+   * y presencial» a secas deja a quien lo lee con la pregunta a medias, y esa
+   * pregunta llega por correo o no llega — y si no llega, se ha perdido.
+   */
+  modalidad?: string;
   /** En euros. null = todavía sin precio. */
   precio: number | null;
   /**
@@ -450,8 +462,31 @@ export type Curso = {
   stripeUrl: string;
   /** Descripción larga, uno o dos párrafos. */
   descripcion: string;
-  /** Lo que se ve en el curso, punto por punto. */
-  bloques: { t: string; d: string }[];
+  /**
+   * LO QUE SE VE EN EL CURSO.
+   *
+   * TENÍA UN SOLO NIVEL Y EL TEMARIO DE VERDAD TIENE DOS. Esto era una lista
+   * plana de seis puntos, y servía mientras el temario era mío. El que ha
+   * pasado Iris no es plano: cada bloque lleva sus apartados dentro, y además
+   * la jornada está partida en dos mitades con dos caras distintas —por la
+   * mañana se explica, por la tarde se practica—.
+   *
+   * Aplanar eso habría costado lo mejor que tiene el curso. Que por la tarde se
+   * lean cartas de verdad, incluidas las de quienes están en la sala, es justo
+   * lo que lo separa de un vídeo grabado; en una lista de catorce puntos
+   * seguidos eso se lee igual de plano que «tipos de carta numerológica».
+   *
+   *   · `momento` parte el programa en mañana y tarde, para que se vea cómo es
+   *     un día entero antes de pagar dos.
+   *   · `puntos` son los apartados de dentro. Opcional: un bloque sin ellos se
+   *     pinta con su descripción y ya está.
+   */
+  bloques: {
+    t: string;
+    d: string;
+    momento?: 'manana' | 'tarde';
+    puntos?: string[];
+  }[];
   /** Para quién es y para quién no. Ayuda a que no se apunte quien no debe. */
   paraQuien: string[];
   /** Lo que la persona se lleva puesto al terminar. */
@@ -509,6 +544,10 @@ export const CURSOS: Curso[] = [
        10:00 a 19:00, con una hora para comer. */
     horario: '10:00 → 19:00 (hora española), con una hora para comer',
     duracion: '2 jornadas completas · 16 h en directo',
+    /* Dado por Gerson el 18 de septiembre de 2026 junto con el temario. FALTA
+       LA CIUDAD del presencial: en cuanto la diga Iris, se escribe aquí
+       detrás — «Online y presencial (Madrid)» — y aparece sola en la ficha. */
+    modalidad: 'Online y presencial',
     precio: 397,
     precioAntes: 697,
     plazas: null,
@@ -518,39 +557,90 @@ export const CURSOS: Curso[] = [
        Es un enlace público de cobro: está hecho para publicarlo, no es un
        secreto que se filtre por estar aquí. */
     stripeUrl: 'https://buy.stripe.com/cNi28r2mc2xL72la8K1ZS00',
+    /* Reescrita con el temario de Iris. La de antes contaba el mío —la tabla
+       pitagórica del nombre, el árbol de tres generaciones— y describía un
+       curso que no es éste. */
     descripcion:
-      'La numerología no adivina nada. Coge dos datos que ya tienes —la fecha en que naciste y el nombre con el que te ' +
-      'inscribieron— y los convierte en cifras con las que se puede trabajar. En estos dos días aprendes a hacer esa ' +
-      'cuenta tú, a mano, sin depender de ninguna aplicación: de dónde sale cada número, por qué el 11, el 22 y el 33 no ' +
-      'se reducen, y qué se está mirando exactamente cuando se mira un camino de vida.\n\n' +
-      'Y después damos el paso que la mayoría de los cursos no da: sacamos las fechas de tus padres y de tus abuelos y las ' +
-      'ponemos juntas. Ahí es donde aparece lo interesante. Las cifras que se repiten generación tras generación, las ' +
-      'edades en las que pasa lo mismo, los años que vuelven. Eso es lo transgeneracional: no una teoría, una tabla con ' +
-      'tu apellido encima que sales sabiendo hacer.',
+      'La numerología no adivina nada. Coge un dato que ya tienes —la fecha en que naciste, con su hora— y lo convierte ' +
+      'en una carta que se puede leer. En estos dos días aprendes a levantarla tú, a mano y sin ninguna aplicación: qué ' +
+      'mira el Espejo, qué tapa la Máscara, y qué hacer cuando en una fecha aparece un número maestro.\n\n' +
+      'Y después viene la parte que casi ningún curso da, porque da miedo darla: las tardes se leen cartas de verdad. ' +
+      'La tuya, y las de personas reales —de quien esté en la sala o de su familia—, con Iris al lado corrigiendo sobre ' +
+      'la marcha. Ahí es donde aparecen las memorias del árbol, lo que se heredó sin haberlo pedido, y por qué eso sigue ' +
+      'decidiendo con quién chocas hoy.\n\n' +
+      'Sales con la plantilla en la mano y sabiendo usarla. No con apuntes: con un método que puedes aplicarle a otra ' +
+      'persona al día siguiente.',
+    /*
+     * EL TEMARIO DE IRIS. Pasado por Gerson el 18 de septiembre de 2026, y
+     * sustituye entero al que había.
+     *
+     * POR QUÉ SE TIRA EL ANTERIOR Y NO SE MEZCLAN. El que estaba lo escribí yo
+     * con la materia estándar de la disciplina —reducción, camino de vida,
+     * tabla pitagórica del nombre, año personal, deudas kármicas— y estaba
+     * honestamente anunciado como tal en el comentario de arriba: «si Iris lo
+     * da en otro orden o con otro nombre, se cambia aquí».
+     *
+     * Pues lo da con otro nombre y con otras herramientas. El suyo trabaja con
+     * el Espejo y la Máscara, la franja horaria, la lateralidad, la castración
+     * y el yacente. Algunas cosas coinciden —los números maestros, la fecha,
+     * las sinergias— y otras sencillamente no estaban.
+     *
+     * Y ESO NO ES UN DETALLE DE REDACCIÓN. Quien paga 397 € lee esta lista y
+     * espera ver eso dentro. Dejar mezclados los dos temarios sería prometer
+     * clases que no se van a dar, que es la forma más rápida que hay de acabar
+     * devolviendo dinero.
+     *
+     * Los términos van TAL CUAL los usa ella. El Espejo, la Máscara, la coraza
+     * egoica, el yacente, la castración: es su oficio y es lo que hace que este
+     * curso no se parezca al de al lado. Lo único que se añade es, donde hace
+     * falta, media frase que diga para qué sirve cada cosa — porque quien lee
+     * la ficha todavía no sabe qué es un yacente, y una lista de palabras que
+     * no se entienden no vende: asusta.
+     */
     bloques: [
       {
-        t: 'Reducir: la operación de la que sale todo',
-        d: 'Cómo se pliega cualquier número hasta dejar una sola cifra, y por qué el 11, el 22 y el 33 se paran ahí y no se reducen. Es la cuenta que hay debajo de todas las demás, y la que da nombre a la escuela.',
+        momento: 'manana',
+        t: 'Fundamentos de la numerología',
+        d: 'De dónde sale todo. Qué se está mirando exactamente cuando se mira una fecha, y por qué dos personas nacidas el mismo día no se leen igual.',
+        puntos: [
+          'Qué es la numerología y para qué sirve en la vida de cada día.',
+          'La fecha de nacimiento y la franja horaria: por qué la hora cambia la lectura.',
+          'La lateralidad: cómo se lee una carta y en qué orden.',
+          'Memorias del árbol: la castración y la figura del yacente, que es donde aparece lo que se hereda sin saberlo.',
+        ],
       },
       {
-        t: 'El camino de vida',
-        d: 'Tu número principal, el que sale de la fecha de nacimiento. Se reducen por separado el día, el mes y el año y después se suman: hacerlo del tirón da otro resultado en una de cada siete fechas, y ése es el error más repetido que hay.',
+        momento: 'manana',
+        t: 'Los tipos de carta',
+        d: 'Las herramientas con las que se diagnostica, y cuándo se usa cada una. Aquí se entrega la plantilla de trabajo, impresa, que es la que vas a usar el resto de tu vida.',
+        puntos: [
+          'Clasificación de las cartas y para qué sirve cada una.',
+          'El Espejo, desglosado entero: todos sus apartados y qué dice cada uno.',
+          'La Máscara: la coraza que se pone delante y de qué está hecha.',
+        ],
       },
       {
-        t: 'Los números del nombre',
-        d: 'La tabla pitagórica, letra por letra. De ahí salen tres cifras distintas: la expresión (todas las letras), el alma (sólo las vocales) y la personalidad (sólo las consonantes). Qué dice cada una y por qué no son la misma cosa.',
+        momento: 'manana',
+        t: 'Claves, cláusulas y trucos de interpretación',
+        d: 'La parte que no está en los libros: cómo se calcula rápido y cómo se lee una carta entera sin perderse.',
+        puntos: [
+          'Herramientas de cálculo rápido y trucos prácticos para el análisis.',
+          'Los números maestros: qué son, qué peso tienen en el árbol y qué se hace cuando aparecen.',
+        ],
       },
       {
-        t: 'En qué año estás',
-        d: 'El año personal y el ciclo de nueve. Sirve para entender por qué hay temporadas en las que todo empuja y otras en las que nada arranca, y para saber en cuál estás ahora mismo.',
+        momento: 'tarde',
+        t: 'Sinergias de pareja',
+        d: 'Qué pasa cuando se ponen dos cartas juntas: el vínculo, lo que se remueve entre los dos y la lección que comparten.',
       },
       {
-        t: 'Lo que viene con deuda',
-        d: 'El 13, el 14, el 16 y el 19: los números que en numerología clásica llegan con algo pendiente detrás. Cómo se detectan en una fecha y cómo se leen sin dramatizarlos.',
-      },
-      {
-        t: 'El árbol: tres generaciones sobre la mesa',
-        d: 'Aquí se junta todo. Colocamos tus fechas, las de tus padres y las de tus abuelos, y buscamos lo que vuelve: las mismas cifras, las mismas edades, los mismos años. Es el trabajo que da sentido a la palabra transgeneracional.',
+        momento: 'tarde',
+        t: 'Taller práctico: leer cartas de verdad',
+        d: 'La tarde entera leyendo. Primero la tuya, y después la de personas reales, con Iris al lado corrigiendo sobre la marcha.',
+        puntos: [
+          'Ejercicios de lectura sobre cartas personales.',
+          'Prácticas guiadas con casos reales de los asistentes o de gente de su entorno.',
+        ],
       },
     ],
     paraQuien: [
@@ -559,10 +649,23 @@ export const CURSOS: Curso[] = [
       'Para quien mira a su familia y ve algo que se repite y no sabe ponerle nombre.',
       'No es para quien busque una predicción. Aquí no se adivina el futuro de nadie.',
     ],
+    /*
+     * ESTO HA CAMBIADO CON EL TEMARIO, Y TENÍA QUE CAMBIAR.
+     *
+     * Aquí ponía «tu carta hecha por ti: camino de vida, expresión, alma,
+     * personalidad y año personal» y «el árbol de tres generaciones empezado».
+     * Las dos frases describían el temario viejo — el mío—, y ninguna de esas
+     * cinco cosas está en el que da Iris.
+     *
+     * O sea que era la peor clase de promesa que puede haber en una web: una
+     * lista concreta, en la pantalla del pago, de cosas que el curso no da.
+     * Quien las lee las espera el sábado por la mañana; quien no las ve, pide
+     * el dinero. Se sustituyen por lo que sí se lleva.
+     */
     teLlevas: [
-      'Tu carta hecha por ti: camino de vida, expresión, alma, personalidad y año personal.',
-      'El árbol de tres generaciones empezado, con las repeticiones que hayan salido señaladas.',
-      'Las tablas y las cuentas por escrito, para poder hacérselo a otra persona al día siguiente.',
+      'La plantilla completa de trabajo, impresa: el Espejo y la Máscara, con todos sus apartados.',
+      'Saber leer un árbol: qué se repite en el tuyo y qué está haciendo en tus relaciones de hoy.',
+      'Casos resueltos en directo, no en teoría: sales habiendo visto leer cartas de verdad y habiendo leído la tuya.',
       'Todo el material lo pone Iris: no hace falta traer nada ni comprar nada aparte.',
       /* El certificado, con las palabras exactas que se acordaron. Dice lo que
          de verdad acredita —haber superado un curso teórico-práctico— y no
@@ -577,10 +680,10 @@ export const CURSOS: Curso[] = [
     ],
     incluye: [
       '16 horas en directo con Iris, en dos jornadas completas',
-      'Todo el material, puesto por ella',
+      'La plantilla del Espejo y la Máscara, impresa',
       'Certificado de Consultor de Numerología',
-      'Tu carta y tu árbol de tres generaciones, hechos por ti',
-      'Las tablas y las cuentas por escrito, para repetirlo en casa',
+      'Tardes enteras leyendo cartas reales, con ella al lado',
+      'Todo el material, puesto por ella',
     ],
   },
 ];

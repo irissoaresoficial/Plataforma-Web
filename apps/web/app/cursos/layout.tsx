@@ -48,7 +48,10 @@ function fichaDelCurso() {
        saber cómo se imparte, no sólo que existe. */
     hasCourseInstance: {
       '@type': 'CourseInstance',
-      courseMode: 'online',
+      /* Decía sólo «online» y el curso también se da en persona. Google usa
+         esto para decidir a quién se lo enseña: alguien que busca formación
+         presencial cerca de casa no ve un curso declarado únicamente online. */
+      courseMode: c.modalidad && /presencial/i.test(c.modalidad) ? ['online', 'onsite'] : 'online',
       startDate: c.fechaISO,
       inLanguage: 'es',
       instructor: { '@type': 'Person', name: AUTORA },
