@@ -39,13 +39,13 @@ export default function BloqueView({
 
   switch (b.tipo) {
     case "h":
-      return <div style={css("font-family:'Cinzel',serif;font-size:var(--t-mini);letter-spacing:.2em;text-transform:uppercase;color:#9A7F32;border-top:1px solid rgba(201,168,76,.3);padding-top:9px;")}>{b.texto}</div>;
+      return <div style={css("font-family:var(--f-cifra),serif;font-size:var(--t-mini);letter-spacing:.2em;text-transform:uppercase;color:#9A7F32;border-top:1px solid rgba(201,168,76,.3);padding-top:9px;")}>{b.texto}</div>;
     case "lead":
       return (
         <p
           {...editable}
           onBlur={onBlur(b.editId)}
-          style={css("font-family:'Cormorant Garamond',serif;font-style:italic;font-size:var(--t-title);line-height:1.5;color:#5E5670;margin:0;text-wrap:pretty;")}
+          style={css("font-family:var(--f-lectura),serif;font-style:italic;font-size:var(--t-title);line-height:1.5;color:#5E5670;margin:0;text-wrap:pretty;")}
         >
           {txt(b.editId, b.textoDef)}
         </p>
@@ -55,7 +55,7 @@ export default function BloqueView({
         <p
           {...editable}
           onBlur={onBlur(b.editId)}
-          style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-read);line-height:1.56;color:#37323F;margin:0;text-align:justify;text-wrap:pretty;white-space:pre-line;")}
+          style={css("font-family:var(--f-lectura),serif;font-size:var(--t-read);line-height:1.56;color:#37323F;margin:0;text-align:justify;text-wrap:pretty;white-space:pre-line;")}
         >
           {txt(b.editId, b.textoDef)}
         </p>
@@ -64,10 +64,10 @@ export default function BloqueView({
       return (
         <div style={css("display:flex;gap:16px;align-items:flex-start;border-left:2px solid #C9A84C;padding-left:14px;")}>
           <div style={css("min-width:78px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.22em;text-transform:uppercase;color:#9B93A8;")}>{b.label}</div>
-            <div style={css("font-family:'Cinzel',serif;font-size:var(--t-hero);line-height:1.1;color:#2B1119;")}>{b.valor}</div>
+            <div style={css("font-family:var(--f-rotulo),sans-serif;font-size:var(--t-micro);letter-spacing:.22em;text-transform:uppercase;color:#9B93A8;")}>{b.label}</div>
+            <div style={css("font-family:var(--f-cifra),serif;font-size:var(--t-hero);line-height:1.1;color:#2B1119;")}>{b.valor}</div>
           </div>
-          <p {...editable} onBlur={onBlur(b.editId)} style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-read);line-height:1.55;color:#37323F;margin:0;flex:1;text-wrap:pretty;")}>
+          <p {...editable} onBlur={onBlur(b.editId)} style={css("font-family:var(--f-lectura),serif;font-size:var(--t-read);line-height:1.55;color:#37323F;margin:0;flex:1;text-wrap:pretty;")}>
             {txt(b.editId, b.textoDef)}
           </p>
         </div>
@@ -76,14 +76,14 @@ export default function BloqueView({
       return (
         <div className={styles.duo}>
           <div style={css("border-left:2px solid #C0574C;padding-left:12px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:#B0564C;margin-bottom:3px;")}>{T.digEnNegativo}</div>
-            <p {...editable} onBlur={onBlur(b.editIdNeg)} style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-body);line-height:1.5;color:#413B4B;margin:0;")}>
+            <div style={css("font-family:var(--f-rotulo),sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:#B0564C;margin-bottom:3px;")}>{T.digEnNegativo}</div>
+            <p {...editable} onBlur={onBlur(b.editIdNeg)} style={css("font-family:var(--f-lectura),serif;font-size:var(--t-body);line-height:1.5;color:#413B4B;margin:0;")}>
               {txt(b.editIdNeg, b.negDef)}
             </p>
           </div>
           <div style={css("border-left:2px solid #4C8A5A;padding-left:12px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:#40794F;margin-bottom:3px;")}>{T.digEnPositivo}</div>
-            <p {...editable} onBlur={onBlur(b.editIdPos)} style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-body);line-height:1.5;color:#413B4B;margin:0;")}>
+            <div style={css("font-family:var(--f-rotulo),sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:#40794F;margin-bottom:3px;")}>{T.digEnPositivo}</div>
+            <p {...editable} onBlur={onBlur(b.editIdPos)} style={css("font-family:var(--f-lectura),serif;font-size:var(--t-body);line-height:1.5;color:#413B4B;margin:0;")}>
               {txt(b.editIdPos, b.posDef)}
             </p>
           </div>
@@ -94,8 +94,8 @@ export default function BloqueView({
         <div style={css("display:flex;flex-direction:column;gap:8px;")}>
           {b.items.map((i, ii) => (
             <div key={ii} style={css(i.style)}>
-              <div style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:" + i.color + ";margin-bottom:3px;")}>{i.label}</div>
-              <p style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-body);line-height:1.5;color:#413B4B;margin:0;")}>{i.texto}</p>
+              <div style={css("font-family:var(--f-rotulo),sans-serif;font-size:var(--t-micro);letter-spacing:.2em;text-transform:uppercase;color:" + i.color + ";margin-bottom:3px;")}>{i.label}</div>
+              <p style={css("font-family:var(--f-lectura),serif;font-size:var(--t-body);line-height:1.5;color:#413B4B;margin:0;")}>{i.texto}</p>
             </div>
           ))}
         </div>
@@ -120,9 +120,9 @@ export default function BloqueView({
                 "display:flex;align-items:baseline;gap:12px;padding:9px 0;" + (fi > 1 ? "border-top:1px solid rgba(201,168,76,.22);" : "")
               )}
             >
-              <span style={css("font-family:'Karla',sans-serif;font-size:var(--t-micro);letter-spacing:.18em;text-transform:uppercase;color:#9B93A8;min-width:96px;")}>{f.label}</span>
-              <span style={css("font-family:'Cinzel',serif;font-size:var(--t-title);line-height:1;color:#2B1119;")}>{f.valor}</span>
-              <span style={css("font-family:'Cormorant Garamond',serif;font-size:var(--t-body);line-height:1.35;color:#6B6478;margin-left:auto;text-align:right;")}>{f.pie}</span>
+              <span style={css("font-family:var(--f-rotulo),sans-serif;font-size:var(--t-micro);letter-spacing:.18em;text-transform:uppercase;color:#9B93A8;min-width:96px;")}>{f.label}</span>
+              <span style={css("font-family:var(--f-cifra),serif;font-size:var(--t-title);line-height:1;color:#2B1119;")}>{f.valor}</span>
+              <span style={css("font-family:var(--f-lectura),serif;font-size:var(--t-body);line-height:1.35;color:#6B6478;margin-left:auto;text-align:right;")}>{f.pie}</span>
             </div>
           ))}
         </div>
@@ -132,7 +132,7 @@ export default function BloqueView({
         <p
           data-nocorte=""
           style={css(
-            "font-family:'Cormorant Garamond',serif;font-style:italic;font-size:var(--t-title);line-height:1.5;color:#6B6478;text-align:center;border-top:1px solid rgba(201,168,76,.3);border-bottom:1px solid rgba(201,168,76,.3);padding:16px 30px;margin:0;"
+            "font-family:var(--f-lectura),serif;font-style:italic;font-size:var(--t-title);line-height:1.5;color:#6B6478;text-align:center;border-top:1px solid rgba(201,168,76,.3);border-bottom:1px solid rgba(201,168,76,.3);padding:16px 30px;margin:0;"
           )}
         >
           {b.texto}

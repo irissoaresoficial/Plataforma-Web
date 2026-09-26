@@ -52,7 +52,7 @@
   border-top: 1px solid rgba(201, 168, 76, 0.3);
   padding-top: 8px;
   margin-top: 16px;
-  font-family: "Karla", sans-serif;
+  font-family: var(--f-rotulo), sans-serif;
   font-size: 9px;
   letter-spacing: 0.2em;
   color: #9b93a8;
@@ -286,6 +286,55 @@
   .page [data-nocorte] {
     break-inside: avoid;
   }
+  /* ---------------------------------------------------------------------
+     EL ÁRBOL DE LA VIDA, A TAMAÑO DE LEERSE.
+
+     Es el diagrama central de un estudio de Kábala, y en papel salía en una
+     columna de 210 px. El ancho útil de una A4 con estos márgenes son unos
+     673 px: el diagrama ocupaba menos de un tercio de la hoja — con las diez
+     sefirot rotuladas, los números de los caminos y los nombres de los
+     arcanos escritos en vertical dentro. Nada de eso se leía; había que
+     acercarse el papel a los ojos para distinguir «Tiphereth» de una mancha.
+
+     Y esa misma página se quedaba con el 45 % de abajo en blanco, que es
+     exactamente lo que se ve como «el PDF se queda corto».
+
+     En papel, por tanto, se apila: el árbol arriba y grande, y los tres
+     caminos debajo. Las dos cosas se arreglan con la misma regla — el
+     diagrama se lee y el hueco desaparece.
+
+     Sólo al imprimir. En pantalla la maqueta de dos columnas está bien: ahí
+     se puede ampliar con los dedos y el árbol convive con su texto al lado
+     sin obligar a bajar.
+     --------------------------------------------------------------------- */
+  :global([data-diagrama="arbol"]) {
+    /* `!important` porque el ancho de la columna llega como estilo en línea
+       desde el componente, y un estilo en línea gana a cualquier regla. */
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+    align-items: start;
+  }
+  :global([data-diagrama="arbol"]) > :first-child {
+    /* Ancho de sobra para que se lean los rótulos, y centrado: a todo el
+       ancho de la caja el árbol saldría tan alto que se comería la hoja
+       entera y echaría los tres caminos a la siguiente. */
+    width: 100%;
+    /* ESTE NÚMERO ESTÁ CALCULADO, NO PUESTO A OJO, y el primer intento con
+       122 mm salió mal de una forma que conviene dejar escrita.
+       El bloque entero lleva `data-nocorte` —un diagrama partido por la mitad
+       no se entiende— así que si no cabe en lo que queda de hoja, salta ENTERO
+       a la siguiente. Con 122 mm el árbol medía 169 mm de alto, más 45 de los
+       tres caminos: 214 mm, y en esa página sólo quedaban unos 212 libres
+       después de la cabecera, el título y el párrafo de entrada. Saltaba por
+       dos milímetros y dejaba la página 3 con cuatro líneas — peor de lo que
+       había antes de tocar nada.
+       A 100 mm el árbol mide 138 mm (proporción 488:676) y el conjunto 183:
+       cabe con holgura. Y sigue siendo casi el doble de los 55 mm que ocupaba
+       en la columna de 210 px. */
+    max-width: 100mm;
+    margin-inline: auto;
+  }
+
   .portada,
   /* La hoja del cliente es de una cara: ocupa el folio entero para que el pie
      quede abajo y no a media página. */

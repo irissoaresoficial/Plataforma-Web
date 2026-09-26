@@ -40,14 +40,18 @@ export function DocArbol({ r, T, idioma = "es" }: { r: Resultado; T: CopiaEstudi
     },
   ];
   return (
-    <div className={styles.split} style={col1("210px")}>
+    /* `data-diagrama="arbol"` no es decoración: es lo que permite a la hoja de
+       estilos tratar este diagrama distinto al imprimir. El motivo entero está
+       en la regla de `@media print` de Estudio.module.css. En corto: en papel
+       salía a 210 px con veinte etiquetas dentro y no se leía ninguna. */
+    <div className={styles.split} data-diagrama="arbol" style={col1("210px")}>
       {/* En papel el árbol va quieto, con los grises del documento y la
        * tipografía del estudio, pero completo: nombres y complementarios. */}
       <ArbolVida
         r={r}
         idioma={idioma}
         animado={false}
-        fuente="Cinzel, serif"
+        fuente="var(--f-cifra), serif"
         tenue="#B9B2C4"
         borde="rgba(40,36,48,.35)"
         colorNombre="#6A6274"
@@ -56,13 +60,13 @@ export function DocArbol({ r, T, idioma = "es" }: { r: Resultado; T: CopiaEstudi
       <div style={css("display:flex;flex-direction:column;gap:11px;")}>
         {camDef.map((d, i) => (
           <div key={i} style={css("border-left:3px solid " + COL[d.k] + ";padding-left:12px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:" + COL[d.k] + ";")}>
+            <div style={css("font-family:var(--f-rotulo),sans-serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:" + COL[d.k] + ";")}>
               {d.etapa} · {d.rango}
             </div>
-            <div style={css("font-family:'Cinzel',serif;font-size:19px;line-height:1.25;color:#2B1119;")}>
+            <div style={css("font-family:var(--f-cifra),serif;font-size:19px;line-height:1.25;color:#2B1119;")}>
               {d.c.arcano} · {d.c.carta?.nombre || ""}
             </div>
-            <div style={css("font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#6B6478;")}>{d.c.carta?.lema || ""}</div>
+            <div style={css("font-family:var(--f-lectura),serif;font-style:italic;font-size:16px;color:#6B6478;")}>{d.c.carta?.lema || ""}</div>
           </div>
         ))}
       </div>
@@ -102,7 +106,7 @@ export function DocEstructura({ r, T }: { r: Resultado; T: CopiaEstudio }) {
             return (
               <g key={n}>
                 <circle cx={pt.x} cy={pt.y} r="15" fill="#FBF8F1" stroke={tenso ? "#B0564C" : "#C7C0D0"} strokeWidth={tenso ? 1.6 : 1.1} />
-                <text x={pt.x} y={pt.y + 6} textAnchor="middle" fontFamily="Cinzel, serif" fontSize="16" fill={tenso ? "#B0564C" : "#4A4456"}>
+                <text x={pt.x} y={pt.y + 6} textAnchor="middle" fontFamily="var(--f-cifra), serif" fontSize="16" fill={tenso ? "#B0564C" : "#4A4456"}>
                   {+n === 10 ? "0" : n}
                 </text>
               </g>
@@ -114,7 +118,7 @@ export function DocEstructura({ r, T }: { r: Resultado; T: CopiaEstudio }) {
           <div
             key={i}
             style={css(
-              "font-family:'Karla',sans-serif;font-size:11px;letter-spacing:.08em;padding:5px 9px;border-radius:2px;color:" +
+              "font-family:var(--f-rotulo),sans-serif;font-size:11px;letter-spacing:.08em;padding:5px 9px;border-radius:2px;color:" +
                 (t.activo ? "#8E3A2F" : "#6B6478") +
                 ";background:" +
                 (t.activo ? "rgba(192,87,76,.1)" : "rgba(201,168,76,.07)") +
@@ -154,7 +158,7 @@ export function DocAlma({ r, T }: { r: Resultado; T: CopiaEstudio }) {
     { label: T.digMateria, celdas: [c(7), c(8), c(9)] },
   ];
   const celda10 = c(10);
-  const ROT = "font-family:'Karla',sans-serif;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:#9B93A8;";
+  const ROT = "font-family:var(--f-rotulo),sans-serif;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:#9B93A8;";
   return (
     <div className={styles.split} style={col1("230px")}>
       <div>
@@ -169,8 +173,8 @@ export function DocAlma({ r, T }: { r: Resultado; T: CopiaEstudio }) {
             <span style={css(ROT)}>{f.label}</span>
             {f.celdas.map((cc, ci) => (
               <div key={ci} style={css(cc.style)}>
-                <span style={css("font-family:'Cinzel',serif;font-size:14px;color:#9B93A8;")}>{cc.n}</span>
-                <span style={css("font-family:'Cinzel',serif;font-size:15px;color:#B0342A;")}>{cc.bloqueo}</span>
+                <span style={css("font-family:var(--f-cifra),serif;font-size:14px;color:#9B93A8;")}>{cc.n}</span>
+                <span style={css("font-family:var(--f-cifra),serif;font-size:15px;color:#B0342A;")}>{cc.bloqueo}</span>
                 <span style={css("font-size:9px;letter-spacing:2px;color:#3E7A4E;")}>{cc.ayuda}</span>
               </div>
             ))}
@@ -179,13 +183,13 @@ export function DocAlma({ r, T }: { r: Resultado; T: CopiaEstudio }) {
         <div style={css("display:grid;grid-template-columns:52px 1fr;gap:7px;align-items:center;")}>
           <span style={css(ROT)}>{T.digEvolucion}</span>
           <div style={css(celda10.style)}>
-            <span style={css("font-family:'Cinzel',serif;font-size:14px;color:#9B93A8;")}>10 / 0</span>
-            <span style={css("font-family:'Cinzel',serif;font-size:15px;color:#B0342A;")}>{celda10.bloqueo}</span>
+            <span style={css("font-family:var(--f-cifra),serif;font-size:14px;color:#9B93A8;")}>10 / 0</span>
+            <span style={css("font-family:var(--f-cifra),serif;font-size:15px;color:#B0342A;")}>{celda10.bloqueo}</span>
             <span style={css("font-size:9px;letter-spacing:2px;color:#3E7A4E;")}>{celda10.ayuda}</span>
           </div>
         </div>
       </div>
-      <div style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.5;color:#4A4356;")}>
+      <div style={css("font-family:var(--f-lectura),serif;font-size:15px;line-height:1.5;color:#4A4356;")}>
         {ia.proyeccion ? rellena(T.digProyeccion, { n: ia.proyeccion }) : ""}
       </div>
     </div>
@@ -193,7 +197,7 @@ export function DocAlma({ r, T }: { r: Resultado; T: CopiaEstudio }) {
 }
 
 const DOC_TH = "font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#9B93A8;display:flex;align-items:center;justify-content:center;padding:5px 0;";
-const DOC_TD = "font-family:'Cinzel',serif;font-size:16px;color:#37323F;display:flex;align-items:center;justify-content:center;padding:8px 0;border:1px solid rgba(201,168,76,.22);border-radius:3px;background:#F3EFE6;";
+const DOC_TD = "font-family:var(--f-cifra),serif;font-size:16px;color:#37323F;display:flex;align-items:center;justify-content:center;padding:8px 0;border:1px solid rgba(201,168,76,.22);border-radius:3px;background:#F3EFE6;";
 const DOC_TD_TOT = DOC_TD.replace("#37323F", "#2B1119").replace("#F3EFE6", "rgba(201,168,76,.22)");
 
 export function DocCuentas({ r, T }: { r: Resultado; T: CopiaEstudio }) {
@@ -224,8 +228,8 @@ export function DocCuentas({ r, T }: { r: Resultado; T: CopiaEstudio }) {
       <div style={css("display:flex;flex-direction:column;gap:9px;")}>
         {karma.map((k, i) => (
           <div key={i} style={css("display:flex;gap:12px;align-items:baseline;border-bottom:1px solid rgba(201,168,76,.25);padding-bottom:7px;")}>
-            <span style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#9B93A8;flex:1;")}>{k.label}</span>
-            <span style={css("font-family:'Cinzel',serif;font-size:23px;color:#2B1119;")}>{k.valor}</span>
+            <span style={css("font-family:var(--f-rotulo),sans-serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#9B93A8;flex:1;")}>{k.label}</span>
+            <span style={css("font-family:var(--f-cifra),serif;font-size:23px;color:#2B1119;")}>{k.valor}</span>
           </div>
         ))}
       </div>
@@ -264,33 +268,33 @@ export function DocCiclos({ r, T, idioma = "es" }: { r: Resultado; T: CopiaEstud
       <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px;")}>
         {ciclos.map((c, i) => (
           <div key={i} style={css("border-top:2px solid #C9A84C;padding-top:9px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
+            <div style={css("font-family:var(--f-rotulo),sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
               {c.nombre} · {c.rango}
             </div>
-            <div style={css("font-family:'Cinzel',serif;font-size:26px;color:#2B1119;line-height:1.2;")}>{c.numero}</div>
-            <p style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{c.texto}</p>
+            <div style={css("font-family:var(--f-cifra),serif;font-size:26px;color:#2B1119;line-height:1.2;")}>{c.numero}</div>
+            <p style={css("font-family:var(--f-lectura),serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{c.texto}</p>
           </div>
         ))}
       </div>
       <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;")}>
         {realizaciones.map((x, i) => (
           <div key={i} style={css("border-left:2px solid #C9A84C;padding-left:12px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
+            <div style={css("font-family:var(--f-rotulo),sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
               {rellena(T.digRealizacion, { n: x.n })} · {x.rango}
             </div>
-            <div style={css("font-family:'Cinzel',serif;font-size:22px;color:#2B1119;")}>{x.valor}</div>
-            <p style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{x.texto}</p>
+            <div style={css("font-family:var(--f-cifra),serif;font-size:22px;color:#2B1119;")}>{x.valor}</div>
+            <p style={css("font-family:var(--f-lectura),serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{x.texto}</p>
           </div>
         ))}
       </div>
       <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;")}>
         {desafios.map((x, i) => (
           <div key={i} style={css("border-left:2px solid #C0574C;padding-left:12px;")}>
-            <div style={css("font-family:'Karla',sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
+            <div style={css("font-family:var(--f-rotulo),sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#9B93A8;")}>
               {x.etiqueta} · {x.rango}
             </div>
-            <div style={css("font-family:'Cinzel',serif;font-size:22px;color:#2B1119;")}>{x.valor}</div>
-            <p style={css("font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{x.texto}</p>
+            <div style={css("font-family:var(--f-cifra),serif;font-size:22px;color:#2B1119;")}>{x.valor}</div>
+            <p style={css("font-family:var(--f-lectura),serif;font-size:15px;line-height:1.45;color:#4A4356;margin:3px 0 0;")}>{x.texto}</p>
           </div>
         ))}
       </div>
