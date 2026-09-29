@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start --port 3001",
     "lint": "eslint",
-    "tipos": "tsc --noEmit"
+    "tipos": "tsc --noEmit",
+    "verificar": "npx tsx --tsconfig tsconfig.json src/lib/__pruebas__/verificar.ts"
   },
   "dependencies": {
     "@iris/datos": "*",
