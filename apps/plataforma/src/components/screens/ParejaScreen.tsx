@@ -63,7 +63,26 @@ export default function ParejaScreen() {
     comp.portalesComunes.forEach((port) => estr.push({ clave: "Portal " + port, texto: K.portales?.[port] || "" }));
     if (comp.portalesComunes.includes(1) && comp.portalesComunes.includes(7)) estr.push({ clave: "Portal 1 + 7", texto: K.combinaciones?.["1+7"] || "" });
 
-    const planos = comp.planosComunes.map((pl) => ({ clave: "Plano " + pl, texto: K.planos?.[pl] || "Bloqueo compartido en el plano " + pl + "." }));
+    /*
+     * SI NO HAY PLANOS COMPARTIDOS, SE DICE. NO SE BORRA LA SECCIÓN.
+     *
+     * Esto devolvía una lista vacía y el `.filter` de abajo hacía desaparecer
+     * el apartado entero. El resultado: la introducción promete cuatro cosas
+     * —camino, estructura, planos y cuentas— y en el papel salían tres, sin
+     * que nada explicara dónde estaba la cuarta.
+     *
+     * Para quien lee eso no es «no comparten ningún plano»: es «aquí falta un
+     * trozo», que es literalmente la queja que llegó del PDF. Y además el dato
+     * de que NO comparten bloqueos es información de la lectura, no un hueco:
+     * dos personas que no se bloquean en los mismos planos se sostienen donde
+     * la otra flojea.
+     *
+     * Las cuentas abiertas ya lo hacían bien desde el principio. Ahora los
+     * cuatro apartados se comportan igual.
+     */
+    const planos = comp.planosComunes.length
+      ? comp.planosComunes.map((pl) => ({ clave: "Plano " + pl, texto: K.planos?.[pl] || "Bloqueo compartido en el plano " + pl + "." }))
+      : [{ clave: "—", texto: "No tenéis ningún plano de consciencia bloqueado a la vez. Donde uno se traba, el otro suele estar libre." }];
 
     const cuentas: Array<{ clave: string | number; texto: string }> = [];
     const vistos: Record<string, boolean> = {};
@@ -87,7 +106,23 @@ export default function ParejaScreen() {
     <main style={css("max-width:1120px;margin:0 auto;padding:var(--s7) var(--gutter) var(--s8);")}>
       <div style={css("text-align:center;margin-bottom:30px;")}>
         <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);margin-bottom:var(--s3);")}>Comparativa</div>
-        <h1 style={css("font-family:var(--font-ui);font-weight:700;font-size:clamp(21px,3.4vw,30px);letter-spacing:-.022em;color:var(--text);margin:0;line-height:1.2;overflow-wrap:anywhere;")}>{titulo(r.nombre.texto)} &amp; su pareja</h1>
+        <h1 style={css("font-family:var(--font-ui);font-weight:700;font-size:clamp(21px,3.4vw,30px);letter-spacing:-.022em;color:var(--text);margin:0;line-height:1.2;overflow-wrap:anywhere;")}>
+          {/*
+              AQUÍ PONÍA «& su pareja», LITERAL, con el nombre de la otra
+              persona ya calculado dos líneas más abajo.
+
+              O sea que el documento que se le entrega a un cliente abría con
+              «Maria Iris Soares Campos & su pareja» mientras el cuadro de
+              debajo decía «Joao Silva Santos» con todos sus números. No es un
+              detalle de estilo: en una entrega de pago, un titular que no sabe
+              el nombre de medio documento se lee como una plantilla sin
+              rellenar.
+
+              Se mantiene «su pareja» sólo mientras la segunda persona no está
+              puesta, que es cuando de verdad no hay nombre que escribir.
+          */}
+          {titulo(r.nombre.texto)} &amp; {pr ? titulo(pr.nombre.texto) : "su pareja"}
+        </h1>
         <p style={css("font-size:var(--t-read);line-height:1.6;color:var(--text-3);margin:var(--s4) auto 0;max-width:62ch;text-wrap:pretty;")}>
           La comparativa no juzga si una pareja funciona: enseña qué traen los dos en común y qué les toca aprender juntos. Se
           miran cuatro cosas — el camino que forman entre los dos, si comparten estructura y portales, qué planos de consciencia
