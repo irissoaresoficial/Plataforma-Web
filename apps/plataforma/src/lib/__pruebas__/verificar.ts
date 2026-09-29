@@ -31,6 +31,7 @@ const PRUEBAS: Array<[string, string]> = [
   ["La carta de Maria Iris, resuelta a mano por Iris", "ficha-resuelta.ts"],
   ["Las cuentas de la guía del manual", "guia-ejemplos.ts"],
   ["El estudio de Lara", "estudio-lara.ts"],
+  ["La imagen del alma, ejemplo del manual", "imagen-alma-roberto.ts"],
   ["Que ningún número se quede sin explicación", "cobertura.ts"],
 ];
 
