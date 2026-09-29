@@ -49,7 +49,7 @@ export default function SeccionEstructura() {
     {
       muestra: (
         <span style={css("display:inline-flex;align-items:center;justify-content:center;width:40px;")}>
-          <span style={css("display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:26px;padding:0 7px;border-radius:7px;background:var(--surface-solid);border:2.2px solid #2C5D9E;font-size:var(--t-body);font-weight:700;color:#2C5D9E;")}>
+          <span style={css("display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:26px;padding:0 7px;border-radius:var(--r-xs);background:var(--surface-solid);border:2.2px solid #2C5D9E;font-size:var(--t-body);font-weight:700;color:#2C5D9E;")}>
             {String(est.dinamicos[1]).repeat(2)}
           </span>
         </span>

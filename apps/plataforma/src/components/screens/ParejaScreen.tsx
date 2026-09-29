@@ -180,7 +180,7 @@ botonPrincipal(listo) + "margin-top:20px;"
               style={css(
                 /* Granate: es EL botón de esta pantalla, y en una pantalla
                    blanca sólo hay uno. Levantado del papel como las tarjetas. */
-                "margin-left:auto;background:var(--accion);border:1px solid var(--accion);color:var(--sobre-accion);border-radius:999px;padding:10px 22px;font-weight:590;font-size:var(--t-body);cursor:pointer;box-shadow:var(--nm-alto);"
+                "margin-left:auto;background:var(--accion);border:1px solid var(--accion);color:var(--sobre-accion);border-radius:var(--r-pill);padding:10px 22px;font-weight:590;font-size:var(--t-body);cursor:pointer;box-shadow:var(--nm-alto);"
               )}
             >
               Exportar PDF

@@ -185,7 +185,7 @@ function Hoja({ contenido, alCerrar, alAnterior, alSiguiente, posicion }: Props 
           aria-label="Cerrar"
           className="ficha-cerrar"
           style={css(
-            "position:absolute;top:14px;right:14px;display:grid;place-items:center;width:40px;height:40px;border-radius:980px;border:1px solid var(--vidrio-borde);background:var(--vidrio);color:var(--text-2);font-size:20px;line-height:1;cursor:pointer;box-shadow:var(--nm-alto);"
+            "position:absolute;top:14px;right:14px;display:grid;place-items:center;width:40px;height:40px;border-radius:var(--r-pill);border:1px solid var(--vidrio-borde);background:var(--vidrio);color:var(--text-2);font-size:20px;line-height:1;cursor:pointer;box-shadow:var(--nm-alto);"
           )}
         >
           ×
@@ -224,7 +224,7 @@ function Hoja({ contenido, alCerrar, alAnterior, alSiguiente, posicion }: Props 
               <div style={css("flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;")}>
                 <div
                   style={css(
-                    "width:84px;height:84px;border-radius:980px;display:grid;place-items:center;background:var(--surface-2);box-shadow:var(--nm-hondo);font-family:var(--font-ui);font-weight:600;font-size:34px;line-height:1;color:" +
+                    "width:84px;height:84px;border-radius:var(--r-pill);display:grid;place-items:center;background:var(--surface-2);box-shadow:var(--nm-hondo);font-family:var(--font-ui);font-weight:600;font-size:34px;line-height:1;color:" +
                       color +
                       ";"
                   )}
@@ -267,7 +267,7 @@ function Hoja({ contenido, alCerrar, alAnterior, alSiguiente, posicion }: Props 
                   )}
                   <span
                     style={css(
-                      "display:inline-flex;align-items:baseline;gap:6px;padding:5px 11px;border-radius:980px;background:var(--surface);border:1px solid var(--border);"
+                      "display:inline-flex;align-items:baseline;gap:6px;padding:5px 11px;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--border);"
                     )}
                   >
                     <span style={css("font-size:var(--t-mini);color:var(--text-3);")}>{p.label}</span>
@@ -364,7 +364,7 @@ function Flecha({ alPulsar, etiqueta, signo }: { alPulsar?: () => void; etiqueta
       disabled={!alPulsar}
       aria-label={etiqueta}
       style={css(
-        "display:grid;place-items:center;width:44px;height:44px;border-radius:980px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);font-size:20px;line-height:1;box-shadow:var(--nm-alto);cursor:" +
+        "display:grid;place-items:center;width:44px;height:44px;border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);font-size:20px;line-height:1;box-shadow:var(--nm-alto);cursor:" +
           (alPulsar ? "pointer" : "not-allowed") +
           ";opacity:" +
           (alPulsar ? "1" : ".4") +

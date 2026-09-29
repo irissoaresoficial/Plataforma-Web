@@ -44,7 +44,7 @@ export default function Copia() {
   };
 
   const boton =
-    "flex:1;min-width:132px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border-radius:var(--r-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:var(--t-body);font-weight:590;cursor:pointer;font-family:inherit;transition:border-color .18s,background .18s;";
+    "flex:1;min-width:132px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border-radius:var(--r-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:var(--t-body);font-weight:590;cursor:pointer;font-family:inherit;transition:border-color var(--t-normal),background var(--t-normal);";
 
   return (
     <div style={css("margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--border);")}>

@@ -28,7 +28,7 @@ export default function Pendiente({ titulo, pie }: { titulo: string; pie: string
       <div style={css("position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:var(--s3);")}>
         <span
           style={css(
-            "display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:980px;background:var(--gold-soft);color:var(--gold-deep);font-size:var(--t-mini);font-weight:590;"
+            "display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:var(--r-pill);background:var(--gold-soft);color:var(--gold-deep);font-size:var(--t-mini);font-weight:590;"
           )}
         >
           Pendiente para desarrollar

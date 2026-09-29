@@ -178,7 +178,7 @@ export function Estado({ texto, color = "var(--text-3)" }: { texto: string; colo
     <span
       style={css(
         "display:inline-flex;align-items:center;flex:none;background:color-mix(in srgb, var(--text) 5%, transparent);" +
-          "border-radius:999px;padding:4px 10px;font-size:var(--t-micro);font-weight:590;white-space:nowrap;color:" +
+          "border-radius:var(--r-pill);padding:4px 10px;font-size:var(--t-micro);font-weight:590;white-space:nowrap;color:" +
           color +
           ";"
       )}

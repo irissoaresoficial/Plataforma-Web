@@ -224,7 +224,7 @@ export default function ClientesScreen() {
                comido justo la señal de dónde está el teclado. */
             "outline-offset:-2px;" +
             (elegida ? "background:var(--accion-suave);" : "background:transparent;") +
-            "transition:background .18s cubic-bezier(.16,1,.3,1);"
+            "transition:background var(--t-normal) var(--curva);"
         )}
       >
         <Avatar nombre={g.c.nombre} tamano={34} />

@@ -22,7 +22,7 @@ export function chipStyle(color: string): string {
     "display:inline-flex;align-items:center;background:color-mix(in srgb, var(--text) 5%, transparent);" +
     "border:none;color:" +
     color +
-    ";border-radius:999px;padding:7px 13px;font-family:var(--font-ui);font-size:var(--t-mini);font-weight:590;" +
+    ";border-radius:var(--r-pill);padding:7px 13px;font-family:var(--font-ui);font-size:var(--t-mini);font-weight:590;" +
     "letter-spacing:-.005em;text-transform:none;cursor:pointer;"
   );
 }

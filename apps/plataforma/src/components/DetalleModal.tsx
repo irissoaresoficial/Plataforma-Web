@@ -115,7 +115,7 @@ function Hoja({ detalle }: { detalle: Detalle }) {
         <button
           onClick={cerrarDetalle}
           aria-label="Cerrar la ficha"
-          style={css("position:absolute;top:12px;right:12px;display:grid;place-items:center;background:none;border:1px solid var(--border-accent);color:var(--gold);border-radius:980px;width:44px;height:44px;cursor:pointer;font-size:var(--t-title);line-height:1;")}
+          style={css("position:absolute;top:12px;right:12px;display:grid;place-items:center;background:none;border:1px solid var(--border-accent);color:var(--gold);border-radius:var(--r-pill);width:44px;height:44px;cursor:pointer;font-size:var(--t-title);line-height:1;")}
         >
           ×
         </button>

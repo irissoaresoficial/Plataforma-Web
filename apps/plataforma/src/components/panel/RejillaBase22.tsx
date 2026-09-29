@@ -162,7 +162,7 @@ export default function RejillaBase22({ base }: Props) {
         <button
           onClick={() => setVuelta((v) => v + 1)}
           style={css(
-            "background:var(--surface);border:1px solid var(--border-strong);color:var(--text-2);border-radius:999px;padding:9px 18px;font-size:var(--t-body);font-weight:560;cursor:pointer;box-shadow:var(--nm-alto);"
+            "background:var(--surface);border:1px solid var(--border-strong);color:var(--text-2);border-radius:var(--r-pill);padding:9px 18px;font-size:var(--t-body);font-weight:560;cursor:pointer;box-shadow:var(--nm-alto);"
           )}
         >
           Verla montarse otra vez

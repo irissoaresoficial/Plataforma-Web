@@ -656,7 +656,7 @@ export default function AgendaScreen() {
                         aria-pressed={on}
                         style={css(
                           "padding:7px 14px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:var(--t-mini);font-weight:590;white-space:nowrap;" +
-                            "transition:background .2s cubic-bezier(.16,1,.3,1),color .2s,box-shadow .2s;background:" +
+                            "transition:background var(--t-normal) var(--curva),color var(--t-normal),box-shadow var(--t-normal);background:" +
                             (on ? "var(--surface-solid)" : "transparent") +
                             ";box-shadow:" +
                             (on ? "var(--shadow-sm)" : "none") +
@@ -821,7 +821,7 @@ export default function AgendaScreen() {
                   aria-pressed={tipo === t.k}
                   style={css(
                     "flex:1;padding:8px 10px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:var(--t-body);font-weight:590;white-space:nowrap;" +
-                      "transition:background .2s cubic-bezier(.16,1,.3,1),color .2s,box-shadow .2s;background:" +
+                      "transition:background var(--t-normal) var(--curva),color var(--t-normal),box-shadow var(--t-normal);background:" +
                       (tipo === t.k ? "var(--surface-solid)" : "transparent") +
                       ";box-shadow:" +
                       (tipo === t.k ? "var(--shadow-sm)" : "none") +

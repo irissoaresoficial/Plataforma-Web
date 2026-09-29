@@ -192,7 +192,7 @@ export default function Confirmar({
                 ref={no}
                 onClick={() => setAbierto(false)}
                 style={css(
-                  "padding:8px 15px;border-radius:980px;border:1px solid var(--border-strong);background:var(--surface);" +
+                  "padding:8px 15px;border-radius:var(--r-pill);border:1px solid var(--border-strong);background:var(--surface);" +
                     "color:var(--text-2);font-family:var(--font-ui);font-size:var(--t-body);font-weight:590;cursor:pointer;"
                 )}
               >
@@ -204,7 +204,7 @@ export default function Confirmar({
                   alConfirmar();
                 }}
                 style={css(
-                  "padding:8px 15px;border-radius:980px;border:1px solid var(--red);background:var(--red);" +
+                  "padding:8px 15px;border-radius:var(--r-pill);border:1px solid var(--red);background:var(--red);" +
                     "color:#fff;font-family:var(--font-ui);font-size:var(--t-body);font-weight:590;cursor:pointer;"
                 )}
               >

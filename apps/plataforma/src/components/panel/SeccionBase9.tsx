@@ -275,7 +275,7 @@ function Chapa({ texto }: { texto: string }) {
   return (
     <span
       style={css(
-        "font-size:var(--t-micro);font-weight:600;padding:2px 8px;border-radius:980px;background:var(--gold-soft);color:var(--gold-deep);"
+        "font-size:var(--t-micro);font-weight:600;padding:2px 8px;border-radius:var(--r-pill);background:var(--gold-soft);color:var(--gold-deep);"
       )}
     >
       {texto}

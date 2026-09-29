@@ -119,7 +119,7 @@ export default function ConsultaScreen() {
             {/* De quién es el estudio. Una empresa se lee igual que una
              * persona, pero su nombre completo es el nombre comercial y la
              * fecha es la de constitución. */}
-            <div style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:980px;padding:3px;margin-bottom:var(--s4);")}>
+            <div style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:var(--r-pill);padding:3px;margin-bottom:var(--s4);")}>
               {([
                 ["persona", "Persona"],
                 ["empresa", "Nombre para empresas"],
@@ -129,7 +129,7 @@ export default function ConsultaScreen() {
                   type="button"
                   onClick={() => set("tipo", k)}
                   style={css(
-                    "flex:1;padding:8px 12px;border-radius:980px;border:none;cursor:pointer;font-size:var(--t-body);font-weight:590;white-space:nowrap;transition:all .2s;background:" +
+                    "flex:1;padding:8px 12px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:var(--t-body);font-weight:590;white-space:nowrap;transition:all var(--t-normal);background:" +
                       (f.tipo === k ? "var(--surface-solid)" : "transparent") +
                       ";box-shadow:" +
                       (f.tipo === k ? "0 2px 6px rgba(0,0,0,.09)" : "none") +
@@ -176,7 +176,7 @@ export default function ConsultaScreen() {
                * en neutro, así que no se pregunta. */}
               <div style={css("display:" + (empresa ? "none" : "flex") + ";align-items:center;gap:var(--s3);flex-wrap:wrap;")}>
                 <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>Se dirige a</span>
-                <div style={css("margin-left:auto;display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:980px;padding:3px;width:fit-content;max-width:100%;")}>
+                <div style={css("margin-left:auto;display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:var(--r-pill);padding:3px;width:fit-content;max-width:100%;")}>
                   {([
                     ["f", "Ella"],
                     ["m", "Él"],
@@ -187,7 +187,7 @@ export default function ConsultaScreen() {
                       type="button"
                       onClick={() => set("genero", k)}
                       style={css(
-                        "flex:none;padding:6px 15px;border-radius:980px;border:none;cursor:pointer;font-size:var(--t-body);font-weight:590;white-space:nowrap;transition:all .2s;background:" +
+                        "flex:none;padding:6px 15px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:var(--t-body);font-weight:590;white-space:nowrap;transition:all var(--t-normal);background:" +
                           (f.genero === k ? "var(--surface-solid)" : "transparent") +
                           ";box-shadow:" +
                           (f.genero === k ? "0 2px 6px rgba(0,0,0,.09)" : "none") +

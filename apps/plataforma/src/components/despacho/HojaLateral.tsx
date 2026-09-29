@@ -136,7 +136,7 @@ export default function HojaLateral({
                 onClick={cerrar}
                 aria-label="Cerrar"
                 style={css(
-                  "flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:980px;cursor:pointer;" +
+                  "flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:var(--r-pill);cursor:pointer;" +
                     "border:1px solid var(--border-strong);background:var(--surface);color:var(--text-3);font-size:var(--t-title);line-height:1;"
                 )}
               >

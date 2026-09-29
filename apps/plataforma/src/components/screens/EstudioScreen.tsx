@@ -111,7 +111,7 @@ export default function EstudioScreen() {
                 onClick={() => setModo(k)}
                 aria-pressed={on}
                 style={css(
-                  "display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;text-align:left;white-space:nowrap;transition:all .2s;" +
+                  "display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;text-align:left;white-space:nowrap;transition:all var(--t-normal);" +
                     (on
                       /* La elegida en granate; las otras, papel. Lo que está
                          elegido y lo que se pulsa comparten color a propósito:
@@ -166,7 +166,7 @@ export default function EstudioScreen() {
                     onClick={() => setIdioma(codigo)}
                     aria-pressed={on}
                     style={css(
-                      "padding:9px 14px;border-radius:980px;cursor:pointer;white-space:nowrap;font-family:var(--font-ui);font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;transition:background .18s,border-color .18s,color .18s;" +
+                      "padding:9px 14px;border-radius:var(--r-pill);cursor:pointer;white-space:nowrap;font-family:var(--font-ui);font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;transition:background var(--t-normal),border-color var(--t-normal),color var(--t-normal);" +
                         /* El granate de la casa es el color de lo que se pulsa y
                            de lo que está elegido; las otras dos, papel con
                            borde, que se siguen leyendo bien. */

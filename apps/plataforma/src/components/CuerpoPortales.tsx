@@ -41,6 +41,12 @@ export default function CuerpoPortales({ r }: { r: Resultado }) {
       ? {}
       : {
           animate: { opacity: [0.5, 0.9, 0.5], scaleX: [0.95, 1.05, 0.95] },
+          /* OJO: este `transition` es un objeto de Framer Motion, no una regla
+             CSS. Sus claves son de JavaScript y `ease` es una de ellas, así que
+             el sistema de movimiento de la hoja de estilos no se le aplica.
+             Queda escrito porque un reemplazo automático sobre «transition:» ya
+             lo confundió una vez con CSS y dejó aquí un `var(--curva):` que ni
+             siquiera compilaba. */
           transition: { duration: 5.5 + i * 0.7, repeat: Infinity, ease: "easeInOut" as const },
         };
 

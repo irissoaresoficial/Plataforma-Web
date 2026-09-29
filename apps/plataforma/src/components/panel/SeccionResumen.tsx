@@ -81,13 +81,13 @@ export default function SeccionResumen() {
             <div style={css("display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap;")}>
               <button
                 onClick={() => setView("estudio")}
-                style={css("flex:1;min-width:130px;padding:12px 18px;border:none;border-radius:980px;cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#5D2734,#2B1119);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);")}
+                style={css("flex:1;min-width:130px;padding:12px 18px;border:none;border-radius:var(--r-pill);cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#5D2734,#2B1119);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);")}
               >
                 Ver el estudio
               </button>
               <button
                 onClick={() => setView("pareja")}
-                style={css("flex:1;min-width:130px;padding:12px 18px;border:1px solid var(--border-strong);border-radius:980px;cursor:pointer;font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;color:var(--text-2);background:color-mix(in srgb, var(--surface-solid) 70%, transparent);")}
+                style={css("flex:1;min-width:130px;padding:12px 18px;border:1px solid var(--border-strong);border-radius:var(--r-pill);cursor:pointer;font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;color:var(--text-2);background:color-mix(in srgb, var(--surface-solid) 70%, transparent);")}
               >
                 Comparar pareja
               </button>
@@ -132,8 +132,8 @@ export default function SeccionResumen() {
             <div style={css("font-family:var(--font-display);font-size:var(--t-title);font-weight:500;letter-spacing:-.01em;color:var(--text);margin-top:6px;")}>
               {cicloActual.nombre} · {cicloActual.numero}
             </div>
-            <div style={css("height:9px;border-radius:980px;background:color-mix(in srgb, var(--text) 10%, transparent);overflow:hidden;margin-top:var(--s3);")}>
-              <div style={css("height:100%;width:" + avance.toFixed(1) + "%;border-radius:980px;background:linear-gradient(90deg,#C9A84C,#9A7B2E);")} />
+            <div style={css("height:9px;border-radius:var(--r-pill);background:color-mix(in srgb, var(--text) 10%, transparent);overflow:hidden;margin-top:var(--s3);")}>
+              <div style={css("height:100%;width:" + avance.toFixed(1) + "%;border-radius:var(--r-pill);background:linear-gradient(90deg,#C9A84C,#9A7B2E);")} />
             </div>
             <div style={css("display:flex;justify-content:space-between;font-size:var(--t-mini);color:var(--text-4);margin-top:7px;")}>
               <span>{cicloActual.desde} años</span>
@@ -226,7 +226,7 @@ export default function SeccionResumen() {
                 <div style={css("font-family:var(--font-display);font-size:var(--t-title);font-weight:500;letter-spacing:-.01em;color:var(--text);")}>Año personal {c.anioPersonal}</div>
                 <div style={css("font-size:var(--t-body);color:var(--text-3);margin-top:2px;")}>Dónde estás dentro de la rueda de nueve años</div>
               </div>
-              <span style={css("margin-left:auto;font-size:var(--t-mini);font-weight:590;color:var(--gold);background:var(--gold-soft);border-radius:980px;padding:5px 12px;")}>Etapa {c.etapaActual}</span>
+              <span style={css("margin-left:auto;font-size:var(--t-mini);font-weight:590;color:var(--gold);background:var(--gold-soft);border-radius:var(--r-pill);padding:5px 12px;")}>Etapa {c.etapaActual}</span>
             </div>
 
             {/* Rueda de nueve años: la barra encendida es el año en curso. */}
@@ -237,7 +237,7 @@ export default function SeccionResumen() {
                   <div key={n} style={css("display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end;")}>
                     <div
                       style={css(
-                        "width:100%;border-radius:7px 7px 3px 3px;height:" +
+                        "width:100%;border-radius:var(--r-xs) 7px 3px 3px;height:" +
                           Math.round(28 + (n / maxEtapa) * 72) +
                           "%;background:" +
                           (on ? "linear-gradient(180deg,#C9A84C,#8A6A1B)" : "color-mix(in srgb, var(--text) 10%, transparent)") +

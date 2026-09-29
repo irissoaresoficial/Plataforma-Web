@@ -102,7 +102,7 @@ export default function PanelScreen() {
         />
 
         <div style={css("position:relative;z-index:1;min-width:0;flex:1 1 260px;")}>
-          <div style={css("display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:980px;background:var(--gold-soft);color:var(--gold-deep);font-size:var(--t-mini);font-weight:590;")}>
+          <div style={css("display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:var(--r-pill);background:var(--gold-soft);color:var(--gold-deep);font-size:var(--t-mini);font-weight:590;")}>
             {DISCIPLINAS.find((d) => d.k === disciplina)?.label}
             {/* Con dos bases dentro de Numerología, «Numerología» a secas ya no
                 dice en cuál estás. La chapa es lo único de la cabecera que lo

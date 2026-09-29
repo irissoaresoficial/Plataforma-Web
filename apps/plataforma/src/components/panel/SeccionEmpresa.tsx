@@ -57,7 +57,7 @@ export default function SeccionEmpresa() {
             <button
               onClick={() => setView("estudio")}
               style={css(
-                "width:100%;margin-top:var(--s5);padding:12px 18px;border:none;border-radius:980px;cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#5D2734,#2B1119);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);"
+                "width:100%;margin-top:var(--s5);padding:12px 18px;border:none;border-radius:var(--r-pill);cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#5D2734,#2B1119);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);"
               )}
             >
               Ver el estudio

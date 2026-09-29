@@ -192,7 +192,7 @@ export default function GuiaApple({
                 dice qué buscar con el ojo en la pantalla del iPad. */}
             <span
               style={css(
-                "flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:56px;height:34px;border-radius:999px;background:var(--gold-soft);color:var(--gold);font-size:var(--t-body);font-weight:640;"
+                "flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:56px;height:34px;border-radius:var(--r-pill);background:var(--gold-soft);color:var(--gold);font-size:var(--t-body);font-weight:640;"
               )}
             >
               {i + 1}

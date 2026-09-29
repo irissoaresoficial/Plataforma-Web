@@ -84,7 +84,7 @@ export default function CuadroBase9({ nombreCompleto, casas }: Props) {
         <button
           onClick={() => setVuelta((v) => v + 1)}
           style={css(
-            "background:var(--surface);border:1px solid var(--border-strong);color:var(--text-2);border-radius:999px;padding:9px 18px;font-size:var(--t-body);font-weight:560;cursor:pointer;box-shadow:var(--nm-alto);"
+            "background:var(--surface);border:1px solid var(--border-strong);color:var(--text-2);border-radius:var(--r-pill);padding:9px 18px;font-size:var(--t-body);font-weight:560;cursor:pointer;box-shadow:var(--nm-alto);"
           )}
         >
           Verlo contarse otra vez
@@ -189,7 +189,7 @@ function Dibujo({ nombreCompleto, casas }: Props) {
                 <span
                   key={l.i}
                   style={css(
-                    "display:flex;flex-direction:column;align-items:center;gap:1px;width:19px;transition:opacity .2s ease,transform .2s ease;" +
+                    "display:flex;flex-direction:column;align-items:center;gap:1px;width:19px;transition:opacity var(--t-normal) var(--curva),transform var(--t-normal) var(--curva);" +
                       (ya ? "opacity:1;" : "opacity:.22;") +
                       (ahora ? "transform:translateY(-3px);" : "")
                   )}
@@ -242,7 +242,7 @@ function Dibujo({ nombreCompleto, casas }: Props) {
                 "position:relative;display:flex;flex-direction:column;align-items:center;gap:var(--s2);padding:var(--s4) var(--s2);cursor:pointer;text-align:center;" +
                   "background:var(--surface);border-radius:var(--r);border:1px solid " +
                   (enciende ? "var(--gold)" : dominante ? "var(--gold-soft)" : "var(--border)") +
-                  ";box-shadow:var(--nm-alto);transition:border-color .2s ease;"
+                  ";box-shadow:var(--nm-alto);transition:border-color var(--t-normal) var(--curva);"
               )}
             >
               {/* El número de la casa, arriba. Pequeño: la casa es la dirección,
@@ -262,7 +262,7 @@ function Dibujo({ nombreCompleto, casas }: Props) {
                 {vacia && (
                   <span
                     style={css(
-                      "letter-spacing:.04em;text-transform:none;padding:2px 7px;border-radius:980px;background:var(--gold-soft);color:var(--gold-deep);"
+                      "letter-spacing:.04em;text-transform:none;padding:2px 7px;border-radius:var(--r-pill);background:var(--gold-soft);color:var(--gold-deep);"
                     )}
                   >
                     kármica
@@ -289,7 +289,7 @@ function Dibujo({ nombreCompleto, casas }: Props) {
                   antes no existe, porque se calcula del habitante terminado. */}
               <span
                 style={css(
-                  "font-size:var(--t-micro);color:var(--text-4);transition:opacity .35s ease;" +
+                  "font-size:var(--t-micro);color:var(--text-4);transition:opacity var(--t-lento) var(--curva);" +
                     (conPuentes ? "opacity:1;" : "opacity:0;")
                 )}
               >

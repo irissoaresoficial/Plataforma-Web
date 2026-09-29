@@ -153,9 +153,9 @@ export const punto = (color: string) => "width:7px;height:7px;border-radius:50%;
  * reconozcan como botones sin tener que leerlos.
  */
 const BOTON =
-  "display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:980px;" +
+  "display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--r-pill);" +
   "font-family:var(--font-ui);font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;" +
-  "white-space:nowrap;cursor:pointer;transition:background .18s,border-color .18s,color .18s;";
+  "white-space:nowrap;cursor:pointer;transition:background var(--t-normal),border-color var(--t-normal),color var(--t-normal);";
 
 /*
  * EL BOTÓN PRINCIPAL VA EN GRANATE, NO EN ORO.

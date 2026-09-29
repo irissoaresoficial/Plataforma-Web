@@ -326,7 +326,7 @@ export default function LeadsScreen() {
                     (marcada
                       ? "background:var(--accion-suave);outline:1px dashed var(--accion-borde);"
                       : "background:transparent;outline:1px dashed transparent;") +
-                    "transition:background .18s ease,outline-color .18s ease;"
+                    "transition:background var(--t-normal) var(--curva),outline-color var(--t-normal) var(--curva);"
                 )}
               >
                 <header style={css("display:flex;align-items:center;gap:8px;padding:2px 6px 8px;")}>
@@ -378,7 +378,7 @@ export default function LeadsScreen() {
                             "text-align:left;padding:12px 13px 12px 20px;cursor:grab;display:flex;gap:10px;align-items:flex-start;" +
                             (yendo ? "opacity:.45;" : "opacity:1;") +
                             (abierto === l.id ? "outline:2px solid var(--accion);outline-offset:-2px;" : "") +
-                            "transition:opacity .15s ease,transform .15s ease;"
+                            "transition:opacity var(--t-rapido) var(--curva),transform var(--t-rapido) var(--curva);"
                         )}
                       >
                         <Avatar nombre={l.nombre || l.email} tamano={28} />
