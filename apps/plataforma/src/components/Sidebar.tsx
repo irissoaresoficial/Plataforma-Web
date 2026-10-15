@@ -20,7 +20,6 @@ import {
   IcoGestion,
   IcoMetricas,
   IcoRecursos,
-  IcoTrofeos,
   IcoCuentas,
   IcoDocumento,
   IcoEstructura,
@@ -85,12 +84,26 @@ const DESPACHO: Array<{ k: View; label: string; Ico: Ico }> = [
  * puerta cerrada que se ve es una invitación a empujarla, y además obliga a
  * explicar en el menú por qué no se puede pasar.
  */
+/*
+ * LOS TROFEOS NO ESTÁN AQUÍ, Y ES A PROPÓSITO.
+ *
+ * Estaban, y Gerson los sacó: «eso tiene que ser como en el apartado de
+ * perfil». Tiene razón, y el motivo va más allá de dónde cae un enlace.
+ *
+ * Una pestaña llamada «Trofeos» convierte el juego en una tarea: aparece en el
+ * menú al mismo nivel que los cursos, como si hubiera que ir a hacerla. Y la
+ * primera vez que alguien la abre está vacía, que es el peor arranque posible
+ * para lo único que tenía que dar alegría.
+ *
+ * Donde funciona es pegado a la persona: en su perfil, al lado de su nombre,
+ * junto a lo que lleva hecho. Ahí no es una sección que visitar — es algo que
+ * uno TIENE, y que crece mientras hace lo demás.
+ */
 const ESCUELA: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> = [
   { k: "escuela", label: "Inicio", Ico: IcoEscuela, llave: "recursos" },
   { k: "cursos", label: "Cursos", Ico: IcoCursos, llave: "cursos" },
   { k: "comunidad", label: "Comunidad", Ico: IcoComunidad, llave: "comunidad" },
   { k: "recursos", label: "Recursos", Ico: IcoRecursos, llave: "recursos" },
-  { k: "trofeos", label: "Trofeos", Ico: IcoTrofeos, llave: "recursos" },
 ];
 
 /** Lo de Iris que no es ni el estudio ni el despacho de siempre. */

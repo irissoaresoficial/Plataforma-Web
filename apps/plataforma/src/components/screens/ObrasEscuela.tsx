@@ -66,17 +66,18 @@ export function RecursosScreen() {
   );
 }
 
-export function TrofeosScreen() {
+export function PerfilScreen() {
   return (
     <EnObra
       fase="Fase 4"
-      titulo="Trofeos"
-      resumen="La parte que engancha. Que entrar en la escuela dé gusto y que avanzar se note."
+      titulo="Tu perfil"
+      resumen="Quién eres aquí dentro y lo que llevas hecho. Aquí viven los trofeos: no como una sección que visitar, sino como algo que tienes, pegado a tu nombre, y que crece mientras haces lo demás."
       tendra={[
-        "Puntos por terminar una lección, por entrar cada día y por participar en la comunidad.",
-        "Rachas: los días seguidos que llevas.",
-        "Medallas que se abren con una animación, no con un cartel.",
-        "Un tablero de los más activos del mes.",
+        "Tu nombre, tu foto y a qué tienes acceso.",
+        "Lo que llevas hecho: cursos empezados, lecciones terminadas, por dónde ibas.",
+        "Tu racha, los días seguidos que entras.",
+        "Las medallas, que se abren con una animación en el momento en que se ganan y luego se quedan aquí.",
+        "Cambiar tu contraseña y tus datos, y pedir que se borre tu cuenta — lo exige la ley europea.",
       ]}
       espera="Hasta dónde llega el tablero público. Enseñar quién va primero anima a unos y espanta a otros, y en una escuela de desarrollo personal lo segundo pesa más de lo normal. Se puede enseñar sólo tu propio avance, o el tablero entero, o dejar que cada uno elija si sale."
     />

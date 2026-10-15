@@ -16,9 +16,11 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
+import { useApp } from "@/lib/app-context";
 
 export default function Cuenta() {
   const { usuario, sale } = useSesion();
+  const { setView } = useApp();
   const [abierto, setAbierto] = useState(false);
   const caja = useRef<HTMLDivElement>(null);
 
@@ -77,6 +79,25 @@ export default function Cuenta() {
               </div>
               <div style={css("font-size:var(--t-body);color:var(--text);overflow-wrap:anywhere;")}>{usuario.email}</div>
             </div>
+
+            <button
+              role="menuitem"
+              onClick={() => {
+                setAbierto(false);
+                setView("perfil");
+              }}
+              style={css(
+                "display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:10px 12px;" +
+                  "border:none;background:transparent;border-radius:var(--r-sm);cursor:pointer;" +
+                  "font-size:var(--t-body);font-weight:500;color:var(--text-2);"
+              )}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              Mi perfil
+            </button>
 
             <button
               role="menuitem"

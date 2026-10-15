@@ -38,7 +38,7 @@ export type View =
   | "cursos"
   | "comunidad"
   | "recursos"
-  | "trofeos"
+  | "perfil"
   /* ---- SÓLO IRIS: el estudio de Kábala y el despacho ---- */
   | "inicio"
   | "panel"
@@ -66,7 +66,7 @@ const RUTA: Record<View, string> = {
   cursos: "/cursos",
   comunidad: "/comunidad",
   recursos: "/recursos",
-  trofeos: "/trofeos",
+  perfil: "/perfil",
   metricas: "/metricas",
   gestion: "/gestion",
   inicio: "/",
@@ -83,7 +83,7 @@ const VISTA: Record<string, View> = {
   "/cursos": "cursos",
   "/comunidad": "comunidad",
   "/recursos": "recursos",
-  "/trofeos": "trofeos",
+  "/perfil": "perfil",
   "/metricas": "metricas",
   "/gestion": "gestion",
   "/": "inicio",
@@ -112,7 +112,7 @@ const LLAVE: Record<View, Capacidad> = {
   cursos: "cursos",
   comunidad: "comunidad",
   recursos: "recursos",
-  trofeos: "recursos", // los trofeos son de todos, cada uno ve los suyos
+  perfil: "recursos", // el perfil es de cada uno: lo abre cualquiera que haya entrado
   /* El estudio de Kábala, que es sólo de Iris */
   inicio: "estudio",
   panel: "estudio",

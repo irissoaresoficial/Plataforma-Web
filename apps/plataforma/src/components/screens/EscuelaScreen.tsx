@@ -50,12 +50,6 @@ const PUERTAS = [
     titulo: "Recursos",
     que: "La biblioteca: plantillas, guías y audios para descargar.",
   },
-  {
-    k: "trofeos" as const,
-    capacidad: "recursos" as const,
-    titulo: "Trofeos",
-    que: "Lo que llevas hecho, tu racha y las medallas que vas abriendo.",
-  },
 ];
 
 export default function EscuelaScreen() {

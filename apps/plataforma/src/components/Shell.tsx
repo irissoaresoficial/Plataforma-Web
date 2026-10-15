@@ -16,7 +16,7 @@ import {
   CursosScreen,
   ComunidadScreen,
   RecursosScreen,
-  TrofeosScreen,
+  PerfilScreen,
   MetricasScreen,
   GestionScreen,
 } from "./screens/ObrasEscuela";
@@ -238,7 +238,7 @@ export default function Shell() {
           {view === "cursos" && <CursosScreen />}
           {view === "comunidad" && <ComunidadScreen />}
           {view === "recursos" && <RecursosScreen />}
-          {view === "trofeos" && <TrofeosScreen />}
+          {view === "perfil" && <PerfilScreen />}
           {view === "metricas" && <MetricasScreen />}
           {view === "gestion" && <GestionScreen />}
         </div>
