@@ -159,10 +159,48 @@ export default function EscuelaScreen() {
       style={css("display:flex;flex-direction:column;gap:var(--s6);max-width:1060px;")}
     >
       {/* ------------------------------------------------------- El saludo */}
-      {/* Un encabezado, no una tarjeta. Sin borde que enmarque un vacío. */}
-      <header>
+      {/*
+        LA BANDA DE ACUARELA.
+        
+        Lo único de toda la plataforma que es una imagen y no una forma
+        dibujada, y está aquí por un motivo que no es decorar: ésta es la
+        primera pantalla que se ve al entrar, y es la que tiene que decir de
+        quién es esta escuela antes de que se lea una palabra.
+        
+        POR QUÉ FUNCIONA Y NO ES RELLENO. Papel crema a la izquierda —donde va
+        el texto, que así se lee sin velos ni trucos— y a la derecha las
+        acuarelas de la casa: granate, salvia y lavanda, con la geometría del
+        árbol trazada en oro muy fino. Es la marca de Iris dicha en voz baja.
+        
+        PESA 36 KB. El original pesaba 1,5 MB, que en la pantalla de entrada es
+        medio segundo de nada mirando un hueco. Se recorta y se convierte a
+        WebP, y lo que se pierde no se ve: es una acuarela difusa, no una foto
+        con detalle que defender.
+        
+        `aria-hidden` y vacío el `alt`: no dice nada que no esté dicho al lado.
+        Describirla a quien usa un lector de pantalla sería hacerle oír la
+        decoración antes de llegar a su nombre.
+      */}
+      <header
+        style={css(
+          "position:relative;overflow:hidden;border-radius:var(--r-tarjeta);" +
+            "background:var(--surface);box-shadow:var(--nm);" +
+            "padding:clamp(28px,4vw,46px) clamp(24px,3.4vw,42px);isolation:isolate;"
+        )}
+      >
+        <span
+          aria-hidden
+          style={css(
+            "position:absolute;inset:0;z-index:0;background-image:url('/banda-escuela.webp');" +
+              "background-size:cover;background-position:right center;" +
+              /* En oscuro la acuarela es demasiado luz: se baja y se funde con
+                 el fondo en vez de flotar encima como un cuadro iluminado. */
+              "opacity:var(--banda-opacidad, 1);"
+          )}
+        />
+        <div style={css("position:relative;z-index:1;")}>
         <h1 style={css(TITULO + "margin:0;")}>{nombre ? `Hola, ${nombre}` : "Escuela de Sabiduría 33"}</h1>
-        <p style={css("font-size:var(--t-read);line-height:1.6;color:var(--text-3);margin:10px 0 0;max-width:60ch;text-wrap:pretty;")}>
+        <p style={css("font-size:var(--t-read);line-height:1.6;color:var(--text-2);margin:10px 0 0;max-width:46ch;text-wrap:pretty;")}>
           Aquí dentro están tus cursos, la comunidad y todo lo que vayas desbloqueando. Se está construyendo ahora
           mismo, así que irás viendo cómo se llena.
         </p>
@@ -185,6 +223,7 @@ export default function EscuelaScreen() {
             </span>
           </p>
         )}
+        </div>
       </header>
 
       {/* --------------------------------------------- Sigue donde lo dejaste */}

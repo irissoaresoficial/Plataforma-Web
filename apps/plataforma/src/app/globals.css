@@ -423,6 +423,10 @@
    * tarjeta se recortaba del fondo como una pegatina.
    */
   --bg: #171214;
+  /* La banda de acuarela del recibidor es papel claro: a plena fuerza sobre
+     el granate oscuro sería una ventana encendida en una habitación a media
+     luz. Se baja hasta que acompaña en vez de deslumbrar. */
+  --banda-opacidad: 0.22;
   --surface: #1f191b;
   --surface-2: #272023;
   --surface-solid: #1f191b;
