@@ -119,10 +119,13 @@ export default function ComunidadScreen() {
       <span
         aria-hidden
         style={css(
-          "flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;font-weight:600;" +
+          "flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;font-weight:600;" +
+            /* Iris en el oro de la casa; el resto en el rosa de la comunidad.
+               Que la escuela se distinga de un alumno de un vistazo importa:
+               lo que escribe ella no es una opinión más del hilo. */
             (t.esIris
               ? "background:var(--gold-soft);color:var(--gold-deep);"
-              : "background:color-mix(in srgb, var(--text) 8%, transparent);color:var(--text-3);")
+              : "background:var(--rosa);color:var(--rosa-tx);")
         )}
       >
         {t.autor.trim()[0]}

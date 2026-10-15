@@ -101,8 +101,8 @@ export default function PerfilScreen() {
         <span
           aria-hidden
           style={css(
-            "flex:none;display:grid;place-items:center;width:62px;height:62px;border-radius:50%;" +
-              "background:var(--gold-soft);color:var(--gold-deep);font-weight:600;font-size:26px;" +
+            "flex:none;display:grid;place-items:center;width:66px;height:66px;border-radius:50%;" +
+              "background:var(--rosa);color:var(--rosa-tx);font-weight:600;font-size:27px;" +
               "font-family:var(--font-display);"
           )}
         >
@@ -179,10 +179,13 @@ export default function PerfilScreen() {
               <span
                 aria-hidden
                 style={css(
-                  "flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;" +
+                  "flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;" +
+                    /* La ganada en lima: es el color de lo conseguido en toda
+                       la plataforma. La que falta, con el canto punteado y sin
+                       color — se ve que es un hueco, no un logro apagado. */
                     (m.abierta
-                      ? "background:var(--gold-soft);color:var(--gold-deep);"
-                      : "border:1.5px dashed var(--border);color:var(--text-4);")
+                      ? "background:var(--lima);color:var(--lima-tx);"
+                      : "border:1.5px dashed var(--border-strong);color:var(--text-4);")
                 )}
               >
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

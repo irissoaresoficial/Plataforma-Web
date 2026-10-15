@@ -85,14 +85,21 @@ export default function MetricasScreen() {
    * cada doce personas no distingue el rojo del verde, y un porcentaje que
    * sólo se entiende por su tono no se entiende.
    */
-  const cifra = (que: string, valor: string, cambio: number, i: number) => (
+  const cifra = (que: string, valor: string, cambio: number, i: number, tono: string) => (
     <motion.div
       key={que}
       initial={quieto ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.05 + i * 0.05, duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-      style={css(tarjeta)}
+      style={css(tarjeta + "position:relative;overflow:hidden;")}
     >
+      {/* Un filo de color arriba, no la tarjeta entera pintada. Cuatro tarjetas
+          de cuatro colores saturados compiten entre ellas y ninguna gana; un
+          filo las distingue y deja que el número siga siendo lo que se lee. */}
+      <span
+        aria-hidden
+        style={css(`position:absolute;inset:0 0 auto;height:3px;background:var(--${tono}-tx);opacity:.55;`)}
+      />
       <div style={css(NOTA)}>{que}</div>
       <div
         style={css(
@@ -172,10 +179,10 @@ export default function MetricasScreen() {
       ) : (
         <>
           <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(190px,1fr));")}>
-            {cifra("Personas que entraron", "409", 18, 0)}
-            {cifra("Alumnos nuevos", "12", 33, 1)}
-            {cifra("Lecciones terminadas", "286", 9, 2)}
-            {cifra("Terminan el curso", "31 %", -4, 3)}
+            {cifra("Personas que entraron", "409", 18, 0, "cielo")}
+            {cifra("Alumnos nuevos", "12", 33, 1, "rosa")}
+            {cifra("Lecciones terminadas", "286", 9, 2, "melocoton")}
+            {cifra("Terminan el curso", "31 %", -4, 3, "lima")}
           </div>
 
           {bloque(

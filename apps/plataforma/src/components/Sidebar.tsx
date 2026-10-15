@@ -199,25 +199,42 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
         aria-label={compacta ? label : undefined}
         aria-current={activo ? "page" : undefined}
         style={css(
-          "display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:9px 10px;white-space:nowrap;border:none;border-radius:var(--r-sm);letter-spacing:-.01em;line-height:1.25;transition:background var(--t-normal),color var(--t-normal);" +
+          "display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;white-space:nowrap;border:none;border-radius:var(--r);letter-spacing:-.01em;line-height:1.25;transition:background var(--t-normal),color var(--t-normal);" +
             (apagado ? "cursor:not-allowed;" : "cursor:pointer;") +
             (grande ? "font-size:var(--t-read);font-weight:600;" : "font-size:var(--t-body);font-weight:590;") +
-            /* Dónde estás, en granate. Es la misma regla que el botón: lo activo
-               y lo que se pulsa comparten color, y el oro se queda para adornar.
-               En oscuro `--accion` es el oro claro por sí solo. */
+            /*
+             * DÓNDE ESTÁS: UNA PASTILLA SÓLIDA, NO UN TINTE.
+             *
+             * Era un fondo granate al 7 % con la letra en granate. Se veía
+             * —apenas— y había que buscarlo. Las dos referencias que mandó
+             * Gerson hacen lo mismo y las dos lo hacen igual: la fila donde
+             * estás va en SÓLIDO, con la letra invertida.
+             *
+             * Y es lo correcto, no sólo lo que está de moda. En un menú de doce
+             * filas, saber dónde estás tiene que costar cero: con un tinte hay
+             * que comparar unas filas con otras; con un bloque sólido, el ojo
+             * lo encuentra antes de empezar a leer. Es la única cosa de toda la
+             * columna que puede gritar, y por eso no grita nada más.
+             */
             "background:" +
-            (activo ? "var(--accion-suave)" : "transparent") +
+            (activo ? "var(--accion)" : "transparent") +
             ";color:" +
-            (activo ? "var(--accion)" : apagado ? "var(--text-4)" : grande ? "var(--text)" : "var(--text-3)") +
+            (activo ? "var(--sobre-accion)" : apagado ? "var(--text-4)" : grande ? "var(--text)" : "var(--text-3)") +
             ";"
         )}
       >
         <span
           style={css(
             "flex:none;display:grid;place-items:center;" +
-              (grande ? "width:26px;height:26px;border-radius:var(--r);background:var(--gold-soft);" : "") +
+              (grande ? "width:26px;height:26px;border-radius:var(--r-sm);background:var(--gold-soft);" : "") +
               "color:" +
-              (apagado ? "var(--text-4)" : activo || grande ? "var(--gold)" : "var(--text-4)") +
+              (apagado
+                ? "var(--text-4)"
+                : activo
+                  ? "var(--sobre-accion)"
+                  : grande
+                    ? "var(--gold)"
+                    : "var(--text-4)") +
               ";"
           )}
         >

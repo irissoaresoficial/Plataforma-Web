@@ -48,6 +48,16 @@ const NOMBRE_TIPO: Record<Tipo, string> = {
   video: "Vídeo",
 };
 
+/* El tono de cada tipo. En una biblioteca de cien fichas, el color es lo que
+   deja barrer la rejilla con la vista buscando «los audios» sin leer una sola
+   etiqueta. Con todas del mismo color habría que leerlas todas. */
+const TONO_TIPO: Record<Tipo, string> = {
+  pdf: "lavanda",
+  audio: "rosa",
+  plantilla: "lima",
+  video: "melocoton",
+};
+
 const EJEMPLO: Recurso[] = [
   { id: "1", nombre: "El Espejo y la Máscara", que: "La plantilla en blanco para hacer la cuenta a mano.", tipo: "plantilla", peso: "180 KB", cuando: "3 oct" },
   { id: "2", nombre: "Tabla de valores de las letras", que: "Las 37 letras con su valor, para tener al lado.", tipo: "pdf", peso: "420 KB", cuando: "3 oct" },
@@ -160,8 +170,8 @@ export default function RecursosScreen() {
               <span
                 aria-hidden
                 style={css(
-                  "flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;" +
-                    "background:color-mix(in srgb, var(--text) 7%, transparent);color:var(--gold-deep, var(--text-2));"
+                  "flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:var(--r-sm);" +
+                    `background:var(--${TONO_TIPO[r.tipo]});color:var(--${TONO_TIPO[r.tipo]}-tx);`
                 )}
               >
                 <Marca tipo={r.tipo} />

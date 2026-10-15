@@ -59,14 +59,26 @@ import type { Capacidad } from "@/lib/roles";
 
 type Ico = (p: { size?: number }) => React.JSX.Element;
 
-/** Las puertas de la escuela, con la llave que pide cada una. */
-const PUERTAS: Array<{ k: View; llave: Capacidad; titulo: string; que: string; Ico: Ico }> = [
+/**
+ * Las puertas de la escuela, con la llave que pide cada una y SU COLOR.
+ *
+ * El color no decora: identifica. Los cursos son melocotón en todas partes, la
+ * comunidad rosa, los recursos lavanda — aquí, en el icono de dentro de cada
+ * pantalla y en lo que venga después. A la tercera visita se sabe dónde se
+ * está antes de haber leído el título, y eso es lo que separa una herramienta
+ * grande y ordenada de una grande y confusa.
+ *
+ * Ir todo en granate sería más «de marca» y no informaría de nada: el granate
+ * y el oro dicen de quién es la plataforma, no en qué parte estás.
+ */
+const PUERTAS: Array<{ k: View; llave: Capacidad; titulo: string; que: string; Ico: Ico; tono: string }> = [
   {
     k: "cursos",
     llave: "cursos",
     titulo: "Cursos",
     que: "Las clases, por módulos, con el vídeo y los materiales de cada una.",
     Ico: IcoCursos,
+    tono: "melocoton",
   },
   {
     k: "comunidad",
@@ -74,6 +86,7 @@ const PUERTAS: Array<{ k: View; llave: Capacidad; titulo: string; que: string; I
     titulo: "Comunidad",
     que: "Donde se pregunta, se responde y se comparte lo que uno va viendo.",
     Ico: IcoComunidad,
+    tono: "rosa",
   },
   {
     k: "recursos",
@@ -81,6 +94,7 @@ const PUERTAS: Array<{ k: View; llave: Capacidad; titulo: string; que: string; I
     titulo: "Recursos",
     que: "La biblioteca: plantillas, guías y audios para descargar.",
     Ico: IcoRecursos,
+    tono: "lavanda",
   },
 ];
 
@@ -247,7 +261,7 @@ export default function EscuelaScreen() {
         <section>
           <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>Tu escuela</h2>
           <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(248px,1fr));")}>
-            {abiertas.map(({ k, titulo, que, Ico }, i) => (
+            {abiertas.map(({ k, titulo, que, Ico, tono }, i) => (
               <motion.button
                 key={k}
                 onClick={() => setView(k)}
@@ -269,11 +283,11 @@ export default function EscuelaScreen() {
                 <span
                   aria-hidden
                   style={css(
-                    "display:grid;place-items:center;width:34px;height:34px;border-radius:10px;" +
-                      "background:color-mix(in srgb, var(--text) 7%, transparent);color:var(--gold-deep, var(--text-2));"
+                    "display:grid;place-items:center;width:40px;height:40px;border-radius:var(--r-sm);" +
+                      `background:var(--${tono});color:var(--${tono}-tx);`
                   )}
                 >
-                  <Ico size={18} />
+                  <Ico size={19} />
                 </span>
                 <span style={css("font-size:var(--t-body);font-weight:600;")}>{titulo}</span>
                 <span style={css(NOTA + "line-height:1.5;text-wrap:pretty;")}>{que}</span>

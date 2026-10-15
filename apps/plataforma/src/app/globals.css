@@ -44,7 +44,7 @@
      Y el fondo es cálido, no gris. Un #f5f5f7 de sistema al lado del oro y del
      granate de la casa se ve azulado y barato.
      ------------------------------------------------------------------------- */
-  --bg: #f4f1ec;
+  --bg: #f7f4ef;
   /* Opacas. Translúcidas dejaban pasar el fondo y cada tarjeta cogía un tinte
    * distinto según sobre qué parte del velo cayera. El cristal está abajo, y
    * sólo para lo que de verdad flota por encima del contenido. */
@@ -52,8 +52,19 @@
   --surface-2: #f1eeea;
   --surface-solid: #ffffff;
 
-  --border: #eceae6;
-  --border-strong: #dbd7d1;
+  /*
+   * EL BORDE, CASI BORRADO.
+   *
+   * Era un gris que se veía. Ahora la tarjeta se separa del fondo con la
+   * sombra y el borde sólo la remata — está para que el canto no quede sucio
+   * contra el papel, no para dibujar una caja.
+   *
+   * Es la diferencia entre las dos referencias y lo que había: en las dos, las
+   * tarjetas FLOTAN; aquí estaban ENMARCADAS. Un marco visible alrededor de
+   * cada bloque convierte una pantalla en una hoja de cálculo.
+   */
+  --border: #eeebe5;
+  --border-strong: #ddd9d2;
   --border-accent: rgba(125, 95, 30, 0.32);
 
   /* -------------------------------------------------------------------------
@@ -102,7 +113,13 @@
    * separar nada. La corta (2 px) despega, la media (8 px) da el volumen, la
    * larga (28 px) el peso.
    */
-  --nm-alto: 0 1px 2px rgba(96, 78, 64, 0.05), 0 4px 8px rgba(96, 78, 64, 0.05), 0 12px 28px rgba(96, 78, 64, 0.07);
+  /*
+   * MÁS ANCHA Y MÁS TENUE. El secreto de que algo se vea caro no es una sombra
+   * más fuerte: es una sombra más GRANDE y más floja. Una sombra corta y
+   * oscura es la de una pegatina pegada al papel; una larga y suave es la de un
+   * objeto que está de verdad por encima, con aire debajo.
+   */
+  --nm-alto: 0 1px 2px rgba(96, 78, 64, 0.035), 0 6px 14px rgba(96, 78, 64, 0.045), 0 22px 48px rgba(96, 78, 64, 0.055);
   /* Hundido: la sombra por dentro y la luz enfrente. Es el hueco donde se
      escribe, y aquí la dirección sí dice algo. */
   --nm-hondo: inset 2px 2px 5px var(--nm-sombra), inset -2px -2px 5px var(--nm-luz);
@@ -167,6 +184,45 @@
   --accion-borde: rgba(74, 26, 38, 0.26);
   --sobre-accion: #fbf6ee;
 
+  /* -------------------------------------------------------------------------
+     LOS CINCO PASTELES
+     -------------------------------------------------------------------------
+     Entraron el 16 de octubre de 2026 con las dos referencias que mandó
+     Gerson. Las dos tienen la misma idea: bloques de color pastel saturado
+     —lima, rosa, lavanda— puestos sobre blanco, y todo lo demás en tinta.
+
+     QUÉ HACEN AQUÍ, QUE NO ES DECORAR. El granate y el oro son la marca de
+     Iris: dicen «esto es la Escuela de Sabiduría 33». Pero con dos colores no
+     se puede distinguir una cosa de otra DENTRO de la plataforma: si los
+     cursos, la comunidad y los recursos van todos en granate, el color no
+     informa de nada y sólo está bonito.
+
+     Los pasteles dan identidad a cada sitio: la comunidad siempre es rosa, los
+     recursos siempre lavanda. A la tercera visita se sabe dónde se está antes
+     de leer el título. Eso es lo que hace que una herramienta se sienta grande
+     y ordenada en vez de grande y confusa.
+
+     TRES REGLAS QUE NO SE SALTAN:
+
+       · VAN DE FONDO, NUNCA DE LETRA. Un lima claro como texto no se lee. La
+         tinta de encima es la `-tx` de cada uno, y las cinco parejas pasan de
+         6:1 de contraste — comprobado, no estimado.
+       · CADA UNO SIGNIFICA UN SITIO, y siempre el mismo. Un pastel que hoy es
+         la comunidad y mañana una advertencia deja de significar nada.
+       · NO SON PARA GRÁFICOS. En un gráfico el color dice magnitud o serie, y
+         eso tiene sus propias reglas. Ver `components/escuela/Grafico.tsx`.
+     ------------------------------------------------------------------------- */
+  --lima: #e4f2a8;
+  --lima-tx: #4a5416;
+  --rosa: #f7d9e9;
+  --rosa-tx: #7a2c54;
+  --lavanda: #ddd8f3;
+  --lavanda-tx: #3f3473;
+  --melocoton: #fbdfc6;
+  --melocoton-tx: #7a441a;
+  --cielo: #d4e6f5;
+  --cielo-tx: #1f4a73;
+
   /*
    * LOS TRES CAMINOS, EN DOS VERSIONES.
    *
@@ -201,9 +257,9 @@
    * que ninguna pantalla ha tenido que tocarse — piden `--shadow` como pedían
    * antes y lo que les llega es el volumen nuevo. La línea de un pelo sigue en
    * su sitio debajo de cada una. */
-  --shadow-sm: 0 1px 2px rgba(96, 78, 64, 0.06), 0 2px 6px rgba(96, 78, 64, 0.05);
+  --shadow-sm: 0 1px 2px rgba(96, 78, 64, 0.045), 0 3px 9px rgba(96, 78, 64, 0.04);
   --shadow: var(--nm-alto);
-  --shadow-lg: 0 2px 6px rgba(96, 78, 64, 0.06), 0 10px 24px rgba(96, 78, 64, 0.09), 0 28px 60px rgba(96, 78, 64, 0.11);
+  --shadow-lg: 0 2px 6px rgba(96, 78, 64, 0.05), 0 14px 34px rgba(96, 78, 64, 0.07), 0 44px 90px rgba(96, 78, 64, 0.09);
 
   /* -------------------------------------------------------------------------
      Escala tipográfica. Siete cuerpos y ni uno más: antes había veinticuatro
@@ -242,11 +298,26 @@
        · `--r` (12) — lo de dentro: campos, filas, controles.
        · `--r-xs` / `--r-sm` (7 / 9) — lo pequeño que va dentro de lo de dentro.
      ------------------------------------------------------------------------- */
-  --r-xs: 7px;
-  --r-sm: 9px;
-  --r: 12px;
-  --r-lg: 16px;
-  --r-tarjeta: 22px;
+  /*
+   * SUBIDOS UN ESCALÓN EL 16 DE OCTUBRE DE 2026, mirando las dos referencias
+   * que mandó Gerson —un panel de CRM y otro de gestión de proyectos—. Las dos
+   * tienen la esquina mucho más blanda que esto.
+   *
+   * POR QUÉ UNA ESQUINA MÁS REDONDA SE LEE COMO MÁS CARA. No es moda. Una
+   * esquina viva es la que sale sola de cortar un rectángulo: es lo que hace
+   * una herramienta hecha deprisa. Redondearla cuesta una decisión, y el ojo
+   * lee esa decisión aunque no sepa nombrarla — igual que distingue un mueble
+   * con el canto matado de uno sin matar sin saber por qué.
+   *
+   * Lo que no se toca es la PROPORCIÓN entre los tres escalones. Si todo sube
+   * lo mismo, se mantiene la gramática: lo grande se distingue de lo que va
+   * dentro, y una tarjeta no se confunde con un botón.
+   */
+  --r-xs: 8px;
+  --r-sm: 11px;
+  --r: 15px;
+  --r-lg: 20px;
+  --r-tarjeta: 26px;
   --r-pill: 100px;
 
   /* -------------------------------------------------------------------------
@@ -314,8 +385,10 @@
    * la ventana deja de ser aire y pasa a ser un scroll. La otra mitad del sitio
    * ha salido de quitar texto, que no cuesta nada de alto. */
   --gutter: clamp(16px, 3.4vw, 44px);
-  --pad-card: clamp(20px, 2.4vw, 30px);
-  --pad-card-sm: clamp(16px, 2vw, 24px);
+  /* Más aire dentro. El relleno es lo que más separa una pantalla cara de una
+     barata, y es lo primero que se recorta cuando se tiene prisa. */
+  --pad-card: clamp(22px, 2.7vw, 34px);
+  --pad-card-sm: clamp(18px, 2.2vw, 26px);
   /* Separación entre tarjetas hermanas y entre bloques de una sección. */
   --gap: clamp(14px, 1.7vw, 22px);
   --gap-lg: clamp(24px, 2.9vw, 38px);
@@ -380,6 +453,29 @@
   --accion-suave: rgba(226, 205, 162, 0.13);
   --accion-borde: rgba(226, 205, 162, 0.34);
   --sobre-accion: #171214;
+
+  /*
+   * LOS PASTELES EN OSCURO NO SON LOS MISMOS APAGADOS.
+   *
+   * Un pastel claro sobre fondo oscuro deslumbra: es un rectángulo de luz en
+   * una pantalla a la que se ha entrado de noche. Y bajarle la opacidad lo
+   * convierte en gris sucio, que es peor — pierde el color, que era lo único
+   * que aportaba.
+   *
+   * Así que en oscuro se invierten: el fondo pasa a ser el tono profundo y la
+   * tinta el claro. El color sigue diciendo lo mismo —rosa es la comunidad— y
+   * la pantalla sigue siendo oscura.
+   */
+  --lima: #2c3410;
+  --lima-tx: #d8e89a;
+  --rosa: #42182f;
+  --rosa-tx: #f2c4dd;
+  --lavanda: #282148;
+  --lavanda-tx: #cfc8ee;
+  --melocoton: #432510;
+  --melocoton-tx: #f6cfad;
+  --cielo: #15293f;
+  --cielo-tx: #bcd9ef;
 
   /* Los colores de código —los tres caminos, los avisos— suben de luz sobre el
      granate. Con los tonos de antes se quedaban por debajo de 4,5:1 y las
