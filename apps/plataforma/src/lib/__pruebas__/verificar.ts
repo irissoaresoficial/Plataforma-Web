@@ -38,6 +38,7 @@ const PRUEBAS: Array<[string, string]> = [
   ["Que ningún número se quede sin explicación", "cobertura.ts"],
   ["Quién puede tocar qué", "roles.ts"],
   ["Lo que se escribe en el formulario", "entrada.ts"],
+  ["El enlace del vídeo", "video.ts"],
 ];
 
 let mal = 0;

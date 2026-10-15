@@ -16,24 +16,6 @@
 
 import EnObra from "../escuela/EnObra";
 
-export function CursosScreen() {
-  return (
-    <EnObra
-      fase="Fase 2 · lo siguiente que se construye"
-      titulo="Cursos"
-      resumen="El corazón de la escuela y lo que se cobra. Iris sube sus cursos ella sola, sin llamar a nadie y sin tocar una línea de código."
-      tendra={[
-        "Un curso se compone de módulos, y cada módulo de lecciones. Iris los crea, los ordena arrastrando y los publica cuando quiere.",
-        "Cada lección lleva su vídeo, su texto y los archivos que se descargan.",
-        "El alumno ve sólo los cursos que ha comprado, por dónde iba y qué le queda.",
-        "Cada lección terminada se marca sola y suma para los trofeos.",
-        "Mientras no esté Stripe, Iris da el acceso a mano desde Gestión.",
-      ]}
-      espera="Dónde se alojan los vídeos. Bunny Stream cuesta unos céntimos por hora vista y no deja descargar el vídeo — es lo que usan las escuelas que cobran. YouTube en oculto es gratis pero cualquier alumno puede pasar el enlace. Es una decisión de dinero contra protección, y la tiene que tomar Iris."
-    />
-  );
-}
-
 export function ComunidadScreen() {
   return (
     <EnObra

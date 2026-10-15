@@ -187,6 +187,24 @@ export const botonPrincipal = (activo = true) =>
      igual en los tres botones y no depende de que éste lleve relieve. */
   (activo ? "box-shadow:var(--nm-alto);" : "cursor:not-allowed;");
 
+/**
+ * UN CAMPO DE ESCRIBIR.
+ *
+ * Estaba escrito a mano, con los mismos valores, en dos pantallas distintas
+ * —Clientes y Agenda— y cada una con un tamaño de letra diferente. Eso no es
+ * un problema hoy: lo es el día que se toque uno y el otro se quede atrás, y
+ * entonces dos pantallas de la misma herramienta escriben distinto sin que
+ * nadie haya decidido eso.
+ *
+ * Se estrena en la escuela, donde hay muchos. Las dos viejas siguen con el
+ * suyo hasta que se toquen por otra cosa: cambiarlas ahora sería mover dos
+ * pantallas que funcionan dentro de un cambio que va de otra cosa.
+ */
+export const CAMPO =
+  "width:100%;min-width:0;padding:11px 14px;color:var(--text);font-family:var(--font-ui);" +
+  "font-size:var(--t-body);background:var(--fondo-2, transparent);border:1px solid var(--border);" +
+  "border-radius:var(--r-sm);";
+
 export const BOTON_NORMAL =
   BOTON + "padding:9px 18px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);";
 

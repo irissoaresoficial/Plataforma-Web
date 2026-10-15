@@ -240,6 +240,91 @@ service cloud.firestore {
     match /ajustes/{id}  { allow read, write: if esAdmin(); }
 
     /* ---------------------------------------------------------------- */
+    /*  LA ESCUELA                                                       */
+    /* ---------------------------------------------------------------- */
+
+    /*
+     * AQUÍ ENTRA GENTE QUE NO ES IRIS, y ésa es toda la diferencia con lo de
+     * arriba. Todo lo anterior es de una sola persona y la regla es «¿eres
+     * ella?». A partir de aquí la pregunta es otra: «¿esto es tuyo?».
+     *
+     * Y esto es lo único que de verdad protege nada. La plataforma esconde del
+     * menú lo que no se puede abrir y redirige a quien escribe una dirección a
+     * mano, pero eso corre en el navegador de cada uno y se salta desde la
+     * consola en diez segundos. Lo de aquí corre en el servidor de Google y no
+     * se salta.
+     */
+
+    /*
+     * LOS CURSOS.
+     *
+     * Dos lectores distintos y por eso dos condiciones:
+     *
+     *   · Iris lo ve todo, borradores incluidos — los necesita para montarlos.
+     *   · Cualquiera que haya entrado ve los PUBLICADOS. Ojo a lo que esto NO
+     *     dice: no dice que pueda verlos sólo quien lo ha comprado. Un curso
+     *     publicado es un escaparate —su título, de qué va, su portada— y hace
+     *     falta poder enseñárselo a alguien para que decida comprarlo.
+     *
+     * LO QUE SE COMPRA ES EL CONTENIDO, Y ESO NO ESTÁ AQUÍ. Los enlaces de los
+     * vídeos viven dentro de este mismo documento, así que a día de hoy quien
+     * vea el curso ve los enlaces. ESTO HAY QUE PARTIRLO ANTES DE COBRAR: el
+     * escaparate por un lado y las lecciones por otro, y las lecciones sólo
+     * para quien tenga inscripción. Está escrito aquí porque es el sitio donde
+     * se va a mirar el día que se monte el pago, y porque un «ya lo haremos»
+     * que no está escrito en ninguna parte no se hace nunca.
+     *
+     * Escribir, sólo Iris. Y `publicados()` filtra en el servidor por eso
+     * mismo: si un alumno pidiera todos los cursos, Firestore rechaza la
+     * consulta entera en vez de devolverle los que sí puede ver.
+     */
+    match /cursos/{id} {
+      allow read: if esAdmin() || (dentro() && resource.data.publicado == true);
+      allow write: if esAdmin();
+    }
+
+    /*
+     * LAS INSCRIPCIONES: quién tiene acceso a qué.
+     *
+     * Cada uno ve LAS SUYAS y nada más. Esto no es pudor: la lista entera dice
+     * quién ha comprado qué y cuándo, que es la contabilidad de la escuela.
+     *
+     * Y NADIE SE INSCRIBE A SÍ MISMO. Es la regla que sostiene todo el dinero
+     * del negocio: si un alumno pudiera escribir aquí, se daría acceso a todos
+     * los cursos sin pagar uno. Las escribe Iris a mano hoy, y el día que haya
+     * Stripe las escribirá el servidor con las llaves de administración, que no
+     * pasan por estas reglas.
+     *
+     * Por eso el identificador es `uid__cursoId` y se comprueba que el `uid` de
+     * dentro coincide con el de quien lee: sin eso, bastaría con adivinar el
+     * identificador de otro para leer su inscripción.
+     */
+    match /inscripciones/{id} {
+      allow read: if esAdmin() || (dentro() && resource.data.uid == request.auth.uid);
+      allow write: if esAdmin();
+    }
+
+    /*
+     * EL AVANCE: por dónde va cada uno.
+     *
+     * Esto sí lo escribe la propia persona —marcar una lección como terminada
+     * es ella pulsando un botón— pero SÓLO EL SUYO. Sin la comprobación del
+     * `uid`, cualquiera podría escribir el avance de otro, que además de ser
+     * una tontería sería la vía para destrozarle las rachas y los trofeos a
+     * alguien.
+     *
+     * Se comprueba `request.resource.data.uid` y no `resource.data.uid`:
+     * `resource` es lo que YA hay y al crear el documento todavía no hay nada.
+     * Con `resource` la primera lección terminada de cada curso fallaría, y
+     * sería de esos fallos que sólo pasan la primera vez y no se reproducen al
+     * ir a mirarlos.
+     */
+    match /avance/{id} {
+      allow read: if esAdmin() || (dentro() && resource.data.uid == request.auth.uid);
+      allow write: if dentro() && request.resource.data.uid == request.auth.uid;
+    }
+
+    /* ---------------------------------------------------------------- */
 
     /* El resto del mundo, cerrado. Incluida la colección `diagnostico`, que
        sólo toca el servidor. Sin esta línea, cualquier colección nueva nacería

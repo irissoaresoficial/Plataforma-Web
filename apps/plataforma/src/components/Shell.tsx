@@ -12,8 +12,8 @@ import AgendaScreen from "./screens/AgendaScreen";
 import ClientesScreen from "./screens/ClientesScreen";
 import FacturasScreen from "./screens/FacturasScreen";
 import EscuelaScreen from "./screens/EscuelaScreen";
+import CursosScreen from "./screens/CursosScreen";
 import {
-  CursosScreen,
   ComunidadScreen,
   RecursosScreen,
   PerfilScreen,
