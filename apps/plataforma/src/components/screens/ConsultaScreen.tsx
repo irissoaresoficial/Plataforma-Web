@@ -203,6 +203,47 @@ export default function ConsultaScreen() {
               </div>
             </div>
 
+            {/*
+              * EL AVISO DE LAS LETRAS QUE EL MANUAL NO RECOGE.
+              *
+              * La tabla de valores tiene las letras que tiene. Cuando llega un
+              * apellido con una que no está —la ce con cedilla de «Gonçalves»,
+              * la a con tilde de «João»— el motor no puede darle un valor, y
+              * antes se la comía sin decir nada: el estudio salía con un
+              * número de menos y con todo el aspecto de estar bien.
+              *
+              * No se inventa el valor que falta, porque eso lo decide Iris y
+              * no este código. Lo que se hace es no entregar a ciegas: aquí se
+              * dice qué letra es y en qué apellido, y ella decide si lo
+              * escribe de otra forma o si hay que añadir esa letra al manual.
+              */}
+            {n.descartadas.length > 0 && (
+              <div
+                role="alert"
+                style={css(
+                  "margin-top:var(--s4);padding:12px 14px;border-radius:var(--r-sm);" +
+                    "border:1px solid var(--alarma, #C0392B);background:color-mix(in srgb, var(--alarma, #C0392B) 10%, transparent);" +
+                    "font-size:var(--t-mini);line-height:1.5;color:var(--text);"
+                )}
+              >
+                <strong>El estudio saldría incompleto.</strong> Hay{" "}
+                {n.descartadas.length === 1 ? "un carácter" : `${n.descartadas.length} caracteres`} que el
+                manual no recoge y que no suman nada:{" "}
+                {n.descartadas.map((c) => (
+                  <code
+                    key={c}
+                    style={css(
+                      "display:inline-block;margin:0 3px;padding:1px 7px;border-radius:4px;" +
+                        "background:color-mix(in srgb, var(--text) 10%, transparent);font-weight:600;"
+                    )}
+                  >
+                    {c}
+                  </code>
+                ))}
+                . Escríbelo con la letra equivalente del castellano, o consúltalo con Iris antes de entregar.
+              </div>
+            )}
+
             <motion.button
               onClick={calcular}
               disabled={!listo}

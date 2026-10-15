@@ -144,6 +144,33 @@ export function valida(f: FormState): string | null {
   if (!(d >= 1 && d <= 31)) return "El día debe estar entre 1 y 31.";
   if (!(m >= 1 && m <= 12)) return "El mes debe estar entre 1 y 12.";
   if (!(a >= 1900 && a <= 2100)) return "El año debe tener cuatro cifras.";
+
+  /*
+   * QUE LA FECHA EXISTA DE VERDAD.
+   *
+   * Las tres comprobaciones de arriba dejaban pasar el 31 de febrero, el 31 de
+   * abril y el 29 de febrero de un año que no es bisiesto. Cada una por
+   * separado es cierta —el día está entre 1 y 31, el mes entre 1 y 12— y
+   * juntas no dicen nada sobre si ese día existió.
+   *
+   * No es un caso raro de laboratorio: es un dedo que resbala al teclear la
+   * fecha de nacimiento de una clienta. Y el estudio que sale de una fecha
+   * imposible no parece roto: parece un estudio normal con los números de otra
+   * persona.
+   *
+   * Se construye la fecha y se le pregunta qué día cree que es. Si contesta
+   * otro, esa fecha no existe y el navegador la ha corregido por su cuenta: el
+   * 31 de febrero de 1980 se convierte en 2 de marzo.
+   */
+  const prueba = new Date(a, m - 1, d);
+  if (prueba.getFullYear() !== a || prueba.getMonth() !== m - 1 || prueba.getDate() !== d) {
+    const MESES = [
+      "enero", "febrero", "marzo", "abril", "mayo", "junio",
+      "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+    ];
+    return `El ${d} de ${MESES[m - 1]} de ${a} no existe. Revisa la fecha.`;
+  }
+
   return null;
 }
 

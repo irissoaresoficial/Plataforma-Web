@@ -84,12 +84,47 @@ function reduceTo(x: number, max: number): number {
   while (n > max && guard++ < 12) n = sumDigits(n);
   return n;
 }
-function normalizaNombre(s: string, conCifras = false): string {
-  return (s || "")
-    .toUpperCase()
-    .replace(conCifras ? /[^A-ZÁÉÍÓÚÜÑÄÖ0-9\s]/g : /[^A-ZÁÉÍÓÚÜÑÄÖ\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+/**
+ * LO QUE EL MOTOR NO SABE LEER, LO DICE EN VOZ ALTA.
+ *
+ * Antes esto sólo devolvía el nombre limpio, y lo que no reconocía lo
+ * cambiaba por un espacio sin más. El resultado era el peor de los posibles:
+ * «Gonçalves» se convertía en «GON ALVES», la ce con cedilla desaparecía, su
+ * valor no se sumaba, y el estudio salía con un número equivocado y con
+ * aspecto de estar perfectamente bien. Nadie podía notarlo mirando la
+ * pantalla, porque no había nada que mirar.
+ *
+ * La tabla de valores del manual tiene las letras que tiene, y no se inventan
+ * las que faltan: eso lo decide Iris, no este archivo. Lo que sí se arregla es
+ * el silencio. Ahora se devuelve también la lista de lo descartado, y quien
+ * pinta la pantalla avisa.
+ */
+type NombreLimpio = { texto: string; descartadas: string[] };
+
+function normalizaNombre(s: string, conCifras = false): NombreLimpio {
+  const permitidas = conCifras ? /[A-ZÁÉÍÓÚÜÑÄÖ0-9\s]/ : /[A-ZÁÉÍÓÚÜÑÄÖ\s]/;
+  const arriba = (s || "").toUpperCase();
+
+  const fuera: string[] = [];
+  let texto = "";
+  for (const c of arriba) {
+    if (permitidas.test(c)) {
+      texto += c;
+      continue;
+    }
+    texto += " ";
+    /* Los separadores que la gente escribe a propósito —el guión de
+       «Anne-Marie», el apóstrofo de «O'Connor», el punto de una inicial— no
+       son un problema: parten el nombre en dos palabras y la cuenta sale
+       igual, porque el total se suma letra a letra y no palabra a palabra.
+       Avisar de ellos sería ruido que enseña a ignorar los avisos. */
+    if (!"-'`´.,·".includes(c)) fuera.push(c);
+  }
+
+  return {
+    texto: texto.replace(/\s+/g, " ").trim(),
+    descartadas: [...new Set(fuera)],
+  };
 }
 const VOCALES = "AEIOUÁÉÍÓÚÄÖÜ";
 
@@ -152,6 +187,10 @@ export type NombreAnalizado = {
   vocales: Letra[];
   consonantes: Letra[];
   numeros: Letra[];
+  /** Los caracteres que el manual no recoge y que, por tanto, no suman nada.
+   *  Vacío en la inmensa mayoría de los nombres. Si trae algo, el estudio
+   *  está incompleto y hay que decirlo antes de entregarlo. */
+  descartadas: string[];
 };
 
 /**
@@ -164,7 +203,7 @@ export type NombreAnalizado = {
  */
 export function analizaNombre(nombreCompleto: string, conCifras = false): NombreAnalizado {
   const limpio = normalizaNombre(nombreCompleto, conCifras);
-  const palabras = limpio ? limpio.split(" ") : [];
+  const palabras = limpio.texto ? limpio.texto.split(" ") : [];
   const detalle: PalabraAnalizada[] = palabras.map((p) => {
     const ls = letrasDe(p);
     return { palabra: p, letras: ls, total: ls.reduce((a, b) => a + b.v, 0) };
@@ -175,7 +214,8 @@ export function analizaNombre(nombreCompleto: string, conCifras = false): Nombre
   const numeros = todas.filter((l) => esCifra(l.g));
   const consonantes = todas.filter((l) => !esVocal(l.g) && !esCifra(l.g));
   return {
-    texto: limpio,
+    texto: limpio.texto,
+    descartadas: limpio.descartadas,
     palabras: detalle,
     total,
     esencia: vocales.reduce((a, b) => a + b.v, 0),
