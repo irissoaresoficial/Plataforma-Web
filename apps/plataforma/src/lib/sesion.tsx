@@ -56,6 +56,7 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, CORREO_DUENA, hayFirebase, nube } from "./firebase";
 import { esAdmin, puede, rolesDe, type Capacidad, type Rol } from "./roles";
+import { marcaVisita } from "./escuela/trofeos";
 
 /**
  * TRES NIVELES DE ACCESO, DESDE QUE ABRE LA ESCUELA.
@@ -371,6 +372,27 @@ export function SesionProvider({ children }: { children: ReactNode }) {
     }),
     [usuario, entrando, error, conNube, entra, sale],
   );
+
+  /*
+   * «HA ENTRADO HOY».
+   *
+   * Es lo único que alimenta la racha, y vive aquí —en la sesión— y no en una
+   * pantalla concreta a propósito: la racha cuenta los días que alguien ABRE
+   * la escuela, no los días que pasa por su perfil. Puesto en el perfil,
+   * contaría sólo a quien va a mirarse la racha, que es justo al revés de como
+   * tiene que funcionar.
+   *
+   * Escribe UNA VEZ AL DÍA como mucho: `marcaVisita` mira si el día ya está y
+   * se vuelve sin tocar nada. Entrar catorce veces un martes es una escritura.
+   *
+   * Y falla en silencio. Si esto revienta, la racha se queda corta un día.
+   * Dejar a alguien fuera de la plataforma porque no se pudo apuntar su visita
+   * sería absurdo.
+   */
+  useEffect(() => {
+    if (!usuario) return;
+    void marcaVisita(usuario.uid).catch(() => {});
+  }, [usuario]);
 
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>;
 }

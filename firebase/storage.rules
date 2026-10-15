@@ -84,6 +84,24 @@ service firebase.storage {
     }
 
     /*
+     * LA BIBLIOTECA.
+     *
+     * Mismo trato que los vídeos: lee quien haya entrado, sube sólo Iris. La
+     * diferencia es el tipo de archivo — aquí entra de todo: PDFs, audios,
+     * hojas de cálculo, imágenes. Así que no se filtra por tipo, sólo por
+     * tamaño.
+     *
+     * NO SE FILTRA POR TIPO Y ES A PROPÓSITO: una lista blanca de extensiones
+     * acaba rechazando el archivo que Iris necesitaba subir un martes por la
+     * tarde, y entonces me escribe. Lo que de verdad protege es que sólo ella
+     * puede subir.
+     */
+    match /recursos/{archivo} {
+      allow read: if request.auth != null;
+      allow write: if esIris() && request.resource.size < 2 * 1024 * 1024 * 1024;
+    }
+
+    /*
      * EL RESTO, CERRADO.
      *
      * Sin esta línea cualquier carpeta nueva nacería sin regla. Firebase la

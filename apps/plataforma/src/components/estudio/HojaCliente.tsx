@@ -145,7 +145,7 @@ export default function HojaCliente({ r, marca, idioma = "es" }: { r: Resultado;
         <img src="/logo.jpeg" alt="" style={css("width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none;")} />
         <div style={css("min-width:0;")}>
           <div style={css(ROTULO)}>{marca}</div>
-          <h1 style={css("font-family:var(--font-display);font-size:24px;font-weight:500;letter-spacing:-.014em;color:#2B1119;margin:2px 0 0;line-height:1.12;overflow-wrap:anywhere;")}>
+          <h1 style={css("font-family:var(--font-doc);font-size:24px;font-weight:500;letter-spacing:-.014em;color:#2B1119;margin:2px 0 0;line-height:1.12;overflow-wrap:anywhere;")}>
             {titulo(r.nombre.texto)}
           </h1>
         </div>
@@ -186,7 +186,7 @@ export default function HojaCliente({ r, marca, idioma = "es" }: { r: Resultado;
                 <span style={css("margin-left:auto;font-size:9px;color:#8A8296;white-space:nowrap;")}>{x.cuando}</span>
               </div>
               <p style={css(APUNTE + "margin-top:1px;")}>
-                <span style={css("font-family:var(--font-display);font-size:12.5px;color:" + COL[x.k] + ";")}>{titulo(x.carta?.nombre)}</span>
+                <span style={css("font-family:var(--font-doc);font-size:12.5px;color:" + COL[x.k] + ";")}>{titulo(x.carta?.nombre)}</span>
                 {x.carta?.lema ? " — " + sinPunto(frase(x.carta.lema)) + "." : ""}
               </p>
             </div>
@@ -342,7 +342,7 @@ export default function HojaCliente({ r, marca, idioma = "es" }: { r: Resultado;
             { l: T.numHilo, v: c.proposito },
           ].map((x) => (
             <span key={x.l} style={css("font-size:9.5px;color:#7A7288;white-space:nowrap;")}>
-              {x.l} <span style={css("font-family:var(--font-display);font-size:12px;color:#2B1119;")}>{x.v}</span>
+              {x.l} <span style={css("font-family:var(--font-doc);font-size:12px;color:#2B1119;")}>{x.v}</span>
             </span>
           ))}
         </div>

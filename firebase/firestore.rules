@@ -324,6 +324,108 @@ service cloud.firestore {
       allow write: if dentro() && request.resource.data.uid == request.auth.uid;
     }
 
+    /*
+     * LA COMUNIDAD.
+     *
+     * Aquí la gente escribe, y eso cambia la forma de las reglas: hasta ahora
+     * casi todo lo escribía Iris. Un sitio donde escriben veinte personas pide
+     * dos candados que no hacían falta antes.
+     *
+     * CANDADO 1: NADIE FIRMA CON EL NOMBRE DE OTRO. Se comprueba que el `uid`
+     * de dentro del mensaje es el de quien lo está escribiendo. Sin esto,
+     * cualquiera puede publicar un tema firmado por Iris — y en una escuela
+     * donde lo que ella dice va a misa, eso no es una travesura.
+     *
+     * Por el mismo motivo se comprueba `esIris`: esa bandera es la que pinta la
+     * etiqueta «la escuela» al lado del nombre, así que ponérsela a sí mismo
+     * sería ponerse el uniforme. Sólo puede ir en true si de verdad lo es.
+     *
+     * CANDADO 2: LO QUE SE ESCRIBE NO SE REESCRIBE A GUSTO. Un autor puede
+     * corregir su propio texto, pero no puede cambiar de quién es el mensaje
+     * ni cuándo se escribió. Y `fijado` sólo lo toca Iris: es el sitio donde
+     * ella dice lo que todos tienen que leer, y si cualquiera pudiera fijarse
+     * a sí mismo, el sitio deja de servir para eso en una semana.
+     *
+     * LEER, cualquiera que esté dentro. Una comunidad que sólo ven algunos no
+     * es una comunidad; y el control de quién entra en la escuela ya está
+     * hecho en `dentro()`.
+     *
+     * BORRAR: el autor lo suyo, Iris lo que sea. Ella tiene que poder quitar
+     * algo que no toque sin pedirle permiso a quien lo escribió.
+     */
+    match /temas/{id} {
+      allow read: if dentro();
+      allow create: if dentro()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.esIris == esAdmin()
+        && request.resource.data.fijado == false
+        && request.resource.data.respuestas == 0;
+      allow update: if esAdmin()
+        || (dentro()
+            && resource.data.uid == request.auth.uid
+            && request.resource.data.uid == resource.data.uid
+            && request.resource.data.creado == resource.data.creado
+            && request.resource.data.fijado == resource.data.fijado);
+      allow delete: if esAdmin() || (dentro() && resource.data.uid == request.auth.uid);
+    }
+
+    /*
+     * LAS RESPUESTAS. Mismos dos candados.
+     *
+     * Y una cosa que NO se puede comprobar desde aquí, dicha para que nadie la
+     * dé por hecha: que el contador de respuestas del tema cuadre con las que
+     * hay de verdad. Son dos escrituras distintas y las reglas miran una cada
+     * vez. Si la segunda falla, el número se queda corto. Se asume a sabiendas
+     * —un contador bajo no engaña a nadie de forma que importe— y por eso el
+     * contador no se usa para nada que decida nada.
+     */
+    match /respuestas/{id} {
+      allow read: if dentro();
+      allow create: if dentro()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.esIris == esAdmin();
+      allow update: if dentro()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.creado == resource.data.creado;
+      allow delete: if esAdmin() || (dentro() && resource.data.uid == request.auth.uid);
+    }
+
+    /*
+     * LA BIBLIOTECA.
+     *
+     * La más simple de todas, y por eso conviene decir lo que NO dice: no
+     * distingue quién puede bajarse qué. Cualquiera que esté dentro ve y baja
+     * todo. Es lo correcto hoy —los recursos son material de apoyo, no el
+     * producto— y dejaría de serlo el día que aquí se cuelgue algo que sólo
+     * han pagado algunos. Ese día esto necesita una condición más.
+     */
+    match /recursos/{id} {
+      allow read: if dentro();
+      allow write: if esAdmin();
+    }
+
+    /*
+     * LAS VISITAS: qué días ha entrado cada uno.
+     *
+     * Un documento por persona, con la lista de días. Es lo único que alimenta
+     * la racha, y la racha es lo que más engancha de toda la escuela.
+     *
+     * CADA UNO ESCRIBE EL SUYO Y SÓLO EL SUYO. Sin esa comprobación se le
+     * podrían escribir días a otro: parece una tontería y no lo es — inflar
+     * la racha de alguien, o romperla, es estropear lo único que le hacía
+     * volver.
+     *
+     * Y SÓLO LO VE SU DUEÑO. Los días que alguien entra en una escuela de
+     * desarrollo personal dibujan su vida: cuándo está mal, cuándo se fue de
+     * viaje, cuándo dejó de venir. Iris sí los ve —los necesita para las
+     * métricas— pero nadie más.
+     */
+    match /visitas/{uid} {
+      allow read: if esAdmin() || (dentro() && uid == request.auth.uid);
+      allow write: if dentro() && uid == request.auth.uid;
+    }
+
     /* ---------------------------------------------------------------- */
 
     /* El resto del mundo, cerrado. Incluida la colección `diagnostico`, que

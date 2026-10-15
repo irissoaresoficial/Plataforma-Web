@@ -130,3 +130,22 @@ export const avanceNube: RepoAvance = {
     return nuevo;
   },
 };
+
+/**
+ * TODOS los avances de todo el mundo. Sólo lo lee la administración.
+ *
+ * Es lo que hace posible la pantalla de métricas sin guardar ni una cifra
+ * aparte: cuántas lecciones se han terminado, cuántos acaban un curso y en qué
+ * lección exacta se cae la gente salen todos de aquí.
+ *
+ * NO SE PUEDE PAGINAR, y conviene saberlo: con mil alumnos y diez cursos son
+ * diez mil documentos en una lectura. Hoy, con una escuela que empieza, son
+ * decenas. El día que eso crezca, las métricas se calculan en el servidor una
+ * vez al día y se guarda el resumen; no se arregla paginando aquí.
+ */
+export async function todosLosAvances(): Promise<Avance[]> {
+  const b = baseOpcional();
+  if (!b) return [];
+  const r = await getDocs(collection(b, "avance"));
+  return r.docs.map((d) => conId<Avance>(d.id, d.data()));
+}

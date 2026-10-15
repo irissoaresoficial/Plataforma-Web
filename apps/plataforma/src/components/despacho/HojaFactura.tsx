@@ -200,7 +200,7 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/flor-de-lis.png" alt="" style={css("width:44px;height:44px;flex:none;object-fit:contain;opacity:.95;")} />
           <div style={css("min-width:0;")}>
-            <div style={css("font-family:var(--font-display);font-size:17px;font-weight:500;line-height:1.2;letter-spacing:-.01em;")}>
+            <div style={css("font-family:var(--font-doc);font-size:17px;font-weight:500;line-height:1.2;letter-spacing:-.01em;")}>
               {marca}
             </div>
             {emisor.nif && !falta(emisor.nif) && (

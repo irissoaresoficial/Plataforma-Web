@@ -23,6 +23,9 @@ export const avance: RepoAvance = enLaNube ? avanceNube : avanceLocal;
  *  con ella, y un aviso que miente enseña a no leer los avisos. */
 export const guardadoEnLaNube = enLaNube;
 
+/* Las lecturas de administración no pasan por el repositorio: no tienen
+   versión local porque sin nube no hay nadie de quien sacar métricas. */
+export { todosLosAvances } from "./nube";
 export { nuevoId } from "./local";
 export * from "./tipos";
 export type { RepoAvance, RepoCursos, RepoInscripciones } from "./repositorio";

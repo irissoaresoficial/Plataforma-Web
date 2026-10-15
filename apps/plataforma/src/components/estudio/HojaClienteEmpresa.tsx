@@ -8,7 +8,7 @@ import { COL } from "@/lib/tree";
 import styles from "./Estudio.module.css";
 
 const ROTULO = "font-size:9px;font-weight:600;color:#9A7F32;letter-spacing:.02em;";
-const DATO = "font-family:var(--font-display);font-size:26px;font-weight:500;color:#2B1119;line-height:1;letter-spacing:-.012em;";
+const DATO = "font-family:var(--font-doc);font-size:26px;font-weight:500;color:#2B1119;line-height:1;letter-spacing:-.012em;";
 const CUERPO = "font-size:10.5px;line-height:1.5;color:#3A3546;margin:3px 0 0;";
 
 /**
@@ -55,7 +55,7 @@ export default function HojaClienteEmpresa({ re, marca, idioma = "es" }: { re: R
         <img src="/logo.jpeg" alt="" style={css("width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;")} />
         <div style={css("min-width:0;")}>
           <div style={css(ROTULO)}>{marca}</div>
-          <h1 style={css("font-family:var(--font-display);font-size:25px;font-weight:500;letter-spacing:-.014em;color:#2B1119;margin:2px 0 0;line-height:1.15;overflow-wrap:anywhere;")}>
+          <h1 style={css("font-family:var(--font-doc);font-size:25px;font-weight:500;letter-spacing:-.014em;color:#2B1119;margin:2px 0 0;line-height:1.15;overflow-wrap:anywhere;")}>
             {titulo(re.nombre.texto)}
           </h1>
         </div>
@@ -88,7 +88,7 @@ export default function HojaClienteEmpresa({ re, marca, idioma = "es" }: { re: R
         <div style={css("border-left:2.5px solid " + COL.origen + ";padding:2px 0 2px 10px;")}>
           <div style={css("display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;")}>
             <span style={css("font-size:9px;font-weight:600;color:" + COL.origen + ";")}>{rellena(T.empArcano, { n: re.origen.arcano })}</span>
-            <span style={css("font-family:var(--font-display);font-size:14px;font-weight:500;color:#2B1119;")}>{titulo(carta?.nombre)}</span>
+            <span style={css("font-family:var(--font-doc);font-size:14px;font-weight:500;color:#2B1119;")}>{titulo(carta?.nombre)}</span>
           </div>
           {/* El apunte en español empieza repitiendo el lema entre comillas y se
               le quita; en los otros dos idiomas el texto ya viene sin él, así

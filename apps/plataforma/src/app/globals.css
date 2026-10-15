@@ -21,7 +21,43 @@
    --------------------------------------------------------------------------- */
 :root {
   --font-ui: var(--f-texto), -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --font-display: var(--f-display), "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+
+  /*
+   * LOS TITULARES, EN PALO SECO DESDE EL 16 DE OCTUBRE DE 2026.
+   *
+   * Eran Fraunces, una serif con carácter, y Gerson lo cambió mirando sus dos
+   * referencias de panel: «SANS».
+   *
+   * QUÉ SE GANA Y QUÉ SE PIERDE, dicho sin adornos. Se pierde carácter: una
+   * serif distingue la plataforma de cualquier panel genérico a un metro de
+   * distancia. Se gana lo que valen las dos referencias: una pantalla de
+   * trabajo se lee más rápido de una sola familia, porque la jerarquía la
+   * llevan el tamaño y el peso y no un cambio de letra que el ojo tiene que
+   * procesar en cada salto.
+   *
+   * En una herramienta que Iris va a tener abierta toda la mañana, la segunda
+   * razón pesa más que la primera.
+   *
+   * LA LETRA SIGUE SIENDO UNA SOLA FAMILIA, así que la jerarquía tiene que
+   * salir de otra parte: los titulares suben de peso y aprietan el espaciado.
+   * Sin eso, un titular en la misma letra que el párrafo no se lee como un
+   * titular — se lee como un párrafo en grande.
+   */
+  --font-display: var(--f-texto), -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+  /*
+   * LA SERIF SE QUEDA, PERO SÓLO PARA EL PAPEL.
+   *
+   * El estudio que Iris le entrega a una clienta y la factura no son pantallas
+   * de trabajo: son documentos que se imprimen, se guardan y se cobran. Ahí la
+   * serif no es decoración, es lo que hace que un papel parezca un documento y
+   * no un volante — y es exactamente donde el carácter que se pierde arriba sí
+   * vale lo que cuesta.
+   *
+   * Si Gerson prefiere que también esos vayan en palo seco, se cambia esta
+   * línea y nada más.
+   */
+  --font-doc: var(--f-display), "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   /* La redondez de Fraunces, la misma que en la web: si aquí fuera otra, las
      dos mitades del proyecto tendrían dos letras que casi son la misma, que es
      peor que tener dos distintas. */

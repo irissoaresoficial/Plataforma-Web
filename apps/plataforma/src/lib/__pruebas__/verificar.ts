@@ -39,6 +39,7 @@ const PRUEBAS: Array<[string, string]> = [
   ["Quién puede tocar qué", "roles.ts"],
   ["Lo que se escribe en el formulario", "entrada.ts"],
   ["El enlace del vídeo", "video.ts"],
+  ["La racha y las medallas", "trofeos.ts"],
 ];
 
 let mal = 0;

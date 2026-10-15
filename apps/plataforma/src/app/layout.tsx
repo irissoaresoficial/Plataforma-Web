@@ -13,11 +13,23 @@ import Guardia from "@/components/Guardia";
  * veía distinta en cada ordenador y, sobre todo, distinta de la web de Iris.
  * Quien sale de una y entra en la otra tiene que notar que es la misma casa.
  *
- * FRAUNCES en los titulares y en las cifras, con el mismo eje de redondez que
- * allí — si aquí fuera otro, las dos mitades del proyecto tendrían dos letras
- * que casi son la misma, que es peor que tener dos distintas. INSTRUMENT SANS
- * para todo lo que se lee. Las dos por `next/font`: se descargan al compilar y
- * se sirven desde el propio dominio, sin pedirle nada a Google en cada visita.
+ * INSTRUMENT SANS para todo lo que se ve en pantalla: los párrafos y, desde el
+ * 16 de octubre de 2026, también los titulares. Antes los titulares eran
+ * Fraunces; Gerson lo cambió mirando sus referencias de panel. El porqué está
+ * escrito en `globals.css`, junto a `--font-display`.
+ *
+ * FRAUNCES se queda, y no por nostalgia: es la letra del PAPEL. El estudio que
+ * se le entrega a una clienta y la factura se imprimen, se guardan y se
+ * cobran, y ahí una serif es lo que hace que un documento parezca un documento.
+ * Va por `--font-doc`.
+ *
+ * OJO CON LA WEB: allí los titulares siguen en Fraunces. Quien pasa de una a
+ * otra ya no ve exactamente la misma letra. Es a propósito —la web vende y la
+ * plataforma se trabaja— pero conviene saberlo, porque es justo la clase de
+ * diferencia que luego parece un descuido.
+ *
+ * Las dos por `next/font`: se descargan al compilar y se sirven desde el propio
+ * dominio, sin pedirle nada a Google en cada visita.
  */
 const display = Fraunces({
   subsets: ["latin"],
@@ -28,7 +40,9 @@ const display = Fraunces({
 
 const texto = Instrument_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  /* El 700 entró con los titulares en palo seco: con una sola familia, el
+     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
+  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--f-texto",
   display: "swap",
@@ -75,7 +89,9 @@ const texto = Instrument_Sans({
  */
 const lectura = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  /* El 700 entró con los titulares en palo seco: con una sola familia, el
+     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
+  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--f-lectura",
   display: "swap",
@@ -83,14 +99,18 @@ const lectura = Cormorant_Garamond({
 
 const cifra = Cinzel({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  /* El 700 entró con los titulares en palo seco: con una sola familia, el
+     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
+  weight: ["400", "500", "600", "700"],
   variable: "--f-cifra",
   display: "swap",
 });
 
 const rotulo = Karla({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  /* El 700 entró con los titulares en palo seco: con una sola familia, el
+     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
+  weight: ["400", "500", "600", "700"],
   variable: "--f-rotulo",
   display: "swap",
 });

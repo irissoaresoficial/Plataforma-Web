@@ -104,10 +104,16 @@ export const rotulo = (color = "var(--text-3)") =>
   "font-size:var(--t-mini);font-weight:590;letter-spacing:-.005em;color:" + color + ";";
 
 /** Título de tarjeta, en la serif. */
-export const TITULO = "font-family:var(--font-display);font-size:var(--t-title);font-weight:500;letter-spacing:-.012em;line-height:1.2;color:var(--text);";
+/*
+ * El título de una pantalla. Con una sola familia, la jerarquía la llevan el
+ * peso y el espaciado: 650 y el tracking apretado. Con el 500 de antes —que
+ * iba bien en la serif, donde la forma de la letra ya distinguía— un titular
+ * en palo seco se lee como un párrafo en grande.
+ */
+export const TITULO = "font-family:var(--font-display);font-size:var(--t-title);font-weight:650;letter-spacing:-.026em;line-height:1.14;color:var(--text);";
 
 /** Encabezado de sección. */
-export const CABECERA = "font-family:var(--font-display);font-size:var(--t-head);font-weight:500;letter-spacing:-.014em;line-height:1.15;color:var(--text);";
+export const CABECERA = "font-family:var(--font-display);font-size:var(--t-head);font-weight:620;letter-spacing:-.022em;line-height:1.16;color:var(--text);";
 
 /** El texto que se lee de verdad: los párrafos de los apuntes. */
 export const LECTURA = "font-size:var(--t-read);line-height:1.62;color:var(--text-2);text-wrap:pretty;";

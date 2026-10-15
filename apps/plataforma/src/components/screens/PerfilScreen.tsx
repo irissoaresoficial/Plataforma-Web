@@ -38,32 +38,79 @@
  * significa que se vea.
  */
 
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
 import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO } from "@/lib/ui";
 import { NOMBRE_ROL } from "@/lib/roles";
-import Muestra from "../escuela/Muestra";
-
-type Medalla = { id: string; nombre: string; como: string; abierta: boolean };
-
-const MEDALLAS: Medalla[] = [
-  { id: "1", nombre: "Primera clase", como: "Termina tu primera lección.", abierta: true },
-  { id: "2", nombre: "Módulo entero", como: "Termina todas las lecciones de un módulo.", abierta: true },
-  { id: "3", nombre: "Siete días", como: "Entra siete días seguidos.", abierta: true },
-  { id: "4", nombre: "La primera vez que hablas", como: "Escribe tu primer tema en la comunidad.", abierta: false },
-  { id: "5", nombre: "Curso terminado", como: "Acaba un curso de principio a fin.", abierta: false },
-  { id: "6", nombre: "Alguien te lo agradece", como: "Responde a alguien y que te lo agradezca.", abierta: false },
-];
+import {
+  avance as repoAvance,
+  cursos as repoCursos,
+  inscripciones as repoInscripciones,
+  type Avance,
+} from "@/lib/escuela";
+import { marcador, medallas, racha, visitasDe, type Marcador, type Medalla } from "@/lib/escuela/trofeos";
 
 export default function PerfilScreen() {
   const { usuario, esAdmin } = useSesion();
   const quieto = useReducedMotion();
+  const uid = usuario ? usuario.uid : "";
+
+  const [marca, setMarca] = useState<Marcador | null>(null);
+  const [lista, setLista] = useState<Medalla[]>([]);
+
+  /*
+   * TODO ESTO SE CALCULA, NO SE GUARDA. El porqué está en `trofeos.ts`: dos
+   * verdades sobre lo mismo acaban discrepando, y entonces no hay forma de
+   * saber cuál miente.
+   *
+   * Y falla en silencio a propósito: si no llega, el perfil sale sin números y
+   * con la identidad intacta. Perder la racha un día es una molestia; perder
+   * la pantalla donde se cambia la contraseña y se borra la cuenta, no.
+   */
+  useEffect(() => {
+    if (!uid) return;
+    let vivo = true;
+    (async () => {
+      try {
+        const mios = esAdmin
+          ? await repoCursos.listar()
+          : await (async () => {
+              const [pub, ins] = await Promise.all([
+                repoCursos.publicados(),
+                repoInscripciones.deAlumno(uid),
+              ]);
+              const con = new Set(ins.map((i) => i.cursoId));
+              return pub.filter((c) => con.has(c.id));
+            })();
+        const [avs, dias] = await Promise.all([
+          Promise.all(mios.map((c) => repoAvance.de(uid, c.id).catch(() => null))),
+          visitasDe(uid).catch(() => [] as string[]),
+        ]);
+        if (!vivo) return;
+        const porCurso: Record<string, Avance | null> = {};
+        mios.forEach((c, i) => (porCurso[c.id] = avs[i]));
+        const m = marcador(mios, porCurso, dias);
+        setMarca(m);
+        /* Los mensajes de la comunidad todavía no se cuentan: haría falta una
+           consulta por autor y un índice. La medalla de «la primera vez que
+           hablas» se queda cerrada hasta que eso exista, que es mejor que
+           darla por ganada sin mirar. */
+        setLista(medallas(m, 0));
+      } catch {
+        /* Ver arriba. */
+      }
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, [uid, esAdmin]);
 
   const nombre = usuario ? usuario.nombre : "";
   const email = usuario ? usuario.email : "";
   const roles = usuario ? usuario.roles : [];
-  const abiertas = MEDALLAS.filter((m) => m.abierta).length;
+  const abiertas = lista.filter((m) => m.abierta).length;
 
   const tarjeta =
     "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
@@ -94,7 +141,6 @@ export default function PerfilScreen() {
     <div style={css("display:flex;flex-direction:column;gap:var(--s5);max-width:900px;")}>
       <h1 style={css(TITULO + "margin:0;")}>Tu perfil</h1>
 
-      <Muestra falta="Al conectarla, los números y las medallas saldrán de lo que hayas hecho de verdad." />
 
       {/* ------------------------------------------------------ quién eres */}
       <section style={css(tarjeta + "display:flex;gap:var(--s4);align-items:center;flex-wrap:wrap;")}>
@@ -143,10 +189,10 @@ export default function PerfilScreen() {
         <section>
           <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>Lo que llevas</h2>
           <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(150px,1fr));")}>
-            {cifra("7", "días seguidos", 0)}
-            {cifra("12", "lecciones hechas", 1)}
-            {cifra("1", "curso empezado", 2)}
-            {cifra(`${abiertas}`, "medallas", 3)}
+            {cifra(`${marca?.racha ?? 0}`, (marca?.racha ?? 0) === 1 ? "día seguido" : "días seguidos", 0)}
+            {cifra(`${marca?.lecciones ?? 0}`, (marca?.lecciones ?? 0) === 1 ? "lección hecha" : "lecciones hechas", 1)}
+            {cifra(`${marca?.cursosEmpezados ?? 0}`, (marca?.cursosEmpezados ?? 0) === 1 ? "curso empezado" : "cursos empezados", 2)}
+            {cifra(`${abiertas}`, abiertas === 1 ? "medalla" : "medallas", 3)}
           </div>
         </section>
       )}
@@ -156,12 +202,12 @@ export default function PerfilScreen() {
         <div style={css("display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s3);flex-wrap:wrap;")}>
           <h2 style={css(CABECERA + "margin:0;font-size:var(--t-head);")}>Medallas</h2>
           <span style={css(NOTA)}>
-            {abiertas} de {MEDALLAS.length}
+            {abiertas} de {lista.length}
           </span>
         </div>
 
         <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(230px,1fr));")}>
-          {MEDALLAS.map((m, i) => (
+          {lista.map((m, i) => (
             <motion.div
               key={m.id}
               initial={quieto ? false : { opacity: 0, y: 10 }}

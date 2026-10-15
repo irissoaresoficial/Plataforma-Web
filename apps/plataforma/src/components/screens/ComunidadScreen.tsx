@@ -6,195 +6,392 @@
  * ============================================================================
  *
  * Lo que hace que la gente vuelva cuando ya ha visto los vídeos. Un curso se
- * termina; una comunidad no. Por eso esto no es un añadido: es lo que sostiene
- * una membresía que se cobra todos los meses.
+ * termina; una comunidad no. No es un añadido: es lo que sostiene una
+ * membresía que se cobra todos los meses.
  *
- * LAS DECISIONES DE FORMA, QUE AQUÍ SON DECISIONES DE FONDO
+ * LAS DECISIONES DE FORMA, QUE AQUÍ SON DE FONDO
  * ---------------------------------------------------------------------------
  *
- * 1. SE ESCRIBE ARRIBA DEL TODO, Y EL CAJÓN ESTÁ ABIERTO.
- *    Un botón de «nuevo tema» esconde la acción detrás de un clic y de una
- *    pantalla nueva, y eso basta para que no se escriba. Con el cajón a la
- *    vista, escribir es lo primero que se puede hacer al entrar.
+ * 1. SE ESCRIBE ARRIBA DEL TODO Y EL CAJÓN ESTÁ ABIERTO. Un botón de «nuevo
+ *    tema» esconde la acción detrás de un clic y de otra pantalla, y eso basta
+ *    para que no se escriba. Con el cajón a la vista, escribir es lo primero
+ *    que se puede hacer al entrar.
  *
- * 2. LOS TEMAS SE ORDENAN POR ÚLTIMA RESPUESTA, no por fecha de creación.
- *    Una comunidad que ordena por creación entierra las conversaciones vivas
- *    debajo de las muertas. Lo que hay que ver al entrar es dónde se está
- *    hablando ahora.
+ * 2. LOS TEMAS SE ORDENAN POR ÚLTIMA RESPUESTA. Ordenar por fecha de creación
+ *    entierra las conversaciones vivas debajo de las muertas.
  *
- * 3. NO HAY «ME GUSTA», HAY RESPUESTAS.
- *    Un contador de corazones premia lo que gusta; en una escuela donde la
- *    gente cuenta cosas difíciles de su familia, lo que hay que premiar es que
- *    alguien conteste. Las reacciones están, pero pequeñas y detrás.
+ * 3. LO FIJADO VA PRIMERO Y SE VE DISTINTO. Es por donde Iris dice lo que
+ *    todos tienen que leer; mezclado con el resto se pierde en dos días.
  *
- * 4. LO FIJADO SE VE DISTINTO Y VA PRIMERO.
- *    Es por donde Iris dice las cosas que todos tienen que leer. Si se mezclara
- *    con el resto, se perdería en dos días.
+ * 4. EL HILO SE ABRE AQUÍ MISMO, no en otra pantalla. Un foro donde entrar a
+ *    un tema es irse de la lista obliga a volver atrás después de cada
+ *    respuesta, y eso es lo que hace que sólo se conteste a uno.
  */
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL, CAMPO, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal } from "@/lib/ui";
-import Muestra from "../escuela/Muestra";
+import { BOTON_NORMAL, BOTON_PLANO, CAMPO, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal } from "@/lib/ui";
+import { useSesion } from "@/lib/sesion";
+import Confirmar from "../Confirmar";
+import {
+  borraTema,
+  creaTema,
+  fija,
+  listaTemas,
+  responde,
+  respuestasDe,
+  type Respuesta,
+  type Tema,
+} from "@/lib/escuela/comunidad";
+import { guardadoEnLaNube } from "@/lib/escuela";
 
-type Tema = {
-  id: string;
-  autor: string;
-  esIris?: boolean;
-  fijado?: boolean;
-  cuando: string;
-  titulo: string;
-  texto: string;
-  respuestas: number;
-  reacciones: number;
-};
-
-const EJEMPLO: Tema[] = [
-  {
-    id: "f",
-    autor: "Iris Soares",
-    esIris: true,
-    fijado: true,
-    cuando: "hace 2 días",
-    titulo: "Cómo funciona esto y qué se puede preguntar aquí",
-    texto:
-      "Bienvenida a la comunidad. Aquí se pregunta cualquier duda de los cursos, se comparten lecturas y se cuenta lo que vais viendo en vuestras familias. Un par de normas: lo que se cuenta aquí no sale de aquí, y nadie interpreta la carta de otro sin que lo pida.",
-    respuestas: 14,
-    reacciones: 31,
-  },
-  {
-    id: "1",
-    autor: "Carmen Aledo",
-    cuando: "hace 3 h",
-    titulo: "El 11 y el 2 en la misma carta: ¿cómo se lee?",
-    texto:
-      "Estoy con la carta de mi madre y me salen los dos. Entiendo que el 11 no se reduce, pero en la casa de los ciclos me cuadra mejor el 2. ¿Alguien lo ha trabajado?",
-    respuestas: 7,
-    reacciones: 4,
-  },
-  {
-    id: "2",
-    autor: "Lucía Ferrer",
-    cuando: "ayer",
-    titulo: "Terminé el módulo 1 y tengo que contar una cosa",
-    texto:
-      "Hice el árbol de mi abuela y me encontré la misma fecha repetida en tres generaciones. Se me quedó el cuerpo raro. No sé si a alguien más le ha pasado.",
-    respuestas: 23,
-    reacciones: 18,
-  },
-  {
-    id: "3",
-    autor: "Marta Ortiz",
-    cuando: "hace 3 días",
-    titulo: "Duda tonta con la ce con cedilla de los apellidos portugueses",
-    texto: "Mi apellido de soltera es Gonçalves y no sabía si la cuenta lo coge bien. ¿Alguien con apellido portugués?",
-    respuestas: 5,
-    reacciones: 2,
-  },
-];
+/** «hace 3 h», «ayer», «12 oct». Lo que diría una persona, no una fecha. */
+function cuando(iso: string): string {
+  const d = new Date(iso);
+  const min = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (min < 1) return "ahora mismo";
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `hace ${h} h`;
+  if (h < 48) return "ayer";
+  return d.toLocaleDateString("es-ES", { day: "numeric", month: "short" });
+}
 
 export default function ComunidadScreen() {
-  const [escrito, setEscrito] = useState("");
+  const { usuario, esAdmin } = useSesion();
   const quieto = useReducedMotion();
 
-  const fijados = EJEMPLO.filter((t) => t.fijado);
-  const resto = EJEMPLO.filter((t) => !t.fijado);
+  const [temas, setTemas] = useState<Tema[] | null>(null);
+  const [roto, setRoto] = useState(false);
+  const [fallo, setFallo] = useState("");
 
-  const ficha = (t: Tema, i: number) => (
-    <motion.article
-      key={t.id}
-      initial={quieto ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(0.05 * i, 0.25), duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+  const [titulo, setTitulo] = useState("");
+  const [texto, setTexto] = useState("");
+  const [mandando, setMandando] = useState(false);
+
+  /** Qué hilo está abierto, y lo que se ha leído de él. */
+  const [abierto, setAbierto] = useState<string | null>(null);
+  const [hilo, setHilo] = useState<Respuesta[]>([]);
+  const [contesta, setContesta] = useState("");
+
+  const autor = usuario
+    ? { uid: usuario.uid, nombre: usuario.nombre || "Sin nombre", esIris: esAdmin }
+    : null;
+
+  const carga = useCallback(async () => {
+    setRoto(false);
+    try {
+      setTemas(await listaTemas());
+    } catch (e) {
+      setTemas([]);
+      setRoto(true);
+      setFallo(e instanceof Error ? e.message : "No se han podido leer los temas.");
+    }
+  }, []);
+
+  useEffect(() => {
+    void carga();
+  }, [carga]);
+
+  async function abre(t: Tema) {
+    if (abierto === t.id) {
+      setAbierto(null);
+      return;
+    }
+    setAbierto(t.id);
+    setHilo([]);
+    setContesta("");
+    try {
+      setHilo(await respuestasDe(t.id));
+    } catch {
+      /* El tema se sigue leyendo aunque sus respuestas no lleguen. */
+    }
+  }
+
+  async function publica() {
+    if (!autor || !titulo.trim()) return;
+    setMandando(true);
+    setFallo("");
+    try {
+      const t = await creaTema(autor, titulo, texto);
+      setTemas((xs) => [t, ...(xs ?? [])]);
+      setTitulo("");
+      setTexto("");
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido publicar.");
+    } finally {
+      setMandando(false);
+    }
+  }
+
+  async function contestar(t: Tema) {
+    if (!autor || !contesta.trim()) return;
+    setFallo("");
+    try {
+      const r = await responde(t.id, autor, contesta);
+      setHilo((xs) => [...xs, r]);
+      setContesta("");
+      setTemas((xs) =>
+        (xs ?? []).map((x) =>
+          x.id === t.id ? { ...x, respuestas: x.respuestas + 1, movido: r.creado } : x
+        )
+      );
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido responder.");
+    }
+  }
+
+  async function alternaFijado(t: Tema) {
+    const antes = temas;
+    setTemas((xs) => (xs ?? []).map((x) => (x.id === t.id ? { ...x, fijado: !x.fijado } : x)));
+    try {
+      await fija(t.id, !t.fijado);
+    } catch (e) {
+      setTemas(antes);
+      setFallo(e instanceof Error ? e.message : "No se ha podido fijar.");
+    }
+  }
+
+  async function borra(t: Tema) {
+    const antes = temas;
+    setTemas((xs) => (xs ?? []).filter((x) => x.id !== t.id));
+    try {
+      await borraTema(t.id);
+    } catch (e) {
+      setTemas(antes);
+      setFallo(e instanceof Error ? e.message : "No se ha podido borrar.");
+    }
+  }
+
+  /* ------------------------------------------------------------- pintura */
+
+  const avatar = (nombre: string, deIris: boolean, grande = false) => (
+    <span
+      aria-hidden
       style={css(
-        "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
-          "box-shadow:var(--nm);padding:var(--s4);display:flex;gap:var(--s3);" +
-          /* Lo fijado se distingue por un filo dorado a la izquierda y no por un
-             fondo distinto: un fondo distinto se lee como «esto es otra cosa» y
-             esto es un tema más, sólo que el que hay que leer. */
-          (t.fijado ? "border-left:3px solid var(--gold, var(--text-3));" : "")
+        `flex:none;display:grid;place-items:center;width:${grande ? 40 : 32}px;height:${grande ? 40 : 32}px;` +
+          "border-radius:50%;font-weight:600;font-size:var(--t-body);" +
+          (deIris
+            ? "background:var(--gold-soft);color:var(--gold-deep);"
+            : "background:var(--rosa);color:var(--rosa-tx);")
       )}
     >
-      <span
-        aria-hidden
+      {(nombre.trim()[0] || "·").toUpperCase()}
+    </span>
+  );
+
+  const ficha = (t: Tema, i: number) => {
+    const dentro = abierto === t.id;
+    const mio = usuario && t.uid === usuario.uid;
+    return (
+      <motion.article
+        key={t.id}
+        initial={quieto ? false : { opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: Math.min(0.04 * i, 0.2), duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         style={css(
-          "flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;font-weight:600;" +
-            /* Iris en el oro de la casa; el resto en el rosa de la comunidad.
-               Que la escuela se distinga de un alumno de un vistazo importa:
-               lo que escribe ella no es una opinión más del hilo. */
-            (t.esIris
-              ? "background:var(--gold-soft);color:var(--gold-deep);"
-              : "background:var(--rosa);color:var(--rosa-tx);")
+          "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);" +
+            "box-shadow:var(--nm);padding:var(--s4);" +
+            /* Lo fijado con un filo dorado a la izquierda, no con otro fondo:
+               otro fondo se lee como «esto es otra cosa», y es un tema más —
+               sólo que el que hay que leer. */
+            (t.fijado ? "border-left:3px solid var(--gold);" : "")
         )}
       >
-        {t.autor.trim()[0]}
-      </span>
-
-      <div style={css("flex:1;min-width:0;")}>
-        <div style={css("display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;")}>
-          <span style={css("font-size:var(--t-body);font-weight:600;color:var(--text);")}>{t.autor}</span>
-          {t.esIris && (
-            <span
-              style={css(
-                "font-size:var(--t-micro);font-weight:600;padding:2px 8px;border-radius:var(--r-pill);" +
-                  "background:var(--gold-soft);color:var(--gold-deep);"
+        <div style={css("display:flex;gap:var(--s3);")}>
+          {avatar(t.autor, t.esIris, true)}
+          <div style={css("flex:1;min-width:0;")}>
+            <div style={css("display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;")}>
+              <span style={css("font-size:var(--t-body);font-weight:600;color:var(--text);")}>{t.autor}</span>
+              {t.esIris && (
+                <span
+                  style={css(
+                    "font-size:var(--t-micro);font-weight:600;padding:2px 8px;border-radius:var(--r-pill);" +
+                      "background:var(--gold-soft);color:var(--gold-deep);"
+                  )}
+                >
+                  la escuela
+                </span>
               )}
-            >
-              la escuela
-            </span>
-          )}
-          {t.fijado && <span style={css(NOTA)}>· fijado</span>}
-          <span style={css(NOTA + "margin-left:auto;")}>{t.cuando}</span>
-        </div>
+              {t.fijado && <span style={css(NOTA)}>· fijado</span>}
+              <span style={css(NOTA + "margin-left:auto;")}>{cuando(t.movido)}</span>
+            </div>
 
-        <h3 style={css("font-size:var(--t-read);font-weight:600;margin:7px 0 6px;line-height:1.3;")}>{t.titulo}</h3>
-        <p style={css(LECTURA + "margin:0;")}>{t.texto}</p>
+            <h3 style={css("font-size:var(--t-read);font-weight:600;margin:7px 0 6px;line-height:1.3;")}>
+              {t.titulo}
+            </h3>
+            {t.texto && <p style={css(LECTURA + "margin:0;white-space:pre-wrap;")}>{t.texto}</p>}
 
-        <div style={css("display:flex;gap:var(--s3);align-items:center;margin-top:var(--s3);")}>
-          <button style={css(BOTON_NORMAL)}>
-            {t.respuestas} {t.respuestas === 1 ? "respuesta" : "respuestas"}
-          </button>
-          {/* Las reacciones existen pero no mandan: lo que esta comunidad
-              premia es que alguien conteste, no que algo guste. */}
-          <span style={css(NOTA)}>♡ {t.reacciones}</span>
+            <div style={css("display:flex;gap:var(--s3);align-items:center;margin-top:var(--s3);flex-wrap:wrap;")}>
+              <button onClick={() => void abre(t)} style={css(BOTON_NORMAL)}>
+                {t.respuestas === 0
+                  ? dentro
+                    ? "Cerrar"
+                    : "Responder"
+                  : `${t.respuestas} ${t.respuestas === 1 ? "respuesta" : "respuestas"}`}
+              </button>
+              {esAdmin && (
+                <button onClick={() => void alternaFijado(t)} style={css(BOTON_PLANO)}>
+                  {t.fijado ? "Dejar de fijar" : "Fijar arriba"}
+                </button>
+              )}
+              {(esAdmin || mio) && (
+                <Confirmar
+                  estilo={BOTON_PLANO}
+                  pregunta="Se borra este tema. Sus respuestas dejan de verse."
+                  confirmar="Borrar"
+                  alConfirmar={() => void borra(t)}
+                >
+                  Borrar
+                </Confirmar>
+              )}
+            </div>
+
+            {/* ------------------------------------------------- el hilo */}
+            {dentro && (
+              <motion.div
+                initial={quieto ? false : { opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                style={css("overflow:hidden;")}
+              >
+                <div style={css("margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:var(--s3);")}>
+                  {hilo.map((r) => (
+                    <div key={r.id} style={css("display:flex;gap:11px;")}>
+                      {avatar(r.autor, r.esIris)}
+                      <div style={css("flex:1;min-width:0;")}>
+                        <div style={css("display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;")}>
+                          <span style={css("font-size:var(--t-mini);font-weight:600;color:var(--text-2);")}>
+                            {r.autor}
+                          </span>
+                          <span style={css(NOTA)}>{cuando(r.creado)}</span>
+                        </div>
+                        <p style={css(LECTURA + "margin:3px 0 0;white-space:pre-wrap;")}>{r.texto}</p>
+                      </div>
+                    </div>
+                  ))}
+
+                  {hilo.length === 0 && (
+                    <p style={css(NOTA + "margin:0;")}>Todavía no ha contestado nadie. Sé la primera.</p>
+                  )}
+
+                  <div style={css("display:flex;gap:var(--s3);align-items:flex-end;margin-top:var(--s2);flex-wrap:wrap;")}>
+                    <textarea
+                      value={contesta}
+                      onChange={(e) => setContesta(e.target.value)}
+                      rows={2}
+                      placeholder="Escribe tu respuesta"
+                      aria-label={`Responder a ${t.titulo}`}
+                      style={css(CAMPO + "flex:1 1 240px;resize:vertical;line-height:1.6;")}
+                    />
+                    <button
+                      onClick={() => void contestar(t)}
+                      disabled={!contesta.trim()}
+                      style={css(botonPrincipal(Boolean(contesta.trim())))}
+                    >
+                      Responder
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.article>
-  );
+      </motion.article>
+    );
+  };
+
+  const fijados = (temas ?? []).filter((t) => t.fijado);
+  const resto = (temas ?? []).filter((t) => !t.fijado);
 
   return (
     <div style={css("display:flex;flex-direction:column;gap:var(--s4);max-width:820px;")}>
       <h1 style={css(TITULO + "margin:0;")}>Comunidad</h1>
 
-      <Muestra falta="Al conectarla, lo que se escriba aquí se guardará y le llegará un aviso a quien participe en el tema." />
+      {!guardadoEnLaNube && (
+        <p style={css(NOTA + "margin:0;")}>
+          Sin conexión a la nube la comunidad no guarda nada. Es lo normal mientras se trabaja en la plataforma.
+        </p>
+      )}
+
+      {fallo && (
+        <p role="alert" style={css(NOTA + "margin:0;color:var(--alarma, #C0392B);")}>
+          {fallo}
+        </p>
+      )}
 
       {/* --------------------------------------------------- escribir algo */}
       <section
         style={css(
-          "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
-            "box-shadow:var(--nm);padding:var(--s4);"
+          "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);" +
+            "box-shadow:var(--nm);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3);"
         )}
       >
-        <textarea
-          value={escrito}
-          onChange={(e) => setEscrito(e.target.value)}
-          rows={escrito ? 4 : 2}
+        <input
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
           placeholder="¿Qué quieres preguntar o contar?"
-          aria-label="Escribe un tema nuevo"
-          style={css(CAMPO + "resize:vertical;line-height:1.6;")}
+          aria-label="Título del tema"
+          style={css(CAMPO + "font-size:var(--t-read);")}
         />
-        <div style={css("display:flex;justify-content:flex-end;gap:var(--s3);margin-top:var(--s3);")}>
-          <button disabled={!escrito.trim()} style={css(botonPrincipal(Boolean(escrito.trim())))}>
-            Publicar
-          </button>
-        </div>
+        {/* El cuerpo sólo aparece cuando hay título: un cajón de dos campos
+            vacíos pide más de lo que parece y frena a quien iba a escribir
+            una línea. */}
+        {titulo.trim() && (
+          <textarea
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            rows={4}
+            placeholder="Cuéntalo con calma. Opcional."
+            aria-label="Texto del tema"
+            style={css(CAMPO + "resize:vertical;line-height:1.6;")}
+          />
+        )}
+        {titulo.trim() && (
+          <div style={css("display:flex;justify-content:flex-end;")}>
+            <button
+              onClick={() => void publica()}
+              disabled={mandando}
+              style={css(botonPrincipal(!mandando))}
+            >
+              {mandando ? "Publicando…" : "Publicar"}
+            </button>
+          </div>
+        )}
       </section>
+
+      {temas === null && <p style={css(NOTA + "margin:0;")}>Cargando…</p>}
+
+      {/* Que no se pueda leer no es lo mismo que que no haya nada escrito. */}
+      {roto && (
+        <p style={css(NOTA + "margin:0;")}>
+          No se han podido leer los temas. Mira la conexión y vuelve a entrar.
+        </p>
+      )}
+
+      {temas !== null && !roto && temas.length === 0 && (
+        <div
+          style={css(
+            "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);" +
+              "padding:clamp(28px,5vw,48px) var(--pad-card);box-shadow:var(--nm);"
+          )}
+        >
+          <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Aquí todavía no ha hablado nadie</h2>
+          <p style={css(LECTURA + "margin:0;max-width:52ch;")}>
+            {esAdmin
+              ? "Empieza tú: un mensaje de bienvenida fijado arriba es lo que hace que el segundo se atreva. Una comunidad vacía no la rompe un alumno."
+              : "Sé la primera en escribir. Una duda, algo que hayas visto en tu carta, lo que sea."}
+          </p>
+        </div>
+      )}
 
       {fijados.map((t, i) => ficha(t, i))}
 
-      <h2 style={css(CABECERA + "margin:var(--s2) 0 0;font-size:var(--t-head);")}>Lo último</h2>
-      {resto.map((t, i) => ficha(t, i + 1))}
+      {resto.length > 0 && fijados.length > 0 && (
+        <h2 style={css(CABECERA + "margin:var(--s2) 0 0;font-size:var(--t-head);")}>Lo último</h2>
+      )}
+      {resto.map((t, i) => ficha(t, i + fijados.length))}
     </div>
   );
 }
