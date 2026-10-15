@@ -204,18 +204,22 @@ export default function ConsultaScreen() {
             </div>
 
             {/*
-              * EL AVISO DE LAS LETRAS QUE EL MANUAL NO RECOGE.
+              * EL AVISO DE LO QUE NO SE PUEDE LEER.
               *
-              * La tabla de valores tiene las letras que tiene. Cuando llega un
-              * apellido con una que no está —la ce con cedilla de «Gonçalves»,
-              * la a con tilde de «João»— el motor no puede darle un valor, y
-              * antes se la comía sin decir nada: el estudio salía con un
-              * número de menos y con todo el aspecto de estar bien.
+              * Casi nunca sale, y ésa es la idea. Las letras con adorno —la ce
+              * con cedilla de «Gonçalves», la a de «João»— ya NO llegan aquí:
+              * el motor les quita el adorno y las lee como la letra que son,
+              * porque una ce con cedilla es una ce. Eso no inventa ningún
+              * valor, sólo deja de perder una letra.
               *
-              * No se inventa el valor que falta, porque eso lo decide Iris y
-              * no este código. Lo que se hace es no entregar a ciegas: aquí se
-              * dice qué letra es y en qué apellido, y ella decide si lo
-              * escribe de otra forma o si hay que añadir esa letra al manual.
+              * Lo que llega aquí es lo que no tiene ninguna letra nuestra
+              * debajo: otro alfabeto, un emoji, un símbolo pegado al copiar.
+              * Eso no se puede convertir en nada, no suma, y hay que decirlo
+              * antes de entregar en vez de comérselo callando.
+              *
+              * Si este aviso empezara a salir a menudo sería señal de que algo
+              * se ha roto —se aprendería a ignorarlo y entonces ya no sirve
+              * para el día que importa.
               */}
             {n.descartadas.length > 0 && (
               <div
@@ -227,8 +231,8 @@ export default function ConsultaScreen() {
                 )}
               >
                 <strong>El estudio saldría incompleto.</strong> Hay{" "}
-                {n.descartadas.length === 1 ? "un carácter" : `${n.descartadas.length} caracteres`} que el
-                manual no recoge y que no suman nada:{" "}
+                {n.descartadas.length === 1 ? "un carácter" : `${n.descartadas.length} caracteres`} que no
+                son una letra de nuestro alfabeto, así que no suman nada:{" "}
                 {n.descartadas.map((c) => (
                   <code
                     key={c}
@@ -240,7 +244,7 @@ export default function ConsultaScreen() {
                     {c}
                   </code>
                 ))}
-                . Escríbelo con la letra equivalente del castellano, o consúltalo con Iris antes de entregar.
+                . Escribe el nombre con nuestras letras, o consúltalo con Iris antes de entregar.
               </div>
             )}
 

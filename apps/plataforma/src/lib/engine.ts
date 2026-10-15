@@ -85,24 +85,41 @@ function reduceTo(x: number, max: number): number {
   return n;
 }
 /**
- * LO QUE EL MOTOR NO SABE LEER, LO DICE EN VOZ ALTA.
+ * UNA LETRA CON ADORNO SIGUE SIENDO SU LETRA.
  *
- * Antes esto sólo devolvía el nombre limpio, y lo que no reconocía lo
- * cambiaba por un espacio sin más. El resultado era el peor de los posibles:
- * «Gonçalves» se convertía en «GON ALVES», la ce con cedilla desaparecía, su
- * valor no se sumaba, y el estudio salía con un número equivocado y con
- * aspecto de estar perfectamente bien. Nadie podía notarlo mirando la
- * pantalla, porque no había nada que mirar.
+ * Antes, lo que la tabla del manual no reconocía se cambiaba por un espacio y
+ * se perdía. «Gonçalves» quedaba en «GON ALVES»: la cedilla desaparecía, su
+ * valor no se sumaba, y el estudio salía con un número de menos y con aspecto
+ * de estar perfectamente bien.
  *
- * La tabla de valores del manual tiene las letras que tiene, y no se inventan
- * las que faltan: eso lo decide Iris, no este archivo. Lo que sí se arregla es
- * el silencio. Ahora se devuelve también la lista de lo descartado, y quien
- * pinta la pantalla avisa.
+ * LA REGLA, DICHA POR GERSON: la ce con cedilla ES una ce. Y por el mismo
+ * camino, la a de «João» es una a, y la o de «Antônio» es una o. El adorno
+ * cambia cómo suena en su idioma, no qué letra es.
+ *
+ * ESTO NO INVENTA NINGÚN VALOR, y por eso se puede hacer sin preguntar: no se
+ * le pone un número a una letra que el manual no tiene, se reconoce qué letra
+ * del manual es la que hay escrita. Además, todas las variantes que la tabla
+ * sí recoge valen exactamente lo mismo que su letra base —la A y la Á valen 1,
+ * la N y la Ñ valen 14, la U y la Ü valen 6—, así que quitar el adorno nunca
+ * cambia una cuenta: sólo deja de perderla.
+ *
+ * CÓMO SE QUITA EL ADORNO. Con la descomposición Unicode: «Ç» se parte en una
+ * «C» más una marca de cedilla suelta, y la marca se tira. Vale para toda
+ * letra latina con cualquier adorno, incluidos los que nadie ha previsto.
+ *
+ * LO QUE NO TIENE LETRA DEBAJO SÍ SE AVISA. Un carácter de otro alfabeto —o un
+ * emoji— no se puede convertir en nada, y ahí sigue haciendo falta decirlo en
+ * vez de comérselo callando.
  */
 type NombreLimpio = { texto: string; descartadas: string[] };
 
+function sinAdorno(c: string): string {
+  /* NFD separa la letra de sus marcas; el rango \u0300-\u036f son esas marcas. */
+  return c.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 function normalizaNombre(s: string, conCifras = false): NombreLimpio {
-  const permitidas = conCifras ? /[A-ZÁÉÍÓÚÜÑÄÖ0-9\s]/ : /[A-ZÁÉÍÓÚÜÑÄÖ\s]/;
+  const permitidas = conCifras ? /^[A-ZÁÉÍÓÚÜÑÄÖ0-9\s]$/ : /^[A-ZÁÉÍÓÚÜÑÄÖ\s]$/;
   const arriba = (s || "").toUpperCase();
 
   const fuera: string[] = [];
@@ -112,6 +129,16 @@ function normalizaNombre(s: string, conCifras = false): NombreLimpio {
       texto += c;
       continue;
     }
+
+    /* El adorno fuera, a ver qué letra queda debajo. «Ç» deja «C», «Ã» deja
+       «A». La Ñ y las vocales con tilde no pasan por aquí: la tabla ya las
+       tiene y han entrado por el camino de arriba, enteras. */
+    const base = sinAdorno(c);
+    if (base.length === 1 && permitidas.test(base)) {
+      texto += base;
+      continue;
+    }
+
     texto += " ";
     /* Los separadores que la gente escribe a propósito —el guión de
        «Anne-Marie», el apóstrofo de «O'Connor», el punto de una inicial— no

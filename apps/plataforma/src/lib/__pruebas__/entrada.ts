@@ -8,11 +8,17 @@
  * los dos se ve mirando la pantalla, y ésa es exactamente la razón de que
  * hagan falta estas comprobaciones.
  *
- *   1. LAS LETRAS QUE NO ESTÁN EN EL MANUAL. La tabla de valores tiene las
- *      letras que tiene. Al llegar «Gonçalves», la ce con cedilla no tenía
- *      valor y el motor se la comía: el nombre valía menos y nadie lo sabía.
- *      Aquí no se comprueba que esa letra sume —no suma, y está bien que no
- *      sume mientras no esté en el manual— sino que el motor AVISE.
+ *   1. LAS LETRAS CON ADORNO. La tabla de valores tiene las letras que tiene.
+ *      Al llegar «Gonçalves», la ce con cedilla no estaba en la tabla y el
+ *      motor se la comía: el nombre valía menos y nadie lo sabía.
+ *
+ *      La regla, dicha por Gerson: esa letra ES una ce. Así que no se avisa de
+ *      ella, se le quita el adorno y se lee como lo que es. Lo que se
+ *      comprueba aquí es justo eso: que la letra LLEGA a la cuenta.
+ *
+ *      Esto no inventa ningún valor —no se le pone número a una letra que el
+ *      manual no tiene, se reconoce qué letra del manual hay escrita— y por
+ *      eso vale también para la a de «João» o la o de «Antônio».
  *
  *   2. LAS FECHAS QUE NO EXISTEN. El 31 de febrero pasaba los tres controles
  *      viejos —día entre 1 y 31, mes entre 1 y 12, año de cuatro cifras— y
@@ -29,18 +35,26 @@ const casos: Caso[] = [];
 const comprueba = (que: string, obtenido: boolean, esperado: boolean) =>
   casos.push([que, obtenido, esperado]);
 
-/* ── 1. Las letras que el manual no recoge ───────────────────────────── */
+/* ── 1. Las letras con adorno se leen, no se tiran ───────────────────── */
 
+const lee = (nombre: string) => analizaNombre(nombre).texto;
 const avisa = (nombre: string) => analizaNombre(nombre).descartadas.length > 0;
 
-comprueba("avisa de la cedilla de Gonçalves", avisa("Joao Gonçalves"), true);
-comprueba("avisa de la a con tilde de João", avisa("João Silva"), true);
-comprueba("avisa de la o abierta de Mònica", avisa("Mònica Jordà"), true);
-comprueba("avisa de Conceição", avisa("Conceição Santos"), true);
-comprueba("avisa del circunflejo de Antônio", avisa("Antônio Câmara"), true);
+/* La comprobación que más importa del archivo: la letra llega a la cuenta.
+   Si esto falla, el nombre vale menos de lo que vale y el estudio sale mal
+   sin que nada en la pantalla lo delate. */
+comprueba("la cedilla de Gonçalves se lee como C", lee("Joao Gonçalves") === "JOAO GONCALVES", true);
+comprueba("la a de João se lee como A", lee("João Silva") === "JOAO SILVA", true);
+comprueba("la o abierta de Mònica se lee como O", lee("Mònica Jordà") === "MONICA JORDA", true);
+comprueba("Conceição se lee entera", lee("Conceição Santos") === "CONCEICAO SANTOS", true);
+comprueba("el circunflejo de Antônio se lee como O", lee("Antônio Câmara") === "ANTONIO CAMARA", true);
 
-/* Y lo contrario, que importa igual: un aviso que salta siempre es un aviso
-   que se aprende a ignorar en dos días. */
+/* Y ninguna de ellas avisa, porque no hay nada de lo que avisar. Un aviso que
+   salta en todos los apellidos portugueses se aprende a ignorar en dos días, y
+   entonces no sirve para el caso en que sí importa. */
+comprueba("Gonçalves NO avisa", avisa("Joao Gonçalves"), false);
+comprueba("João NO avisa", avisa("João Silva"), false);
+comprueba("Conceição NO avisa", avisa("Conceição Santos"), false);
 comprueba("NO avisa de un nombre normal", avisa("Maria Iris Soares Campos"), false);
 comprueba("NO avisa de las tildes del castellano", avisa("José Martínez Núñez"), false);
 comprueba("NO avisa de la diéresis", avisa("Begoña Güell"), false);
@@ -48,18 +62,40 @@ comprueba("NO avisa del guión de Anne-Marie", avisa("Anne-Marie Dupont"), false
 comprueba("NO avisa del apóstrofo de O'Connor", avisa("O'Connor Murphy"), false);
 comprueba("NO avisa de una inicial con punto", avisa("Ana M. Ruiz"), false);
 
-/* Dice QUÉ letra es, no sólo que hay algo raro: sin eso el aviso no sirve
-   para arreglarlo. */
-const g = analizaNombre("Gonçalves").descartadas;
-comprueba("el aviso nombra la letra concreta", g.length === 1 && g[0] === "Ç", true);
+/* Las que la tabla SÍ recoge entran enteras y siguen valiendo lo suyo: la Ñ no
+   se convierte en N por el camino. Esto no es un detalle: la Ñ vale 14 y la N
+   vale 5, así que confundirlas cambia la cuenta. */
+comprueba("la Ñ sobrevive entera", lee("Núñez") === "NÚÑEZ", true);
+comprueba("la tilde del castellano sobrevive", lee("José") === "JOSÉ", true);
 
-/* Una letra repetida se nombra una vez, no seis. */
-const repetida = analizaNombre("Çaça Çeçe").descartadas;
-comprueba("una letra repetida se nombra una sola vez", repetida.length === 1, true);
+/* Quitar el adorno no cambia una cuenta que ya salía bien: todas las variantes
+   que la tabla recoge valen lo mismo que su letra base. Se comprueba con la
+   que sí está en los dos sitios. */
+const conTilde = analizaNombre("MARÍA").total;
+const sinTilde = analizaNombre("MARIA").total;
+comprueba("la Í acentuada vale lo mismo que la I", conTilde === sinTilde, true);
+
+/* LO QUE NO TIENE LETRA DEBAJO SÍ SE AVISA. Un carácter de otro alfabeto o un
+   emoji no se puede convertir en nada, y ahí sigue haciendo falta decirlo en
+   vez de comérselo callando. Es el único caso que queda, y por eso ahora el
+   aviso significa algo. */
+comprueba("avisa de un alfabeto que no es el nuestro", avisa("Ана Петрова"), true);
+comprueba("avisa del griego", avisa("Γιώργος"), true);
+comprueba("avisa de un emoji", avisa("Ana 🌙 Ruiz"), true);
+
+/* Dice QUÉ carácter es, no sólo que hay algo raro: sin eso el aviso no sirve
+   para arreglarlo. */
+const emoji = analizaNombre("Ana 🌙 Ruiz").descartadas;
+comprueba("el aviso nombra el carácter concreto", emoji.length === 1 && emoji[0] === "🌙", true);
+
+/* Repetido se nombra una vez, no seis. */
+const repetido = analizaNombre("Ana 🌙🌙 Ruiz 🌙").descartadas;
+comprueba("un carácter repetido se nombra una sola vez", repetido.length === 1, true);
 
 /* El nombre se sigue leyendo: avisar no es romper. */
-const roto = analizaNombre("Joao Gonçalves");
+const roto = analizaNombre("Ana 🌙 Ruiz");
 comprueba("el resto del nombre se sigue leyendo", roto.total > 0, true);
+comprueba("y el emoji no se cuela en el texto", roto.texto === "ANA RUIZ", true);
 
 /* ── 2. Las fechas que no existen ────────────────────────────────────── */
 
