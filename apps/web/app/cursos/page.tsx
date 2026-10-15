@@ -16,7 +16,7 @@ import LeadForm from '@/components/LeadForm';
 import Pendiente, { Hueco } from '@/components/Pendiente';
 import CursoDetalle from '@/components/CursoDetalle';
 import CuentaAtras from '@/components/CuentaAtras';
-import VideoPresenta from '@/components/VideoPresenta';
+import MarcaCurso from '@/components/MarcaCurso';
 import Foto from '@/components/Foto';
 import CartelCurso from '@/components/CartelCurso';
 import { CURSOS, MEMBRESIA, PENDIENTE, eur, falta, type Curso } from '@/content/site';
@@ -318,14 +318,34 @@ export default function Cursos() {
             )}
           </div>
 
-          {/* El vídeo se acerca. Es la cara de Iris: subiendo se lee como una
-              fila más de la ficha de al lado, acercándose se lee como que se
-              pone delante. */}
+          {/*
+            AQUÍ ESTABA IRIS PRESENTANDO EL CURSO DE SEPTIEMBRE.
+
+            Ese curso se dio en septiembre y está borrado de la web, así que su
+            vídeo de presentación anunciaba algo que ya no existe. Gerson, el 15
+            de octubre de 2026: «el vídeo de septiembre, quítalo, erradícalo».
+            Borrado el archivo, no sólo desenchufado.
+
+            En su sitio, la marca del curso que SÍ viene. Se acerca al aparecer
+            en vez de subir: es la cara de la página —una cosa que se pone
+            delante— y lo de arriba y lo de abajo ya suben.
+
+            CUANDO IRIS GRABE SU PRESENTACIÓN DE ESTE CURSO, su enlace va en
+            `videoUrl` dentro de la ficha del curso y sale dentro de la ficha,
+            que es donde ya lo enseña `CursoDetalle`. Una persona hablando vende
+            más que un rótulo; esto es lo mejor que hay mientras no la haya.
+
+            Con el vídeo se fue también `VideoPresenta`, el componente que lo
+            ponía: era el único sitio que lo usaba y su archivo ya no existe. Un
+            componente que no usa nadie y que apunta a un archivo borrado no es
+            una opción guardada para más adelante — es una trampa para quien lo
+            encuentre. Está en el historial si vuelve a hacer falta.
+          */}
           <Aparece modo="escala" retraso={2} className="cur-hero-video">
-            <VideoPresenta
-              src="/video/iris-presentacion.mp4"
-              cartel="/images/iris-presentacion-cartel.jpg"
-              etiqueta="Que te lo cuente Iris"
+            <MarcaCurso
+              video="/video/desordenes-amorosos.mp4"
+              cartel="/images/desordenes-amorosos-cartel.jpg"
+              alt="Desórdenes Amorosos · Escuela de Sabiduría 33"
             />
           </Aparece>
         </div>

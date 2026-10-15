@@ -6078,56 +6078,12 @@ body[data-nav-claro='si'] .sello-color {
   display: block;
 }
 
-/* El botón de reproducir ocupa el cuadro entero: en un móvil, acertar en un
-   círculo de sesenta píxeles con el pulgar es pedir puntería. Lo que se ve
-   dentro es la pastilla, pero lo que se pulsa es todo. */
-.vpres-play {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  border: none;
-  cursor: pointer;
-  font: inherit;
-  color: #fbf6ee;
-  background: linear-gradient(to top, rgba(20, 11, 14, 0.62), rgba(20, 11, 14, 0.12) 55%, rgba(20, 11, 14, 0.3));
-  transition: background 0.35s ease;
-}
-.vpres-play:hover {
-  background: linear-gradient(to top, rgba(20, 11, 14, 0.7), rgba(20, 11, 14, 0.2) 55%, rgba(20, 11, 14, 0.38));
-}
-.vpres-icono {
-  display: grid;
-  place-items: center;
-  width: clamp(54px, 6vw, 68px);
-  height: clamp(54px, 6vw, 68px);
-  border-radius: 50%;
-  background: var(--oro-luz, #e2cda2);
-  color: #2a1119;
-  padding-left: 4px; /* el triángulo pesa a la izquierda y descentra el círculo */
-  box-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.6);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.vpres-play:hover .vpres-icono {
-  transform: scale(1.07);
-}
-.vpres-txt {
-  font-size: var(--t-cuerpo);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
-}
-@media (max-width: 520px) {
-  /* En vertical la pastilla entera no cabe al lado del círculo sin apretarse:
-     el texto baja debajo. */
-  .vpres-play { flex-direction: column; gap: 14px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .vpres-play, .vpres-icono { transition: none; }
-  .vpres-play:hover .vpres-icono { transform: none; }
-}
+/* Aquí vivía el botón de reproducir, con su círculo dorado y su velo encima
+   del cartel. Se fue con `VideoPresenta` y con el vídeo de septiembre.
+
+   El marco `.vpres` sigue en pie porque lo usa la marca del curso, pero nada
+   pinta ya un botón encima: lo que la marca enseña se ve solo, y no hay nada
+   que decidir pulsar. */
 
 /* --- la urgencia, justo debajo ------------------------------------------- */
 .cur-urgencia {

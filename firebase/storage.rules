@@ -1,0 +1,98 @@
+rules_version = '2';
+
+/**
+ * ============================================================================
+ * LAS REGLAS DEL ALMACÉN DE ARCHIVOS
+ * ============================================================================
+ *
+ * OJO: ESTO NO ES LO MISMO QUE `firestore.rules` Y SE PEGA EN OTRO SITIO.
+ *
+ * Firebase tiene dos juegos de reglas separados y es el error más común de
+ * toda la instalación: se pegan las de la base de datos, se da por hecho que
+ * ya está todo, y las subidas siguen fallando con un «no autorizado» que no
+ * explica nada.
+ *
+ *   · `firestore.rules` → consola → Firestore Database → pestaña Reglas
+ *   · `storage.rules`   → consola → Storage → pestaña Reglas      ← ESTE
+ *
+ * QUÉ GUARDA ESTO: los vídeos de las clases. Entraron cuando Gerson decidió
+ * que todo fuera a Firebase en vez de a una plataforma de vídeo aparte.
+ */
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    /*
+     * QUIÉN PUEDE SUBIR: SÓLO IRIS, Y SE COMPRUEBA POR SU CORREO.
+     *
+     * Es el mismo truco que `arranque()` en las reglas de la base de datos, y
+     * se usa aquí por lo mismo: es lo más simple que funciona sin montar nada
+     * más. El correo sale del vale firmado por Firebase Auth, no de algo que
+     * el navegador pueda inventarse.
+     *
+     * LO QUE SE HA DESCARTADO, y por qué, para que no se vuelva a estudiar:
+     * desde septiembre de 2022 estas reglas SÍ pueden mirar la base de datos
+     * —`firestore.get()` y `firestore.exists()`— y se podría preguntar por el
+     * rol de la ficha, igual que hace Firestore. Sería más elegante y más
+     * general, pero trae tres cosas: hay que aceptar un permiso extra la
+     * primera vez que se guardan, cada comprobación cuenta como una lectura
+     * que se factura, y el tope es de dos documentos por evaluación.
+     *
+     * Con UNA administradora, todo eso se paga a cambio de nada. Con dos, deja
+     * de ser verdad: el día que Iris nombre a alguien más, esto se cambia por
+     * la consulta a la ficha y entonces sí merece la pena.
+     *
+     * ESTE CORREO ESTÁ ESCRITO EN TRES SITIOS —aquí, en `firestore.rules` y en
+     * `lib/firebase.ts`— y los tres tienen que decir lo mismo. No hay forma de
+     * tenerlo en uno solo: las reglas no leen variables de entorno.
+     */
+    function esIris() {
+      return request.auth != null
+        && request.auth.token.email.lower() == 'irissoaresoficial@gmail.com';
+    }
+
+    /*
+     * LOS VÍDEOS DE LAS CLASES.
+     *
+     * LEER: cualquiera que haya entrado en la plataforma.
+     *
+     * Y AQUÍ HAY UNA COSA QUE HAY QUE SABER ANTES DE COBRAR, escrita donde se
+     * va a mirar: esto NO dice «sólo quien ha comprado el curso». Dice «quien
+     * haya entrado». Además, la dirección que devuelve Firebase al subir lleva
+     * una llave dentro, así que quien tenga esa dirección se baja el vídeo sin
+     * estar dentro de nada.
+     *
+     * Para una escuela que todavía no cobra, está bien. Para una que cobre, no:
+     * un alumno pasa la dirección por WhatsApp y el curso se ha ido. Lo que lo
+     * arregla de verdad es no servir el archivo directamente, sino darle a cada
+     * persona una dirección que caduca en unos minutos, firmada por el servidor
+     * después de comprobar que esa persona tiene inscripción.
+     *
+     * Eso es trabajo de cuando entre Stripe, y va escrito aquí porque un «ya lo
+     * haremos» que no está escrito en ninguna parte no se hace nunca.
+     *
+     * ESCRIBIR: sólo Iris. Y el tope de tamaño va también aquí y no sólo en la
+     * pantalla: lo de la pantalla es cortesía —avisa antes de empezar a subir—
+     * y esto es la regla. Sin ella, cualquiera con la sesión de Iris abierta
+     * podría llenar el almacén, y el almacén se paga.
+     */
+    match /cursos/{cursoId}/{archivo} {
+      allow read: if request.auth != null;
+      allow write: if esIris()
+        && request.resource.size < 2 * 1024 * 1024 * 1024
+        && request.resource.contentType.matches('video/.*');
+    }
+
+    /*
+     * EL RESTO, CERRADO.
+     *
+     * Sin esta línea cualquier carpeta nueva nacería sin regla. Firebase la
+     * trataría como cerrada de todas formas, pero dejarlo escrito evita que
+     * alguien lo dé por supuesto — y evita la tentación de abrir la raíz «un
+     * momento, para probar».
+     */
+    match /{todo=**} {
+      allow read, write: if false;
+    }
+  }
+}

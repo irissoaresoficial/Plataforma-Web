@@ -31,8 +31,14 @@
  * 3. NADA PIDE SABER NADA.
  *
  *    No hay un campo «identificador», ni «slug», ni «orden». Todo eso lo pone
- *    el código. Los minutos los escribe ella porque acaba de grabar y los sabe;
- *    pedírselos a la plataforma de vídeo ataría la escuela a esa plataforma.
+ *    el código. Los minutos los escribe ella porque acaba de grabar y los sabe.
+ *
+ *    Y EL VÍDEO SE SUBE, NO SE PEGA. Al principio esto pedía un enlace, y aun
+ *    traduciéndolo bien seguía obligando a tener el vídeo colgado en algún
+ *    sitio y a saber de dónde se copia la dirección. Desde el 15 de octubre de
+ *    2026 se elige el archivo del ordenador y va a Firebase. Pegar un enlace
+ *    sigue estando, debajo y en pequeño, para la clase que ya vive en otra
+ *    parte.
  */
 
 import { useEffect, useState } from "react";
@@ -40,6 +46,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { BOTON_NORMAL, BOTON_PLANO, CAMPO, CABECERA, NOTA, botonPrincipal, rotulo } from "@/lib/ui";
 import Confirmar from "../Confirmar";
+import SubirVideo from "./SubirVideo";
 import { cursos as repo, nuevoId, totalLecciones, type Curso, type Leccion, type Modulo } from "@/lib/escuela";
 
 /** Un curso recién nacido: en borrador y sin nada dentro. */
@@ -433,14 +440,15 @@ export default function EditorCurso({
                     </div>
                   </div>
 
-                  <div style={css("display:flex;gap:10px;flex-wrap:wrap;")}>
-                    <input
-                      value={l.video}
-                      onChange={(e) => cambiaLeccion(im, il, { video: e.target.value })}
-                      placeholder="Pega aquí el enlace del vídeo"
-                      aria-label="Enlace del vídeo"
-                      style={css(CAMPO + "flex:1 1 260px;")}
-                    />
+                  <div style={css("display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;")}>
+                    <div style={css("flex:1 1 260px;min-width:0;")}>
+                      <SubirVideo
+                        cursoId={c.id}
+                        valor={l.video}
+                        alCambiar={(video) => cambiaLeccion(im, il, { video })}
+                        etiqueta={l.titulo || `la lección ${im + 1}.${il + 1}`}
+                      />
+                    </div>
                     <input
                       type="number"
                       min={0}

@@ -364,19 +364,26 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
           );
         })}
 
+        {/*
+          * LO QUE SE ENTREGA VA AQUÍ DENTRO, NO EN UN GRUPO APARTE.
+          *
+          * Tenía su propio rótulo —«PARA ENTREGAR»— y Gerson lo mandó dentro:
+          * «es parte de lo mismo». Y lo es: el documento y la comparativa SALEN
+          * del estudio que esté abierto. Sin estudio no hay ninguno de los dos,
+          * exactamente igual que las disciplinas de arriba, y se apagan a la
+          * vez que ellas.
+          *
+          * Un grupo aparte decía lo contrario: que era otro sitio al que ir.
+          * Y encima partía en dos un menú que ya tenía cinco rótulos, que es
+          * más de los que nadie lee.
+          *
+          * Van separados por un poco de aire y no por un rótulo: se ve que son
+          * el final del estudio —lo que sale de él— sin anunciar un viaje.
+          */}
+        <div style={css("height:var(--s3);")} aria-hidden />
+        {fila(view === "estudio", IcoDocumento, "El documento", ir("estudio"), { apagado: !hayEstudio })}
+        {fila(view === "pareja", IcoPareja, "Comparar pareja", ir("pareja"), { apagado: !hayEstudio })}
       </div>
-      )}
-
-      {/* ---------------------------------------------------- PARA ENTREGAR */}
-      {/* Lo que se imprime y se le da a la persona. Los dos salen del estudio
-          que esté abierto, así que se apagan igual que las disciplinas cuando
-          todavía no hay ninguno. */}
-      {verEstudio && (
-        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-          {rotulo("Para entregar")}
-          {fila(view === "estudio", IcoDocumento, "El documento", ir("estudio"), { apagado: !hayEstudio })}
-          {fila(view === "pareja", IcoPareja, "Comparar pareja", ir("pareja"), { apagado: !hayEstudio })}
-        </div>
       )}
 
       {/* ------------------------------------------------------ EL DESPACHO */}

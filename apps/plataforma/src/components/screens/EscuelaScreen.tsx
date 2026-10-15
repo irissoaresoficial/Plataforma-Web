@@ -5,165 +5,311 @@
  * EL RECIBIDOR DE LA ESCUELA
  * ============================================================================
  *
- * La primera pantalla de quien NO es Iris. Es el equivalente de la consulta
- * para ella: el sitio donde se cae al entrar y al que se vuelve.
+ * La primera pantalla de quien entra. El equivalente de la consulta para Iris:
+ * el sitio donde se cae al abrir y al que se vuelve.
  *
- * QUÉ DECIDE ESTA PANTALLA, QUE NO ES POCO. Una escuela por internet se gana o
- * se pierde en los primeros diez segundos de la segunda visita. La primera vez
- * la gente entra por curiosidad; la segunda entra buscando algo concreto, y si
- * no lo encuentra de un vistazo no hay tercera. Así que aquí no va un panel de
- * bienvenida con el logotipo grande: va LO SIGUIENTE QUE HAY QUE HACER.
+ * LO QUE ESTABA MAL Y POR QUÉ SE REHIZO
+ * ---------------------------------------------------------------------------
+ * Gerson, mirándola: «no me gusta cómo está alineado, no me gusta la UI». Tres
+ * cosas concretas, y las tres eran de verdad:
  *
- * Y mientras no haya nada que hacer —hoy— lo que va es la verdad, dicha sin
- * rodeos. Una escuela vacía disfrazada de escuela llena se nota enseguida.
+ *   1. EL SALUDO ERA UNA CAJA ENORME CON UN AGUJERO DENTRO. Dos líneas de
+ *      texto arriba a la izquierda y debajo medio metro de nada, con borde
+ *      alrededor para enmarcar el vacío. Un recuadro es una promesa de que
+ *      dentro hay algo; si no lo hay, la promesa sale fallida.
  *
- * SE LE ENSEÑA A CADA UNO LO SUYO. La misma pantalla cambia según las llaves
- * que lleve quien la abre, y eso se pregunta a `puede()`, nunca a «¿es
- * alumno?». Iris la ve también —entra por aquí cuando quiere mirar su escuela
- * con los ojos de quien paga— y por eso hay un aviso que sólo ve ella.
+ *      Un saludo no es un objeto: es el encabezado de la página. Ahora es un
+ *      título, sin caja, sin borde y sin relleno de sobra.
+ *
+ *   2. NADA SE ALINEABA CON NADA. El saludo tenía un relleno, el aviso otro y
+ *      las tarjetas otro, así que los textos empezaban en tres verticales
+ *      distintas. Eso no se sabe nombrar al verlo —se siente como que está
+ *      descuidado— y es de lo que más separa una herramienta cara de una
+ *      barata. Ahora todo arranca en la misma línea.
+ *
+ *   3. ESTABA VACÍA. Tres tarjetas que sólo decían a dónde llevan, en una
+ *      pantalla donde cabían diez. El hueco no se arregla estirando lo que
+ *      hay: se arregla poniendo algo que importe. Y lo que importa en el
+ *      recibidor de una escuela es POR DÓNDE IBAS: los cursos empezados, con
+ *      su avance, y el botón de seguir.
+ *
+ * La regla que queda, para cuando esto crezca: esta pantalla responde «¿qué
+ * hago ahora?». Todo lo que no ayude a contestar eso sobra, por bonito que
+ * quede.
  */
 
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { useApp } from "@/lib/app-context";
+import { useApp, type View } from "@/lib/app-context";
 import { useSesion } from "@/lib/sesion";
-import { botonPrincipal } from "@/lib/ui";
-import Particulas from "../Particulas";
+import { CABECERA, NOTA, TITULO, botonPrincipal } from "@/lib/ui";
+import { IcoComunidad, IcoCursos, IcoRecursos } from "../Iconos";
+import {
+  avance as repoAvance,
+  cursos as repoCursos,
+  inscripciones as repoInscripciones,
+  porDondeIba,
+  progreso,
+  totalLecciones,
+  type Avance,
+  type Curso,
+} from "@/lib/escuela";
+import type { Capacidad } from "@/lib/roles";
+
+type Ico = (p: { size?: number }) => React.JSX.Element;
 
 /** Las puertas de la escuela, con la llave que pide cada una. */
-const PUERTAS = [
+const PUERTAS: Array<{ k: View; llave: Capacidad; titulo: string; que: string; Ico: Ico }> = [
   {
-    k: "cursos" as const,
-    capacidad: "cursos" as const,
+    k: "cursos",
+    llave: "cursos",
     titulo: "Cursos",
     que: "Las clases, por módulos, con el vídeo y los materiales de cada una.",
+    Ico: IcoCursos,
   },
   {
-    k: "comunidad" as const,
-    capacidad: "comunidad" as const,
+    k: "comunidad",
+    llave: "comunidad",
     titulo: "Comunidad",
     que: "Donde se pregunta, se responde y se comparte lo que uno va viendo.",
+    Ico: IcoComunidad,
   },
   {
-    k: "recursos" as const,
-    capacidad: "recursos" as const,
+    k: "recursos",
+    llave: "recursos",
     titulo: "Recursos",
     que: "La biblioteca: plantillas, guías y audios para descargar.",
+    Ico: IcoRecursos,
   },
 ];
 
 export default function EscuelaScreen() {
   const { setView } = useApp();
   const { usuario, puede, esAdmin } = useSesion();
+  const uid = usuario ? usuario.uid : "";
   const quieto = useReducedMotion();
 
-  const abiertas = PUERTAS.filter((p) => puede(p.capacidad));
+  const [empezados, setEmpezados] = useState<Array<{ curso: Curso; av: Avance | null }>>([]);
+
+  /*
+   * LO QUE SE ESTÁ VIENDO AHORA MISMO.
+   *
+   * Falla en silencio a propósito: si esto no carga, el recibidor sale sin la
+   * fila de «sigue donde lo dejaste» y con todo lo demás en su sitio. Un
+   * atajo que no aparece es una molestia; un recibidor que no aparece es una
+   * plataforma rota.
+   */
+  useEffect(() => {
+    if (!uid) return;
+    let vivo = true;
+    (async () => {
+      try {
+        const mios = esAdmin
+          ? await repoCursos.listar()
+          : await (async () => {
+              const [pub, ins] = await Promise.all([
+                repoCursos.publicados(),
+                repoInscripciones.deAlumno(uid),
+              ]);
+              const permitidos = new Set(ins.map((i) => i.cursoId));
+              return pub.filter((c) => permitidos.has(c.id));
+            })();
+        const avs = await Promise.all(mios.map((c) => repoAvance.de(uid, c.id).catch(() => null)));
+        if (!vivo) return;
+        setEmpezados(
+          mios
+            .map((curso, i) => ({ curso, av: avs[i] }))
+            .filter(({ curso }) => totalLecciones(curso) > 0)
+            .slice(0, 3)
+        );
+      } catch {
+        /* Ver arriba: sin esto la pantalla sigue entera. */
+      }
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, [uid, esAdmin]);
+
+  const abiertas = PUERTAS.filter((p) => puede(p.llave));
   const nombre = (usuario ? usuario.nombre : "").split(" ")[0];
 
+  /* Un solo ancho y un solo arranque para todo lo de esta pantalla: es lo que
+     hacía que los textos empezaran en tres verticales distintas. */
   return (
-    <div style={css("display:flex;flex-direction:column;gap:var(--s5);max-width:980px;")}>
+    <motion.div
+      initial={quieto ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      style={css("display:flex;flex-direction:column;gap:var(--s6);max-width:1060px;")}
+    >
       {/* ------------------------------------------------------- El saludo */}
-      <motion.div
-        initial={quieto ? false : { opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        style={css(
-          "position:relative;overflow:hidden;isolation:isolate;background:var(--surface);" +
-            "border:1px solid var(--border);border-radius:var(--r);padding:clamp(32px,6vw,64px) var(--pad-card);" +
-            "box-shadow:var(--nm-alto);"
-        )}
-      >
-        <div style={css("position:absolute;inset:0;z-index:0;pointer-events:none;")} aria-hidden>
-          <Particulas cantidad={18} />
-        </div>
-        <div style={css("position:relative;z-index:1;")}>
-          <h1 style={css("font-size:var(--t-display, var(--t-head));margin:0;line-height:1.15;")}>
-            {nombre ? `Hola, ${nombre}` : "Escuela de Sabiduría 33"}
-          </h1>
+      {/* Un encabezado, no una tarjeta. Sin borde que enmarque un vacío. */}
+      <header>
+        <h1 style={css(TITULO + "margin:0;")}>{nombre ? `Hola, ${nombre}` : "Escuela de Sabiduría 33"}</h1>
+        <p style={css("font-size:var(--t-read);line-height:1.6;color:var(--text-3);margin:10px 0 0;max-width:60ch;text-wrap:pretty;")}>
+          Aquí dentro están tus cursos, la comunidad y todo lo que vayas desbloqueando. Se está construyendo ahora
+          mismo, así que irás viendo cómo se llena.
+        </p>
+
+        {/* Iris no es alumna. Sin esta línea lee la pantalla como un fallo de
+            su propia plataforma: «¿dónde está mi despacho?». */}
+        {esAdmin && (
           <p
             style={css(
-              "font-size:var(--t-read);line-height:1.65;color:var(--text-3);margin:var(--s3) 0 0;max-width:56ch;text-wrap:pretty;"
+              "display:flex;gap:9px;align-items:baseline;margin:var(--s4) 0 0;padding:11px 14px;" +
+                "border-radius:var(--r-sm);border:1px solid var(--border);" +
+                "background:color-mix(in srgb, var(--text) 4%, transparent);" +
+                "font-size:var(--t-mini);line-height:1.55;color:var(--text-3);max-width:76ch;"
             )}
           >
-            Aquí dentro están tus cursos, la comunidad y todo lo que vayas desbloqueando. Esto se está construyendo
-            ahora mismo, así que irás viendo cómo se llena.
+            <span aria-hidden style={css("flex:none;color:var(--gold-deep, var(--text-3));")}>•</span>
+            <span>
+              <strong style={css("color:var(--text-2);")}>Estás viendo la escuela como la ve un alumno.</strong> Tu
+              estudio de Kábala y tu despacho siguen donde estaban, en el menú. Ningún alumno los ve.
+            </span>
           </p>
-        </div>
-      </motion.div>
+        )}
+      </header>
 
-      {/* ------------------------------------------- El aviso que sólo ve Iris */}
-      {/* Ella no es alumna, así que ve esta pantalla como la ve todo el mundo
-          pero necesita saber que está mirando el otro lado del espejo: si no,
-          lo lee como un fallo de su propia plataforma. */}
-      {esAdmin && (
-        <div
-          style={css(
-            "padding:12px 16px;border-radius:var(--r-sm);border:1px solid var(--border);" +
-              "background:color-mix(in srgb, var(--gold-deep, var(--text)) 7%, transparent);" +
-              "font-size:var(--t-mini);line-height:1.55;color:var(--text-3);"
-          )}
-        >
-          <strong style={css("color:var(--text-2);")}>Estás viendo la escuela como la ve un alumno.</strong>{" "}
-          Tu estudio de Kábala y tu despacho siguen donde estaban, en el menú de la izquierda. Ningún alumno los ve.
-        </div>
+      {/* --------------------------------------------- Sigue donde lo dejaste */}
+      {/* Lo primero de verdad, antes que los atajos: la pregunta que trae a
+          alguien a esta pantalla es «¿qué hago ahora?», y esto la contesta. */}
+      {empezados.length > 0 && (
+        <section>
+          <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>Sigue donde lo dejaste</h2>
+          <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(300px,1fr));")}>
+            {empezados.map(({ curso, av }, i) => {
+              const parte = progreso(curso, av);
+              const total = totalLecciones(curso);
+              const hechas = Math.round(parte * total);
+              const siguiente = porDondeIba(curso, av);
+              return (
+                <motion.article
+                  key={curso.id}
+                  initial={quieto ? false : { opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08 + i * 0.05, duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                  style={css(
+                    "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
+                      "box-shadow:var(--nm);padding:var(--s4);display:flex;flex-direction:column;gap:10px;"
+                  )}
+                >
+                  <h3 style={css("font-size:var(--t-body);font-weight:600;margin:0;")}>
+                    {curso.titulo || "Curso sin nombre"}
+                  </h3>
+
+                  <span style={css(NOTA)}>
+                    {parte === 1
+                      ? "Terminado"
+                      : siguiente
+                        ? `Te toca: ${siguiente.titulo || "la siguiente lección"}`
+                        : "Sin empezar"}
+                  </span>
+
+                  <div
+                    role="progressbar"
+                    aria-valuenow={Math.round(parte * 100)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`Lo que llevas de ${curso.titulo}`}
+                    style={css(
+                      "height:5px;border-radius:999px;margin-top:2px;overflow:hidden;" +
+                        "background:color-mix(in srgb, var(--text) 10%, transparent);"
+                    )}
+                  >
+                    <motion.div
+                      initial={quieto ? false : { width: 0 }}
+                      animate={{ width: `${parte * 100}%` }}
+                      transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                      style={css("height:100%;background:var(--gold-deep, var(--text));border-radius:999px;")}
+                    />
+                  </div>
+
+                  <div style={css("display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:4px;")}>
+                    <span style={css(NOTA)}>
+                      {hechas} de {total}
+                    </span>
+                    <button onClick={() => setView("cursos")} style={css(botonPrincipal())}>
+                      {parte === 0 ? "Empezar" : parte === 1 ? "Repasar" : "Seguir"}
+                    </button>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+        </section>
       )}
 
       {/* ------------------------------------------------------ Las puertas */}
-      <div
-        style={css(
-          "display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(248px,1fr));"
-        )}
-      >
-        {abiertas.map((p, i) => (
-          <motion.button
-            key={p.k}
-            onClick={() => setView(p.k)}
-            whileTap={{ scale: 0.985 }}
-            initial={quieto ? false : { opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + i * 0.06, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            style={css(
-              "text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--border);" +
-                "border-radius:var(--r);padding:var(--s4) var(--s4);box-shadow:var(--nm);color:inherit;font:inherit;"
-            )}
-          >
-            <span style={css("display:block;font-size:var(--t-body);font-weight:600;margin-bottom:6px;")}>
-              {p.titulo}
-            </span>
-            <span style={css("display:block;font-size:var(--t-mini);line-height:1.5;color:var(--text-4);text-wrap:pretty;")}>
-              {p.que}
-            </span>
-          </motion.button>
-        ))}
-      </div>
+      {abiertas.length > 0 && (
+        <section>
+          <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>Tu escuela</h2>
+          <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(248px,1fr));")}>
+            {abiertas.map(({ k, titulo, que, Ico }, i) => (
+              <motion.button
+                key={k}
+                onClick={() => setView(k)}
+                whileHover={quieto ? undefined : { y: -2 }}
+                whileTap={{ scale: 0.99 }}
+                initial={quieto ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.05, duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                style={css(
+                  "text-align:left;cursor:pointer;color:inherit;font:inherit;" +
+                    "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
+                    "box-shadow:var(--nm);padding:var(--s4);" +
+                    /* Los tres bloques de dentro en la misma rejilla en las tres
+                       tarjetas: así los títulos quedan a la misma altura aunque
+                       una descripción ocupe dos renglones y otra tres. */
+                    "display:grid;grid-template-rows:auto auto 1fr;gap:10px;min-height:152px;"
+                )}
+              >
+                <span
+                  aria-hidden
+                  style={css(
+                    "display:grid;place-items:center;width:34px;height:34px;border-radius:10px;" +
+                      "background:color-mix(in srgb, var(--text) 7%, transparent);color:var(--gold-deep, var(--text-2));"
+                  )}
+                >
+                  <Ico size={18} />
+                </span>
+                <span style={css("font-size:var(--t-body);font-weight:600;")}>{titulo}</span>
+                <span style={css(NOTA + "line-height:1.5;text-wrap:pretty;")}>{que}</span>
+              </motion.button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/*
        * NADIE SE QUEDA MIRANDO UNA PANTALLA SIN SALIDA.
        *
-       * Alguien con cuenta pero sin ninguna llave —se dio de alta, todavía no
-       * ha comprado nada, o se le retiró el acceso— llegaría aquí y no vería
-       * ni una sola puerta. Sin esto, una pantalla en blanco y a adivinar.
+       * Alguien con cuenta y sin ninguna llave —se dio de alta, no ha comprado
+       * todavía, o se le retiró el acceso— no vería ni una puerta. Sin esto,
+       * una pantalla en blanco y a adivinar a quién se escribe.
        */}
       {abiertas.length === 0 && (
-        <div
+        <section
           style={css(
             "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
-              "padding:clamp(28px,5vw,48px) var(--pad-card);text-align:center;box-shadow:var(--nm);"
+              "padding:clamp(28px,5vw,48px) var(--pad-card);box-shadow:var(--nm);max-width:620px;"
           )}
         >
-          <h2 style={css("font-size:var(--t-head);margin:0 0 var(--s2);")}>Tu cuenta todavía no tiene acceso a nada</h2>
-          <p style={css("font-size:var(--t-read);line-height:1.6;color:var(--text-3);margin:0 auto;max-width:48ch;text-wrap:pretty;")}>
+          <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Tu cuenta todavía no tiene acceso a nada</h2>
+          <p style={css("font-size:var(--t-read);line-height:1.6;color:var(--text-3);margin:0 0 var(--s4);text-wrap:pretty;")}>
             Si acabas de comprar un curso, el acceso puede tardar un poco en llegar. Si llevas esperando más de un día,
             escribe a Iris y lo soluciona enseguida.
           </p>
           <a
             href="mailto:irissoaresoficial@gmail.com"
-            style={css(botonPrincipal() + "display:inline-block;margin-top:var(--s4);text-decoration:none;")}
+            style={css(botonPrincipal() + "display:inline-block;text-decoration:none;")}
           >
             Escribir a Iris
           </a>
-        </div>
+        </section>
       )}
-    </div>
+    </motion.div>
   );
 }

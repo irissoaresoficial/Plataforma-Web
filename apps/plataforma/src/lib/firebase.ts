@@ -32,6 +32,7 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 /**
  * DOS VARIABLES, NO SEIS.
@@ -43,7 +44,10 @@ import { getFirestore, type Firestore } from "firebase/firestore";
  *   · `authDomain` es SIEMPRE `<projectId>.firebaseapp.com`. No es una
  *     casualidad ni un valor que Google pueda cambiar por proyecto: es cómo se
  *     construye. Copiarlo a mano sólo añade una casilla más donde equivocarse.
- *   · `storageBucket` igual, y además esta plataforma no sube archivos.
+ *   · `storageBucket` igual. Antes ponía aquí «y además esta plataforma no
+ *     sube archivos», y dejó de ser verdad el 15 de octubre de 2026: los
+ *     vídeos de los cursos se suben al almacén de Firebase. Se sigue sin pedir
+ *     la variable porque se deduce igual de bien.
  *   · `messagingSenderId` y `appId` son para avisos push y para analítica.
  *     Ninguna de las dos cosas existe aquí.
  *
@@ -104,4 +108,22 @@ export function auth(): Auth | null {
 export function nube(): Firestore | null {
   const a = arranca();
   return a ? getFirestore(a) : null;
+}
+
+/**
+ * EL ALMACÉN DE ARCHIVOS.
+ *
+ * Aquí viven los vídeos de las clases. Entró cuando Gerson decidió que todo se
+ * subiera a Firebase en vez de a una plataforma de vídeo aparte.
+ *
+ * LO QUE HAY QUE SABER DE ESA DECISIÓN, escrito donde se va a buscar: Firebase
+ * cobra por lo que se DESCARGA, unos 0,11 € por giga. Una hora de clase en
+ * buena calidad pesa uno o dos gigas, así que cincuenta alumnos viendo un
+ * curso de diez horas son unos quinientos gigas — del orden de 55 € ese mes.
+ * Funciona perfectamente y es lo más simple que hay; sólo es más caro que una
+ * plataforma de vídeo, y conviene mirar el aviso de gasto los primeros meses.
+ */
+export function almacen(): FirebaseStorage | null {
+  const a = arranca();
+  return a ? getStorage(a) : null;
 }
