@@ -29,6 +29,7 @@
  */
 
 import { collection, deleteDoc, doc, getDocs, orderBy, query, setDoc, updateDoc } from "firebase/firestore";
+import type { Rol } from "@/lib/roles";
 import { nube } from "../firebase";
 
 export type FichaUsuario = {
@@ -36,6 +37,18 @@ export type FichaUsuario = {
   email: string;
   nombre: string;
   activo: boolean;
+  /**
+   * LAS LLAVES QUE LLEVA. Puede no estar, y eso significa algo concreto.
+   *
+   * Las fichas escritas antes de que existieran los roles no tienen este campo,
+   * y se leen como administradoras — ver `rolesDe` en `lib/roles.ts`, que es el
+   * único sitio donde se decide eso. Aquí el campo va opcional porque así es
+   * como está en la base de datos, no por comodidad: ponerlo obligatorio
+   * obligaría a inventarse un valor al leer, y ese invento taparía la
+   * diferencia entre «no tiene roles escritos» y «tiene la lista vacía», que
+   * son cosas distintas.
+   */
+  roles?: Rol[];
 };
 
 /** Todas las fichas, por nombre. Vacío si no hay nube. */
@@ -62,6 +75,21 @@ export async function daAcceso(f: FichaUsuario): Promise<void> {
     email: f.email.trim().toLowerCase(),
     nombre: f.nombre.trim(),
     activo: f.activo,
+    /*
+     * UNA FICHA NUEVA NACE SIN NINGUNA LLAVE, Y ESO ES LO SEGURO.
+     *
+     * Aquí NO se puede caer en la indulgencia de `rolesDe`: una ficha SIN el
+     * campo se lee como administradora, y eso está bien para las que se
+     * escribieron antes de que los roles existieran —son de Iris y de quien
+     * ella ya dejó entrar—. Pero una ficha que se crea HOY, desde la pantalla
+     * de Gestión, es de alguien que acaba de llegar. Si naciera sin el campo,
+     * la indulgencia la convertiría en administradora y ese alumno vería el
+     * despacho entero.
+     *
+     * Así que se escribe la lista, aunque esté vacía. Vacía significa «sin
+     * llaves», que es distinto de «no tiene el campo».
+     */
+    roles: f.roles ?? [],
   });
 }
 
