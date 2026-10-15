@@ -13,13 +13,11 @@ import ClientesScreen from "./screens/ClientesScreen";
 import FacturasScreen from "./screens/FacturasScreen";
 import EscuelaScreen from "./screens/EscuelaScreen";
 import CursosScreen from "./screens/CursosScreen";
-import {
-  ComunidadScreen,
-  RecursosScreen,
-  PerfilScreen,
-  MetricasScreen,
-  GestionScreen,
-} from "./screens/ObrasEscuela";
+import MetricasScreen from "./screens/MetricasScreen";
+import ComunidadScreen from "./screens/ComunidadScreen";
+import RecursosScreen from "./screens/RecursosScreen";
+import PerfilScreen from "./screens/PerfilScreen";
+import GestionScreen from "./screens/GestionScreen";
 import DetalleModal from "./DetalleModal";
 import Sidebar from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";

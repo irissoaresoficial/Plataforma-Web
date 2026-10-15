@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp, type Base, type Seccion, type Disciplina, type View } from "@/lib/app-context";
@@ -21,6 +21,7 @@ import {
   IcoMetricas,
   IcoRecursos,
   IcoCuentas,
+  IcoDespacho,
   IcoDocumento,
   IcoEstructura,
   IcoFacturas,
@@ -149,6 +150,26 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
   // Qué disciplinas están desplegadas. Se abre la que se está mirando, y
   // pulsando su nombre se cierra.
   const [abiertas, setAbiertas] = useState<Disciplina[]>(["kabala"]);
+  /*
+   * EL PLEGADO DEL DESPACHO.
+   *
+   * Empieza cerrado, salvo que ya se esté dentro de una de sus pantallas: abrir
+   * la plataforma en /facturas y ver el grupo cerrado sería no saber dónde
+   * estás. Por eso el estado arranca mirando la vista, y no en `false` a secas.
+   *
+   * Y se vuelve a abrir si se entra desde fuera —desde un aviso de la campana,
+   * por ejemplo— porque entonces la vista cambia sin que nadie haya tocado el
+   * menú. Sólo abre: cerrarlo a mano estando dentro sigue valiendo, que es lo
+   * que hace falta para mirar el estudio sin perder el sitio.
+   */
+  const dentroDespacho = DESPACHO.some((d) => d.k === view);
+  const [despachoAbierto, setDespachoAbierto] = useState(dentroDespacho);
+  useEffect(() => {
+    if (dentroDespacho) setDespachoAbierto(true);
+  }, [dentroDespacho]);
+  const alternaDespacho = () => setDespachoAbierto((x) => !x);
+  /* Plegada a iconos no hay flecha ni sitio para una: el grupo va abierto. */
+  const verDespachoAbierto = compacta || despachoAbierto;
 
   const hayEstudio = Boolean(r || re);
   // El estudio de empresa cabe entero en una pantalla: no hay siete partes
@@ -220,14 +241,35 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
     );
   };
 
-  /* El rótulo de un grupo. Se calla cuando la columna está plegada a iconos:
-     ahí no cabe y la separación ya la hace el aire entre grupos. */
-  const rotulo = (t: string) =>
-    !compacta && (
-      <div style={css("font-size:var(--t-micro);font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--text-4);padding:0 10px var(--s2);")}>
-        {t}
-      </div>
-    );
+  /*
+   * LA SEPARACIÓN ENTRE GRUPOS ES UNA RAYA, NO UN RÓTULO.
+   *
+   * Aquí había cuatro rótulos en versalitas —LA ESCUELA, EL ESTUDIO, EL
+   * DESPACHO, LA DIRECCIÓN— y Gerson pidió «que en el banner izquierdo no haya
+   * tanto texto». Tenía razón, y por un motivo que va más allá de la cantidad:
+   *
+   * UN RÓTULO SE LEE Y NO SIRVE PARA NADA. Nadie pulsa «EL DESPACHO». Está ahí
+   * para decir que lo de abajo va junto, y eso una raya lo dice igual de bien
+   * sin pedir que lo leas. Cuatro rótulos son cuatro renglones que el ojo tiene
+   * que saltar cada vez que busca dónde ir, y encima en mayúsculas, que se leen
+   * más despacio que las minúsculas porque todas las letras miden lo mismo y se
+   * pierde la silueta de la palabra.
+   *
+   * Lo que se pierde es poder nombrar el grupo. Se puede perder: los nombres de
+   * dentro ya dicen de qué va cada uno, y quien entra en «Clientes» no necesita
+   * que le digan que eso es el despacho.
+   */
+  const raya = () => (
+    <div
+      aria-hidden
+      style={css(
+        "height:1px;margin:var(--s3) 10px;background:var(--border);" +
+          /* Plegada a iconos la raya se estrecha con la columna en vez de
+             tocar los bordes, que ahí quedaría como un corte. */
+          (compacta ? "margin-left:6px;margin-right:6px;" : "")
+      )}
+    />
+  );
 
   const ir = (v: View) => () => {
     setView(v);
@@ -258,15 +300,14 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
           una escuela: primero cómo va la clase, después el papeleo. */}
       {escuela.length > 0 && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-          {rotulo("La escuela")}
           {escuela.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
         </div>
       )}
 
       {/* ------------------------------------------------------- EL ESTUDIO */}
+      {verEstudio && escuela.length > 0 && raya()}
       {verEstudio && (
       <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-        {rotulo("El estudio")}
 
         {/* La consulta es donde se empieza y donde se cambia de persona, así
             que no se bloquea nunca: es la salida de todas las demás. */}
@@ -387,17 +428,63 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
       )}
 
       {/* ------------------------------------------------------ EL DESPACHO */}
+      {/*
+        EL DESPACHO SE PLIEGA, Y ES LA MITAD DEL ADELGAZAMIENTO.
+        
+        Cuatro renglones —Leads, Agenda, Clientes, Facturas— pasan a ser uno
+        mientras no se abre. Se pliega éste y no el estudio porque no son lo
+        mismo: el estudio es a lo que Iris entra a trabajar, y el despacho es
+        donde va cuando le hace falta algo concreto. Lo que se usa a diario se
+        deja a la vista; lo que se visita, se guarda.
+        
+        Se abre solo cuando se está dentro de una de las cuatro, para que nunca
+        pase lo de estar en Facturas y no ver dónde estás. Y plegada a iconos la
+        columna, se abre siempre: ahí no hay sitio para una flecha.
+      */}
       {verDespacho && (
-        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-          {rotulo("El despacho")}
-          {DESPACHO.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
-        </div>
+        <>
+          {raya()}
+          <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+            {fila(
+              false,
+              IcoDespacho,
+              "Despacho",
+              () => alternaDespacho(),
+              { abierta: compacta ? undefined : despachoAbierto }
+            )}
+            <AnimatePresence initial={false}>
+              {verDespachoAbierto && (
+                <motion.div
+                  key="despacho"
+                  initial={quieto ? false : { height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={quieto ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                  transition={{ height: { duration: 0.32, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.2 } }}
+                  style={css("overflow:hidden;display:flex;flex-direction:column;gap:2px;")}
+                >
+                  {DESPACHO.map(({ k, label, Ico }, i) => (
+                    <motion.div
+                      key={k}
+                      initial={quieto ? false : { opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.04 + i * 0.03, duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      {fila(view === k, Ico, label, ir(k))}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </>
       )}
 
       {/* ------------------------------------------------------- LA DIRECCIÓN */}
+      {/* Dos entradas sueltas: plegarlas no ahorraría nada —serían dos
+          renglones convertidos en uno más la flecha— y escondería justo lo que
+          Iris va a querer mirar cada mañana cuando la escuela esté llena. */}
       {direccion.length > 0 && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-          {rotulo("La dirección")}
           {direccion.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
         </div>
       )}

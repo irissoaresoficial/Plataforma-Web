@@ -343,3 +343,11 @@ export const IcoGestion = (p: P) => (
     <path d="m19.6 19.2-1.7 1.7" opacity=".6" />
   </Caja>
 );
+
+/** El despacho: la carpeta de lo que no es leer una carta. */
+export const IcoDespacho = (p: P) => (
+  <Caja {...p}>
+    <path d="M3.4 8.6a2 2 0 0 1 2-2h4.1l1.8 2.1h7.3a2 2 0 0 1 2 2v7.1a2 2 0 0 1-2 2H5.4a2 2 0 0 1-2-2z" />
+    <path d="M3.4 11.9h17.2" opacity=".5" />
+  </Caja>
+);
