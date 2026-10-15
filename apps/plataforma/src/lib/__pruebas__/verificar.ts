@@ -24,6 +24,9 @@
  *      distintas no coinciden por casualidad.
  *   4. QUE NADA SE QUEDE SIN EXPLICAR — 4.704 fichas repartidas por todo el
  *      siglo, 79.968 números: que cada uno tenga algo que decirle a quien lee.
+ *   5. QUIÉN PUEDE TOCAR QUÉ — los permisos de la escuela. Un permiso mal
+ *      puesto no se ve en pantalla: se ve el día que un alumno abre el
+ *      despacho de Iris y lee las notas de sus clientas.
  */
 import { spawnSync } from "node:child_process";
 
@@ -33,6 +36,7 @@ const PRUEBAS: Array<[string, string]> = [
   ["El estudio de Lara", "estudio-lara.ts"],
   ["La imagen del alma, ejemplo del manual", "imagen-alma-roberto.ts"],
   ["Que ningún número se quede sin explicación", "cobertura.ts"],
+  ["Quién puede tocar qué", "roles.ts"],
 ];
 
 let mal = 0;

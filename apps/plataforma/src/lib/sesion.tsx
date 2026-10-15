@@ -55,9 +55,21 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, CORREO_DUENA, hayFirebase, nube } from "./firebase";
+import { esAdmin, puede, rolesDe, type Capacidad, type Rol } from "./roles";
 
 /**
- * UN SOLO NIVEL DE ACCESO, A PROPÓSITO.
+ * TRES NIVELES DE ACCESO, DESDE QUE ABRE LA ESCUELA.
+ *
+ * Aquí ponía «un solo nivel de acceso, a propósito», y el motivo era bueno:
+ * con una sola usuaria, un sistema de permisos no protege de nada y complica
+ * todo. Decía también que el día que entrara una segunda persona con permisos
+ * distintos se añadiría, «sabiendo qué hace falta de verdad».
+ *
+ * Ese día llegó: la escuela abre con cursos, y entran alumnos y miembros que
+ * no pueden ver ni el despacho ni la lectura de Kábala. Las llaves y lo que
+ * abre cada una están en `roles.ts`, con su prueba en `__pruebas__/roles.ts`.
+ *
+ * Lo de abajo sigue valiendo entero:
  *
  * Hubo aquí tres roles —administradora, trabajo y sólo mirar— y se han quitado.
  * Hoy esto lo usa una persona: Iris. Un sistema de permisos para un solo
@@ -77,6 +89,9 @@ export type Usuario = {
   email: string;
   nombre: string;
   activo: boolean;
+  /** Las llaves que lleva. Una ficha sin este campo se lee como
+   *  administradora: ver `rolesDe` en `roles.ts`. */
+  roles: Rol[];
 };
 
 type Estado = {
@@ -88,12 +103,17 @@ type Estado = {
   conNube: boolean;
   entra: (email: string, clave: string) => Promise<void>;
   sale: () => void;
+  /** ¿Puede quien está dentro hacer esto? Las pantallas preguntan por esto y
+   *  nunca por el rol: ver el porqué en `roles.ts`. */
+  puede: (que: Capacidad) => boolean;
+  /** Atajo de lo que más se pregunta. */
+  esAdmin: boolean;
 };
 
 const Ctx = createContext<Estado | null>(null);
 
 /** El usuario de mentira de cuando no hay nube. Sólo existe en desarrollo. */
-const LOCAL: Usuario = { uid: "local", email: "local", nombre: "Iris", activo: true };
+const LOCAL: Usuario = { uid: "local", email: "local", nombre: "Iris", activo: true, roles: ["admin"] };
 
 export function SesionProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null | false>(null);
@@ -167,6 +187,11 @@ export function SesionProvider({ children }: { children: ReactNode }) {
             email: u.email,
             nombre: (u.displayName || "Iris").trim(),
             activo: true,
+            /* La dueña nace administradora. Sin esto su ficha sería una de las
+               «viejas» y funcionaría igual por la indulgencia de `rolesDe`,
+               pero dejarlo escrito significa que el día que esa indulgencia se
+               retire —cuando no queden fichas viejas— nada se rompe. */
+            roles: ["admin"],
           });
           ficha = await getDoc(referencia);
         }
@@ -186,6 +211,7 @@ export function SesionProvider({ children }: { children: ReactNode }) {
           email: u.email || d.email || "",
           nombre: d.nombre || u.displayName || (u.email || "").split("@")[0],
           activo: true,
+          roles: rolesDe(d as { roles?: Rol[] }),
         });
       } catch (e) {
         /* Si no se puede escribir la ficha —sin red, reglas mal puestas— no se
@@ -330,7 +356,19 @@ export function SesionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const valor = useMemo<Estado>(
-    () => ({ usuario, entrando, error, conNube, entra, sale }),
+    () => ({
+      usuario,
+      entrando,
+      error,
+      conNube,
+      entra,
+      sale,
+      /* Si no hay nadie dentro, no puede nada. `usuario` vale `false` mientras
+         no ha entrado y `null` mientras se comprueba, y en los dos casos la
+         respuesta correcta es la misma: no. */
+      puede: (que: Capacidad) => (usuario ? puede(usuario, que) : false),
+      esAdmin: usuario ? esAdmin(usuario) : false,
+    }),
     [usuario, entrando, error, conNube, entra, sale],
   );
 

@@ -46,12 +46,35 @@ service cloud.firestore {
         && ficha().activo == true;
     }
     /*
-     * NO HAY ROLES. Hoy esto lo usa una persona, y un sistema de permisos para
-     * un solo usuario no protege de nada: sólo añade condiciones que nadie
-     * comprueba nunca porque no existe el segundo caso. Quien está dentro,
-     * puede. El día que entre alguien con permisos distintos se añade aquí, y
-     * se añadirá sabiendo qué hace falta de verdad.
+     * LOS ROLES, QUE ANTES NO HACÍAN FALTA Y AHORA SÍ.
+     *
+     * Aquí ponía «NO HAY ROLES», y el motivo era bueno: con una sola usuaria,
+     * un permiso que nadie comprueba nunca es ruido. Decía también que el día
+     * que entrara alguien con permisos distintos se añadirían «sabiendo qué
+     * hace falta de verdad».
+     *
+     * Ese día es hoy: la escuela abre con cursos, y entran alumnos y miembros.
+     * Lo que NO pueden ver es exactamente lo que Iris usa para trabajar: el
+     * despacho —clientas, leads, agenda, facturas— y la lectura de Kábala. Un
+     * alumno paga un curso; no compra el método.
+     *
+     * LAS FICHAS SIN `roles` SON ADMINISTRADORAS. Todas las que existen hoy se
+     * escribieron antes de que esto existiera, y todas tienen acceso completo
+     * ahora mismo. Si al publicar estas reglas se las tratara como al rol más
+     * bajo «por prudencia», Iris se quedaría fuera de su propia plataforma y no
+     * quedaría nadie dentro capaz de devolverle el acceso.
+     *
+     * ESTO TIENE QUE DECIR LO MISMO QUE `lib/roles.ts`. Son dos sitios porque
+     * las reglas corren en el servidor de Google y el código en el navegador,
+     * y no hay manera de compartirlos. El de aquí es el que manda: el del
+     * navegador sólo sirve para enseñar la pantalla correcta.
      */
+    function roles() {
+      return ficha().get('roles', ['admin']);
+    }
+    function esAdmin() {
+      return dentro() && ('admin' in roles() || roles().size() == 0);
+    }
 
     /**
      * EL ARRANQUE: CÓMO ENTRA LA PRIMERA PERSONA.
@@ -110,7 +133,13 @@ service cloud.firestore {
          Leer TU PROPIA ficha no enseña nada de nadie: o dice que estás activo o
          dice que no, y las dos cosas las sabes ya por lo que tienes delante. Lo
          que abre es exactamente el paso que faltaba, ni un milímetro más. */
-      allow read: if dentro() || (request.auth != null && uid == request.auth.uid);
+      /* LA LISTA ENTERA, SÓLO LA ADMINISTRACIÓN. Antes la veía cualquiera que
+         estuviera dentro, y mientras «dentro» significaba Iris eso era igual
+         de seguro y más simple. Con alumnos dentro deja de serlo: la lista de
+         `usuarios` son nombres y correos de todas las personas de la escuela,
+         y enseñárselos a quien compró un curso es una cesión de datos que
+         nadie ha consentido. */
+      allow read: if esAdmin() || (request.auth != null && uid == request.auth.uid);
 
       /**
        * Dar y quitar accesos lo hace quien está dentro, con un candado: NADIE
@@ -122,10 +151,16 @@ service cloud.firestore {
        * Firebase. Con una sola cuenta viva, ese error es irreversible desde
        * dentro.
        */
-      allow create: if dentro() || arranque(uid);
-      allow update: if dentro()
-        && (request.resource.data.activo == true || uid != request.auth.uid);
-      allow delete: if dentro() && uid != request.auth.uid;
+      /* Dar, quitar y cambiar accesos es cosa de la administración. Y el
+         candado de siempre: nadie puede dejarse a sí mismo fuera, ni quitarse
+         su propia administración. Si Iris lo hiciera por error, no quedaría
+         nadie capaz de devolvérselo sin entrar a mano en la consola. */
+      allow create: if esAdmin() || arranque(uid);
+      allow update: if esAdmin()
+        && (uid != request.auth.uid
+            || (request.resource.data.activo == true
+                && 'admin' in request.resource.data.get('roles', ['admin'])));
+      allow delete: if esAdmin() && uid != request.auth.uid;
     }
 
     /* ---------------------------------------------------------------- */
@@ -135,8 +170,8 @@ service cloud.firestore {
     match /leads/{id} {
       /* Se leen desde la plataforma y se pueden mover de estado —nuevo,
          contactado, cliente— y anotar. */
-      allow read: if dentro();
-      allow update: if dentro();
+      allow read: if esAdmin();
+      allow update: if esAdmin();
 
       /**
        * CREAR, NO. Y esto no es una omisión.
@@ -173,11 +208,11 @@ service cloud.firestore {
        * Se borra desde la ficha y con confirmación, que es donde vive el resto
        * de lo irreversible.
        */
-      allow delete: if dentro();
+      allow delete: if esAdmin();
     }
 
     match /reservas/{id} {
-      allow read, update: if dentro();
+      allow read, update: if esAdmin();
       allow create, delete: if false;
     }
 
@@ -191,18 +226,18 @@ service cloud.firestore {
      * asignado forma parte de una serie correlativa y hacerla desaparecer deja
      * un hueco. Se anula —un `update`— y conserva su número.
      */
-    match /citas/{id}    { allow read, write: if dentro(); }
-    match /clientes/{id} { allow read, write: if dentro(); }
+    match /citas/{id}    { allow read, write: if esAdmin(); }
+    match /clientes/{id} { allow read, write: if esAdmin(); }
     match /facturas/{id} {
-      allow read, create, update: if dentro();
-      allow delete: if dentro() && resource.data.numero == null;
+      allow read, create, update: if esAdmin();
+      allow delete: if esAdmin() && resource.data.numero == null;
     }
-    match /avisos/{id}   { allow read, write: if dentro(); }
+    match /avisos/{id}   { allow read, write: if esAdmin(); }
 
     /* Los ajustes de la casa: hoy, los datos fiscales de quien factura. Se
        escriben desde la pantalla y no desde el código, así que necesitan regla
        — y sólo la necesita quien ya está dentro. */
-    match /ajustes/{id}  { allow read, write: if dentro(); }
+    match /ajustes/{id}  { allow read, write: if esAdmin(); }
 
     /* ---------------------------------------------------------------- */
 
