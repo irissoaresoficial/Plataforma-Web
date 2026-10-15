@@ -1,0 +1,9 @@
+{
+  "//": "Dónde están las reglas. Lo lee la herramienta de Firebase para saber qué subir y a dónde. Ver .github/workflows/reglas.yml.",
+  "firestore": {
+    "rules": "firebase/firestore.rules"
+  },
+  "storage": {
+    "rules": "firebase/storage.rules"
+  }
+}

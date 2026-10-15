@@ -1,0 +1,107 @@
+# =============================================================================
+# LAS REGLAS SE PUBLICAN SOLAS
+# =============================================================================
+#
+# EL PROBLEMA QUE RESUELVE, dicho tal cual pasó: cada vez que la plataforma
+# estrena una colección, alguien tiene que entrar en la consola de Firebase,
+# abrir DOS pestañas distintas —Firestore y Storage, que es el error más común
+# de toda la instalación— copiar, pegar y publicar. Ha pasado cuatro veces en
+# dos días. A la quinta se olvida, y entonces la plataforma intenta guardar
+# algo y le dice a Iris «no autorizado» sin explicar nada.
+#
+# Un paso manual que hay que repetir no es un paso: es un fallo esperando su
+# turno.
+#
+# A PARTIR DE AQUÍ: se cambian las reglas en el repositorio, se suben a `main`,
+# y se publican en Firebase sin que nadie toque la consola. Y como viven en el
+# repositorio, quedan en el historial: se puede ver quién cambió qué regla y
+# cuándo, que en la consola no se puede.
+#
+# -----------------------------------------------------------------------------
+# LO ÚNICO QUE HAY QUE HACER UNA VEZ
+# -----------------------------------------------------------------------------
+#
+#   1. Consola de Firebase → rueda dentada → Configuración del proyecto →
+#      pestaña «Cuentas de servicio» → «Generar nueva clave privada».
+#      Se descarga un archivo .json.
+#
+#   2. GitHub → el repositorio → Settings → Secrets and variables → Actions →
+#      «New repository secret».
+#         Nombre:  FIREBASE_SERVICE_ACCOUNT
+#         Valor:   el contenido ENTERO de ese .json (ábrelo con un editor de
+#                  texto y copia todo, llaves incluidas).
+#
+#   3. Borra el .json de tu ordenador. Ya está dentro de GitHub, cifrado.
+#
+# ESA CLAVE ES LA LLAVE MAESTRA DEL PROYECTO: con ella se puede leer y escribir
+# cualquier cosa saltándose todas las reglas. Por eso va en un secreto de
+# GitHub y NO en el repositorio, ni en un chat, ni en un correo. GitHub la
+# guarda cifrada, no la enseña nunca más —ni a ti— y la tapa en los registros.
+#
+# Si alguna vez se filtra: Firebase → Cuentas de servicio → se revoca esa clave
+# y se genera otra. La vieja deja de valer al instante.
+
+name: Publicar las reglas de Firebase
+
+on:
+  push:
+    branches: [main]
+    # Sólo cuando cambian las reglas o lo que dice dónde están. Sin este
+    # filtro, cada commit de una coma en un componente lanzaría un despliegue.
+    paths:
+      - "firebase/**"
+      - "firebase.json"
+      - ".firebaserc"
+      - ".github/workflows/reglas.yml"
+  # Y a mano desde la pestaña Actions, para poder forzarlo sin tocar nada.
+  workflow_dispatch:
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # SE FIJA LA VERSIÓN, y no es manía: una herramienta que se actualiza
+      # sola puede cambiar de comportamiento un martes y romper un despliegue
+      # sin que nadie haya tocado nada — y entonces se busca el fallo en el
+      # último cambio del código, que no tiene nada que ver.
+      #
+      # Y se fija una de hace un par de semanas, no la de ayer: las de ayer
+      # son las que todavía no ha estrenado nadie. Ésta lleva quince días
+      # publicada, que es tiempo de sobra para que un fallo gordo aparezca.
+      - name: Instalar la herramienta de Firebase
+        run: npm install -g firebase-tools@15.32.1
+
+      # NO HAY UNA COMPROBACIÓN PREVIA, Y NO ES UN OLVIDO.
+      #
+      # Lo intenté: cargar las reglas en el emulador antes de desplegar, para
+      # cazar un error de sintaxis sin tocar producción. NO SIRVE — probado
+      # rompiendo una regla a propósito: el emulador arranca igual, devuelve
+      # éxito y no deja ni una línea en su registro. Una comprobación que pasa
+      # con las reglas rotas es peor que ninguna, porque da confianza falsa.
+      #
+      # Quien valida de verdad es el propio `deploy`: el servidor de Google
+      # compila las reglas y rechaza las que no lo hacen, sin publicar nada a
+      # medias. Si están mal, este trabajo falla en rojo y GitHub avisa por
+      # correo. Que es exactamente lo que se quería.
+      #
+      # La clave se escribe en un archivo porque la herramienta la pide así, y
+      # el archivo vive sólo lo que dura este trabajo: la máquina se tira
+      # entera al terminar.
+      - name: Publicar Firestore y Storage
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/clave.json
+          CLAVE: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$CLAVE" ]; then
+            echo "Falta el secreto FIREBASE_SERVICE_ACCOUNT."
+            echo "Está explicado arriba, en este mismo archivo."
+            exit 1
+          fi
+          printf '%s' "$CLAVE" > /tmp/clave.json
+          firebase deploy --only firestore:rules,storage --project plataforma-d3c55 --non-interactive
