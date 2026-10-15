@@ -18,6 +18,7 @@ import CursoDetalle from '@/components/CursoDetalle';
 import CuentaAtras from '@/components/CuentaAtras';
 import VideoPresenta from '@/components/VideoPresenta';
 import Foto from '@/components/Foto';
+import CartelCurso from '@/components/CartelCurso';
 import { CURSOS, MEMBRESIA, PENDIENTE, eur, falta, type Curso } from '@/content/site';
 
 /** Texto real, o etiqueta roja si todavía está sin rellenar. */
@@ -70,7 +71,12 @@ function CursoBloque({ curso }: { curso: Curso }) {
             data-cur-label="Ver"
             aria-label={`Ver ${falta(curso.titulo) ? 'el curso' : curso.titulo}`}
           >
-            <Foto src={curso.cartel} alt={`Cartel de ${curso.titulo}`} llenar radius={0} sizes="(max-width:1099px) 90vw, 240px" />
+            <CartelCurso
+              cartel={curso.cartel}
+              video={curso.cartelVideo}
+              alt={`Cartel de ${curso.titulo}`}
+              sizes="(max-width:1099px) 90vw, 240px"
+            />
           </button>
         )}
         <div className="curso-texto">

@@ -441,20 +441,39 @@ export type Curso = {
    */
   videoUrl: string;
   /**
-   * EL CARTEL DEL CURSO. La imagen que lo anuncia, en vertical.
+   * EL CARTEL DEL CURSO. La imagen con la que se anuncia.
    *
    * Va aquí, colgando del curso, y no en la lista general de fotos de la web.
-   * El motivo: la portada enseña el cartel del PRÓXIMO curso, así que el día
-   * que haya otro con otra imagen, la portada cambia sola con sólo añadir el
-   * curso — sin tocar la portada ni acordarse de cambiar dos sitios.
+   * El motivo: el cartel es del PRÓXIMO curso, así que el día que haya otro
+   * con otra imagen, cambia solo con añadir el curso — sin acordarse de ir a
+   * tocar una segunda lista.
    *
-   * Vacío = la portada vuelve al retrato de Iris, que es lo que había antes.
-   * No se rompe nada por no tener cartel.
+   * Vacío = no sale cartel y la tarjeta vuelve a dos columnas. No se rompe
+   * nada por no tener uno.
    *
-   * Que sea VERTICAL, cerca de 4:5. El marco de la portada tiene esa forma y
-   * una imagen apaisada saldría recortada por los lados.
+   * EL MARCO TIENE DOS FORMAS, y conviene saberlo antes de encargar la
+   * imagen: franja apaisada 16:9 por debajo de 1100 px, y vertical 4:5 por
+   * encima, cuando recupera su columna. Así que lo que importe tiene que
+   * estar CENTRADO: lo que se arrime a un borde se pierde en una de las dos.
    */
   cartel?: string;
+  /**
+   * EL CARTEL, EN MOVIMIENTO.
+   *
+   * Opcional y encima del de arriba: si está, se reproduce en bucle, sin
+   * sonido y sin controles, y el `cartel` de arriba pasa a ser su primer
+   * fotograma — el que se ve mientras el vídeo carga y el que se queda fijo
+   * para quien ha pedido que no se mueva nada en pantalla.
+   *
+   * POR ESO EL CARTEL QUIETO SIGUE HACIENDO FALTA aunque haya vídeo. Sin él
+   * se ve un rectángulo negro durante el primer segundo, que en la página que
+   * vende es el primer segundo que cuenta.
+   *
+   * Pesa poco a propósito: es decoración de una tarjeta, no una clase. Si un
+   * día alguien pone aquí un vídeo de varios megas, la página que vende tarda
+   * en cargar y eso cuesta ventas.
+   */
+  cartelVideo?: string;
   /**
    * Enlace de pago de Stripe: el que sale en Stripe → Enlaces de pago → Crear.
    * Vacío = el botón capta el dato y avisa de que aún no se cobra.
@@ -523,6 +542,62 @@ export type Curso = {
  * ponerlas a ojo sería mentir a alguien que va a pagar.
  */
 export const CURSOS: Curso[] = [
+  /*
+   * ===========================================================================
+   * DESÓRDENES AMOROSOS — el curso nuevo.
+   * ===========================================================================
+   *
+   * Dado por Gerson el 15 de octubre de 2026, y de momento sólo dos cosas: el
+   * nombre y la marca animada con la que se anuncia. Nada más.
+   *
+   * POR QUÉ ESTÁ CASI ENTERO EN ROJO Y NO RELLENO A OJO. Todo lo que falta aquí
+   * —las fechas, el horario, el precio, el programa, lo que te llevas— son
+   * decisiones de Iris, y van pegadas a un botón de pagar. Escribir un precio
+   * verosímil o inventarse un temario de dos días sería poner a alguien a
+   * comprar algo que no existe con esas condiciones. Así que el sitio lo
+   * enseña en rojo, y en rojo se queda hasta que Iris lo diga.
+   *
+   * Eso no es un fallo que arreglar deprisa: es el aviso funcionando. Mientras
+   * haya un `PENDIENTE` en esta ficha, esta web no se publica de cara al
+   * público con este curso dentro.
+   *
+   * VA EL PRIMERO a propósito. `CURSOS[0]` es el que la página saca de
+   * cabecera y el que va en los metadatos que se ven al compartir el enlace,
+   * así que el orden del array es el orden de importancia, no el cronológico.
+   */
+  {
+    id: 'desordenes-amorosos',
+    titulo: 'Desórdenes Amorosos',
+    claim: PENDIENTE,
+    fechas: PENDIENTE,
+    fechaISO: '',
+    horario: PENDIENTE,
+    duracion: PENDIENTE,
+    modalidad: PENDIENTE,
+    precio: null,
+    precioAntes: null,
+    plazas: null,
+    videoUrl: '',
+    /*
+     * LA MARCA DEL CURSO, ANIMADA. Siete segundos en bucle, sin sonido: el
+     * logotipo se forma sobre granate y se deshace. El fotograma quieto sale
+     * del segundo 4,2 del propio vídeo —donde ya está formado y antes de que
+     * se deshaga— y es lo que se ve mientras carga, y lo único que se ve para
+     * quien ha pedido que nada se mueva en pantalla.
+     *
+     * Está centrado sobre fondo liso, que es justo lo que necesita este hueco:
+     * se recorta a franja apaisada en móvil y a vertical en pantalla ancha, y
+     * no se pierde nada por ningún lado.
+     */
+    cartel: '/images/desordenes-amorosos-cartel.jpg',
+    cartelVideo: '/video/desordenes-amorosos.mp4',
+    stripeUrl: '',
+    descripcion: PENDIENTE,
+    bloques: [],
+    paraQuien: [],
+    teLlevas: [],
+    incluye: [],
+  },
   {
     id: 'septiembre',
     /*
@@ -552,7 +627,17 @@ export const CURSOS: Curso[] = [
     precioAntes: 697,
     plazas: null,
     videoUrl: '',
-    cartel: '/images/curso-cartel.png',
+    /*
+     * SIN CARTEL. Aquí había un cuadro —una familia atada con hilos rojos— y
+     * Gerson lo retiró el 15 de octubre de 2026: «eso de hilos es viejo». El
+     * archivo está borrado, no sólo desenchufado.
+     *
+     * No se le pone el cartel del otro curso para tapar el hueco: son dos
+     * cursos distintos y anunciar uno con la cara del otro confunde a quien
+     * está decidiendo cuál compra. Sin `cartel`, la tarjeta vuelve sola a dos
+     * columnas y no se ve ningún agujero. Cuando Iris dé una imagen de éste,
+     * se escribe aquí y vuelve a tres.
+     */
     /* Enlace de pago de Stripe, dado por Gerson el 8 de septiembre de 2026.
        Es un enlace público de cobro: está hecho para publicarlo, no es un
        secreto que se filtre por estar aquí. */

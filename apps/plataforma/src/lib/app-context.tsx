@@ -4,19 +4,52 @@ import { usePathname, useRouter } from "next/navigation";
 import { analizaNombre, calcula, calculaEmpresa, comparaPareja, ficha as fichaDe, type Resultado, type ResultadoEmpresa, type Comparativa, type Ficha, type Genero } from "./engine";
 import { cargaHistorial, guardaHistorial, cargaEdits, guardaEdits, cargaActual, guardaActual, type HistItem, type Edits } from "./storage";
 import { descargaRespaldo, importaRespaldo, type ResultadoImportar } from "./respaldo";
+import type { Capacidad } from "./roles";
 
 /**
- * LAS DOS MITADES DE LA PLATAFORMA
+ * LOS DOS MUNDOS DE LA PLATAFORMA
  *
- * `inicio`, `panel`, `estudio` y `pareja` son EL ESTUDIO: los cuatro pasos de
- * leerle la carta a alguien, y los cuatro necesitan que haya un estudio abierto.
+ * Hasta hoy esto era una herramienta de una sola persona y todas las pantallas
+ * eran suyas. Ahora conviven dos cosas distintas bajo el mismo techo, y lo que
+ * las separa no es un menú más ordenado: es quién puede abrir cada una.
  *
- * `agenda`, `clientes` y `facturas` son EL DESPACHO: lo que Iris hace cuando no
- * está leyendo una carta. No cuelgan de un estudio ni de una disciplina —una
- * factura no es una parte de Kábala— así que van al mismo nivel y se puede
- * entrar en ellas sin haber calculado nada.
+ * LA ESCUELA — `escuela`, `cursos`, `comunidad`, `recursos`, `trofeos`.
+ * Lo que ve quien compra un curso o paga la membresía. Cada una pide su llave:
+ * los cursos los ve quien ha comprado alguno, la comunidad quien es miembro,
+ * los recursos cualquiera que haya entrado.
+ *
+ * SÓLO IRIS — todo lo demás. Y dentro, dos oficios distintos:
+ *
+ *   EL ESTUDIO: `inicio`, `panel`, `estudio` y `pareja`, los cuatro pasos de
+ *   leerle la carta a alguien. Los cuatro necesitan un estudio abierto.
+ *
+ *   EL DESPACHO: `leads`, `agenda`, `clientes`, `facturas`, `metricas` y
+ *   `gestion`. Lo que Iris hace cuando no está leyendo una carta. No cuelgan
+ *   de un estudio ni de una disciplina —una factura no es una parte de
+ *   Kábala— así que van al mismo nivel y se entra sin haber calculado nada.
+ *
+ * LA REGLA QUE NO SE NEGOCIA: la lectura de Kábala es la herramienta con la
+ * que Iris prepara los estudios de sus clientas. Un alumno que paga un curso
+ * no compra acceso al método. Por eso el estudio entero vive de este lado.
  */
-export type View = "inicio" | "panel" | "estudio" | "pareja" | "agenda" | "clientes" | "facturas" | "leads";
+export type View =
+  /* ---- LA ESCUELA: lo que ve quien compra un curso o paga la membresía ---- */
+  | "escuela"
+  | "cursos"
+  | "comunidad"
+  | "recursos"
+  | "trofeos"
+  /* ---- SÓLO IRIS: el estudio de Kábala y el despacho ---- */
+  | "inicio"
+  | "panel"
+  | "estudio"
+  | "pareja"
+  | "agenda"
+  | "clientes"
+  | "facturas"
+  | "leads"
+  | "metricas"
+  | "gestion";
 
 /** Las que sólo tienen sentido con un estudio abierto. Las demás se abren
  *  siempre: entrar a mirar la agenda no puede exigir calcular una carta. */
@@ -29,6 +62,13 @@ export const VISTAS_DE_ESTUDIO: View[] = ["panel", "estudio", "pareja"];
  * el sitio vivía en la misma dirección.
  */
 const RUTA: Record<View, string> = {
+  escuela: "/escuela",
+  cursos: "/cursos",
+  comunidad: "/comunidad",
+  recursos: "/recursos",
+  trofeos: "/trofeos",
+  metricas: "/metricas",
+  gestion: "/gestion",
   inicio: "/",
   panel: "/panel",
   estudio: "/estudio",
@@ -39,6 +79,13 @@ const RUTA: Record<View, string> = {
   facturas: "/facturas",
 };
 const VISTA: Record<string, View> = {
+  "/escuela": "escuela",
+  "/cursos": "cursos",
+  "/comunidad": "comunidad",
+  "/recursos": "recursos",
+  "/trofeos": "trofeos",
+  "/metricas": "metricas",
+  "/gestion": "gestion",
   "/": "inicio",
   "/panel": "panel",
   "/estudio": "estudio",
@@ -48,6 +95,56 @@ const VISTA: Record<string, View> = {
   "/clientes": "clientes",
   "/facturas": "facturas",
 };
+/**
+ * QUÉ LLAVE ABRE CADA PANTALLA.
+ *
+ * Una sola tabla, y por eso se puede confiar en ella: si una pantalla no está
+ * aquí no se abre, y añadir una pantalla nueva obliga a decir de quién es —no
+ * hay forma de colar una sin permiso, porque TypeScript exige la fila.
+ *
+ * Se pregunta por capacidad y no por rol a propósito. El día que el rol de
+ * `admin` se parta en dos —pongamos Iris y una ayudante que lleva la agenda
+ * pero no toca las cartas— se cambia `roles.ts` y esta tabla no se entera.
+ */
+const LLAVE: Record<View, Capacidad> = {
+  /* La escuela */
+  escuela: "recursos", // el recibidor: lo ve cualquiera que haya entrado
+  cursos: "cursos",
+  comunidad: "comunidad",
+  recursos: "recursos",
+  trofeos: "recursos", // los trofeos son de todos, cada uno ve los suyos
+  /* El estudio de Kábala, que es sólo de Iris */
+  inicio: "estudio",
+  panel: "estudio",
+  estudio: "estudio",
+  pareja: "estudio",
+  /* El despacho */
+  leads: "despacho",
+  agenda: "despacho",
+  clientes: "despacho",
+  facturas: "despacho",
+  metricas: "metricas",
+  gestion: "gestion",
+};
+
+/** La llave que hace falta para abrir una pantalla. */
+export function llaveDe(v: View): Capacidad {
+  return LLAVE[v];
+}
+
+/**
+ * Dónde se manda a alguien que no puede estar donde está.
+ *
+ * No es una pantalla de «no tienes permiso», que no sirve de nada: es el sitio
+ * más cercano que SÍ puede abrir. Iris cae en su consulta, un alumno en su
+ * escuela, y quien no tenga ninguna llave cae en la escuela también y verá
+ * allí que no hay nada suyo todavía.
+ */
+export function dondeEmpieza(puedeHacer: (c: Capacidad) => boolean): View {
+  if (puedeHacer("estudio")) return "inicio";
+  return "escuela";
+}
+
 /**
  * Los nombres de las pantallas, escritos una sola vez.
  *

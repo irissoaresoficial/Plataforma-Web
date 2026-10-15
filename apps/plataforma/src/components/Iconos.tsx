@@ -267,3 +267,79 @@ export const IcoLeads = (p: P) => (
     <path d="M3.6 6.8l8.4 6.6 8.4-6.6" opacity=".7" />
   </Caja>
 );
+
+/* ========================================================================= */
+/*  LA ESCUELA                                                               */
+/*                                                                           */
+/*  Mismo criterio que los de arriba: cada uno dibuja la cosa que abre, no un */
+/*  símbolo genérico. Un icono que podría estar en cualquier panel de control */
+/*  no ayuda a encontrar nada — se lee la palabra de al lado y el icono sobra.*/
+/* ========================================================================= */
+
+/** El recibidor: el arco de entrada de la escuela. */
+export const IcoEscuela = (p: P) => (
+  <Caja {...p}>
+    <path d="M4 20v-8.2a1 1 0 0 1 .42-.81l7-5.1a1 1 0 0 1 1.16 0l7 5.1a1 1 0 0 1 .42.81V20" />
+    <path d="M9.4 20v-5.1a2.6 2.6 0 0 1 5.2 0V20" />
+    <path d="M2.8 20h18.4" />
+  </Caja>
+);
+
+/** Un curso: las lecciones apiladas, con el triángulo de reproducir delante. */
+export const IcoCursos = (p: P) => (
+  <Caja {...p}>
+    <rect x="3" y="6.4" width="13" height="11.2" rx="1.8" />
+    <path d="m9.1 10.6 3.3 1.9-3.3 1.9z" fill="currentColor" stroke="none" />
+    <path d="M18.4 8.3v7.4" opacity=".6" />
+    <path d="M21 9.9v4.2" opacity=".35" />
+  </Caja>
+);
+
+/** La comunidad: dos conversaciones que se solapan. Gente hablando, no gente. */
+export const IcoComunidad = (p: P) => (
+  <Caja {...p}>
+    <path d="M3.2 9.1a2 2 0 0 1 2-2h7.6a2 2 0 0 1 2 2v3.6a2 2 0 0 1-2 2H8.3L5 17.4v-2.7a2 2 0 0 1-1.8-2z" />
+    <path d="M17.6 10.3h1.2a2 2 0 0 1 2 2v3.1a2 2 0 0 1-1.7 2v2.2l-2.6-2.2h-3" opacity=".55" />
+  </Caja>
+);
+
+/** Los recursos: la hoja que se descarga. */
+export const IcoRecursos = (p: P) => (
+  <Caja {...p}>
+    <path d="M13.4 3.2H7a2 2 0 0 0-2 2v13.6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.8z" />
+    <path d="M13.3 3.3v4.3a1.2 1.2 0 0 0 1.2 1.2h4.3" opacity=".6" />
+    <path d="M12 11.6v4.7m0 0-1.9-1.9M12 16.3l1.9-1.9" />
+  </Caja>
+);
+
+/** Los trofeos: la copa con sus asas. */
+export const IcoTrofeos = (p: P) => (
+  <Caja {...p}>
+    <path d="M8 3.6h8v4.6a4 4 0 0 1-8 0z" />
+    <path d="M8 4.8H5.4v1.6a2.8 2.8 0 0 0 2.6 2.8" opacity=".6" />
+    <path d="M16 4.8h2.6v1.6a2.8 2.8 0 0 1-2.6 2.8" opacity=".6" />
+    <path d="M12 12.2v3.3" />
+    <path d="M9 20.4h6l-.7-2.6a1.4 1.4 0 0 0-1.35-1.05h-1.9A1.4 1.4 0 0 0 9.7 17.8z" />
+  </Caja>
+);
+
+/** Las métricas: las barras subiendo, con la línea de la tendencia. */
+export const IcoMetricas = (p: P) => (
+  <Caja {...p}>
+    <path d="M3.6 20.4h16.8" />
+    <path d="M7 20.4v-4.1" />
+    <path d="M12 20.4v-7.3" />
+    <path d="M17 20.4v-2.5" />
+    <path d="m5.4 10.4 4.2-3.9 3.1 2.5 5.9-4.6" opacity=".55" />
+  </Caja>
+);
+
+/** La gestión: el llavero. Es literalmente lo que hace esa pantalla. */
+export const IcoGestion = (p: P) => (
+  <Caja {...p}>
+    <circle cx="8.4" cy="8.4" r="4.2" />
+    <path d="m11.6 11.2 8 8" />
+    <path d="m17.1 16.7-2 2" />
+    <path d="m19.6 19.2-1.7 1.7" opacity=".6" />
+  </Caja>
+);

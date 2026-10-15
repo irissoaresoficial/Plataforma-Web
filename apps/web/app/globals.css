@@ -4153,9 +4153,18 @@ body[data-nav-claro='si'] .sello-color {
    * columnas de siempre. A partir de 1100 px recupera su columna (más abajo).
    */
   grid-column: 1 / -1;
-  /* Franja apaisada en pantallas estrechas. `object-position` alto porque lo
-     que hay que ver de este cuadro son las caras, y están en la mitad de
-     arriba: centrado, la franja enseñaría manos y suelo. */
+  /*
+   * DOS FORMAS, Y POR ESO EL CARTEL SE ENCARGA CENTRADO.
+   *
+   * Franja apaisada aquí; vertical 4:5 a partir de 1100 px, cuando recupera
+   * su columna (más abajo). Lo que se arrime a un borde se pierde en una de
+   * las dos, así que lo que importe va al medio. El cartel de Desórdenes
+   * Amorosos lo cumple: el logotipo está centrado sobre un fondo liso, y eso
+   * es lo que le permite recortarse por los lados sin perder nada.
+   *
+   * Antes había aquí un `object-position` alto, porque el cartel era un cuadro
+   * con las caras en la mitad de arriba. Ya no lo es.
+   */
   aspect-ratio: 16 / 9;
   border: 0;
   padding: 0;
@@ -4165,18 +4174,29 @@ body[data-nav-claro='si'] .sello-color {
   cursor: pointer;
   box-shadow: 0 1px 2px var(--sombra), 0 18px 44px -26px var(--sombra);
 }
-.curso-cartel img {
-  object-position: center 28%;
+/* El cartel puede ser una foto o un vídeo en bucle, y los dos se comportan
+   igual: llenan el marco, se recortan por donde sobra y se acercan un pelo al
+   pasar por encima. Van juntos en el mismo selector para que no puedan
+   discrepar — con reglas separadas, el día que se toque una se olvida la otra
+   y el cartel se mueve distinto según el curso. */
+.curso-cartel :is(img, video) {
+  object-position: center center;
   transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.curso-cartel:hover img {
+.curso-cartel video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.curso-cartel:hover :is(img, video) {
   transform: scale(1.03);
 }
 @media (prefers-reduced-motion: reduce) {
-  .curso-cartel img {
+  .curso-cartel :is(img, video) {
     transition: none;
   }
-  .curso-cartel:hover img {
+  .curso-cartel:hover :is(img, video) {
     transform: none;
   }
 }
@@ -4194,9 +4214,6 @@ body[data-nav-claro='si'] .sello-color {
   .curso-cartel {
     grid-column: auto;
     aspect-ratio: 4 / 5;
-  }
-  .curso-cartel img {
-    object-position: center center;
   }
 }
 

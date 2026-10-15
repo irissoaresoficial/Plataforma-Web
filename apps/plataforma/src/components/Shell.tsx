@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { css } from "@/lib/css";
-import { useApp, PESTANAS, VISTAS_DE_ESTUDIO } from "@/lib/app-context";
+import { useApp, PESTANAS, VISTAS_DE_ESTUDIO, llaveDe, dondeEmpieza } from "@/lib/app-context";
+import { useSesion } from "@/lib/sesion";
 import ConsultaScreen from "./screens/ConsultaScreen";
 import PanelScreen from "./screens/PanelScreen";
 import EstudioScreen from "./screens/EstudioScreen";
@@ -10,6 +11,15 @@ import LeadsScreen from "./screens/LeadsScreen";
 import AgendaScreen from "./screens/AgendaScreen";
 import ClientesScreen from "./screens/ClientesScreen";
 import FacturasScreen from "./screens/FacturasScreen";
+import EscuelaScreen from "./screens/EscuelaScreen";
+import {
+  CursosScreen,
+  ComunidadScreen,
+  RecursosScreen,
+  TrofeosScreen,
+  MetricasScreen,
+  GestionScreen,
+} from "./screens/ObrasEscuela";
 import DetalleModal from "./DetalleModal";
 import Sidebar from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
@@ -21,8 +31,39 @@ import Particulas from "./Particulas";
 import SinEstudio from "./SinEstudio";
 
 export default function Shell() {
-  const { view, r, re, rehidratado } = useApp();
+  const { view, setView, r, re, rehidratado } = useApp();
+  const { usuario, puede } = useSesion();
   const [menu, setMenu] = useState(false);
+
+  /*
+   * ESCONDER UNA PUERTA NO ES CERRARLA.
+   *
+   * El menú ya no enseña lo que no se puede abrir, y eso basta para que nadie
+   * se tropiece con el despacho de Iris sin querer. Pero no basta para nada
+   * más: la dirección se escribe a mano, se pega de un chat, se queda en el
+   * historial del navegador. Un alumno que haya visto `/clientes` una vez lo
+   * vuelve a escribir y entra.
+   *
+   * Así que la puerta se cierra aquí también, y a quien no puede pasar no se
+   * le enseña un cartel de «no tienes permiso» —que no sirve de nada y encima
+   * confirma que ahí hay algo— sino que se le lleva a lo más cercano que sí
+   * es suyo: Iris a su consulta, un alumno a su escuela.
+   *
+   * ESTO NO ES LA SEGURIDAD, ES LA EDUCACIÓN. Quien sepa lo justo puede saltar
+   * esto desde la consola del navegador en diez segundos. Lo que de verdad
+   * impide que se lleve los datos son las reglas de Firestore, que corren en
+   * el servidor de Google y no se pueden tocar desde aquí. Esto es para que la
+   * plataforma no enseñe pantallas rotas a quien no le tocan.
+   *
+   * Se espera a que se sepa quién hay dentro: con `usuario` en null todavía no
+   * ha contestado Firebase, y mover a alguien en ese momento lo echaría de
+   * donde quería ir justo antes de tener derecho a estar.
+   */
+  useEffect(() => {
+    if (usuario == null) return;
+    if (puede(llaveDe(view))) return;
+    setView(dondeEmpieza(puede));
+  }, [usuario, view, puede, setView]);
 
   /*
    * SIN ESTUDIO NO HAY PANEL, PERO TAMPOCO SE MUEVE A NADIE DE SITIO.
@@ -193,6 +234,13 @@ export default function Shell() {
           {view === "agenda" && <AgendaScreen />}
           {view === "clientes" && <ClientesScreen />}
           {view === "facturas" && <FacturasScreen />}
+          {view === "escuela" && <EscuelaScreen />}
+          {view === "cursos" && <CursosScreen />}
+          {view === "comunidad" && <ComunidadScreen />}
+          {view === "recursos" && <RecursosScreen />}
+          {view === "trofeos" && <TrofeosScreen />}
+          {view === "metricas" && <MetricasScreen />}
+          {view === "gestion" && <GestionScreen />}
         </div>
       </div>
 

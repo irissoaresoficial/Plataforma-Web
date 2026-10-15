@@ -3,6 +3,8 @@ import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp, type Base, type Seccion, type Disciplina, type View } from "@/lib/app-context";
+import { useSesion } from "@/lib/sesion";
+import type { Capacidad } from "@/lib/roles";
 import {
   IcoAgenda,
   IcoAlma,
@@ -11,7 +13,14 @@ import {
   IcoBase22,
   IcoCiclos,
   IcoClientes,
+  IcoComunidad,
   IcoConsulta,
+  IcoCursos,
+  IcoEscuela,
+  IcoGestion,
+  IcoMetricas,
+  IcoRecursos,
+  IcoTrofeos,
   IcoCuentas,
   IcoDocumento,
   IcoEstructura,
@@ -69,6 +78,28 @@ const DESPACHO: Array<{ k: View; label: string; Ico: Ico }> = [
 ];
 
 /**
+ * LA ESCUELA: lo que ve quien paga.
+ *
+ * Cada entrada dice qué llave pide, y el menú no enseña las que no se tienen.
+ * Un alumno no ve «Comunidad» en gris con un candado al lado: no la ve. Una
+ * puerta cerrada que se ve es una invitación a empujarla, y además obliga a
+ * explicar en el menú por qué no se puede pasar.
+ */
+const ESCUELA: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> = [
+  { k: "escuela", label: "Inicio", Ico: IcoEscuela, llave: "recursos" },
+  { k: "cursos", label: "Cursos", Ico: IcoCursos, llave: "cursos" },
+  { k: "comunidad", label: "Comunidad", Ico: IcoComunidad, llave: "comunidad" },
+  { k: "recursos", label: "Recursos", Ico: IcoRecursos, llave: "recursos" },
+  { k: "trofeos", label: "Trofeos", Ico: IcoTrofeos, llave: "recursos" },
+];
+
+/** Lo de Iris que no es ni el estudio ni el despacho de siempre. */
+const DIRECCION: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> = [
+  { k: "metricas", label: "Métricas", Ico: IcoMetricas, llave: "metricas" },
+  { k: "gestion", label: "Gestión", Ico: IcoGestion, llave: "gestion" },
+];
+
+/**
  * TODA LA NAVEGACIÓN, EN UN SOLO SITIO.
  *
  * Antes estaba repartida en dos: una tira de pestañas arriba —Consulta, Panel,
@@ -100,6 +131,7 @@ const DESPACHO: Array<{ k: View; label: string; Ico: Ico }> = [
  */
 export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void; compacta?: boolean }) {
   const { r, re, view, setView, seccion, setSeccion, disciplina, setDisciplina, base, setBase } = useApp();
+  const { puede } = useSesion();
   const quieto = useReducedMotion();
   // Qué disciplinas están desplegadas. Se abre la que se está mirando, y
   // pulsando su nombre se cierra.
@@ -189,9 +221,37 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
     alCambiar?.();
   };
 
+  /*
+   * QUÉ SE ENSEÑA DE CADA MUNDO.
+   *
+   * Lo que no se puede abrir no sale. Ni en gris, ni con candado: no sale.
+   *
+   * Y un grupo entero sin una sola entrada abierta tampoco sale, con su
+   * rótulo incluido. Si no, un alumno vería «EL DESPACHO» escrito encima de
+   * un hueco vacío, que es peor que no verlo: le dice que ahí hay algo suyo
+   * que no le dejan ver.
+   */
+  const escuela = ESCUELA.filter((x) => puede(x.llave));
+  const direccion = DIRECCION.filter((x) => puede(x.llave));
+  const verEstudio = puede("estudio");
+  const verDespacho = puede("despacho");
+
   return (
     <nav style={css("display:flex;flex-direction:column;gap:var(--s6);")}>
+      {/* ---------------------------------------------------- LA ESCUELA */}
+      {/* Va primero porque es lo que ve TODO EL MUNDO, y el orden de un menú
+          dice de quién es la herramienta. Para Iris queda arriba lo de sus
+          alumnos y debajo lo suyo, que es el orden en que piensa quien lleva
+          una escuela: primero cómo va la clase, después el papeleo. */}
+      {escuela.length > 0 && (
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {rotulo("La escuela")}
+          {escuela.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
+        </div>
+      )}
+
       {/* ------------------------------------------------------- EL ESTUDIO */}
+      {verEstudio && (
       <div style={css("display:flex;flex-direction:column;gap:2px;")}>
         {rotulo("El estudio")}
 
@@ -292,22 +352,35 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
         })}
 
       </div>
+      )}
 
       {/* ---------------------------------------------------- PARA ENTREGAR */}
       {/* Lo que se imprime y se le da a la persona. Los dos salen del estudio
           que esté abierto, así que se apagan igual que las disciplinas cuando
           todavía no hay ninguno. */}
-      <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-        {rotulo("Para entregar")}
-        {fila(view === "estudio", IcoDocumento, "El documento", ir("estudio"), { apagado: !hayEstudio })}
-        {fila(view === "pareja", IcoPareja, "Comparar pareja", ir("pareja"), { apagado: !hayEstudio })}
-      </div>
+      {verEstudio && (
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {rotulo("Para entregar")}
+          {fila(view === "estudio", IcoDocumento, "El documento", ir("estudio"), { apagado: !hayEstudio })}
+          {fila(view === "pareja", IcoPareja, "Comparar pareja", ir("pareja"), { apagado: !hayEstudio })}
+        </div>
+      )}
 
       {/* ------------------------------------------------------ EL DESPACHO */}
-      <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-        {rotulo("El despacho")}
-        {DESPACHO.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
-      </div>
+      {verDespacho && (
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {rotulo("El despacho")}
+          {DESPACHO.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
+        </div>
+      )}
+
+      {/* ------------------------------------------------------- LA DIRECCIÓN */}
+      {direccion.length > 0 && (
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {rotulo("La dirección")}
+          {direccion.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
+        </div>
+      )}
     </nav>
   );
 }
