@@ -43,20 +43,11 @@ import { SESION } from '@/content/site';
  */
 export default function Portal() {
   useEffect(() => {
-    /* EL PRECIO DE LA ÚLTIMA PARADA, DESDE LOS DATOS.
-       Con oferta: «150 € · 111 € las 16 primeras, por los años de consulta».
-       Sin oferta, sólo el precio. El motivo va pegado al número a propósito:
-       una rebaja con motivo se lee como una condición y una sin motivo se lee
-       como que mañana seguirá ahí. */
+    /* LOS AÑOS DE CONSULTA, DESDE LOS DATOS Y NO ESCRITOS A MANO.
+       Es la fila que sostiene la autoridad de la última parada: en cuanto se
+       queda vieja, deja de sostenerla. */
     const anos = new Date().getFullYear() - SESION.desde;
-    const precio =
-      SESION.precioOferta !== null && SESION.precio !== null
-        ? `${SESION.precio} €. Ahora ${SESION.precioOferta} € para las ${SESION.plazasOferta} primeras, por los ${anos} años de consulta.`
-        : SESION.precio !== null
-          ? `${SESION.precio} € la sesión.`
-          : 'Te lo digo en la reserva.';
-
-    const parar = arrancaPortal({ precio });
+    const parar = arrancaPortal({ anos: `${SESION.desde}. ${anos} años de consulta, online.` });
 
     /* LOS SUSURROS, CALLADOS MIENTRAS SE VE EL PORTAL.
        Son las burbujas del chat contando cosas de la Kábala. En medio de una

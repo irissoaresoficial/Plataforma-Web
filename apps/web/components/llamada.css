@@ -1,0 +1,149 @@
+/* ============================================================================
+ * EL CIERRE
+ * ============================================================================
+ * Todo sale de los tokens del sistema: el ancho, el aire, el hueco, el radio
+ * y la escala de cuerpos. Aquí no hay ni un número suelto que no sea una
+ * decisión de esta pieza — y las que hay están explicadas.
+ * ========================================================================= */
+
+.llamada {
+  position: relative;
+  z-index: 3;
+  background: var(--bg);
+  color: var(--tx);
+  padding: var(--aire) var(--hueco);
+  overflow: hidden;
+}
+.llamada-dentro-caja {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.llamada-rotulo {
+  margin: 0 0 clamp(16px, 2vw, 22px);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-2);
+}
+.llamada-h {
+  margin: 0 0 clamp(16px, 2vw, 22px);
+  font-family: var(--sans);
+  font-size: var(--t-seccion);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--tx);
+}
+.llamada-p {
+  max-width: 46ch;
+  margin: 0 auto clamp(40px, 5vw, 58px);
+  font-size: var(--t-cuerpo);
+  line-height: 1.6;
+  color: var(--tx-2);
+}
+
+/* El curso y lo que viene, uno al lado del otro. En el móvil se apilan y el
+   curso va primero: lo que hay pesa más que lo que vendrá. */
+.llamada-piezas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(16px, 2vw, 24px);
+  max-width: 820px;
+  margin: 0 auto clamp(40px, 5vw, 56px);
+  text-align: left;
+}
+@media (min-width: 760px) {
+  .llamada-piezas { grid-template-columns: 1fr 1fr; }
+}
+
+.llamada-curso {
+  overflow: hidden;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+.llamada-curso img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.llamada-curso-pie {
+  padding: clamp(16px, 1.8vw, 22px);
+}
+.llamada-curso h3 {
+  margin: 0 0 6px;
+  font-family: var(--sans);
+  font-size: var(--t-bloque);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.llamada-curso span {
+  font-size: var(--t-nota);
+  color: var(--tx-2);
+}
+
+/* En punteado y no en caja cerrada: es un hueco que se va a llenar, y el
+   punteado lo dice sin tener que escribirlo. */
+.llamada-pronto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed var(--linea);
+  border-radius: var(--radio);
+  padding: clamp(22px, 2.6vw, 30px);
+}
+.llamada-pronto p {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-bloque);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.llamada-pronto span {
+  font-size: var(--t-nota);
+  line-height: 1.55;
+  color: var(--tx-2);
+}
+
+.llamada-boton { justify-content: center; }
+
+/* --------------------------------------------------------------- la entrada
+   Sube apareciendo, y escalonado: primero el rótulo, luego el titular, luego
+   las piezas y al final el botón. Todo a la vez es un parpadeo; escalonado se
+   lee como que la página te lo va contando. */
+.llamada-rotulo,
+.llamada-h,
+.llamada-p,
+.llamada-piezas,
+.llamada-boton {
+  opacity: 0;
+  transform: translateY(26px);
+}
+.llamada-dentro .llamada-rotulo,
+.llamada-dentro .llamada-h,
+.llamada-dentro .llamada-p,
+.llamada-dentro .llamada-piezas,
+.llamada-dentro .llamada-boton {
+  animation: llamada-sube 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.llamada-dentro .llamada-h { animation-delay: 0.08s; }
+.llamada-dentro .llamada-p { animation-delay: 0.16s; }
+.llamada-dentro .llamada-piezas { animation-delay: 0.24s; }
+.llamada-dentro .llamada-boton { animation-delay: 0.34s; }
+
+@keyframes llamada-sube {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .llamada-rotulo, .llamada-h, .llamada-p, .llamada-piezas, .llamada-boton {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}

@@ -1,5 +1,13 @@
 'use client';
 
+/* Su propio CSS, importado aquí y no en la página.
+   Lo cargaba app/page.tsx, que ya no pinta este bloque: la portada se
+   quedaba con una hoja de estilos que no viste nadie, y el día que alguien
+   volviera a poner la sinergia en otra página le habría salido sin estilos
+   y sin saber por qué. Pegado al componente no puede pasar ni lo uno ni lo
+   otro. */
+import '../app/sinergia-aqui.css';
+
 /**
  * LA SINERGIA, AQUÍ MISMO
  * ============================================================================

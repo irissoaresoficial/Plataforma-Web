@@ -44,9 +44,9 @@ export const MARCADO = String.raw`
   </section>
 
   <section class="contenido marco" aria-live="polite">
-    <h1 id="titulo">NUMEROLOGÍA</h1>
+    <h1 id="titulo">NO EMPIEZA EN TI</h1>
     <dl id="datos"></dl>
-    <a class="reserva" href="#consultas">Reservar mi consulta <span aria-hidden="true">&#8594;</span></a>
+    <a class="reserva" href="#cursos">Ver los talleres y cursos <span aria-hidden="true">&#8594;</span></a>
   </section>
 
   <div class="baja" id="baja" aria-hidden="true">Baja<span></span></div>

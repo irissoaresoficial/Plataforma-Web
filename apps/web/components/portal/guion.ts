@@ -3,8 +3,8 @@
  * React necesita para no dejar escuchas colgando al cambiar de página. */
 /* eslint-disable */
 // @ts-nocheck
-export function arrancaPortal(opciones: { precio: string }): () => void {
-const PRECIO_SESION = opciones.precio;
+export function arrancaPortal(opciones: { anos: string }): () => void {
+const AUTORIDAD_ANOS = opciones.anos;
 
 'use strict';
 
@@ -43,55 +43,59 @@ const luego = (fn: () => void, ms: number) => {
    cuando los titulares ya no dicen eso: un índice que no coincide con la
    página es peor que no tener índice. Van cortos a propósito — ahí no cabe
    una frase. */
-const ETAPAS = ['El patrón', 'La cuenta', 'Iris Soares'];
+const ETAPAS = ['El patrón', 'De dónde viene', 'Iris Soares'];
 
+/* ============================================================================
+ * LA HISTORIA: CUATRO COSAS Y EL PIE
+ * ============================================================================
+ * Encargo de Gerson, literal: «solo es hablar sobre los patrones de la vida
+ * (pregunta), después explicas esto (transgeneracional), después presentar a
+ * Iris, quién es y por qué es autoridad, y después un CTA que es un botón a
+ * los talleres y cursos. Después de eso está el footer y ya está.»
+ *
+ * Las tres primeras son estas tres paradas; el CTA es la sección de debajo.
+ * Cada parada hace UN trabajo y sólo uno:
+ *
+ *   1. EL PATRÓN        que se reconozca. Si no se ve aquí, lo demás sobra.
+ *   2. DE DÓNDE VIENE   la explicación, con nombres: la abuela, la madre, tú.
+ *                       Es la idea entera del oficio y es lo que separa esto
+ *                       de leer el horóscopo.
+ *   3. IRIS SOARES      quién es y, sobre todo, POR QUÉ creerla. Autoridad no
+ *                       es decir «llevo años»: es poder decir qué haces
+ *                       distinto a todos los demás.
+ */
 const DATOS = {
-  /* ==========================================================================
-   * EL TEXTO DEL RECORRIDO
-   * ==========================================================================
-   * Antes esto era una ficha técnica: «Base 22», «imagen del alma», «ciclos
-   * vitales». Son los nombres que usa Iris entre colegas, y para quien entra
-   * por primera vez no significan nada — describen el MECANISMO, y nadie
-   * compra un mecanismo.
-   *
-   * Las tres paradas son ahora los tres golpes de un argumento:
-   *
-   *   1. NO EMPIEZA EN TI   le quita la culpa. Es la frase que hace seguir
-   *      bajando, porque convierte «qué mala suerte tengo» en «entonces hay
-   *      algo que se puede mirar».
-   *   2. Y SE PUEDE MIRAR   la prueba, en humano. Lo que convence no es la
-   *      numerología: es que los dos datos que hacen falta no los eligió.
-   *   3. HOLA, SOY IRIS     la persona, y el precio. Que el precio esté aquí
-   *      y no detrás de una puerta es a propósito: quien ve el número y sigue
-   *      bajando es quien de verdad va a reservar.
-   */
   numerologia: {
     nombre: 'No empieza en ti', orden: 0,
     datos: [
-      ['Lo que te han dicho:', 'Que es mala suerte. O que eres tú.'],
-      ['De quién viene:', 'De tu madre. Y de la suya. Y de la de antes.'],
-      ['Qué se hereda:', 'No lo que les pasó. La manera que encontraron de aguantarlo.'],
-      ['Por qué sigue:', 'Porque en tu familia nadie lo ha dicho todavía en voz alta.'],
+      ['En el trabajo:', 'Cambias, y a los seis meses estás igual.'],
+      ['En la pareja:', 'La misma discusión, con otra persona.'],
+      ['Con el dinero:', 'Entra, y se va siempre por el mismo sitio.'],
+      ['Y un día:', 'Te oyes decir una frase de tu madre.'],
     ],
   },
   kabala: {
-    nombre: 'Y se puede mirar', orden: 1,
+    /* El titular de aquí se mide contra el de la parada anterior: «No
+       empieza en ti» -> «Empieza en tu abuela». Las dos frases son una
+       sola leída a lo largo del scroll, y es la idea entera del oficio
+       dicha en siete palabras. Además cabe: a 9vw el hueco del titular da
+       para dos renglones de unas diez letras, y «Lo que no se habla, se
+       hereda» pedía tres — la tercera se salía por abajo de la pantalla. */
+    nombre: 'Empieza en tu abuela', orden: 1,
     datos: [
-      ['Qué hace falta:', 'Tu fecha de nacimiento y tu nombre completo. Nada más.'],
-      ['Por qué esos dos:', 'Porque no los elegiste tú. Son lo único tuyo que ya estaba escrito.'],
-      ['Qué sale:', 'Qué se repite, desde qué generación, y qué toca ahora.'],
-      ['Qué no sale:', 'El futuro. Esto explica el presente.'],
+      ['Tu abuela:', 'Tomó una decisión para sobrevivir a lo suyo: callarse, aguantar, irse.'],
+      ['Tu madre:', 'Creció con esa decisión puesta en casa, sin que nadie se la explicara.'],
+      ['Y tú:', 'No repites lo que les pasó. Repites la salida que encontraron ellas.'],
+      ['Cómo se ve:', 'En tu fecha y en tu nombre. Dos datos que no elegiste tú.'],
     ],
   },
   iris: {
     nombre: 'Hola, soy Iris', orden: 2, retrato: true, foco: .3,
     datos: [
-      ['Quién soy:', 'Iris Soares. Llevo desde 2010 levantando cartas.'],
-      ['Qué hacemos:', 'La tuya, contigo delante y en directo.'],
-      ['Qué te llevas:', 'Las cuentas hechas y sabiendo repetirlas tú sola.'],
-      /* El precio y su motivo salen de `content/site.ts`, no escritos aquí:
-         el día que Iris cambie el número, cambia también en la portada. */
-      ['Cuánto cuesta:', 'PRECIO_SESION'],
+      ['Quién soy:', 'Iris Soares. Numerología transgeneracional y Kábala.'],
+      ['Desde cuándo:', 'AUTORIDAD_ANOS'],
+      ['Qué hago distinto:', 'No te leo la carta y ya. Te enseño la cuenta para que la rehagas sin mí.'],
+      ['Y por eso:', 'Detrás hay una escuela, no sólo una consulta.'],
     ],
   },
 };
@@ -166,11 +170,11 @@ const punto = document.querySelector('.cursor-punto');
    que el número se mete aquí al arrancar. Si algún día no hay oferta, la fila
    dice sólo el precio normal y el motivo desaparece solo — que es lo que
    impide que la portada anuncie una rebaja que ya no existe. */
+/* LOS AÑOS, CONTADOS SOLOS. Escritos a mano, en enero la web dice una cifra
+   que ya no es verdad — y la autoridad se cae justo por donde se sostiene. */
 {
-  const f = DATOS.iris.datos.find((d) => d[1] === 'PRECIO_SESION');
-  if (f) {
-    f[1] = PRECIO_SESION;
-  }
+  const f = DATOS.iris.datos.find((d) => d[1] === 'AUTORIDAD_ANOS');
+  if (f) f[1] = AUTORIDAD_ANOS;
 }
 
 let actual = 'numerologia';

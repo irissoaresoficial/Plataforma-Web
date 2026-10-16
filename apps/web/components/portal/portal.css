@@ -311,8 +311,10 @@ body:not(.abierto) .portal .cabecera, body:not(.abierto) .portal .etapas, body:n
 
 /* EL BOTÓN DEL ÚLTIMO TRAMO.
    Sale sólo cuando aparece ella, que es cuando la persona ya sabe quién es y
-   qué hace. Antes no: pedir una consulta en la primera pantalla, a alguien que
-   todavía no sabe de qué va esto, es la forma más rápida de que se vaya. */
+   qué hace. Antes no: pedir algo en la primera pantalla, a alguien que todavía
+   no sabe de qué va esto, es la forma más rápida de que se vaya.
+   Llevaba a `#consultas` y ese bloque ya no está en la portada: ahora baja al
+   cierre, que es la única cosa que se pide en toda la página. */
 .portal .reserva {
   display: none;
   margin-top: clamp(18px, 2.4svh, 28px);

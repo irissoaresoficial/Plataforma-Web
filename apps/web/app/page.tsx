@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import Cursor from '@/components/Cursor';
-import CampoNumeros from '@/components/CampoNumeros';
 /*
  * `Aparece` en vez de `Reveal`, en toda la web.
  *
@@ -17,9 +16,6 @@ import CampoNumeros from '@/components/CampoNumeros';
  * Bajas y entra, paras y se para a media entrada. Ver components/Aparece.tsx.
  */
 import Aparece from '@/components/Aparece';
-import { Palabras, Marquesina, Paralaje, Revelado, Entra } from '@/components/movimiento';
-import TuNumero from '@/components/TuNumero';
-import Anclado from '@/components/Anclado';
 /* AQUÍ SE IMPORTABA `Testimonios` Y NO SE PINTABA EN NINGUNA PARTE.
    El componente estaba terminado, la lista `TESTIMONIOS` de content/site.ts
    estaba vacía, y el import llevaba meses colgando sin dibujar un solo píxel.
@@ -27,8 +23,6 @@ import Anclado from '@/components/Anclado';
    clientes ni testimonios — «no es necesario» —, así que la línea se va. El
    «qué he hecho» de la página se cuenta con su recorrido, que es verdad y no
    depende de que nadie escriba nada. */
-import Lanzamiento from '@/components/Lanzamiento';
-import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
@@ -36,17 +30,10 @@ import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/C
 import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
 import Portal from '@/components/Portal';
-import QueEs from '@/components/QueEs';
-import SinergiaAqui from '@/components/SinergiaAqui';
+import Llamada from '@/components/Llamada';
 import { useLang } from '@/lib/i18n';
-import { CONTACTO, FOTOS, MEMBRESIA } from '@/content/site';
+import { CONTACTO } from '@/content/site';
 import Pendiente from '@/components/Pendiente';
-/* El CSS de la sinergia vive en su propio archivo: es una pieza entera con su
-   maqueta, sus casillas y su resultado, y meterla en globals.css la escondía
-   entre seis mil líneas. */
-import './sinergia-aqui.css';
-
-const PAD = 'var(--aire) var(--hueco)';
 const ANCHO = 'var(--ancho)';
 
 /** Rótulo de sección: línea fina + palabra pequeña.
@@ -126,35 +113,12 @@ export default function Home() {
    * argumento al aire.
    */
   const abrirConsulta = () => openChat('consulta');
-  const [faq, setFaq] = useState(-1);
 
-  /* El curso que sale en la ficha de la portada: el primero que tenga fecha de
-     verdad. Sin ninguno, la ficha no se dibuja: es preferible un hueco a una
-     fecha inventada. */
+  /* AQUÍ VIVÍAN LAS DOCE DUDAS Y LAS CUATRO FRASES DEL DOLOR.
+     Se van con sus bloques. Las claves `f_*` y `p_*` se quedan en i18n.tsx:
+     no cuestan nada, el chat las usa para responder, y las dudas tienen que
+     volver — pero en su propia página, no al final de una historia. */
 
-  /* Los precios ya no salen en la portada: viven en /numerologia y /kabala,
-     que son las páginas que explican qué se compra, y el chat los dice en su
-     primera respuesta. Aquí no queda ninguna cifra que calcular. */
-
-  /* Doce, no cuatro. Quien duda antes de reservar no duda de una cosa: duda de
-     si esto es adivinación, de si le van a pedir creer algo, de qué pasa si no
-     sabe las fechas de sus abuelos y de si puede mover la cita. Cada pregunta
-     que no está aquí es alguien que cierra la pestaña sin escribir. */
-  const faqs: [string, string][] = [
-    [t.f_q1, t.f_a1],
-    [t.f_q5, t.f_a5],
-    [t.f_q7, t.f_a7],
-    [t.f_q10, t.f_a10],
-    [t.f_q6, t.f_a6],
-    [t.f_q8, t.f_a8],
-    [t.f_q2, t.f_a2],
-    [t.f_q3, t.f_a3],
-    [t.f_q9, t.f_a9],
-    [t.f_q11, t.f_a11],
-    [t.f_q12, t.f_a12],
-    [t.f_q4, t.f_a4],
-  ];
-  const dolor = [t.p1, t.p2, t.p3, t.p4];
 
   return (
     <div id="app" className="claro" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
@@ -167,17 +131,13 @@ export default function Home() {
         cta={t.book}
         onCta={abrirConsulta}
         conIdiomas
-        /* Enlaces de ESTA página, no destinos. «Qué es la Kábala» apuntaba a
-           un `#kabala` que ya no existe —ese bloque se mudó entero a su propia
-           página— así que era un enlace que no llevaba a ningún sitio: se
-           pulsaba y no pasaba nada. La Kábala ya está en la lista de arriba del
-           menú, con su página. */
-        extra={[
-          { href: '#hola', label: 'Quién es Iris' },
-          { href: '#consultas', label: 'La consulta' },
-          { href: '#prueba', label: t.n1 },
-          { href: '#dudas', label: 'Dudas' },
-        ]}
+        /* Enlaces de ESTA página, no destinos: el menú los pone bajo «En
+           esta página». Eran cuatro —«Quién es Iris», «La consulta», la
+           prueba y las dudas— y los cuatro apuntaban a bloques que ya no
+           están aquí: la home es el portal, el botón y el pie. Un menú que
+           ofrece cuatro sitios y no lleva a ninguno es peor que no tenerlo.
+           Queda el único ancla que existe de verdad. */
+        extra={[{ href: '#cursos', label: 'Talleres y cursos' }]}
       />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
@@ -202,299 +162,27 @@ export default function Home() {
           Ocupaba el sitio más caro de la página —entre el titular y el primer
           bloque de verdad— y no daba ni un motivo para seguir bajando. */}
 
-      {/* ── EL DOLOR ─────────────────────────────────────────
-          Anclado: la sección se queda quieta y cada frase se lee sola. Es el
-          mejor texto que tiene la web y como lista pasaba desapercibido. */}
-      <Anclado rotulo={t.p_lab} lineas={dolor} cierre={t.p_punch} />
+      {/* ── EL CIERRE: UN BOTÓN A LOS TALLERES Y CURSOS ─────
+          Lo último antes del pie, y lo único que se pide en toda la página.
 
-      {/* ── HOLA, SOY IRIS ────────────────────────────────────
-          El orden de la página es el de una conversación de verdad: primero el
-          problema —la portada y las cuatro frases del bloque de arriba, donde
-          la persona se reconoce— y SÓLO ENTONCES entra ella.
+          AQUÍ SE HAN QUITADO CINCO BLOQUES, y no por recortar: la portada
+          contaba la misma historia dos veces. El recorrido presentaba a Iris
+          y tres pantallas más abajo «hola, soy Iris» volvía a presentarla; el
+          recorrido explicaba de dónde viene el patrón y «qué es esto» lo
+          explicaba otra vez. Dicho dos veces, se cree la mitad.
 
-          Al revés no funciona: alguien presentándose antes de que le hayas
-          dicho por qué te interesa es un folleto. Presentándose justo después
-          de «y llevas años jurando que tú no ibas a ser así» es la respuesta a
-          la pregunta que la persona acaba de hacerse.
+          Lo que se ha ido, y dónde está ahora:
+            · «A ver si te suena» ... es la primera parada del recorrido.
+            · «Hola, soy Iris» ...... es la tercera.
+            · «Qué es esto» ......... es la segunda, y entero en /numerologia.
+            · La sinergia ........... en /sinergia, que es su casa.
+            · «Déjame mirarlo contigo» y las dudas ... la reserva vive en el
+              botón de la barra y en el pie, que están siempre a la vista; las
+              dudas desarman una historia si se ponen al final de ella.
 
-          Y aquí el nombre gigante en versales que había —«IRIS / SOARES» de
-          setenta píxeles— tampoco está: ocupaba el sitio de un titular y no
-          decía nada. Ese sitio lo ocupa el saludo, que dice quién es Y a qué se
-          dedica en la misma línea. */}
-      <div id="hola" className="claro hola">
-        <div className="hola-marco">
-          <div className="hola-texto">
-            <Aparece>
-              <h2 className="hola-h">
-                {t.w_hola}
-                <br />
-                <b>{t.w_oficio}</b>
-              </h2>
-            </Aparece>
-            <Aparece retraso={1}>
-              <p className="hola-p">{t.w_que}</p>
-            </Aparece>
-            <Aparece retraso={2}>
-              {/* El mismo botón que la portada: la frase y una flecha en un
-                  disco levantado del papel. Una sola forma de pedir en toda la
-                  página, y se reconoce a la segunda vez que se ve. */}
-              <button
-                type="button"
-                className="portada-cta cta-solida"
-                onClick={abrirConsulta}
-                data-mag
-                data-cur-label={t.cbook}
-              >
-                <span>{t.hcta}</span>
-                <i aria-hidden>→</i>
-              </button>
-            </Aparece>
-          </div>
-
-          {/* El retrato, con su canto y sin degradados encima. Aquí va la foto
-              y no el vídeo: en este bloque ella se PRESENTA, y una cara quieta
-              mirándote es exactamente eso. El vídeo está donde toca decidir
-              —justo encima del botón de reservar— porque ahí lo que hace falta
-              es oírla, no verla. */}
-          {/*
-              AQUÍ EL BLOQUE SE MUEVE CON LA RUEDA, Y NO ES ADORNO.
-
-              Antes la foto entraba con un barrido y se quedaba quieta: el
-              bloque de Iris era el único tramo largo de la página en el que no
-              pasaba nada mientras se bajaba. Gerson: «la parte de soy Iris
-              quiero que sea más interactivo, que juegue bien con el scrolling».
-
-              Lo que hace ahora son DOS cosas que trabajan juntas:
-
-               · El texto se queda pegado (`.hola-texto` es sticky) mientras la
-                 foto sigue subiendo. Durante unos cuantos cientos de píxeles
-                 quien lee tiene la frase delante y a Iris pasando al lado. En
-                 una presentación eso es exactamente lo que se quiere: que la
-                 cara acompañe al texto en vez de competir con él.
-               · Y la foto va en paralaje —se desplaza más despacio que la
-                 página, 70 px de un extremo al otro del recorrido—, así que no
-                 sube «con» el scroll sino un poco por detrás. Es lo que da la
-                 sensación de profundidad sin que haya nada en 3D.
-
-              El paralaje se apaga solo con `prefers-reduced-motion`, y el
-              sticky se apaga por debajo de 900 px: en una columna, pegar el
-              texto significa taparle la foto a quien baja.
-          */}
-          <Paralaje cantidad={70} className="hola-foto">
-            <Foto
-              src={FOTOS.hablando}
-              alt="Iris Soares, en su consulta"
-              ratio="4/5"
-              radius="0"
-              sizes="(max-width:900px) 100vw, 42vw"
-              objectPosition="center 18%"
-            />
-          </Paralaje>
-        </div>
-      </div>
-
-      {/* ── QUÉ ES ESTO ──────────────────────────────────────
-          El único sitio de la página donde se dice QUÉ ES esto. Y ahora es solo
-          texto: la foto de las generaciones que iba al lado se ha ido a
-          /numerologia, que es su casa.
-
-          Dos motivos, y ninguno es que la foto estuviera mal. Uno: una cara a
-          media pantalla al lado de la explicación se lleva la mirada entera y
-          la explicación se salta, justo aquí, que es donde no puede saltarse.
-          Dos: venía inmediatamente después del bloque de Iris, que también
-          lleva foto — dos fotos seguidas a media pantalla y la página se lee
-          como un catálogo.
-
-          Lo que la acompaña ahora no compite: polvo dorado flotando muy
-          despacio por detrás, y las palabras escribiéndose al ritmo al que se
-          baja. El detalle está en components/QueEs.tsx. */}
-      <QueEs titular={t.q_h} uno={t.q_p1} dos={t.q_p2} />
-
-      {/* ── EL REGALO: LA SINERGIA, AQUÍ MISMO ───────────────
-          Aquí estaba la calculadora del número personal. Se fue a /numerologia,
-          que es su casa: en la portada había DOS cosas gratis y ése es justo el
-          lío del que se quejaba Gerson — tantos servicios que la gente se
-          pierde.
-
-          Y en su sitio estuvo un rato un bloque con dos círculos vacíos y un
-          botón que LLEVABA A OTRA PÁGINA. Duró lo que tardó en verlo: «no
-          quiero que salga de la página». Tenía razón y por un motivo que no es
-          de gusto — mandar a alguien a otra pantalla en mitad de una historia
-          es perder la historia.
-
-          Ahora la cuenta se hace aquí. Dos fechas, un botón, y el resultado
-          debajo sin recargar ni navegar. Y los dos círculos, que eran adorno,
-          se han convertido en el resultado: el número de cada uno en su lado y
-          el del vínculo en la lente, que es literalmente donde va. Vacíos no se
-          pintan, así que no hay ningún número de mentira en pantalla.
-
-          El cálculo es el mismo módulo del que come /sinergia: mismos números y
-          mismos textos, comprobados uno a uno contra esa página. Ni una
-          interpretación inventada. */}
-      <SinergiaAqui />
-
-      {/* LAS TRES FOTOS SIN TEXTO ESTABAN AQUÍ. Un descanso visual en medio
-          de una página de venta, y quien está decidiendo si se gasta 111 € no
-          necesita descansar: necesita el siguiente motivo. Las buenas —el árbol
-          en la pizarra y la cuenta a mano— vuelven donde prueban algo. */}
-
-      {/* Aquí iba «TRES PASOS. SIN MISTERIO» con tres fichas numeradas: me das
-          dos datos, preparo tu historia, nos vemos en directo. Fuera.
-
-          Se pidió quitarlo y tenía razón: eran los pasos de la RESERVA disfrazados
-          de método. Nadie entra a esta web preguntándose cómo se pide cita —eso lo
-          contesta el botón de reservar, que está siempre a la vista— y ponerlo en
-          un bloque a pantalla completa con su barra de progreso le daba el peso de
-          lo que sí importa. Lo que de verdad se hace paso a paso ya está contado
-          donde toca: la cuenta se ve en la portada, el temario en la ficha del
-          curso y las capas del árbol en la landing de la comunidad. */}
-
-      {/* ── LA CONSULTA ──────────────────────────────────────
-          UN BOTÓN. NO DOS FICHAS CON PRECIO.
-
-          Aquí había dos columnas, dos precios grandes, un tachado, un motivo de
-          oferta y tres botones entre las dos. Es una tabla de tarifas puesta en
-          medio de una historia — y le hace a la persona la pregunta equivocada:
-          en vez de «¿quiero esto?», le pregunta «¿cuál de las dos y por cuánto?».
-          Eso es una decisión de compra, y todavía no toca.
-
-          Lo que toca aquí es una sola cosa: hablar con Iris. El precio lo dice
-          el chat en la primera respuesta, y quien quiera verlo antes lo tiene
-          escrito en las dos páginas que lo explican —numerología y Kábala—,
-          enlazadas desde el pie y desde el propio texto. */}
-      {/*
-          Y AQUÍ HABÍA TEXTO SOBRE BLANCO. NADA MÁS.
-
-          Un titular, una línea gris y dos enlaces dorados, pegados a la
-          izquierda en medio de una pantalla en blanco. En el móvil de Gerson se
-          veía exactamente así: un hueco. No es que estuviera mal maquetado — es
-          que no había maqueta. Y este bloque es el momento en que se decide la
-          única compra de la página.
-
-          Lo que hay ahora:
-           · la sala se oscurece un punto (fondo arena en vez de papel) para que
-             el cierre no sea la misma pared que el resto,
-           · las cifras de la casa flotando detrás, como en la portada,
-           · una raya dorada que SE DIBUJA al bajar —de ancho cero a 76 px—, que
-             es lo que separa un bloque compuesto de un bloque escrito,
-           · y las dos puertas, que eran dos enlaces sueltos, ahora son dos
-             fichas con nombre, una línea de qué hay dentro y una flecha que se
-             mueve. Un enlace dorado suelto en el móvil no se ve como una puerta:
-             se ve como una palabra en otro color. */}
-      <div id="consultas" className="cierre2" style={{ scrollMarginTop: 80 }}>
-        <CampoNumeros intensidad={0.55} />
-        <div className="cierre2-dentro">
-          {/* La raya crece con `--p`, el número de 0 a 1 que escribe `Aparece`.
-              No es un adorno que se enciende: se estira mientras se baja. */}
-          <Aparece className="cierre2-raya" />
-          <Aparece as="h2" className="titular-seccion cierre2-h" retraso={1}>
-            {t.cu_h}
-          </Aparece>
-          {/* AQUÍ IBA «Online, con tu historia ya preparada antes de vernos.»
-              y se ha ido. Entre «Déjame mirarlo contigo» y el botón, esa línea
-              no hacía más que enfriar: el titular es una mano tendida y lo
-              siguiente que se leía era una nota de logística. El cómo y el
-              cuándo se cuentan en /numerologia y los dice el chat en su primera
-              respuesta — aquí sobra. */}
-          <Aparece retraso={2}>
-            <button
-              type="button"
-              className="portada-cta cta-solida cierre2-cta"
-              onClick={abrirConsulta}
-              data-mag
-              data-cur-label={t.cbook}
-            >
-              <span>{t.hcta}</span>
-              <i aria-hidden>→</i>
-            </button>
-          </Aparece>
-
-          {/* Las dos puertas para quien quiera leer antes de hablar. Siguen
-              pesando menos que el botón —no son doradas ni llevan relleno— pero
-              ya tienen tamaño de cosa que se toca. */}
-          <Aparece retraso={3} className="cierre2-puertas">
-            <Link href="/numerologia" className="cierre2-puerta" data-mag data-cur-label="Ver">
-              <span className="cierre2-puerta-h">{t.cu_num}</span>
-              <span className="cierre2-puerta-p">{t.cu_num_p}</span>
-              <i aria-hidden>→</i>
-            </Link>
-            <Link href="/kabala" className="cierre2-puerta" data-mag data-cur-label="Ver">
-              <span className="cierre2-puerta-h">{t.cu_kab}</span>
-              <span className="cierre2-puerta-p">{t.cu_kab_p}</span>
-              <i aria-hidden>→</i>
-            </Link>
-          </Aparece>
-        </div>
-      </div>
-
-      {/* EL VÍDEO DE IRIS NO VA AQUÍ. Ni aquí ni en el bloque de «Hola, soy
-          Iris», donde también estuvo. Va en el apartado del curso y en ningún
-          otro sitio — se ha pedido tres veces y las tres lo puse donde no era.
-          Aquí queda el texto y el botón, y ya está. */}
-
-      {/* ── DUDAS ────────────────────────────────────────────── */}
-      <div id="dudas" className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD }}>
-        <div style={{ maxWidth: ANCHO, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(24px,4vw,72px)', alignItems: 'start' }}>
-          {/* El título se queda pegado arriba MIENTRAS haya dos columnas. En el
-              móvil hay una sola, así que quedarse pegado significa quedarse
-              encima de las preguntas: el rótulo «Dudas» y «Lo que me preguntan
-              siempre» se leían pisados por «¿Las sesiones son online?». La clase
-              apaga el sticky por debajo de 900 px. */}
-          <div className="faq-titulo">
-            <Aparece>
-              <Rotulo claro>{t.f_lab}</Rotulo>
-            </Aparece>
-            <Aparece retraso={1} className="display" style={{ fontSize: 'var(--t-seccion)', maxWidth: '13ch' }}>
-              {t.f_h}
-            </Aparece>
-          </div>
-          <Aparece>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {faqs.map(([q, a], i) => {
-                const on = faq === i;
-                return (
-                  <div key={q} className="line-hover" style={{ borderTop: '1px solid var(--linea)', borderBottom: i === faqs.length - 1 ? '1px solid var(--linea)' : undefined }}>
-                    {/* Un botón de verdad: se alcanza con el tabulador y se abre
-                        con Intro o con la barra. `aria-expanded` es lo que le
-                        dice a un lector de pantalla si está abierta o cerrada, y
-                        `aria-controls` con qué respuesta va. */}
-                    <button
-                      type="button"
-                      onClick={() => setFaq(on ? -1 : i)}
-                      aria-expanded={on}
-                      aria-controls={`duda-${i}`}
-                      data-mag
-                      className="duda-boton"
-                    >
-                      <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: 'var(--esp-bloque)', textAlign: 'left' }}>{q}</span>
-                      <span aria-hidden style={{ fontSize: 'var(--t-icono)', color: 'var(--acento)', flexShrink: 0 }}>{on ? '−' : '+'}</span>
-                    </button>
-                    <div id={`duda-${i}`} role="region" hidden={!on} style={{ overflow: 'hidden', transition: 'max-height .55s cubic-bezier(.16,1,.3,1),opacity .4s ease', maxHeight: on ? 240 : 0, opacity: on ? 1 : 0 }}>
-                      <p style={{ margin: '0 0 24px', fontSize: 'var(--t-cuerpo)', lineHeight: 1.65, color: 'var(--tx-2)', maxWidth: '48ch' }}>{a}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Aparece>
-        </div>
-      </div>
-
-      {/*
-          EL BLOQUE DE CIERRE SE HA IDO ENTERO.
-          ---------------------------------------------------------------------
-          Era una pantalla de granate detrás de las dudas: un titular, una línea
-          y el botón «Reservar mi consulta» — el QUINTO de la página, con las
-          mismas palabras exactas que los cuatro anteriores. Gerson: «esa parte
-          NO SIRVE PARA NADA», y la auditoría del relato había llegado a lo
-          mismo por su cuenta: se pedía lo mismo cinco veces, y la quinta no
-          ofrecía nada que no ofreciera la primera.
-
-          Repetir una petición no la hace más fuerte: la gasta. La página cierra
-          ahora en las dudas y en el pie, y la única petición de verdad vive en
-          el bloque de la consulta, que es donde la persona ya sabe qué compra.
-          Las claves `c_h`, `c_p` y `c_btn` se quedan en i18n.tsx: no cuestan
-          nada y las usa el chat. */}
+          No se ha borrado ningún componente: todos siguen en el repositorio y
+          las páginas que los usan, en pie. */}
+      <Llamada />
 
       {/* ── PIE: el mapa de la web ───────────────────────────── */}
       <div className="arena" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(44px,6vw,72px) clamp(16px,4vw,56px) 30px' }}>
