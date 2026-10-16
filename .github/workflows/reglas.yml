@@ -66,33 +66,41 @@ jobs:
         with:
           node-version: "20"
 
-      # SE FIJA LA VERSIÓN, y no es manía: una herramienta que se actualiza
+      # SE FIJA LA VERSIÓN, y no es manía: una biblioteca que se actualiza
       # sola puede cambiar de comportamiento un martes y romper un despliegue
       # sin que nadie haya tocado nada — y entonces se busca el fallo en el
       # último cambio del código, que no tiene nada que ver.
-      #
-      # Y se fija una de hace un par de semanas, no la de ayer: las de ayer
-      # son las que todavía no ha estrenado nadie. Ésta lleva quince días
-      # publicada, que es tiempo de sobra para que un fallo gordo aparezca.
-      - name: Instalar la herramienta de Firebase
-        run: npm install -g firebase-tools@15.32.1
+      - name: Instalar lo que hace falta para firmar
+        run: npm install --no-save google-auth-library@11.1.0
 
+      # AQUÍ ESTABA `firebase deploy`, Y NO FUNCIONA CON LA CLAVE QUE HAY.
+      #
+      # El CLI pregunta antes a `serviceusage.googleapis.com` si las APIs
+      # están activadas, y la cuenta de servicio del SDK de administrador no
+      # tiene permiso para esa pregunta:
+      #
+      #     Permission denied to get service [firestore.googleapis.com]
+      #
+      # Comprobado contra el proyecto de verdad: falla antes de empezar. La
+      # explicación entera, y qué se hace en su lugar, está dentro de
+      # `firebase/publicar-reglas.mjs`.
+      #
       # NO HAY UNA COMPROBACIÓN PREVIA, Y NO ES UN OLVIDO.
       #
-      # Lo intenté: cargar las reglas en el emulador antes de desplegar, para
+      # Lo intenté: cargar las reglas en el emulador antes de publicar, para
       # cazar un error de sintaxis sin tocar producción. NO SIRVE — probado
       # rompiendo una regla a propósito: el emulador arranca igual, devuelve
       # éxito y no deja ni una línea en su registro. Una comprobación que pasa
       # con las reglas rotas es peor que ninguna, porque da confianza falsa.
       #
-      # Quien valida de verdad es el propio `deploy`: el servidor de Google
-      # compila las reglas y rechaza las que no lo hacen, sin publicar nada a
-      # medias. Si están mal, este trabajo falla en rojo y GitHub avisa por
-      # correo. Que es exactamente lo que se quería.
+      # Quien valida de verdad es Google al recibirlas: compila las reglas en
+      # su servidor y rechaza las que no lo hacen, antes de publicar nada. Si
+      # están mal, este trabajo falla en rojo y GitHub avisa por correo. Que es
+      # exactamente lo que se quería.
       #
-      # La clave se escribe en un archivo porque la herramienta la pide así, y
-      # el archivo vive sólo lo que dura este trabajo: la máquina se tira
-      # entera al terminar.
+      # La clave se escribe en un archivo porque así es como la buscan las
+      # bibliotecas de Google, y el archivo vive sólo lo que dura este trabajo:
+      # la máquina se tira entera al terminar.
       - name: Publicar Firestore y Storage
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/clave.json
@@ -104,4 +112,4 @@ jobs:
             exit 1
           fi
           printf '%s' "$CLAVE" > /tmp/clave.json
-          firebase deploy --only firestore:rules,storage --project plataforma-d3c55 --non-interactive
+          node firebase/publicar-reglas.mjs
