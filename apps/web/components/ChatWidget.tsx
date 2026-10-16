@@ -115,29 +115,7 @@ export type ChatWidgetHandle = { open: (servicio?: Servicio) => void };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/**
- * EL AGENTE, FUERA DE LA VISTA (pero las reservas se quedan).
- *
- * Gerson: «ESE AGENTE CREO QUE QUITALO DE MOMENTO». Lo que se veía —y lo que
- * salía tapando el texto en las cinco capturas— era la pastilla flotante
- * «Reservar · Agente de IA · agenda en directo» y las burbujas que soltaban
- * frases de Kábala por su cuenta.
- *
- * Eso es lo que se va. Lo que NO se va es esto de dentro: este componente es
- * el que habla con /api/availability y /api/booking, o sea que es el único
- * sitio por el que hoy se puede pedir cita. Borrarlo entero habría dejado la
- * web preciosa y sin agenda.
- *
- * Así que ahora no se anuncia solo: no hay pastilla y no hay burbujas. Se abre
- * únicamente cuando alguien pulsa «Reservar mi consulta», y entonces es una
- * ventana de reserva y nada más.
- *
- * `lanzador` existe para volver a encenderla el día que se decida, sin tener
- * que reconstruir nada.
- */
-type Props = { lanzador?: boolean };
-
-const ChatWidget = forwardRef<ChatWidgetHandle, Props>(function ChatWidget({ lanzador = false }, ref) {
+const ChatWidget = forwardRef<ChatWidgetHandle>(function ChatWidget(_props, ref) {
   const { lang, t } = useLang();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -696,68 +674,66 @@ const ChatWidget = forwardRef<ChatWidgetHandle, Props>(function ChatWidget({ lan
 
   return (
     <>
-      {lanzador && (
-        <button
-          type="button"
-          id="chat-launcher"
-          className="vino"
-          /* Con `onClick={openChat}` el navegador pasaba el evento del clic como
-             primer argumento, y ese argumento es ahora QUÉ se reserva. */
-          onClick={() => openChat('consulta')}
-          aria-label={t.cbook || 'Reservar una sesión'}
-          data-mag
-          data-cur-label={t.cbook}
-          style={{
-            position: 'fixed',
-            zIndex: 139,
-            right: 'clamp(10px,2vw,24px)',
-            /* Con el área segura sumada: en un iPhone la barra del navegador se
-               come los últimos 34 px, y ahí es donde estaba medio botón. */
-            bottom: 'calc(clamp(10px,2vw,24px) + env(safe-area-inset-bottom))',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            background: 'var(--vino)',
-            color: 'var(--tx)',
-            border: '1px solid var(--linea-2)',
-            borderRadius: 100,
-            padding: '8px 10px 8px 8px',
-            cursor: 'pointer',
-            boxShadow: '0 14px 34px rgba(34,29,31,.28)',
-            transition: 'opacity .35s ease,transform .45s cubic-bezier(.16,1,.3,1),border-color .4s ease',
-            opacity: open || tapado ? 0 : 1,
-            pointerEvents: open || tapado ? 'none' : 'auto',
-            transform: `translateY(${open || tapado ? 10 : 0}px)`,
-          }}
-        >
-          <div style={{ position: 'relative', width: 38, height: 38, flexShrink: 0 }}>
-            <div
-              style={{
-                position: 'absolute',
-                inset: -5,
-                borderRadius: '50%',
-                border: '1px solid rgba(200,155,74,.55)',
-                animation: 'pulseRing 2.6s ease-out infinite',
-              }}
-            />
-            <div style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden', background: 'var(--superficie)', border: '1px solid rgba(200,155,74,.5)' }}>
-              <Image src="/images/iris.jpg" alt="Iris" width={38} height={38} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 18%', display: 'block' }} />
-            </div>
-            <span style={{ position: 'absolute', right: -1, bottom: -1, width: 11, height: 11, borderRadius: '50%', background: '#7CC48A', border: '2px solid var(--bg)' }} />
+      <button
+        type="button"
+        id="chat-launcher"
+        className="vino"
+        /* Con `onClick={openChat}` el navegador pasaba el evento del clic como
+           primer argumento, y ese argumento es ahora QUÉ se reserva. */
+        onClick={() => openChat('consulta')}
+        aria-label={t.cbook || 'Reservar una sesión'}
+        data-mag
+        data-cur-label={t.cbook}
+        style={{
+          position: 'fixed',
+          zIndex: 139,
+          right: 'clamp(10px,2vw,24px)',
+          /* Con el área segura sumada: en un iPhone la barra del navegador se
+             come los últimos 34 px, y ahí es donde estaba medio botón. */
+          bottom: 'calc(clamp(10px,2vw,24px) + env(safe-area-inset-bottom))',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          background: 'var(--vino)',
+          color: 'var(--tx)',
+          border: '1px solid var(--linea-2)',
+          borderRadius: 100,
+          padding: '8px 10px 8px 8px',
+          cursor: 'pointer',
+          boxShadow: '0 14px 34px rgba(34,29,31,.28)',
+          transition: 'opacity .35s ease,transform .45s cubic-bezier(.16,1,.3,1),border-color .4s ease',
+          opacity: open || tapado ? 0 : 1,
+          pointerEvents: open || tapado ? 'none' : 'auto',
+          transform: `translateY(${open || tapado ? 10 : 0}px)`,
+        }}
+      >
+        <div style={{ position: 'relative', width: 38, height: 38, flexShrink: 0 }}>
+          <div
+            style={{
+              position: 'absolute',
+              inset: -5,
+              borderRadius: '50%',
+              border: '1px solid rgba(200,155,74,.55)',
+              animation: 'pulseRing 2.6s ease-out infinite',
+            }}
+          />
+          <div style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden', background: 'var(--superficie)', border: '1px solid rgba(200,155,74,.5)' }}>
+            <Image src="/images/iris.jpg" alt="Iris" width={38} height={38} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 18%', display: 'block' }} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
-            <span style={{ fontSize: 'var(--t-nota)', fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
-            {/* «Agente de IA · agenda en directo» explica qué es esto, y en el
-                escritorio vale la pena. En el móvil es lo que hacía la pastilla de
-                276 px de ancho —siete de cada diez de la pantalla— así que ahí se
-                cae y queda la foto, la palabra y la flecha. */}
-            <span className="chat-sub" style={{ fontSize: 'var(--t-nota)', fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
-          </div>
-          <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--t-nota)', fontWeight: 'var(--peso-medio)', flexShrink: 0 }}>
-            →
-          </span>
-        </button>
-      )}
+          <span style={{ position: 'absolute', right: -1, bottom: -1, width: 11, height: 11, borderRadius: '50%', background: '#7CC48A', border: '2px solid var(--bg)' }} />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
+          <span style={{ fontSize: 'var(--t-nota)', fontWeight: 'var(--peso-fino)', letterSpacing: '-.01em', whiteSpace: 'nowrap' }}>{t.book}</span>
+          {/* «Agente de IA · agenda en directo» explica qué es esto, y en el
+              escritorio vale la pena. En el móvil es lo que hacía la pastilla de
+              276 px de ancho —siete de cada diez de la pantalla— así que ahí se
+              cae y queda la foto, la palabra y la flecha. */}
+          <span className="chat-sub" style={{ fontSize: 'var(--t-nota)', fontWeight: 500, color: 'var(--tx-2)', whiteSpace: 'nowrap' }}>{t.ch_sub}</span>
+        </div>
+        <span style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--boton)', color: 'var(--boton-tx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--t-nota)', fontWeight: 'var(--peso-medio)', flexShrink: 0 }}>
+          →
+        </span>
+      </button>
 
       {/* Una ventana que se abre encima tiene que decir que lo es: `dialog`
           para que un lector de pantalla la anuncie, `aria-modal` para que se

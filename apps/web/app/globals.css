@@ -1,30 +1,26 @@
 :root {
   /*
-   * UNA SOLA LETRA EN TODA LA CASA.
+   * Dos voces, no una. `--serif` es la de los titulares (Fraunces, con las
+   * esquinas redondeadas por su eje SOFT) y `--sans` la de leer (Instrument
+   * Sans). Los nombres se quedan como estaban porque están escritos en medio
+   * archivo; lo que cambia es que ahora apuntan a sitios distintos, que era
+   * justo lo que faltaba: con una sola familia, un titular no era más que texto
+   * grande.
    *
-   * Eran dos: una serif con gestos para los titulares y una grotesca para
-   * leer. En la pantalla no se leían como dos voces, se leían como dos webs
-   * pegadas — y se notaba justo al bajar de la portada.
-   *
-   * La de ahora es la del sistema cuando la hay: en un iPhone y en un Mac
-   * `-apple-system` ES San Francisco, ya instalada, sin descargar nada. Donde
-   * no esté entra Inter, que es la que más se le parece.
-   *
-   * `--serif` y `--sans` apuntan al mismo sitio a propósito. Los dos nombres
-   * están escritos en medio archivo y en el portal; cambiarlos uno a uno era
-   * tocar cien líneas para el mismo resultado, y además dejaría la puerta
-   * abierta a que mañana vuelvan a ser dos.
+   * Las dos llegan por next/font, así que el nombre real lo pone una variable
+   * que escribe Next al compilar. Detrás va siempre una pila de reserva de
+   * verdad: si la letra tardara, lo que se ve mientras tanto tiene que
+   * parecerse, no ser otra cosa.
    */
-  --letra:
-    -apple-system, BlinkMacSystemFont, var(--f-letra), 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
-  --serif: var(--letra);
-  --sans: var(--letra);
+  --serif: var(--f-display), 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --sans: var(--f-texto), -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 
-  /* Fraunces era variable y esto abría sus esquinas. Sin Fraunces no hay ejes
-     que mover; se queda vacío para no tener que cazar los tres sitios donde
-     está escrito. */
-  --display-ejes: normal;
+  /*
+   * La redondez de los titulares. Fraunces es variable: SOFT abre las esquinas
+   * (0 = seca de periódico, 100 = tierna) y WONK le mete los gestos raros, que
+   * aquí sobran. Se pone una vez, aquí, y no se vuelve a tocar.
+   */
+  --display-ejes: 'SOFT' 62, 'WONK' 0;
 
   /*
    * LOS BORDES
@@ -47,14 +43,8 @@
    * curva de la página es la de las cosas que se pulsan: se distinguen sin
    * necesidad de ningún color más.
    */
-  /* LOS RADIOS, SUBIDOS. Estaban en 4 y 3 px con una idea detrás: que lo
-     único curvo de la página fuera lo que se pulsa. Es una idea bonita y no es
-     la que se ha pedido tres veces — «minimalista Apple style». Apple redondea,
-     y bastante: una tarjeta a 4 px se lee como una tabla, no como una tarjeta.
-     Cambiarlo aquí lo cambia en toda la web y en la plataforma a la vez, que
-     es justo lo que quiere decir «todo es todo». */
-  --radio: 14px;
-  --radio-chico: 10px;
+  --radio: 4px;
+  --radio-chico: 3px;
   --radio-pildora: 100px;
 
   /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
@@ -476,7 +466,7 @@ h3 {
 }
 .titular-seccion {
   font-size: var(--t-seccion);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   line-height: 1.06;
   letter-spacing: -0.038em;
   text-wrap: balance;
@@ -2369,7 +2359,7 @@ body[data-nav-claro='si'] .sello-color {
 .tn-titulo {
   margin: 0;
   font-size: var(--t-seccion);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   line-height: 1.06;
   letter-spacing: -0.038em;
   text-wrap: balance;
@@ -2686,7 +2676,7 @@ body[data-nav-claro='si'] .sello-color {
   /* Más grande que un titular normal: ahora es lo ÚNICO que hay en pantalla,
      y a tamaño de sección se quedaba pequeña en medio de tanto aire. */
   font-size: var(--t-h2);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   line-height: 1.18;
   letter-spacing: var(--esp-seccion);
   text-wrap: balance;
@@ -4402,7 +4392,7 @@ body[data-nav-claro='si'] .sello-color {
 .com-titular {
   margin: 0;
   font-size: var(--t-h1);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   line-height: 1.02;
   letter-spacing: -0.038em;
   text-wrap: balance;
@@ -5592,7 +5582,7 @@ body[data-nav-claro='si'] .sello-color {
 .hola-h {
   margin: 0;
   font-family: var(--sans);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   font-size: var(--t-h1);
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -6393,7 +6383,7 @@ body[data-nav-claro='si'] .sello-color {
   margin: 0;
   font-family: var(--sans);
   font-size: var(--t-h1);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.03em;
   text-wrap: balance;
@@ -6423,7 +6413,7 @@ body[data-nav-claro='si'] .sello-color {
      eso no es jerarquía, es otra web. Las tres frases de la portada son la
      misma cosa dicha tres veces seguidas; tienen que pesar igual. */
   font-size: var(--t-h1);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.03em;
   text-wrap: balance;
@@ -6488,7 +6478,7 @@ body[data-nav-claro='si'] .sello-color {
   cursor: pointer;
   font-family: var(--sans);
   font-size: var(--t-lead);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   letter-spacing: -0.03em;
   color: var(--vino);
   text-align: left;
@@ -7405,7 +7395,7 @@ body[data-nav-claro='si'] .sello-color {
   margin: 0;
   font-family: var(--sans);
   font-size: var(--t-h1);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   line-height: 1.0;
   letter-spacing: -0.045em;
   color: var(--tinta);
@@ -7621,55 +7611,8 @@ body[data-nav-claro='si'] .sello-color {
 .com-lista {
   margin: clamp(6px, 1vw, 12px) 0 0;
   font-size: var(--t-h2);
-  font-weight: var(--peso-fino);
+  font-weight: 600;
   line-height: 1.02;
   letter-spacing: -0.035em;
   color: var(--oro-luz);
-}
-
-/* ============================================================================
- * LA LÍNEA: UNA SOLA, Y LIGERA
- * ============================================================================
- * Gerson, por tercera vez: «LA TIPOGRAFIA ES MINIMALISTA APPLE STYLE MODERN
- * LIGHT» y «ajusta todo a un solo diseño (TODO ES TODO)».
- *
- * Arriba ya manda una sola letra —la del sistema, que en un iPhone y en un Mac
- * es San Francisco— y los titulares grandes bajaron a 300. Esto es lo que
- * faltaba: EL ÉNFASIS.
- *
- * En esta casa se enfatizaba engordando. «numeróloga transgeneracional» salía
- * en negrita y en dorado dentro de un titular de 300, y lo que se veía no era
- * énfasis: eran dos tipografías distintas en la misma frase. Así no escribe
- * Apple y así no se lee ligero.
- *
- * La regla, de aquí en adelante: DENTRO DE UN TITULAR EL ÉNFASIS ES EL COLOR,
- * NUNCA EL PESO. Y en el texto corrido, una negrita es 500 — lo justo para que
- * se note—, no el 700 que pone el navegador por su cuenta.
- * ========================================================================= */
-
-b,
-strong {
-  font-weight: var(--peso-medio);
-}
-
-h1 b, h1 strong,
-h2 b, h2 strong,
-h3 b, h3 strong,
-.hola-h b, .hola-h strong,
-.portada-h1 b, .portada-h1 strong,
-.titular-portada b, .titular-portada strong,
-.portal .contenido h1 b, .portal .contenido h1 strong {
-  font-weight: inherit;
-  /* El color sí: es lo que ahora hace el trabajo que hacía el grosor. */
-}
-
-/* Y el apriete de las letras, que es la mitad del aire de un titular de Apple:
-   cuanto más grande, más juntas. A 300 y sin apretar, un titular de 60 px se
-   deshace en la pantalla. */
-h1,
-h2,
-.hola-h,
-.portada-h1,
-.titular-portada {
-  letter-spacing: -0.03em;
 }

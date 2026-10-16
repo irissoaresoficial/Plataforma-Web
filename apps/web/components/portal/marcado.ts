@@ -8,7 +8,7 @@
  */
 export const MARCADO = String.raw`
 <div class="pista" id="pista">
-<main class="recorrido" id="recorrido" data-etapa="pregunta">
+<main class="recorrido" id="recorrido" data-etapa="numerologia">
 
   <div class="antesala" id="antesala" aria-label="Abriendo">
     <video id="antesala-video" muted playsinline preload="auto"></video>

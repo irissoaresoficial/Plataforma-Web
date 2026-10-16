@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Fraunces, Instrument_Sans } from 'next/font/google';
 import { LangProvider } from '@/lib/i18n';
 import Medicion from '@/components/Medicion';
 import Ficha from '@/components/Ficha';
@@ -41,29 +41,21 @@ import './movimiento.css';
  * es donde vive media web —notas, rótulos, letra legal—. Debajo de una serif
  * con carácter, el texto tiene que apartarse.
  */
-/*
- * UNA SOLA LETRA, Y DE LAS LIGERAS.
- *
- * Había dos: Fraunces para los titulares y Instrument Sans para leer. Sobre el
- * papel está bien —una web con dos voces— y en la pantalla no lo estaba: una
- * serif con gestos arriba y una grotesca sólida debajo se leen como dos webs
- * pegadas, y es justo lo que se veía al bajar de la portada.
- *
- * Ahora manda una, y es la del sistema cuando la hay. En un iPhone y en un Mac
- * `-apple-system` ES San Francisco: no se parece a la tipografía de Apple, es
- * la tipografía de Apple, ya instalada y sin descargar un byte. Donde no esté
- * —Windows, Android— entra Inter, que es la que más se le acerca y la única
- * razón por la que se descarga algo.
- *
- * Los pesos van de 300 a 600 y el reparto es el de Apple: los titulares
- * grandes en 300, finos y con las letras apretadas; el texto en 400; el 500 y
- * el 600 sólo para rótulos pequeños y botones, que es donde un peso ligero
- * deja de leerse.
- */
-const letra = Inter({
+/* Sin lista de pesos: pidiendo ejes hay que traerse la fuente variable entera,
+   que además es lo que queremos —el peso se mueve de 300 a 500 según el sitio— y
+   pesa menos que tres archivos sueltos. */
+const display = Fraunces({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--f-letra',
+  axes: ['SOFT', 'WONK', 'opsz'],
+  variable: '--f-display',
+  display: 'swap',
+});
+
+const texto = Instrument_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--f-texto',
   display: 'swap',
 });
 
@@ -139,7 +131,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={letra.variable}>
+    <html lang="es" className={`${display.variable} ${texto.variable}`}>
       <body>
         {/*
             QUIÉN ES LA CASA Y QUIÉN ES IRIS, ESCRITO PARA GOOGLE.

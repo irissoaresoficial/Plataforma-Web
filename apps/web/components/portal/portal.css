@@ -73,14 +73,8 @@
   --marfil-hondo:#e3dbcb;
   --papel:#fbf8f2;
   --linea:rgba(34,29,31,.22);
-  /* AQUÍ ESTABA EL ESCAPE. El portal venía de ser una página suelta y traía
-     sus propias letras —una serif de las de sistema para los titulares— y al
-     estar definidas DENTRO de `.portal` ganaban a las de la casa. O sea: se
-     cambió la tipografía de toda la web y el portal siguió con la suya, que
-     es exactamente lo que no puede pasar. Ahora apunta a `--letra`, la única
-     que hay. */
-  --serif:var(--letra);
-  --sans:var(--letra);
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
   font-family:var(--sans);
   color:var(--tinta);
   background:var(--marfil);
@@ -159,7 +153,7 @@ body:not(.antesala-lista){overflow:hidden;height:100%}
 /* El tamaño del titular lo manda la palabra más larga: «NUMEROLOGÍA» son once
    letras y a 13,5vw ocupaba la fila entera, echando la ficha fuera de la
    pantalla. Se veía un titular precioso y ni uno de los cuatro renglones. */
-.portal .contenido h1{font-family:var(--serif);font-size:clamp(54px,9vw,132px);font-weight:300;line-height:.84;
+.portal .contenido h1{font-family:var(--serif);font-size:clamp(54px,9vw,132px);font-weight:400;line-height:.84;
   margin:0 0 -.02em;letter-spacing:-.032em;color:var(--vino);transform:translateX(-6px);opacity:0;
   flex:0 1 auto;min-width:0}
 .portal .contenido dl{width:min(420px,32vw);flex:none;margin:0;font-size:15px;min-width:0}
@@ -265,11 +259,7 @@ body:not(.abierto) .portal .cabecera, body:not(.abierto) .portal .etapas, body:n
      cortados. Medido en el propio fotograma: la tinta está entre el 48% y el
      55% de la cinta. Y más pequeña, para que su borde de abajo quede 20 px
      por encima del titular. */
-/* MEDIDO EN LAS SEIS PARADAS. Con la mirilla al 51% y 206 px pisaba el
-     titular: 48 px en «¿Por qué se repite?» —que con la letra de la casa va a
-     dos renglones—, 20 en el árbol y 16 en los cursos. Al 43% y 176 px no
-     toca en ninguna, y sigue centrada sobre la tinta del plano vertical. */
-  .portal .ventana-zona{top:43%;width:min(176px,46vw);transform:translate(-50%,-50%)}
+.portal .ventana-zona{top:51%;width:min(206px,53vw);transform:translate(-50%,-50%)}
 .portal .contenido{left:max(18px,env(safe-area-inset-left,0px));right:max(18px,env(safe-area-inset-right,0px));
     bottom:max(18px,env(safe-area-inset-bottom,0px));display:block}
 .portal .contenido h1{font-size:clamp(38px,12.4vw,92px);letter-spacing:-.035em;margin-bottom:14px}
@@ -325,10 +315,6 @@ body:not(.abierto) .portal .cabecera, body:not(.abierto) .portal .etapas, body:n
    todavía no sabe de qué va esto, es la forma más rápida de que se vaya. */
 .portal .reserva {
   display: none;
-  /* Sin esto «Ver los cursos» parte en dos renglones al quedarse sin sitio
-     al lado de la ficha, y un botón de dos líneas no se lee como un botón. */
-  white-space: nowrap;
-  flex: none;
   margin-top: clamp(18px, 2.4svh, 28px);
   align-items: center;
   gap: 10px;
@@ -347,25 +333,7 @@ body:not(.abierto) .portal .cabecera, body:not(.abierto) .portal .etapas, body:n
 }
 .portal .reserva:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(69, 26, 37, .28); }
 .portal .reserva span { font-size: 19px; line-height: 1; }
-.portal .reserva[data-puesto='si'] { display: inline-flex; }
-
-/* 2. EL PARPADEO AL CAMBIAR DE PLANO.
-   Entre dos paradas de retrato la mirilla mide lo mismo y sólo cambia la
-   foto: sin esto es un corte seco en mitad de una pieza que no tiene ni uno.
-   Doscientas milésimas, que es lo que tarda un ojo en no notarlo. */
-@keyframes portal-cambia {
-  0% { opacity: 1; }
-  38% { opacity: 0; }
-  100% { opacity: 1; }
-}
-.portal .lienzo-ventana.cambia-plano {
-  animation: portal-cambia .5s ease both;
-}
-
-/* 3. LOS TITULARES, CON LA LETRA DE LA CASA.
-   Aquí hubo un rato una serif de acento. Fuera: la regla es una sola letra
-   en la web y en la plataforma, y una segunda familia —por bonita que sea—
-   es exactamente lo que hace que dos pantallas parezcan de dos sitios. */
+.portal .recorrido[data-etapa="iris"] .reserva { display: inline-flex; }
 
 /* La ficha no recibe clics —es un panel que cruza media pantalla y se comería
    todo lo que hay debajo—, así que el botón tiene que devolvérselos él solo.

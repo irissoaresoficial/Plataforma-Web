@@ -20,7 +20,7 @@
    Por eso cambiar la marca entera se hace aquí y en ningún sitio más.
    --------------------------------------------------------------------------- */
 :root {
-  --font-ui: -apple-system, BlinkMacSystemFont, var(--f-texto), "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-ui: var(--f-texto), -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 
   /*
    * LOS TITULARES, EN PALO SECO DESDE EL 16 DE OCTUBRE DE 2026.
@@ -43,7 +43,7 @@
    * Sin eso, un titular en la misma letra que el párrafo no se lee como un
    * titular — se lee como un párrafo en grande.
    */
-  --font-display: -apple-system, BlinkMacSystemFont, var(--f-texto), "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--f-texto), -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 
   /*
    * LA SERIF SE QUEDA, PERO SÓLO PARA EL PAPEL.
