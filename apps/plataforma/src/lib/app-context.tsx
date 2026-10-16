@@ -14,7 +14,7 @@ import type { Capacidad } from "./roles";
  * eran suyas. Ahora conviven dos cosas distintas bajo el mismo techo, y lo que
  * las separa no es un menú más ordenado: es quién puede abrir cada una.
  *
- * LA ESCUELA — `escuela`, `cursos`, `comunidad`, `recursos`, `trofeos`.
+ * LA ESCUELA — `escuela`, `cursos`, `comunidad`, `perfil`.
  * Lo que ve quien compra un curso o paga la membresía. Cada una pide su llave:
  * los cursos los ve quien ha comprado alguno, la comunidad quien es miembro,
  * los recursos cualquiera que haya entrado.
@@ -38,7 +38,6 @@ export type View =
   | "escuela"
   | "cursos"
   | "comunidad"
-  | "recursos"
   | "perfil"
   /* ---- SÓLO IRIS: el estudio de Kábala y el despacho ---- */
   | "inicio"
@@ -66,7 +65,6 @@ const RUTA: Record<View, string> = {
   escuela: "/escuela",
   cursos: "/cursos",
   comunidad: "/comunidad",
-  recursos: "/recursos",
   perfil: "/perfil",
   metricas: "/metricas",
   gestion: "/gestion",
@@ -83,7 +81,6 @@ const VISTA: Record<string, View> = {
   "/escuela": "escuela",
   "/cursos": "cursos",
   "/comunidad": "comunidad",
-  "/recursos": "recursos",
   "/perfil": "perfil",
   "/metricas": "metricas",
   "/gestion": "gestion",
@@ -109,11 +106,10 @@ const VISTA: Record<string, View> = {
  */
 const LLAVE: Record<View, Capacidad> = {
   /* La escuela */
-  escuela: "recursos", // el recibidor: lo ve cualquiera que haya entrado
+  escuela: "escuela", // el recibidor: lo ve cualquiera que haya entrado
   cursos: "cursos",
   comunidad: "comunidad",
-  recursos: "recursos",
-  perfil: "recursos", // el perfil es de cada uno: lo abre cualquiera que haya entrado
+  perfil: "escuela", // el perfil es de cada uno: lo abre cualquiera que haya entrado
   /* El estudio de Kábala, que es sólo de Iris */
   inicio: "estudio",
   panel: "estudio",

@@ -31,6 +31,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { BOTON_NORMAL, BOTON_PLANO, CABECERA, LECTURA, NOTA, botonPrincipal } from "@/lib/ui";
 import { leeVideo } from "@/lib/escuela/video";
+import Recursos from "./Recursos";
 import { avance as repoAvance, porDondeIba, progreso, totalLecciones, type Avance, type Curso, type Leccion } from "@/lib/escuela";
 
 export default function Reproductor({
@@ -298,6 +299,19 @@ export default function Reproductor({
           </section>
         </div>
       )}
+
+      {/*
+        EL MATERIAL DEL CURSO, DEBAJO DE TODO.
+
+        Aquí abajo y no arriba: quien abre un curso viene a ver la clase, y lo
+        que se baja se busca después de verla o al terminar. Puesto arriba
+        sería un trámite entre la persona y el vídeo.
+
+        Fuera de la rejilla del reproductor a propósito —ocupa el ancho
+        entero— porque no es parte de la lección que se está viendo: es del
+        curso. Si no hay archivos, el componente no pinta nada.
+      */}
+      <Recursos cursoId={curso.id} recursos={curso.recursos ?? []} />
 
       {/* En pantalla ancha el temario vuelve a su columna de la derecha. En
           estrecho va debajo del vídeo —de ahí los `order` de arriba—: lo

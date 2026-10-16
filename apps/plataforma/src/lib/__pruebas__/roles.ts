@@ -56,9 +56,9 @@ comprueba("alumno ve sus cursos", puede(alumno, "cursos"), true);
 comprueba("miembro NO ve cursos", puede(miembro, "cursos"), false);
 comprueba("miembro entra en comunidad", puede(miembro, "comunidad"), true);
 comprueba("alumno NO entra en comunidad", puede(alumno, "comunidad"), false);
-comprueba("los tres ven recursos · alumno", puede(alumno, "recursos"), true);
-comprueba("los tres ven recursos · miembro", puede(miembro, "recursos"), true);
-comprueba("los tres ven recursos · admin", puede(admin, "recursos"), true);
+comprueba("los tres entran en la escuela · alumno", puede(alumno, "escuela"), true);
+comprueba("los tres entran en la escuela · miembro", puede(miembro, "escuela"), true);
+comprueba("los tres entran en la escuela · admin", puede(admin, "escuela"), true);
 
 /* ── 3. Las llaves se acumulan ───────────────────────────────────────── */
 
@@ -73,8 +73,8 @@ comprueba("ficha vieja abre el estudio", puede(vieja, "estudio"), true);
 comprueba("roles vacío cuenta como vieja", esAdmin({ roles: [] }), true);
 comprueba("roles null cuenta como vieja", esAdmin({ roles: null }), true);
 comprueba("ficha rota NO es admin", esAdmin(rota), false);
-comprueba("ficha rota no abre nada", puede(rota, "recursos"), false);
-comprueba("sin ficha no abre nada", puede(null, "recursos"), false);
+comprueba("ficha rota no abre nada", puede(rota, "escuela"), false);
+comprueba("sin ficha no abre nada", puede(null, "escuela"), false);
 comprueba("sin ficha no es admin", esAdmin(null), false);
 
 /* Lo que se descarta de una ficha a medias no se lleva lo bueno por delante. */

@@ -304,15 +304,6 @@ export const IcoComunidad = (p: P) => (
 );
 
 /** Los recursos: la hoja que se descarga. */
-export const IcoRecursos = (p: P) => (
-  <Caja {...p}>
-    <path d="M13.4 3.2H7a2 2 0 0 0-2 2v13.6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.8z" />
-    <path d="M13.3 3.3v4.3a1.2 1.2 0 0 0 1.2 1.2h4.3" opacity=".6" />
-    <path d="M12 11.6v4.7m0 0-1.9-1.9M12 16.3l1.9-1.9" />
-  </Caja>
-);
-
-/** Los trofeos: la copa con sus asas. */
 export const IcoTrofeos = (p: P) => (
   <Caja {...p}>
     <path d="M8 3.6h8v4.6a4 4 0 0 1-8 0z" />

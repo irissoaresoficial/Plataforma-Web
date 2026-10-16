@@ -80,6 +80,47 @@ export type Modulo = {
   lecciones: Leccion[];
 };
 
+/**
+ * UN RECURSO: UN ARCHIVO QUE SE BAJA.
+ *
+ * El PDF del manual, la plantilla de la ficha, el audio de la meditación. Lo
+ * que acompaña a un curso y no es un vídeo de clase.
+ *
+ * VIVE DENTRO DEL CURSO, y eso cambió el 16 de octubre de 2026. Antes había
+ * una colección `recursos` aparte y una pantalla «Recursos» en el menú, con
+ * todo mezclado. Gerson: «el apartado de recursos y demás, pues esto iría
+ * como tal dentro de los cursos. Cada curso tiene sus recursos, entonces es
+ * irrelevante colocarlo allí».
+ *
+ * Y es la forma correcta, no sólo la que se pidió: una biblioteca común
+ * obliga a decidir quién puede bajar qué archivo, y la respuesta siempre iba
+ * a ser «quien tenga el curso del que es». Puesto dentro, esa pregunta ya
+ * está contestada por la inscripción y no hay una segunda lista de permisos
+ * que mantener.
+ *
+ * LA FICHA VIVE AQUÍ, EL ARCHIVO NO. Un documento de Firestore no pasa de
+ * 1 MB, así que el archivo se sube al almacén y aquí queda su dirección. Eso
+ * arrastra una cosa que hay que saber: quitar el recurso de esta lista NO
+ * borra el archivo. Son dos borrados, y el orden está elegido en
+ * `recursos.ts`.
+ */
+export type Recurso = {
+  id: string;
+  nombre: string;
+  /** Una línea de qué es. */
+  que: string;
+  tipo: "pdf" | "audio" | "plantilla" | "video";
+  /** Dónde está el archivo, para bajarlo. */
+  url: string;
+  /** Su sitio exacto en el almacén, que es lo que hace falta para borrarlo.
+   *  No se saca de la `url`: esa lleva una llave dentro y parsearla sería
+   *  atarse a un formato que Google puede cambiar. */
+  ruta: string;
+  /** En bytes. Se enseña en humano; se guarda en crudo para poder sumarlo. */
+  peso: number;
+  creado: string;
+};
+
 export type Curso = {
   id: string;
   titulo: string;
@@ -105,6 +146,14 @@ export type Curso = {
    */
   publicado: boolean;
   modulos: Modulo[];
+  /**
+   * Los archivos que se bajan: el manual, la plantilla, el audio.
+   *
+   * Opcional porque los cursos creados antes de que esto existiera no lo
+   * traen, y al faltar se lee como una lista vacía. Nada se rompe y no hay
+   * que ir a tocar ningún documento a mano.
+   */
+  recursos?: Recurso[];
   /** Cuándo se creó y cuándo se tocó por última vez. ISO. */
   creado: string;
   tocado: string;

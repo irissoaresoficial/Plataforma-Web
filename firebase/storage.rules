@@ -75,12 +75,29 @@ service firebase.storage {
      * pantalla: lo de la pantalla es cortesía —avisa antes de empezar a subir—
      * y esto es la regla. Sin ella, cualquiera con la sesión de Iris abierta
      * podría llenar el almacén, y el almacén se paga.
+     *
+     * BORRAR SE DICE APARTE, Y NO ES UNA FLORITURA.
+     *
+     * `allow write` son las tres cosas a la vez: subir, reemplazar y borrar. Y
+     * AL BORRAR NO HAY `request.resource` —se manda quitar, no poner— así que
+     * preguntarle su tamaño y su tipo no devuelve false: revienta la
+     * evaluación, y una evaluación rota es un no.
+     *
+     * Encontrado probándolo de verdad el 16 de octubre de 2026, con el vale de
+     * Iris: borrar un archivo daba 403. Consecuencia: ella quitaba un vídeo o
+     * un material desde la pantalla, desaparecía de la lista, y EL ARCHIVO SE
+     * QUEDABA EN EL ALMACÉN PARA SIEMPRE. Sin error visible, porque el borrado
+     * del archivo se hace sin molestar a nadie si falla — a propósito, para que
+     * un fallo de red no deje a medias lo que la pantalla ya ha hecho. Así que
+     * el almacén iba engordando con cosas que nadie podía ver ni borrar, y el
+     * almacén se paga por lo que ocupa.
      */
     match /cursos/{cursoId}/{archivo} {
       allow read: if request.auth != null;
-      allow write: if esIris()
+      allow create, update: if esIris()
         && request.resource.size < 2 * 1024 * 1024 * 1024
         && request.resource.contentType.matches('video/.*');
+      allow delete: if esIris();
     }
 
     /*
@@ -96,9 +113,17 @@ service firebase.storage {
      * tarde, y entonces me escribe. Lo que de verdad protege es que sólo ella
      * puede subir.
      */
-    match /recursos/{archivo} {
+    /* UNA CARPETA POR CURSO, y el `{cursoId}` del medio no es decorativo: sin
+       él esta regla NO CASA con `recursos/<curso>/<archivo>` y toda subida de
+       material se rechaza. Los archivos se metieron en carpetas el día que
+       los recursos pasaron a vivir dentro de cada curso, para que borrar un
+       curso pueda llevarse sus archivos sin ir a buscarlos uno a uno. */
+    match /recursos/{cursoId}/{archivo} {
       allow read: if request.auth != null;
-      allow write: if esIris() && request.resource.size < 2 * 1024 * 1024 * 1024;
+      /* Partido en dos por lo mismo que los vídeos de arriba: al borrar no hay
+         `request.resource` al que preguntarle el tamaño. */
+      allow create, update: if esIris() && request.resource.size < 2 * 1024 * 1024 * 1024;
+      allow delete: if esIris();
     }
 
     /*

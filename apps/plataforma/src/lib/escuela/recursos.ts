@@ -1,42 +1,36 @@
 /**
  * ============================================================================
- * LA BIBLIOTECA, EN DATOS
+ * LOS ARCHIVOS QUE SE BAJAN: SUBIRLOS Y QUITARLOS
  * ============================================================================
  *
- * Un recurso es una ficha en Firestore que apunta a un archivo en el almacén.
- * Dos sitios, y hay que saber por qué: Firestore guarda texto y busca rápido;
- * el almacén guarda archivos y no sabe buscar. Meter el PDF dentro del
- * documento no se puede —hay un tope de 1 MB— y meter el nombre y la
- * descripción sólo en el nombre del archivo haría imposible buscar.
+ * El manual en PDF, la plantilla de la ficha, el audio de la meditación. Lo
+ * que acompaña a un curso y no es un vídeo de clase.
  *
- * LO QUE ESTO ARRASTRA, dicho claro: borrar la ficha NO borra el archivo. Son
- * dos borrados y el segundo puede fallar. Así que `borra()` hace los dos, en
- * el orden que deja el menor destrozo si se rompe a la mitad.
+ * ESTO ERA UNA BIBLIOTECA COMÚN Y YA NO LO ES. Había una colección
+ * `recursos` en Firestore y una pantalla «Recursos» en el menú, con todo
+ * junto. Gerson: «cada curso tiene sus recursos, entonces es irrelevante
+ * colocarlo allí». Ahora la ficha de cada archivo vive DENTRO del documento
+ * de su curso, al lado de sus módulos — el porqué está escrito en `tipos.ts`,
+ * donde está el tipo.
+ *
+ * LO QUE QUEDA AQUÍ es la parte que no cambia de sitio: hablar con el
+ * almacén. Subir un archivo, adivinar de qué tipo es, decir cuánto pesa en
+ * cristiano y borrarlo cuando sobra.
+ *
+ * DOS SITIOS, Y HAY QUE SABER POR QUÉ: un documento de Firestore no pasa de
+ * 1 MB, así que el archivo va al almacén y en el curso queda su dirección.
+ * Eso arrastra que quitar un recurso son DOS borrados —la ficha y el
+ * archivo— y el segundo puede fallar. El orden está elegido abajo.
  */
 
-import { collection, deleteDoc, doc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { almacen, nube } from "@/lib/firebase";
+import { almacen } from "@/lib/firebase";
 import { nuevoId } from "./local";
+import type { Recurso } from "./tipos";
 
-export type Tipo = "pdf" | "audio" | "plantilla" | "video";
+export type { Recurso };
 
-export type Recurso = {
-  id: string;
-  nombre: string;
-  /** Una línea de qué es. Se busca por aquí además de por el nombre. */
-  que: string;
-  tipo: Tipo;
-  /** Dónde está el archivo, para bajarlo. */
-  url: string;
-  /** Su sitio exacto en el almacén, que es lo que hace falta para borrarlo.
-   *  No se saca de la `url`: esa lleva una llave dentro y parsearla sería
-   *  atarse a un formato que Google puede cambiar. */
-  ruta: string;
-  /** En bytes. Se enseña en humano; se guarda en crudo para poder sumarlo. */
-  peso: number;
-  creado: string;
-};
+export type Tipo = Recurso["tipo"];
 
 /** 2 GB, igual que los vídeos de las clases. */
 const TOPE = 2 * 1024 * 1024 * 1024;
@@ -65,21 +59,17 @@ export function adivinaTipo(f: File): Tipo {
   return "pdf";
 }
 
-function base() {
-  const b = nube();
-  if (!b) throw new Error("La plataforma no está conectada a Firebase.");
-  return b;
-}
-
-export async function listaRecursos(): Promise<Recurso[]> {
-  const b = nube();
-  if (!b) return [];
-  const r = await getDocs(query(collection(b, "recursos"), orderBy("creado", "desc")));
-  return r.docs.map((d) => ({ ...(d.data() as Omit<Recurso, "id">), id: d.id }));
-}
-
-/** Sube el archivo y guarda su ficha. Devuelve la ficha ya creada. */
+/**
+ * Sube el archivo al almacén y devuelve su ficha.
+ *
+ * NO LA GUARDA EN NINGÚN SITIO, y eso es a propósito: la ficha va dentro del
+ * documento del curso, y quien lo escribe es el editor, que ya está guardando
+ * el curso entero por otras razones. Si esto escribiera por su cuenta,
+ * habría dos sitios desde los que se toca el mismo documento y un curso a
+ * medio guardar podría perder un recurso recién subido.
+ */
 export async function sube(
+  cursoId: string,
   f: File,
   datos: { nombre: string; que: string; tipo?: Tipo },
   alVer: (parte: number) => void
@@ -92,7 +82,10 @@ export async function sube(
 
   const punto = f.name.lastIndexOf(".");
   const ext = punto > 0 ? f.name.slice(punto + 1).toLowerCase() : "bin";
-  const ruta = `recursos/${nuevoId()}.${ext}`;
+  /* Dentro de la carpeta del curso, no en un montón común. Así, el día que
+     se borre un curso entero, sus archivos se van con él sin tener que
+     buscarlos uno a uno — y mirando el almacén se ve de quién es cada cosa. */
+  const ruta = `recursos/${cursoId}/${nuevoId()}.${ext}`;
   const tarea = uploadBytesResumable(ref(a, ruta), f, { contentType: f.type || "application/octet-stream" });
 
   await new Promise<void>((listo, falla) => {
@@ -114,25 +107,24 @@ export async function sube(
     peso: f.size,
     creado: new Date().toISOString(),
   };
-  await setDoc(doc(base(), "recursos", r.id), r);
   return r;
 }
 
 /**
- * Borrar un recurso: la ficha y el archivo.
+ * Borra el archivo del almacén.
  *
- * EL ORDEN IMPORTA Y ESTÁ ELEGIDO. Primero la ficha, después el archivo.
+ * EL ORDEN IMPORTA Y ESTÁ ELEGIDO: quien llama quita primero la ficha de la
+ * lista del curso y guarda, y después llama a esto.
  *
  * Si se rompe entre los dos, queda un archivo en el almacén que no aparece en
  * ninguna lista: ocupa unos céntimos y no molesta a nadie. Al revés —archivo
  * primero— un fallo dejaría una ficha visible con un botón de descargar que da
  * error, que es lo que hace que alguien escriba preguntando qué pasa.
  *
- * Entre perder céntimos y perder la confianza de quien usa la biblioteca, se
- * pierden los céntimos.
+ * Entre perder céntimos y perder la confianza de quien usa el curso, se
+ * pierden los céntimos. Por eso esto NO lanza si falla.
  */
-export async function borra(r: Recurso): Promise<void> {
-  await deleteDoc(doc(base(), "recursos", r.id));
+export async function borraArchivo(r: Recurso): Promise<void> {
   const a = almacen();
   if (!a) return;
   try {

@@ -71,8 +71,19 @@ export type Capacidad =
   | "cursos"
   /** Entrar en la comunidad. */
   | "comunidad"
-  /** La biblioteca de recursos. */
-  | "recursos";
+  /**
+   * Estar dentro de la escuela: el recibidor y el perfil propio.
+   *
+   * SE LLAMABA `recursos` y era el nombre de una pantalla que ya no existe —
+   * la biblioteca común, que se deshizo cuando los archivos se metieron
+   * dentro de cada curso. Lo que esta llave abría de verdad nunca fue la
+   * biblioteca: era «has entrado y tienes algún tipo de acceso».
+   *
+   * Un permiso con el nombre de una pantalla borrada es de las cosas que más
+   * tiempo hacen perder: se lee, se busca la pantalla, no está, y hay que
+   * reconstruir qué significaba. Por eso se renombra en vez de dejarlo.
+   */
+  | "escuela";
 
 /**
  * Qué llave abre qué puerta.
@@ -88,7 +99,7 @@ const ABRE: Record<Capacidad, readonly Rol[]> = {
   gestion: ["admin"],
   cursos: ["admin", "alumno"],
   comunidad: ["admin", "miembro"],
-  recursos: ["admin", "alumno", "miembro"],
+  escuela: ["admin", "alumno", "miembro"],
 };
 
 /** Lo mínimo que hace falta saber de alguien para decidir si pasa. */

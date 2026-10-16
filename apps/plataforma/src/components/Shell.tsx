@@ -15,7 +15,6 @@ import EscuelaScreen from "./screens/EscuelaScreen";
 import CursosScreen from "./screens/CursosScreen";
 import MetricasScreen from "./screens/MetricasScreen";
 import ComunidadScreen from "./screens/ComunidadScreen";
-import RecursosScreen from "./screens/RecursosScreen";
 import PerfilScreen from "./screens/PerfilScreen";
 import GestionScreen from "./screens/GestionScreen";
 import DetalleModal from "./DetalleModal";
@@ -281,7 +280,6 @@ export default function Shell() {
           {vista === "escuela" && <EscuelaScreen />}
           {vista === "cursos" && <CursosScreen />}
           {vista === "comunidad" && <ComunidadScreen />}
-          {vista === "recursos" && <RecursosScreen />}
           {vista === "perfil" && <PerfilScreen />}
           {vista === "metricas" && <MetricasScreen />}
           {vista === "gestion" && <GestionScreen />}

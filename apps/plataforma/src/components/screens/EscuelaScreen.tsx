@@ -44,7 +44,7 @@ import { css } from "@/lib/css";
 import { useApp, type View } from "@/lib/app-context";
 import { useSesion } from "@/lib/sesion";
 import { CABECERA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
-import { IcoComunidad, IcoCursos, IcoRecursos } from "../Iconos";
+import { IcoComunidad, IcoCursos, IcoTrofeos } from "../Iconos";
 import PanelInicio from "../escuela/PanelInicio";
 import {
   avance as repoAvance,
@@ -90,11 +90,11 @@ const PUERTAS: Array<{ k: View; llave: Capacidad; titulo: string; que: string; I
     tono: "rosa",
   },
   {
-    k: "recursos",
-    llave: "recursos",
-    titulo: "Recursos",
-    que: "La biblioteca: plantillas, guías y audios para descargar.",
-    Ico: IcoRecursos,
+    k: "perfil",
+    llave: "escuela",
+    titulo: "Tu perfil",
+    que: "Lo que llevas hecho, tus medallas y tus datos.",
+    Ico: IcoTrofeos,
     tono: "lavanda",
   },
 ];

@@ -464,18 +464,29 @@ service cloud.firestore {
     }
 
     /*
-     * LA BIBLIOTECA.
+     * LA BIBLIOTECA, QUE YA NO EXISTE COMO TAL.
      *
-     * La más simple de todas, y por eso conviene decir lo que NO dice: no
-     * distingue quién puede bajarse qué. Cualquiera que esté dentro ve y baja
-     * todo. Es lo correcto hoy —los recursos son material de apoyo, no el
-     * producto— y dejaría de serlo el día que aquí se cuelgue algo que sólo
-     * han pagado algunos. Ese día esto necesita una condición más.
+     * Había aquí una colección `recursos` con todos los archivos juntos, y
+     * una pantalla en el menú para verlos. Gerson la deshizo: «cada curso
+     * tiene sus recursos, entonces es irrelevante colocarlo allí».
+     *
+     * Ahora la ficha de cada archivo vive DENTRO del documento de su curso,
+     * al lado de sus módulos, así que la manda la regla de `cursos` y no hace
+     * falta ninguna aquí. El archivo en sí sigue en el almacén, bajo
+     * `recursos/<curso>/`, y eso sí tiene su regla — en `storage.rules`, que
+     * es un archivo distinto y es el error más común de esta instalación.
+     *
+     * NO SE DEJA LA REGLA VIEJA «POR SI ACASO». La colección quedó vacía
+     * —comprobado antes de tocar nada— y una regla que autoriza a leer algo
+     * que ya nadie escribe es una puerta abierta a un sitio del que nadie se
+     * acuerda. El cierre general de más abajo la cubre.
+     *
+     * LO QUE ESTO HEREDA, dicho: quien puede leer un curso puede leer los
+     * enlaces de sus archivos, igual que puede leer los enlaces de sus
+     * vídeos. Es el mismo agujero que ya estaba anotado para los vídeos
+     * —hoy el escaparate y el contenido viven en el mismo documento— y se
+     * tapa de una vez cuando se parta ese documento, antes de cobrar.
      */
-    match /recursos/{id} {
-      allow read: if dentro();
-      allow write: if esAdmin();
-    }
 
     /*
      * LAS VISITAS: qué días ha entrado cada uno.

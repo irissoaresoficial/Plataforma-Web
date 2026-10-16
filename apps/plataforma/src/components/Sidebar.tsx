@@ -19,7 +19,6 @@ import {
   IcoEscuela,
   IcoGestion,
   IcoMetricas,
-  IcoRecursos,
   IcoCuentas,
   IcoDespacho,
   IcoDocumento,
@@ -101,10 +100,9 @@ const DESPACHO: Array<{ k: View; label: string; Ico: Ico }> = [
  * uno TIENE, y que crece mientras hace lo demás.
  */
 const ESCUELA: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> = [
-  { k: "escuela", label: "Inicio", Ico: IcoEscuela, llave: "recursos" },
+  { k: "escuela", label: "Inicio", Ico: IcoEscuela, llave: "escuela" },
   { k: "cursos", label: "Cursos", Ico: IcoCursos, llave: "cursos" },
   { k: "comunidad", label: "Comunidad", Ico: IcoComunidad, llave: "comunidad" },
-  { k: "recursos", label: "Recursos", Ico: IcoRecursos, llave: "recursos" },
 ];
 
 /** Lo de Iris que no es ni el estudio ni el despacho de siempre. */

@@ -47,6 +47,7 @@ import { css } from "@/lib/css";
 import { BOTON_NORMAL, BOTON_PLANO, CAMPO, CABECERA, NOTA, botonPrincipal, rotulo } from "@/lib/ui";
 import Confirmar from "../Confirmar";
 import SubirVideo from "./SubirVideo";
+import Recursos from "./Recursos";
 import { cursos as repo, nuevoId, totalLecciones, type Curso, type Leccion, type Modulo } from "@/lib/escuela";
 
 /** Un curso recién nacido: en borrador y sin nada dentro. */
@@ -482,6 +483,33 @@ export default function EditorCurso({
       <button onClick={nuevoModulo} style={css(BOTON_NORMAL + "align-self:flex-start;")}>
         + Añadir módulo
       </button>
+
+      {/*
+        EL MATERIAL QUE SE BAJA, DEBAJO DEL TEMARIO.
+
+        Mismo orden que ve la alumna en el reproductor, a propósito: primero
+        las clases, después lo que se lleva. Que Iris monte el curso en el
+        mismo orden en que se va a leer es lo que hace que sepa cómo le queda
+        sin tener que salir a mirarlo.
+
+        SUBIR UN ARCHIVO SÍ TOCA EL ALMACÉN AL MOMENTO —el archivo se va para
+        arriba en cuanto se pulsa Subir— pero la FICHA entra en el curso como
+        cualquier otro cambio, por `cambia()`, y se guarda con el botón de
+        Guardar. Así no hay dos caminos por los que el documento del curso se
+        escriba, que es como se pierde un módulo recién creado.
+
+        Lo que eso arrastra, dicho: si Iris sube un archivo y cierra sin
+        guardar, el archivo se queda en el almacén sin estar en ningún curso.
+        Ocupa unos céntimos y nadie lo ve. La alternativa —guardar el curso
+        entero a su espalda al subir— puede pisarle un título a medio
+        escribir, y eso sí se nota.
+      */}
+      <Recursos
+        cursoId={c.id}
+        recursos={c.recursos ?? []}
+        puedeEditar
+        alCambiar={(recursos) => cambia({ recursos })}
+      />
     </div>
   );
 }
