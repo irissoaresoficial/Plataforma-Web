@@ -73,8 +73,14 @@
   --marfil-hondo:#e3dbcb;
   --papel:#fbf8f2;
   --linea:rgba(34,29,31,.22);
-  --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
-  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+  /* AQUÍ ESTABA EL ESCAPE. El portal venía de ser una página suelta y traía
+     sus propias letras —una serif de las de sistema para los titulares— y al
+     estar definidas DENTRO de `.portal` ganaban a las de la casa. O sea: se
+     cambió la tipografía de toda la web y el portal siguió con la suya, que
+     es exactamente lo que no puede pasar. Ahora apunta a `--letra`, la única
+     que hay. */
+  --serif:var(--letra);
+  --sans:var(--letra);
   font-family:var(--sans);
   color:var(--tinta);
   background:var(--marfil);
@@ -319,6 +325,10 @@ body:not(.abierto) .portal .cabecera, body:not(.abierto) .portal .etapas, body:n
    todavía no sabe de qué va esto, es la forma más rápida de que se vaya. */
 .portal .reserva {
   display: none;
+  /* Sin esto «Ver los cursos» parte en dos renglones al quedarse sin sitio
+     al lado de la ficha, y un botón de dos líneas no se lee como un botón. */
+  white-space: nowrap;
+  flex: none;
   margin-top: clamp(18px, 2.4svh, 28px);
   align-items: center;
   gap: 10px;

@@ -62,9 +62,12 @@ type Props = {
   compacto?: boolean;
   titulo?: string;
   rotulo?: string;
+  /** El ancla. La portada la llama «cursos» porque es a donde apunta el
+      botón del final del recorrido. */
+  id?: string;
 };
 
-export default function Catalogo({ compacto = false, titulo, rotulo = 'Cursos y talleres' }: Props) {
+export default function Catalogo({ compacto = false, titulo, rotulo = 'Cursos y talleres', id = 'catalogo' }: Props) {
   const [texto, setTexto] = useState('');
   const [filtro, setFiltro] = useState<'todos' | Estado>('todos');
 
@@ -87,7 +90,7 @@ export default function Catalogo({ compacto = false, titulo, rotulo = 'Cursos y 
   const conMandos = !compacto && CURSOS.length >= 3;
 
   return (
-    <section id="catalogo" className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', scrollMarginTop: 80 }}>
+    <section id={id} className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', scrollMarginTop: 80 }}>
       <div className="e33-marco">
         <div className="cat-cabeza">
           <div>
@@ -149,12 +152,14 @@ export default function Catalogo({ compacto = false, titulo, rotulo = 'Cursos y 
 
         <div
           className="cat-rejilla"
-          data-pocos={aEnseñar.length === 1 ? 'si' : 'no'}
+          data-pocos="no"
+          /* Ya nunca hay una sola cosa en la rejilla: al curso le acompaña
+             siempre la tarjeta de «próximamente». */
           style={
             {
               ...(conMandos ? {} : { marginTop: 'clamp(26px,3vw,38px)' }),
-              '--cat-n': String(Math.min(Math.max(aEnseñar.length, 1), 3)),
-              '--cat-n2': String(Math.min(Math.max(aEnseñar.length, 1), 2)),
+              '--cat-n': String(Math.min(aEnseñar.length + 1, 3)),
+              '--cat-n2': String(Math.min(aEnseñar.length + 1, 2)),
             } as React.CSSProperties
           }
         >
@@ -202,6 +207,17 @@ export default function Catalogo({ compacto = false, titulo, rotulo = 'Cursos y 
               </div>
             </Link>
           ))}
+
+          {/* LO QUE VIENE, DICHO EN VOZ ALTA Y EN SU SITIO.
+              Con un curso en el catálogo, lo que una persona piensa es «esto
+              está muerto». Decirle que van saliendo cambia por completo lo que
+              lee: no es una escuela sin cursos, es una escuela empezando. */}
+          {aEnseñar.length > 0 && (
+            <div className="cat-pronto" aria-hidden={false}>
+              <p>Próximamente, más cursos.</p>
+              <span>Van saliendo poco a poco. Si quieres que te avise, dímelo en la consulta.</span>
+            </div>
+          )}
 
           {aEnseñar.length === 0 && (
             <div className="cat-nada">

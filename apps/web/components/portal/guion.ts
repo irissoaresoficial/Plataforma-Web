@@ -37,88 +37,106 @@ const luego = (fn: () => void, ms: number) => {
    la fecha y la base 9 del nombre completo; el árbol tiene diez puntos y
    veintidós caminos. Un dato inventado en una pantalla que vende se nota, y
    no hacía falta: lo que hay ya es bastante. */
-const ETAPAS = ['La pregunta', 'Numerología', 'Kábala', 'Iris Soares', 'La escuela', 'Los cursos'];
+const ETAPAS = ['La pregunta', 'Los patrones', 'Los números', 'Iris', 'La escuela'];
 
 /* ============================================================================
- * LA HISTORIA, EN SEIS PARADAS
+ * LA HISTORIA, EN CINCO PARADAS
  * ============================================================================
- * Gerson: «que a medida del scrolling vaya contando como una historia, que
- * inicie con una pregunta, en la mitad presentes a Iris, y al finalizar un
- * CTA redirigiendo a los cursos».
+ * Dictada por Gerson, y es su guion, no el mío:
  *
- * Eso es exactamente este orden, y cada parada hace una cosa:
+ *   «Va a iniciar: ¿por qué crees que se repite en tu vida lo que se repite
+ *    constantemente? Bajas, vas scrolleando, va apareciendo el vídeo. Y luego
+ *    empieza a explicar un poquito que todos son patrones de nuestros padres,
+ *    de nuestros abuelos. Y luego ¡pra!, abres a Iris: hola, soy Iris Soares,
+ *    numeróloga transgeneracional. Y al finalizar: y esta es la Escuela de
+ *    Sabiduría 33, clic aquí — y se abre la parte de talleres y cursos.»
  *
- *   1. LA PREGUNTA   engancha. No se presenta nadie ni se vende nada: se dice
- *                    en voz alta lo que le está pasando a quien entra. Si no
- *                    se reconoce aquí, lo demás da igual.
- *   2. NUMEROLOGÍA   la primera respuesta: de dónde sale.
- *   3. KÁBALA        la segunda: dónde se ve entero.
- *   4. IRIS          justo en la mitad, que es donde tiene que ir. Antes es un
- *                    folleto —alguien presentándose sin que le hayas
- *                    preguntado—; después, nadie llega.
- *   5. LA ESCUELA    el giro: no te la lee, te enseña a leerla.
- *   6. LOS CURSOS    el único botón de la pieza, y sale al final.
+ * Así que:
  *
- * Antes empezaba en «Numerología». Era bonito y no contaba nada: una ficha
- * técnica de algo que todavía no sabes para qué sirve.
+ *   1. LA PREGUNTA  no se presenta nadie ni se vende nada. Se dice en voz alta
+ *                   lo que le está pasando a quien entra.
+ *   2. LOS PATRONES la explicación: no empieza en ti. Viene de tus padres y de
+ *                   tus abuelos. Es la parte que convierte un «qué mala suerte
+ *                   tengo» en «ah, entonces se puede mirar».
+ *   3. LOS NÚMEROS  cómo se ve. Aquí la ventana se abre y la película hace su
+ *                   trabajo: los números sueltos se vuelven el árbol.
+ *   4. IRIS         el ¡pra!. Se presenta cuando ya le has preguntado.
+ *   5. LA ESCUELA   el cierre y el único botón, que abre los cursos.
  */
 const DATOS = {
+  /* 1. EL GANCHO. No es «¿por qué se repite?» por una razón: esa pregunta ya
+     se la ha hecho la persona mil veces y no tiene respuesta, así que no abre
+     nada. «¿Y si no es mala suerte?» sí: le quita la culpa en cinco palabras
+     y le deja una puerta. Y la ficha de al lado hace el reconocimiento —si no
+     se ve ahí, esta web no es para ella y mejor que se vaya en la primera
+     pantalla. */
   pregunta: {
     nombre: '¿Por qué se repite?', orden: 0,
     datos: [
-      ['En el trabajo:', 'Cambias, y a los seis meses te sientes igual.'],
+      ['En el trabajo:', 'Cambias de sitio y a los seis meses estás igual.'],
       ['En la pareja:', 'La misma discusión, con otra persona.'],
-      ['Con el dinero:', 'Entra, y se va siempre por el mismo sitio.'],
-      ['Lo que nadie dice:', 'Que eso ya le pasaba a alguien antes que a ti.'],
+      ['Con el dinero:', 'Entra, y se va por el mismo agujero.'],
+      ['Y si no es suerte:', 'Entonces hay algo que se puede mirar.'],
     ],
   },
-  numerologia: {
-    nombre: 'Numerología', orden: 1,
+
+  /* 2. EL ALIVIO. Tres palabras y es la frase que hace seguir bajando: deja
+     de ser un defecto tuyo y pasa a ser algo que se puede mirar. Y la última
+     fila deja la pregunta abierta que contesta la pantalla siguiente. */
+  patrones: {
+    nombre: 'No empieza en ti', orden: 1,
     datos: [
-      ['De dónde sale:', 'De tu fecha y de tu nombre completo. Nada más.'],
-      ['Base 22:', 'La fecha. Dice cómo te comportas.'],
-      ['Base 9:', 'El nombre. Dice de qué estás hecho.'],
-      ['Lo que se mira:', 'Lo que se repite, los huecos, y lo que salta una generación.'],
+      ['Tus padres:', 'Lo que les pasó y en casa no se habló.'],
+      ['Tus abuelos:', 'Lo que decidieron para poder seguir adelante.'],
+      ['Qué se hereda:', 'No lo que pasó. La manera de salir de ello.'],
+      ['Por qué sigue:', 'Porque todavía nadie se ha parado a mirarlo.'],
     ],
   },
-  kabala: {
-    nombre: 'Kábala', orden: 2,
+
+  /* 3. LA PRUEBA. Aquí la ventana se abre y la película hace su trabajo. Lo
+     que convence no es «la numerología dice»: es que los dos datos salen de
+     algo que la persona no eligió. */
+  numeros: {
+    nombre: 'Está en tus números', orden: 2,
     datos: [
-      ['El árbol:', 'Diez puntos y veintidós caminos. La carta entera cabe ahí.'],
-      ['Imagen del alma:', 'Lo que traías antes de que nadie te pusiera un nombre.'],
-      ['Cuentas abiertas:', 'Lo que en tu familia nunca se contó, y lo estás pagando tú.'],
-      ['Ciclos vitales:', 'En qué tramo estás y qué toca ahora.'],
+      ['Tu fecha:', 'No la elegiste tú. Dice cómo te comportas.'],
+      ['Tu nombre:', 'Tampoco. Dice de qué estás hecho.'],
+      ['El árbol:', 'Diez puntos y veintidós caminos. Tu carta entera cabe ahí.'],
+      ['Qué se busca:', 'Lo que se repite, lo que falta y lo que salta una generación.'],
     ],
   },
+
+  /* 4. LA PERSONA. Cuatro pantallas hablándole de ella y ahora aparece
+     alguien. Cambia la voz a primera persona a propósito: hasta aquí narraba
+     la web, de aquí en adelante habla Iris. */
   iris: {
-    nombre: 'Iris Soares', orden: 3, retrato: true, foco: .3,
+    nombre: 'Hola, soy Iris', orden: 3, retrato: true, foco: .3,
     imagen: '/images/iris-consulta.jpg',
     datos: [
-      ['Quién:', 'Iris Soares, numerología transgeneracional.'],
-      ['Desde:', 'Consulta online desde 2010.'],
-      ['Qué hace:', 'Levanta tu carta y la lee contigo, en directo.'],
-      ['Lo que no hace:', 'Adivinar el futuro. Esto explica el presente.'],
+      ['Quién soy:', 'Iris Soares, numeróloga transgeneracional.'],
+      ['Desde cuándo:', 'Consulta online desde 2010.'],
+      ['Qué hago:', 'Levanto tu carta y la leo contigo, en directo.'],
+      ['Qué no hago:', 'Adivinar el futuro. Esto explica el presente.'],
     ],
   },
+
+  /* 5. LA CASA Y LA PUERTA. La primera fila es lo único que separa esto de
+     todo el sector, así que va la primera. El botón es el único de la pieza
+     y sale aquí, cuando ya hay motivo para pulsarlo. */
   escuela: {
     nombre: 'La escuela', orden: 4, retrato: true, foco: .5,
     imagen: '/images/la-cuenta.jpg',
     datos: [
-      ['Qué es:', 'Escuela de Sabiduría 33.'],
-      ['La diferencia:', 'Aquí no te leen la carta. Aprendes a leerla tú.'],
-      ['Cómo:', 'En directo, con tu caso encima de la mesa.'],
-      ['Qué te llevas:', 'Tu carta, la de tu pareja y la de tus hijos. Hechas por ti.'],
+      ['Cómo se llama:', 'Escuela de Sabiduría 33.'],
+      ['Qué es:', 'Aquí no te leo la carta. Te enseño a leerla.'],
+      ['Cómo se da:', 'En directo, con tu caso encima de la mesa.'],
+      /* Cuatro filas y ni una más: con cinco, en el móvil la ficha sube
+         tanto que se mete debajo de la mirilla. Y la que sobraba era la de
+         «ahora mismo, Desórdenes Amorosos», porque el curso está justo
+         debajo, con su cartel, a un dedo de distancia. */
+      ['Qué te llevas:', 'Las cuentas hechas por ti.'],
     ],
-  },
-  cursos: {
-    nombre: 'Los cursos', orden: 5, retrato: true, foco: .5,
-    imagen: '/images/desordenes-amorosos-cartel.jpg',
-    datos: [
-      ['Qué hay:', 'Cursos y talleres en directo, y quedan grabados.'],
-      ['Ahora mismo:', 'Desórdenes Amorosos. Fechas por confirmar.'],
-      ['Lo que viene:', 'Van saliendo poco a poco. Están todos en el catálogo.'],
-    ],
-    accion: { texto: 'Ver los cursos', href: '/cursos' },
+    accion: { texto: 'Ver los cursos', href: '#cursos' },
   },
 };
 
@@ -126,31 +144,25 @@ const DATOS = {
  * LOS TRAMOS, Y LOS DOS NÚMEROS QUE LLEVA CADA UNO.
  *
  * `ventana` dice cuánto está abierta la ventana al empezar y al acabar el
- * tramo: 0 es pequeña en el centro, 1 es la pantalla entera. `cinta` dice por
- * qué segundo va la película, de 0 a 1.
+ * tramo: 0 es la mirilla pequeña en el centro, 1 es la pantalla entera.
+ * `cinta` dice por qué segundo va la película, de 0 a 1.
  *
- * Leídos en vertical se ve la pieza entera: la mirilla pequeña mientras se
- * hace la pregunta, se abre con la cuenta (0→1), te deja dentro del árbol
- * (1), y se cierra sobre ella (1→0) para quedarse de retrato en las tres
- * últimas. Y la cinta corre sin parar de 0 a 1 mientras tanto, así que los
- * números se vuelven el árbol sin un solo corte.
+ * La pregunta y los patrones se leen por la mirilla, con la película apenas
+ * arrancando — «bajas y va apareciendo el vídeo». En los números la ventana
+ * se abre del todo y el metraje hace su trabajo: los números se vuelven el
+ * árbol sin un solo corte. Y se cierra sobre ella para el ¡pra!.
  *
- * IRIS CAE EN EL 0,56 DEL RECORRIDO. No es casualidad: es «en la mitad».
+ * EL CORTE DEL ÁRBOL ESTÁ MEDIDO, NO PUESTO A OJO: contando píxeles de luz,
+ * el árbol no está formado hasta el 0,84 de la cinta.
  */
 const TRAMOS = [
-  { etapa: 'pregunta',    desde: 0,   hasta: .14, ventana: [0, 0], cinta: [0, .10] },
-  { etapa: 'numerologia', desde: .14, hasta: .28, ventana: [0, 0], cinta: [.10, .30] },
-  /* EL CORTE ESTÁ MEDIDO, NO PUESTO A OJO. Contando píxeles de luz en el
-     plano, el árbol no está formado hasta el 0,84 de la cinta: con la Kábala
-     empezando antes, el titular decía KÁBALA y en pantalla seguía habiendo
-     números sueltos. El paso ES la transcendencia, no un corte entre dos
-     cosas. */
-  { etapa: 'numerologia', desde: .28, hasta: .42, ventana: [0, 1], cinta: [.30, .84] },
-  { etapa: 'kabala',      desde: .42, hasta: .52, ventana: [1, 1], cinta: [.84, 1] },
-  { etapa: 'iris',        desde: .52, hasta: .60, ventana: [1, 0], cinta: [1, 1] },
-  { etapa: 'iris',        desde: .60, hasta: .70, ventana: [0, 0], cinta: [1, 1] },
-  { etapa: 'escuela',     desde: .70, hasta: .86, ventana: [0, 0], cinta: [1, 1] },
-  { etapa: 'cursos',      desde: .86, hasta: 1,   ventana: [0, 0], cinta: [1, 1] },
+  { etapa: 'pregunta',  desde: 0,   hasta: .16, ventana: [0, 0], cinta: [0, .08] },
+  { etapa: 'patrones',  desde: .16, hasta: .34, ventana: [0, 0], cinta: [.08, .26] },
+  { etapa: 'numeros',   desde: .34, hasta: .56, ventana: [0, 1], cinta: [.26, .84] },
+  { etapa: 'numeros',   desde: .56, hasta: .64, ventana: [1, 1], cinta: [.84, 1] },
+  { etapa: 'iris',      desde: .64, hasta: .72, ventana: [1, 0], cinta: [1, 1] },
+  { etapa: 'iris',      desde: .72, hasta: .84, ventana: [0, 0], cinta: [1, 1] },
+  { etapa: 'escuela',   desde: .84, hasta: 1,   ventana: [0, 0], cinta: [1, 1] },
 ];
 
 /* ---------------------------------------------------------------- piezas */
@@ -191,7 +203,10 @@ const punto = document.querySelector('.cursor-punto');
   basura.push(() => forma.removeEventListener('change', reparte));
 })();
 
-let actual = 'numerologia';
+/* La primera parada del recorrido. Tiene que ser una clave de DATOS: cuando
+   la historia cambió de orden esto se quedó apuntando a una etapa que ya no
+   existía y el portal entero reventaba en el primer fotograma. */
+let actual = 'pregunta';
 let expansion = 0;
 let girX = 0, girY = 0, metaX = 0, metaY = 0;
 let ultimo = performance.now();
