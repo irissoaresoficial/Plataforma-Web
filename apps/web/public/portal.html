@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>El Portal — Escuela de Sabiduría 33</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* ===========================================================================
+   EL PORTAL — la apertura de la portada
+   ===========================================================================
+
+   UN SOLO ARCHIVO, SIN COMPILAR NADA. Se abre en /portal.html y funciona.
+   Es a propósito: así se mira y se decide antes de tocar la portada de
+   verdad, y si no convence no hay nada que deshacer.
+
+   EL RECORRIDO, que es lo que pidió Gerson: «que inicie con algo que sea de
+   numerología, trascienda al cábala y luego plop la presente a ella».
+
+       I. NUMEROLOGÍA  — los números. De dónde sale todo.
+      II. KÁBALA       — el árbol. Donde los números se ordenan.
+     III. IRIS         — quien lo lee.
+
+   Se pasa de una a otra pulsando la ventana del centro. No hay scroll: es un
+   recorrido, y un recorrido se anda, no se hojea.
+
+   POR QUÉ UNA VENTANA Y NO UN VÍDEO A PANTALLA COMPLETA. Un vídeo de fondo se
+   mira dos segundos y se ignora. Una ventana que se inclina hacia donde está
+   el ratón, con el metraje quieto detrás, obliga a moverse para ver más — y
+   eso es exactamente lo que hace alguien que está decidiendo si entra.
+
+   LAS FUENTES NO SE PIDEN A GOOGLE. La web de Iris las sirve desde su propio
+   servidor por el reglamento europeo —pedirlas a Google regala la IP de quien
+   entra— y esta pantalla suelta no va a ser la excepción. Usa la misma pila
+   de reserva que declara `globals.css`. Al llevarlo a la portada hereda las
+   de verdad, que ya están servidas desde aquí.
+=========================================================================== */
+
+:root{
+  /* La casa: tinta, vino, oro y arena. Los mismos de globals.css. */
+  --tinta:#221d1f;
+  --vino:#451a25;
+  --oro:#a9884f;
+  --oro-luz:#e2cda2;
+  --arena:#f1ede4;
+  --hueso:#fbf8f2;
+  /* El fondo del portal es más hondo que el de la web: aquí se entra en una
+     sala a oscuras, y lo claro vuelve al salir. */
+  --fondo:#120d0f;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+  font-family:var(--sans);
+  color:var(--hueso);
+  background:var(--fondo);
+  color-scheme:dark;
+  font-synthesis:none;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;width:100%;background:var(--fondo);overflow-x:hidden}
+/* Mientras dura la antesala no se baja: la película no ha empezado. */
+body:not(.antesala-lista){overflow:hidden;height:100%}
+
+/* LA PISTA Y LA ESCENA.
+   La pista es alto y nada más: es el carrete que se gasta al bajar. La escena
+   va pegada arriba y ocupa la pantalla entera, así que lo que se mueve no es
+   la página, es lo que pasa dentro. Cuatro pantallas y media de pista dan
+   tiempo a los dos pasos sin que haya que bajar media hora. */
+.pista{position:relative;height:460vh}
+.recorrido{position:sticky;top:0;width:100%;height:100svh;min-height:540px;overflow:hidden;background:var(--fondo)}
+
+/* ----------------------------------------------------------- los fondos */
+.fondos,.fondo,.velo{position:absolute;inset:0;width:100%;height:100%}
+.fondo{object-fit:cover;opacity:0;transition:opacity .9s ease;background-size:cover;background-position:center}
+.fondo.se-ve{opacity:1}
+/* El velo de abajo. Sin él, el titular gigante se pierde sobre lo claro del
+   metraje, y subirle el peso a la letra para compensar la engorda. */
+.velo{z-index:1;background:linear-gradient(to bottom,transparent 50%,rgba(10,7,8,.92) 100%);pointer-events:none}
+
+/* Todo lo que es interfaz se va de golpe cuando empieza el paso: durante la
+   transición no hay nada que leer, sólo que mirar. */
+.marco{position:absolute;z-index:4;transition:opacity .45s ease,filter .45s ease}
+.recorrido.pasando .marco{opacity:0;filter:blur(8px);pointer-events:none}
+
+/* ----------------------------------------------------------- la cabecera */
+/* LA CABECERA Y EL TEXTO DE ABAJO NO ATRAPAN EL RATÓN, Y ESO NO ES UN
+   DETALLE: los dos son bloques que cruzan la pantalla de lado a lado, van por
+   encima de la ventana del centro y se comían el clic en su parte vacía. Es
+   de los fallos que no se ven mirando —todo está en su sitio— y sólo se
+   descubren intentando pulsar. Sólo escucha lo que de verdad se pulsa. */
+.cabecera{left:clamp(18px,1.95vw,28px);right:clamp(18px,1.95vw,28px);top:max(clamp(18px,3.1vh,28px),env(safe-area-inset-top,0px));
+  display:flex;justify-content:space-between;align-items:center;gap:16px;pointer-events:none}
+.cabecera-acciones{margin-left:auto;display:flex;align-items:center;gap:10px;pointer-events:auto}
+.menu-nav{display:flex;align-items:center;height:42px;padding:4px 5px;border:1px solid rgba(251,248,242,.4);
+  background:rgba(251,248,242,.1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:999px}
+.menu-nav a{color:var(--hueso);text-decoration:none;padding:8px 18px;border-radius:999px;line-height:1;font-size:15px;
+  transition:background .25s ease,color .25s ease}
+.menu-nav a.puesto{background:var(--hueso);color:var(--tinta)}
+.entrar{height:42px;padding:0 22px;border:0;border-radius:999px;background:var(--hueso);color:var(--tinta);
+  font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+
+/* ----------------------------------------------------- la lista de etapas */
+.etapas{left:max(clamp(18px,1.95vw,28px),env(safe-area-inset-left,0px));top:50%;transform:translateY(-43%);
+  display:flex;flex-direction:column;gap:9px;font-size:16px}
+.etapa{display:flex;align-items:center;min-height:20px;color:rgba(251,248,242,.62);letter-spacing:.01em}
+.etapa.puesta{font-size:18px;font-weight:700;gap:9px;color:var(--hueso)}
+.etapa.puesta:before{content:'';width:15px;height:15px;border-radius:50%;background:var(--oro-luz);flex:none}
+
+/* ------------------------------------------------------------- la ventana */
+.ventana-zona{left:50%;top:50%;width:min(320px,31vw);transform:translate(-50%,-62%)}
+.ventana-rotulo{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;font-size:15px;opacity:0;
+  color:rgba(251,248,242,.78)}
+.ventana-rotulo strong{font-size:18px;margin-left:8px;color:var(--hueso);font-weight:600}
+.ventana{position:relative;display:block;width:100%;aspect-ratio:320/350;padding:0;overflow:visible;border:0;
+  border-radius:90px;background:transparent;cursor:pointer;box-shadow:none;transform:none!important}
+/* El vídeo y la foto NO se ven: existen sólo para que el lienzo los copie.
+   Lo que se ve es el recorte que pinta el canvas de encima. */
+.ventana video,.ventana img{visibility:hidden;position:absolute;width:1px;height:1px;pointer-events:none}
+.lienzo-ventana{position:fixed;inset:0;z-index:3;width:100%;height:100%;pointer-events:none}
+
+/*
+ * LA ÚLTIMA ETAPA: LA VENTANA SE QUEDA Y SE VUELVE EL RETRATO.
+ *
+ * Primero puse su foto de fondo a pantalla completa, y no vale por dos
+ * motivos que sólo se ven mirándolo: la foto es vertical y la pantalla
+ * apaisada, así que al recortar la cortaba por los ojos; y encima es una foto
+ * clara, así que el texto en hueso de encima no se leía.
+ *
+ * Los dos se arreglan de una vez enseñándola como lo que es —un retrato, de
+ * pie, a un lado— sobre el fondo oscuro de la casa. Y sale gratis: la ventana
+ * que ha estado abriéndose todo el recorrido ya sabe dibujarla; aquí sólo
+ * cambia de sitio y de proporción. El recorrido entero acaba siendo una sola
+ * forma que crece, se come la pantalla y se posa hecha su retrato.
+ */
+.recorrido[data-etapa="iris"] .ventana-zona{left:auto;right:max(clamp(28px,5vw,90px),env(safe-area-inset-right,0px));
+  top:50%;width:min(340px,31vw);transform:translateY(-50%)}
+.recorrido[data-etapa="iris"] .ventana{aspect-ratio:3/4;border-radius:999px 999px 28px 28px}
+.recorrido[data-etapa="iris"] .ventana-rotulo{display:none}
+/* Y la lista de etapas se retira: el recorrido se ha acabado, ya no dice a
+   nadie dónde está. Además «IRIS SOARES» parte en dos renglones y el titular
+   se le subía encima — un choque que sólo se ve en esta etapa y sólo con un
+   nombre de dos palabras. */
+.recorrido[data-etapa="iris"] .etapas{opacity:0;pointer-events:none}
+/* Y el texto se pone en columna a la izquierda, lejos del retrato. */
+.recorrido[data-etapa="iris"] .contenido{display:block;right:auto;width:min(560px,48vw)}
+.recorrido[data-etapa="iris"] .contenido h1{margin-bottom:20px}
+.recorrido[data-etapa="iris"] .contenido dl{width:100%}
+
+/* --------------------------------------------------------- el contenido */
+.contenido{left:max(clamp(28px,4vw,58px),env(safe-area-inset-left,0px));
+  right:max(clamp(28px,3vw,44px),env(safe-area-inset-right,0px));
+  bottom:max(clamp(24px,3vh,30px),env(safe-area-inset-bottom,0px));
+  display:flex;justify-content:space-between;align-items:flex-end;gap:40px;pointer-events:none}
+/* EL TAMAÑO DEL TITULAR LO MANDA LA PALABRA MÁS LARGA, no el gusto.
+   «NUMEROLOGÍA» son once letras: a 13,5vw ocupaba la fila entera y echaba la
+   ficha de datos fuera de la pantalla — se veía el titular precioso y no se
+   veía ni uno de los cuatro renglones que explican de qué va esto. Con
+   `min-width:0` en los dos y un cuerpo que cabe, las dos cosas conviven. */
+.contenido h1{font-family:var(--serif);font-size:clamp(54px,9vw,132px);font-weight:400;line-height:.82;
+  margin:0 0 -.02em;letter-spacing:-.03em;transform:translateX(-10px);opacity:0;flex:0 1 auto;min-width:0}
+.contenido dl{width:min(420px,32vw);flex:none;margin:0;font-size:15px;min-width:0}
+.dato{display:grid;grid-template-columns:148px 1fr;gap:18px;padding:9px 0;
+  border-bottom:1px solid rgba(251,248,242,.4);opacity:0;min-width:0}
+.dato:last-child{border-bottom:0}
+.dato dt{font-weight:700;color:var(--oro-luz)}
+.dato dd{margin:0;color:rgba(251,248,242,.92);line-height:1.45;min-width:0}
+
+/* ------------------------------------------------------------- lo demás */
+.baja{position:absolute;z-index:5;left:50%;bottom:max(clamp(18px,2.4vh,26px),env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;
+  font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(251,248,242,.72);pointer-events:none;
+  transition:opacity .5s ease}
+.baja span{display:block;width:1px;height:26px;background:linear-gradient(to bottom,rgba(251,248,242,.72),transparent);
+  animation:cae 1.9s ease-in-out infinite}
+@keyframes cae{0%{transform:scaleY(.25);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}
+  50.1%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(.25);transform-origin:bottom}}
+.cargando{position:absolute;z-index:12;left:50%;bottom:30px;transform:translateX(-50%);opacity:0;
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:opacity .2s}
+.recorrido.esperando .cargando{opacity:.8}
+.recorrido.pasando .cabecera,.recorrido.pasando .etapas{opacity:1;filter:none;pointer-events:auto}
+.recorrido.pasando .velo{opacity:1}
+.recorrido.fijando .fondo{transition:none!important}
+
+/* =========================================================== LA ANTESALA */
+/* Los tres primeros segundos: el metraje de los números, una cuenta de 0 a
+   100 y el sello flotando en el centro, que al terminar se va a su esquina.
+   No es decoración: es el tiempo que tardan en estar listos los vídeos, y
+   contarlo es más honesto que una rueda girando. */
+.antesala{position:absolute;inset:0;z-index:20;background:#000;overflow:hidden}
+.antesala video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.antesala-velo{position:absolute;inset:auto 0 0;height:35%;background:linear-gradient(to bottom,transparent,#000)}
+/*
+ * AL TERMINAR, LA ANTESALA SE DESVANECE. Y es un arreglo, no un adorno.
+ *
+ * Se quedaba con `z-index:0` «de fondo», y de fondo no estaba: va después de
+ * los fondos en el documento, así que con la misma capa pintaba ENCIMA y su
+ * negro tapaba el metraje de las tres etapas. En pantalla era una web negra
+ * con una ventana funcionando en medio — todo correcto en el código y todo
+ * mal en la pantalla, que son los peores.
+ *
+ * Desvanecerla en vez de quitarla de golpe deja además el cruce que se
+ * buscaba: el último fotograma de la antesala se funde con el fondo de la
+ * primera etapa, y como son el mismo metraje no se nota el corte.
+ */
+.antesala.al-fondo{z-index:0;opacity:0;pointer-events:none;transition:opacity .9s ease}
+.antesala.al-fondo .antesala-velo{opacity:0}
+
+.sello{position:fixed;z-index:22;left:50%;top:50%;width:76px;height:76px;transform:translate(-50%,-50%);
+  will-change:left,top,width,height,transform;
+  transition:left 2s cubic-bezier(.16,1,.3,1),top 2s cubic-bezier(.16,1,.3,1),
+             width 2s cubic-bezier(.16,1,.3,1),height 2s cubic-bezier(.16,1,.3,1),
+             transform 2s cubic-bezier(.16,1,.3,1)}
+.sello.encajado{left:clamp(18px,1.95vw,28px);top:max(clamp(18px,3.1vh,28px),env(safe-area-inset-top,0px));
+  width:42px;height:42px;transform:none}
+.sello.asentado{z-index:5}
+
+.cuenta{position:fixed;z-index:22;left:50%;bottom:max(clamp(22px,3.1vh,28px),env(safe-area-inset-bottom,0px));
+  display:flex;align-items:flex-end;gap:5px;transform:translateX(-50%);line-height:1;font-variant-numeric:tabular-nums}
+.cuenta>span:first-child{font-family:var(--serif);font-size:clamp(44px,7vw,64px);font-weight:400}
+.cuenta .porciento{font-size:22px;padding-bottom:5px;color:var(--oro-luz)}
+.cuenta.se-va{animation:cuenta-fuera .75s cubic-bezier(.22,1,.36,1) both}
+@keyframes cuenta-fuera{to{opacity:0;filter:blur(7px);transform:translate(-50%,-34px)}}
+body:not(.antesala-lista) .cursor{opacity:0!important}
+
+/* ================================================================ CURSOR */
+html,body,button,a,.ventana{cursor:none!important}
+.cursor{display:block;position:fixed;left:0;top:0;z-index:100;width:1px;height:1px;pointer-events:none;opacity:0;
+  transition:opacity .2s ease}
+.cursor.se-ve{opacity:1}
+.cursor-punto,.cursor-aro{position:absolute;left:0;top:0;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor-punto{width:11px;height:11px;background:var(--hueso)}
+.cursor-aro{width:36px;height:36px;border:1px solid var(--oro-luz);background:rgba(226,205,162,.26);
+  transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.cursor.sobre .cursor-aro{transform:translate(-50%,-50%) scale(1.16)}
+.cursor-palabra{position:absolute;top:26px;left:0;transform:translateX(-50%) translateY(-4px);
+  font:15px/1.2 var(--sans);white-space:nowrap;opacity:0;color:var(--hueso);
+  transition:opacity .2s ease,transform .3s cubic-bezier(.22,1,.36,1)}
+.cursor.sobre .cursor-palabra{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ========================================================== LAS ENTRADAS */
+body:not(.abierto) .cabecera,
+body:not(.abierto) .etapas,
+body:not(.abierto) .contenido h1,
+body:not(.abierto) .contenido .dato{opacity:0}
+.abierto .cabecera{animation:baja .9s cubic-bezier(.22,1,.36,1) .1s both}
+.abierto .etapas{animation:entra-lado .9s cubic-bezier(.22,1,.36,1) .65s both}
+.revelando-contenido h1{animation:sube-titulo 1.05s cubic-bezier(.16,1,.3,1) both}
+.revelando-contenido .dato{animation:sube-dato .72s cubic-bezier(.22,1,.36,1) both}
+.revelando-contenido .dato:nth-child(1){animation-delay:.52s}
+.revelando-contenido .dato:nth-child(2){animation-delay:.68s}
+.revelando-contenido .dato:nth-child(3){animation-delay:.84s}
+.revelando-contenido .dato:nth-child(4){animation-delay:1s}
+.revelando-ventana .ventana-rotulo{animation:rotulo-sube .85s cubic-bezier(.22,1,.36,1) both}
+.etapas.cambiando .etapa{animation:fila .58s cubic-bezier(.22,1,.36,1) both}
+.etapas.cambiando .etapa:nth-child(1){animation-delay:.02s}
+.etapas.cambiando .etapa:nth-child(2){animation-delay:.09s}
+.etapas.cambiando .etapa:nth-child(3){animation-delay:.16s}
+.etapas.cambiando .etapa.puesta:before{animation:punto .55s cubic-bezier(.22,1,.36,1) .18s both}
+
+@keyframes baja{from{opacity:0;filter:blur(8px);transform:translateY(-18px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes entra-lado{from{opacity:0;filter:blur(8px);transform:translate(-20px,-43%)}to{opacity:1;filter:blur(0);transform:translate(0,-43%)}}
+@keyframes sube-titulo{from{opacity:0;filter:blur(12px);transform:translate(-10px,42px)}to{opacity:1;filter:blur(0);transform:translate(-10px,0)}}
+@keyframes sube-dato{from{opacity:0;filter:blur(7px);transform:translateY(18px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes rotulo-sube{from{opacity:0;filter:blur(7px);transform:translateY(22px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes fila{from{opacity:.35;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes punto{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+
+/* ============================================================= ESTRECHO */
+@media(max-width:900px){
+  .menu-nav{display:none}
+  .ventana-zona{width:min(300px,48vw)}
+  .contenido h1{font-size:clamp(68px,15vw,130px)}
+  .contenido dl{width:43vw}
+  .dato{grid-template-columns:116px 1fr;font-size:14px}
+  .etapas{font-size:14px}
+  .etapa.puesta{font-size:16px}
+}
+@media(max-width:640px){
+  .recorrido{min-height:600px}
+  .etapas{display:none}
+  .ventana-zona{top:43%;width:min(250px,64vw)}
+  .contenido{left:max(18px,env(safe-area-inset-left,0px));right:max(18px,env(safe-area-inset-right,0px));
+    bottom:max(18px,env(safe-area-inset-bottom,0px));display:block}
+  .contenido h1{font-size:clamp(58px,17vw,110px);margin-bottom:18px}
+  .contenido dl{width:100%;font-size:13px}
+  .dato{grid-template-columns:104px 1fr;gap:12px;padding:6px 0}
+  .ventana-rotulo{font-size:14px}
+  .ventana-rotulo strong{font-size:16px}
+  .entrar{height:38px;padding:0 17px}
+  .ventana{border-radius:70px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms!important;animation-duration:.01ms!important}
+  .ventana{transform:none!important}
+}
+</style>
+</head>
+<body>
+<div class="pista" id="pista">
+<main class="recorrido" id="recorrido" data-etapa="numerologia">
+
+  <div class="fondos" aria-hidden="true">
+    <video id="fondo-numerologia" class="fondo se-ve" muted playsinline preload="auto" loop>
+      <source src="/video/codigo-sagrado.mp4" type="video/mp4">
+    </video>
+    <video id="fondo-kabala" class="fondo" muted playsinline preload="auto" loop>
+      <source src="/video/arbol-scroll.webm" type="video/webm"><source src="/video/arbol-scroll.mp4" type="video/mp4">
+    </video>
+    <div id="fondo-iris" class="fondo" style="background:radial-gradient(120% 92% at 68% 38%,#2b1b21 0%,#160f12 58%,#100b0d 100%)"></div>
+  </div>
+
+  <div class="antesala" id="antesala" aria-label="Abriendo">
+    <video id="antesala-video" muted playsinline preload="auto">
+      <source src="/video/codigo-sagrado.mp4" type="video/mp4">
+    </video>
+    <div class="antesala-velo"></div>
+  </div>
+
+  <img class="sello" id="sello" src="/images/logo-33-blanco.png" alt="Escuela de Sabiduría 33">
+
+  <div class="cuenta" id="cuenta" aria-live="polite">
+    <span id="cuenta-valor">0</span><span class="porciento">%</span>
+  </div>
+
+  <div class="velo" aria-hidden="true"></div>
+
+  <header class="cabecera marco">
+    <div class="cabecera-acciones">
+      <nav class="menu-nav" aria-label="Secciones">
+        <a class="puesto" href="/">Portada</a><a href="/cursos">Cursos</a><a href="/membresia">Escuela</a>
+      </nav>
+      <a class="entrar" href="https://app.escueladesabiduria33.com">Entrar</a>
+    </div>
+  </header>
+
+  <aside class="etapas marco" id="etapas" aria-label="El recorrido"></aside>
+
+  <canvas id="lienzo-ventana" class="lienzo-ventana" aria-hidden="true"></canvas>
+
+  <section class="ventana-zona marco" aria-label="Lo que viene">
+    <div class="ventana-rotulo">
+      <span>Luego:</span>
+      <span><span id="luego-numero">[II]</span> <strong id="luego-nombre">Kábala</strong></span>
+    </div>
+    <div class="ventana" id="ventana" aria-hidden="true">
+      <video id="ventana-video" muted playsinline preload="auto" loop>
+        <source src="/video/arbol-scroll.webm" type="video/webm"><source src="/video/arbol-scroll.mp4" type="video/mp4">
+      </video>
+      <img id="ventana-imagen" src="/images/iris-consulta.jpg" alt="">
+    </div>
+  </section>
+
+  <section class="contenido marco" aria-live="polite">
+    <h1 id="titulo">NUMEROLOGÍA</h1>
+    <dl id="datos"></dl>
+  </section>
+
+  <div class="baja" id="baja" aria-hidden="true">Baja<span></span></div>
+
+  <div class="cursor" aria-hidden="true">
+    <span class="cursor-aro"></span><span class="cursor-punto"></span><span class="cursor-palabra">Pasar</span>
+  </div>
+</main>
+
+<script>
+(() => {
+'use strict';
+
+/* ======================================================================
+   EL RECORRIDO, EN DATOS
+   ======================================================================
+   Tres etapas y una cadena: numerología → kábala → Iris. La última no
+   lleva a ninguna parte, y eso es el final del recorrido, no un fallo.
+
+   Lo que pone en cada ficha es verdad y es de esta casa: la base 22 sale
+   de la fecha y la base 9 del nombre completo, el árbol tiene diez puntos
+   y veintidós caminos. Un dato inventado en una pantalla que vende se
+   nota, y además no hace falta: lo que hay ya es bastante. */
+const ETAPAS = ['Numerología', 'Kábala', 'Iris Soares'];
+
+const DATOS = {
+  numerologia: {
+    nombre: 'Numerología',
+    orden: 0,
+    siguiente: 'Kábala',
+    numero: '[II]',
+    fondo: 'fondo-numerologia',
+    portal: 'arbol-scroll',
+    datos: [
+      ['Base 22:', 'Sale de tu fecha de nacimiento. Dice cómo te comportas.'],
+      ['Base 9:', 'Sale de tu nombre completo. Dice de qué estás hecho.'],
+      ['Lo que se mira:', 'Las repeticiones, los huecos y lo que se salta una generación.'],
+      ['Desde:', 'Consulta online desde 2010.'],
+    ],
+  },
+  kabala: {
+    nombre: 'Kábala',
+    orden: 1,
+    siguiente: 'Iris Soares',
+    numero: '[III]',
+    fondo: 'fondo-kabala',
+    /* Aquí la ventana no enseña un vídeo: enseña su cara. Es el «plop» que
+       pidió Gerson, y por eso el paso a esta etapa no lleva metraje — la
+       ventana se abre y ya está ella. */
+    imagen: '/images/iris-consulta.jpg',
+    foco: .3,
+    datos: [
+      ['El árbol:', 'Diez puntos y veintidós caminos. La carta entera cabe ahí.'],
+      ['Imagen del alma:', 'Lo que traías antes de que nadie te pusiera un nombre.'],
+      ['Cuentas abiertas:', 'Lo que en tu familia nunca se contó, y lo estás pagando tú.'],
+      ['Ciclos vitales:', 'En qué tramo estás y qué toca ahora.'],
+    ],
+  },
+  iris: {
+    nombre: 'Iris Soares',
+    orden: 2,
+    fondo: 'fondo-iris',
+    imagen: '/images/iris-consulta.jpg',
+    foco: .3,
+    datos: [
+      ['Quién:', 'Iris Soares, numerología transgeneracional.'],
+      ['Qué hace:', 'Levanta tu carta y te enseña a leerla.'],
+      ['Para qué:', 'Para que las cuentas las hagas tú, no con apuntes.'],
+      ['Por dónde empezar:', 'Una sesión, o la prueba gratis de la sinergia.'],
+    ],
+  },
+};
+const CADENA = { numerologia: 'kabala', kabala: 'iris' };
+
+/* LAS FUENTES DE UN VÍDEO, en los dos formatos que hay.
+   El mp4 lleva un códec de pago que algunos navegadores no traen —y entonces
+   la pantalla se queda en negro SIN decir nada, que es la peor forma de
+   fallar—. Con el webm delante, el navegador coge el que sabe leer. */
+const CON_WEBM = new Set(['arbol-scroll', 'arbol-vertical']);
+function ponFuentes(video, base) {
+  video.innerHTML = '';
+  if (CON_WEBM.has(base)) {
+    const w = document.createElement('source');
+    w.src = '/video/' + base + '.webm'; w.type = 'video/webm';
+    video.append(w);
+  }
+  const m = document.createElement('source');
+  m.src = '/video/' + base + '.mp4'; m.type = 'video/mp4';
+  video.append(m);
+  video.load();
+}
+
+/* ---------------------------------------------------------------- piezas */
+const $ = (id) => document.getElementById(id);
+const recorrido = $('recorrido');
+const lienzo = $('lienzo-ventana');
+const ctx = lienzo.getContext('2d');
+const ventana = $('ventana');
+const ventanaVideo = $('ventana-video');
+const ventanaImagen = $('ventana-imagen');
+const cursor = document.querySelector('.cursor');
+const aro = document.querySelector('.cursor-aro');
+const punto = document.querySelector('.cursor-punto');
+const palabra = document.querySelector('.cursor-palabra');
+
+ventanaVideo.dataset.base = 'arbol-scroll';
+let actual = 'numerologia';
+let expansion = 0;      /* 0 = ventana pequeña, 1 = pantalla entera */
+let escala = 1;         /* 0 → 1 al abrirse la ventana */
+let opacidadLienzo = 1;
+let girX = 0, girY = 0, metaX = 0, metaY = 0;
+let ultimo = performance.now();
+
+const suave = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+/* Quitar y volver a poner una clase para que su animación vuelva a correr.
+   El `offsetWidth` de en medio no sobra: sin esa lectura el navegador junta
+   los dos cambios en uno y la animación no se entera de que ha pasado nada. */
+function reaviva(el, clase) {
+  if (!el) return;
+  el.classList.remove(clase);
+  void el.offsetWidth;
+  el.classList.add(clase);
+}
+
+/* ------------------------------------------------------------- pintar */
+function midelienzo() {
+  const d = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth, h = window.innerHeight;
+  lienzo.width = w * d; lienzo.height = h * d;
+  lienzo.style.width = w + 'px'; lienzo.style.height = h + 'px';
+  ctx.setTransform(d, 0, 0, d, 0, 0);
+}
+
+/* El metraje se pinta SIEMPRE a pantalla completa y centrado, no dentro de
+   la ventana. Esa es toda la gracia: la imagen se queda quieta y lo que se
+   mueve es el agujero por donde se ve. */
+function cubre(c, media, foco) {
+  const mw = media.videoWidth || media.naturalWidth;
+  const mh = media.videoHeight || media.naturalHeight;
+  if (!mw || !mh) return;
+  const w = window.innerWidth, h = window.innerHeight;
+  const e = Math.max(w / mw, h / mh);
+  const dw = mw * e, dh = mh * e;
+  let y = (h - dh) / 2;
+  /*
+   * EL PUNTO QUE TIENE QUE QUEDAR EN LA VENTANA.
+   *
+   * Recortar por el centro vale para un vídeo abstracto y no vale para un
+   * retrato: la foto de Iris es vertical y su cara está en el tercio de
+   * arriba, así que con el recorte normal la ventana caía justo en su boca.
+   * Daba exactamente la impresión contraria a la que se busca.
+   *
+   * `foco` dice qué altura de la imagen —de 0 arriba a 1 abajo— tiene que
+   * quedar en el medio de la pantalla. Se limita a lo que cabe para no
+   * destapar un borde: antes se pierde encuadre que se enseña un hueco.
+   */
+  if (foco != null && dh > h) {
+    y = Math.min(0, Math.max(h - dh, h / 2 - dh * foco));
+  }
+  c.drawImage(media, (w - dw) / 2, y, dw, dh);
+}
+
+/*
+ * EL OTRO ENCUADRE: A LA VENTANA, NO A LA PANTALLA.
+ *
+ * El de arriba pinta el metraje a pantalla completa y lo deja quieto; la
+ * ventana es un agujero que se pasea por encima. Es lo que hace que esto no
+ * parezca una tarjeta con una foto, y para un vídeo abstracto es perfecto.
+ *
+ * PARA UN RETRATO ES UN DESASTRE. La ventana ocupa un quinto del ancho, así
+ * que de una foto vertical de Iris enseñaba un ojo. Comprobado mirándolo: la
+ * primera versión caía en su boca, y corrigiendo el foco cayó en una ceja.
+ *
+ * Cuando la etapa enseña su cara, el metraje se ajusta A LA VENTANA. Se pierde
+ * el paralaje en esa etapa y se gana lo único que importa ahí: que se la vea.
+ * Y como la ventana crece hasta ser la pantalla entera al pasar, las dos
+ * formas acaban en el mismo sitio y la transición no da ningún salto.
+ */
+function cubreVentana(c, media, cx, cy, cw, ch, foco) {
+  const mw = media.videoWidth || media.naturalWidth;
+  const mh = media.videoHeight || media.naturalHeight;
+  if (!mw || !mh) return;
+  const e = Math.max(cw / mw, ch / mh);
+  const dw = mw * e, dh = mh * e;
+  let y = cy - dh / 2;
+  if (foco != null && dh > ch) {
+    y = Math.min(cy - ch / 2, Math.max(cy + ch / 2 - dh, cy - dh * foco));
+  }
+  c.drawImage(media, cx - dw / 2, y, dw, dh);
+}
+
+function sombra(c) {
+  const h = window.innerHeight, w = window.innerWidth;
+  const g = c.createLinearGradient(0, h * .52, 0, h);
+  g.addColorStop(0, 'rgba(10,7,8,0)');
+  g.addColorStop(1, 'rgba(10,7,8,.92)');
+  c.fillStyle = g;
+  c.fillRect(0, h * .52, w, h * .48);
+}
+
+/* Los puntos de un rectángulo redondeado, en coordenadas centradas en el
+   origen: cada esquina se recorre en diez pasos, así que salen unos 44
+   puntos. Hace falta tenerlos sueltos para poder proyectarlos uno a uno. */
+function puntosCaja(w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  const p = [];
+  const esquinas = [
+    [w / 2 - r, -h / 2 + r, -Math.PI / 2, 0],
+    [w / 2 - r, h / 2 - r, 0, Math.PI / 2],
+    [-w / 2 + r, h / 2 - r, Math.PI / 2, Math.PI],
+    [-w / 2 + r, -h / 2 + r, Math.PI, Math.PI * 1.5],
+  ];
+  for (const [cx, cy, a0, a1] of esquinas) {
+    for (let i = 0; i <= 10; i++) {
+      const a = a0 + (a1 - a0) * (i / 10);
+      p.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+    }
+  }
+  return p;
+}
+
+/* Perspectiva de mentira con distancia focal 850. No es 3D de verdad y no
+   hace falta que lo sea: lo que se busca es que el borde de arriba se aleje
+   un poco cuando el ratón sube, y eso esto lo hace con cuatro líneas. */
+function proyecta(x, y, rx, ry, cx, cy) {
+  const ax = rx * Math.PI / 180, ay = ry * Math.PI / 180;
+  const xx = x * Math.cos(ay);
+  const yy = y * Math.cos(ax);
+  const z = x * Math.sin(ay) - y * Math.sin(ax);
+  const p = 850 / (850 + z);
+  return [cx + xx * p, cy + yy * p];
+}
+
+function pinta(ahora) {
+  const dt = Math.min(40, ahora - ultimo);
+  ultimo = ahora;
+  const k = Math.min(1, dt * .009);
+  girX += (metaX - girX) * k;
+  girY += (metaY - girY) * k;
+
+  const w = window.innerWidth, h = window.innerHeight;
+  ctx.clearRect(0, 0, w, h);
+
+  const caja = ventana.getBoundingClientRect();
+  const e = expansion;
+  const cx = (caja.left + caja.width / 2) + (w / 2 - (caja.left + caja.width / 2)) * e;
+  const cy = (caja.top + caja.height / 2) + (h / 2 - (caja.top + caja.height / 2)) * e;
+  const baseW = caja.width + (w - caja.width) * e;
+  const baseH = caja.height + (h - caja.height) * e;
+  const s = e ? 1 : escala;
+  const cw = baseW * s, ch = baseH * s;
+  const r = 90 * (1 - e) * s;
+  const rx = girX * (1 - e), ry = girY * (1 - e);
+
+  if (cw > 1 && ch > 1) {
+    const pts = puntosCaja(cw, ch, r).map(([x, y]) => proyecta(x, y, rx, ry, cx, cy));
+    ctx.save();
+    ctx.globalAlpha = opacidadLienzo;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.closePath();
+    ctx.clip();
+    ctx.fillStyle = '#0a0708';
+    ctx.fillRect(0, 0, w, h);
+    const d = DATOS[actual];
+    const media = d.imagen ? ventanaImagen : ventanaVideo;
+    if (d.imagen) cubreVentana(ctx, media, cx, cy, cw, ch, d.foco);
+    else cubre(ctx, media, d.foco);
+    ctx.restore();
+  }
+  requestAnimationFrame(pinta);
+}
+
+/* ------------------------------------------------------------- dibujar */
+let primera = true;
+function dibuja() {
+  const d = DATOS[actual];
+  recorrido.dataset.etapa = actual;
+  $('titulo').textContent = d.nombre.toUpperCase();
+
+  /* La zona de la ventana NO se esconde al final: allí es el retrato. Lo que
+     se esconde es su rótulo, que no tiene a dónde llevar. */
+  const hayLuego = Boolean(CADENA[actual]);
+  {
+    if (hayLuego) {
+      $('luego-nombre').textContent = d.siguiente;
+      $('luego-numero').textContent = d.numero;
+    }
+    if (d.imagen) {
+      if (ventanaImagen.getAttribute('src') !== d.imagen) ventanaImagen.src = d.imagen;
+    } else if (d.portal && ventanaVideo.dataset.base !== d.portal) {
+      ventanaVideo.dataset.base = d.portal;
+      ponFuentes(ventanaVideo, d.portal);
+      ventanaVideo.play().catch(() => {});
+    }
+  }
+
+  const dl = $('datos');
+  dl.innerHTML = '';
+  for (const [clave, valor] of d.datos) {
+    const fila = document.createElement('div');
+    fila.className = 'dato';
+    const dt = document.createElement('dt'); dt.textContent = clave;
+    const dd = document.createElement('dd'); dd.textContent = valor;
+    fila.append(dt, dd);
+    dl.append(fila);
+  }
+
+  const lista = $('etapas');
+  lista.innerHTML = '';
+  ETAPAS.forEach((nombre, i) => {
+    const s = document.createElement('span');
+    s.className = 'etapa' + (i === d.orden ? ' puesta' : '');
+    s.textContent = nombre;
+    lista.append(s);
+  });
+  if (!primera) reaviva(lista, 'cambiando');
+  primera = false;
+
+  document.querySelectorAll('.fondo').forEach((f) => {
+    const suya = f.id === d.fondo;
+    f.classList.toggle('se-ve', suya);
+    if (f.tagName === 'VIDEO') { if (suya) f.play().catch(() => {}); else f.pause(); }
+  });
+}
+
+/* ---------------------------------------------------------- los reveles */
+function abreContenido() { reaviva(recorrido, 'revelando-contenido'); }
+
+/* ======================================================================
+   EL RECORRIDO LO MANDA LA RUEDA
+   ======================================================================
+   Gerson: «a medida que hace scrolling juega con los vídeos, va mostrando
+   información relevante y después se muestra ella».
+
+   Así que no se pulsa nada: se baja. La pista mide cuatro pantallas y media
+   y esa altura es el carrete. Cuánto se ha bajado —un número de 0 a 1— es lo
+   único que decide qué se ve, y por eso parar a mitad de un paso deja la
+   ventana parada a mitad de camino. Eso es lo que separa esto de una
+   animación que arranca sola al asomar: aquí la mano de quien mira es la que
+   pasa la película, y puede volver atrás.
+
+   CINCO TRAMOS, y los dos de paso son los que hacen el trabajo:
+
+     numerologia   los números, quietos, con su ficha
+     paso          la ventana crece hasta comerse la pantalla
+     kabala        el árbol, con la suya
+     paso          la ventana crece, y lo que hay detrás es ella
+     iris          ella
+
+   NO HACE FALTA NI CONGELAR UN FOTOGRAMA NI UNA CAPA APARTE, y eso quitó
+   medio motor. La ventana YA enseña el metraje de la etapa siguiente, así
+   que al crecer hasta la pantalla entera lo que queda es exactamente el
+   fondo de esa etapa. Se cambia de tramo y no hay salto que disimular. */
+
+const TRAMOS = [
+  { etapa: 'numerologia', desde: 0,    hasta: .30, paso: false },
+  { etapa: 'numerologia', desde: .30,  hasta: .44, paso: true  },
+  { etapa: 'kabala',      desde: .44,  hasta: .70, paso: false },
+  { etapa: 'kabala',      desde: .70,  hasta: .84, paso: true  },
+  { etapa: 'iris',        desde: .84,  hasta: 1,   paso: false },
+];
+
+let tramoPuesto = -1;
+
+/** Pone el vídeo en el segundo que toca, sin reproducirlo. Es lo que hace
+ *  que el metraje avance con la rueda en vez de ir por su cuenta. */
+function rebobina(video, parte) {
+  if (!video || !video.duration || !isFinite(video.duration)) return;
+  const t = Math.max(0, Math.min(.999, parte)) * video.duration;
+  if (Math.abs(video.currentTime - t) > .03) {
+    try { video.currentTime = t; } catch (e) { /* todavía no se puede buscar */ }
+  }
+}
+
+function alBajar() {
+  const pista = $('pista');
+  const alto = pista.offsetHeight - window.innerHeight;
+  const p = alto > 0 ? Math.max(0, Math.min(1, window.scrollY / alto)) : 0;
+
+  let i = TRAMOS.length - 1;
+  while (i > 0 && p < TRAMOS[i].desde) i--;
+  const t = TRAMOS[i];
+  const local = Math.max(0, Math.min(1, (p - t.desde) / (t.hasta - t.desde)));
+
+  if (i !== tramoPuesto) {
+    tramoPuesto = i;
+    if (actual !== t.etapa) { actual = t.etapa; dibuja(); }
+    recorrido.classList.toggle('pasando', t.paso);
+    /* La ficha vuelve a entrar cada vez que se llega a un tramo de reposo,
+       también bajando hacia atrás: quien sube quiere volver a leerla. */
+    if (!t.paso) { abreContenido(); reaviva(recorrido, 'revelando-ventana'); }
+    $('baja').style.opacity = i === 0 ? '' : '0';
+  }
+
+  const d = DATOS[actual];
+  if (t.paso) {
+    /* Dentro de un paso la ventana se come la pantalla, y el metraje de
+       dentro avanza con ella. */
+    expansion = suave(local);
+    escala = 1;
+    if (!d.imagen) rebobina(ventanaVideo, local);
+  } else {
+    expansion = 0;
+    /* La ventana se abre en el primer quinto del tramo y se queda. */
+    escala = suave(Math.min(1, local / .2));
+    const fondo = document.getElementById(d.fondo);
+    if (fondo && fondo.tagName === 'VIDEO') rebobina(fondo, local);
+    if (!d.imagen) rebobina(ventanaVideo, Math.min(1, local / .2) * .25);
+  }
+}
+
+/* --------------------------------------------------------- la antesala */
+function antesala() {
+  const v = $('antesala-video');
+  const valor = $('cuenta-valor');
+  let acabada = false;
+
+  const termina = () => {
+    if (acabada) return;
+    acabada = true;
+    valor.textContent = '100';
+    $('cuenta').classList.add('se-va');
+    $('sello').classList.add('encajado');
+    $('antesala').classList.add('al-fondo');
+    document.body.classList.add('antesala-lista');
+    arranca();
+    setTimeout(() => $('cuenta').remove(), 750);
+    setTimeout(() => $('sello').classList.add('asentado'), 2000);
+  };
+
+  const cuenta = () => {
+    if (acabada) return;
+    if (v.duration) valor.textContent = String(Math.round(v.currentTime / v.duration * 100));
+    requestAnimationFrame(cuenta);
+  };
+
+  const empieza = () => {
+    /* El metraje dura lo que dure; la antesala dura tres segundos. Se acelera
+       para que cuadren, con un suelo por si el vídeo fuera cortísimo. */
+    if (v.duration) v.playbackRate = Math.max(.25, v.duration / 3);
+    v.play().then(() => requestAnimationFrame(cuenta)).catch(termina);
+  };
+
+  v.addEventListener('ended', termina, { once: true });
+  if (v.readyState >= 1) empieza();
+  else v.addEventListener('loadedmetadata', empieza, { once: true });
+  /* Red lenta, archivo que no llega, autoplay bloqueado: pasados cinco
+     segundos se entra igual. Una antesala que no termina es una web rota. */
+  setTimeout(termina, 5000);
+}
+
+function arranca() {
+  document.body.classList.add('abierto');
+  tramoPuesto = -1;
+  alBajar();
+  setTimeout(abreContenido, 850);
+}
+
+/* ----------------------------------------------------------- el cursor */
+let px = window.innerWidth / 2, py = window.innerHeight / 2;
+let ax = px, ay = py;
+function giraCursor() {
+  ax += (px - ax) * .2;
+  ay += (py - ay) * .2;
+  aro.style.transform = 'translate3d(' + ax + 'px,' + ay + 'px,0) translate(-50%,-50%)';
+  punto.style.transform = 'translate3d(' + px + 'px,' + py + 'px,0) translate(-50%,-50%)';
+  palabra.style.transform = 'translate3d(' + px + 'px,' + (py + 4) + 'px,0) translateX(-50%)';
+  requestAnimationFrame(giraCursor);
+}
+
+/* ------------------------------------------------------------ escuchas */
+window.addEventListener('resize', () => { midelienzo(); alBajar(); });
+window.addEventListener('scroll', alBajar, { passive: true });
+window.addEventListener('pointermove', (ev) => {
+  px = ev.clientX; py = ev.clientY;
+  cursor.classList.add('se-ve');
+  metaY = (ev.clientX / window.innerWidth - .5) * 37.4;
+  metaX = (ev.clientY / window.innerHeight - .5) * -33;
+});
+window.addEventListener('pointerleave', () => { metaX = 0; metaY = 0; });
+document.addEventListener('mouseleave', () => cursor.classList.remove('se-ve'));
+
+/* ------------------------------------------------------------ arranque */
+document.querySelectorAll('.fondo').forEach((f) => {
+  if (f.tagName === 'VIDEO') { f.pause(); f.currentTime = 0; }
+});
+midelienzo();
+dibuja();
+alBajar();
+requestAnimationFrame(pinta);
+requestAnimationFrame(giraCursor);
+antesala();
+})();
+</script>
+</body>
+</html>
