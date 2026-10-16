@@ -10,3 +10,8 @@ dist
 # lo genera tsc al comprobar tipos, no es del proyecto
 *.tsbuildinfo
 next-env.d.ts
+
+# Claves de servicio. Si alguna acaba aquí por error, que git no la vea.
+*serviceaccount*.json
+*adminsdk*.json
+sa.json

@@ -64,6 +64,34 @@ export default function Shell() {
   }, [usuario, view, puede, setView]);
 
   /*
+   * Y MIENTRAS SE LA LLEVA, NO SE PINTA LA PANTALLA PROHIBIDA.
+   *
+   * El efecto de arriba corre DESPUÉS de pintar. Eso significaba que un alumno
+   * que escribía /clientes veía la pantalla de clientes montarse durante un
+   * fotograma, y un fotograma es tiempo de sobra para que esa pantalla pida a
+   * Firestore la lista de clientes de Iris. El servidor contestaba no —que es
+   * lo que tiene que pasar— pero la petición ya iba de camino y su rechazo
+   * aparecía en la consola como un error sin dueño:
+   *
+   *     Missing or insufficient permissions.
+   *
+   * No se escapaba ni un dato. Lo que se escapaba era la calma: un error rojo
+   * al navegar enseña a desconfiar de la consola, y el día que haya uno de
+   * verdad estará mezclado con éstos.
+   *
+   * Así que la vista que se PINTA se decide aquí, antes de pintar, y no espera
+   * al efecto. El efecto sigue haciendo falta —es quien cambia la dirección en
+   * la barra para que no se quede /clientes escrito— pero ya no es él quien
+   * protege la pantalla.
+   *
+   * `usuario` aquí nunca es null: `<Guardia>` no deja montar nada de esto
+   * hasta que Firebase ha contestado quién hay dentro (app/layout.tsx). Si eso
+   * cambiara, se comprueba igual, porque sin saber quién eres `puede()`
+   * devuelve false para todo y lo seguro es llevarte a tu sitio.
+   */
+  const vista = usuario != null && !puede(llaveDe(view)) ? dondeEmpieza(puede) : view;
+
+  /*
    * SIN ESTUDIO NO HAY PANEL, PERO TAMPOCO SE MUEVE A NADIE DE SITIO.
    *
    * Aquí había un `setView("inicio")`: si se llegaba a /panel sin ningún
@@ -86,7 +114,7 @@ export default function Shell() {
    * recuperar el estudio guardado y el cartel saldría siempre, incluso cuando
    * sí lo hay.
    */
-  const faltaEstudio = rehidratado && VISTAS_DE_ESTUDIO.includes(view) && !r && !re;
+  const faltaEstudio = rehidratado && VISTAS_DE_ESTUDIO.includes(vista) && !r && !re;
 
   return (
     <div
@@ -152,8 +180,16 @@ export default function Shell() {
           />
           <div style={css("display:flex;flex-direction:column;gap:2px;min-width:0;")}>
             <div data-marca-nombre="" style={css("font-family:var(--font-display);font-weight:500;font-size:clamp(15px,1.7vw,19px);letter-spacing:-.008em;color:var(--text);line-height:1.15;")}>Escuela de Sabiduría 33</div>
-            {/* Las disciplinas que hay. Feng Shui salía aquí y no existía. */}
-            <div data-marca-disciplinas="" style={css("font-size:var(--t-mini);color:var(--text-4);letter-spacing:-.01em;")}>Kábala · Numerología</div>
+            {/* Las disciplinas que hay. Feng Shui salía aquí y no existía.
+
+                Y sólo las ve quien estudia. Un alumno que compra un curso de
+                la escuela no trabaja con la Kábala ni con la numerología: leía
+                aquí el nombre de dos cosas que no puede abrir en ningún sitio,
+                justo debajo del nombre de la casa. No era una fuga de datos,
+                pero sí la promesa de una puerta que para él no existe. */}
+            {puede("estudio") && (
+              <div data-marca-disciplinas="" style={css("font-size:var(--t-mini);color:var(--text-4);letter-spacing:-.01em;")}>Kábala · Numerología</div>
+            )}
             {/*
                 DÓNDE ESTOY, CUANDO LAS PESTAÑAS NO SE VEN.
 
@@ -173,7 +209,7 @@ export default function Shell() {
               data-marca-vista=""
               style={css("font-size:var(--t-mini);font-weight:600;color:var(--accion);letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}
             >
-              {PESTANAS.find((t) => t.k === view)?.label ?? (view === "pareja" ? "Comparativa" : "")}
+              {PESTANAS.find((t) => t.k === vista)?.label ?? (vista === "pareja" ? "Comparativa" : "")}
             </div>
           </div>
         </div>
@@ -202,8 +238,18 @@ export default function Shell() {
             sitios y un aviso no es un sitio, además de que desaparece dentro del
             cajón por debajo de 980 px. El porqué entero está escrito en
             `despacho/Avisos.tsx`. Delante del tema, porque es lo que a veces
-            hay que mirar y el tema se toca una vez en la vida. */}
-        <Avisos />
+            hay que mirar y el tema se toca una vez en la vida.
+
+            SÓLO PARA QUIEN TIENE DESPACHO. Esto estaba montado para todo el
+            mundo, y un alumno entrando en la escuela disparaba la lectura de
+            `avisos`, `leads` y `citas` — tres colecciones que las reglas
+            reservan a Iris. No se colaba nada: el servidor decía no las tres
+            veces. Lo que pasaba es que la consola se llenaba de «Missing or
+            insufficient permissions» en cada pantalla, y ese ruido es
+            exactamente el que luego esconde un fallo de verdad. Se arregla en
+            el sitio correcto: no pedir lo que no te toca, en vez de pedirlo y
+            tragarse el no. */}
+        {puede("despacho") && <Avisos />}
         <Tema />
         <Cuenta />
       </header>
@@ -222,23 +268,23 @@ export default function Shell() {
             nuevo y no el mismo repintado: sin eso, React reutiliza el nodo y la
             animación de entrada de `[data-vista]` no vuelve a dispararse nunca.
             El porqué de que haya animación está en globals.css. */}
-        <div key={view} data-vista="" style={css("flex:1;min-width:0;")}>
-          {view === "inicio" && <ConsultaScreen />}
-          {faltaEstudio && <SinEstudio vista={view} />}
-          {view === "panel" && !faltaEstudio && <PanelScreen />}
-          {view === "estudio" && !faltaEstudio && <EstudioScreen />}
-          {view === "pareja" && !faltaEstudio && <ParejaScreen />}
-          {view === "leads" && <LeadsScreen />}
-          {view === "agenda" && <AgendaScreen />}
-          {view === "clientes" && <ClientesScreen />}
-          {view === "facturas" && <FacturasScreen />}
-          {view === "escuela" && <EscuelaScreen />}
-          {view === "cursos" && <CursosScreen />}
-          {view === "comunidad" && <ComunidadScreen />}
-          {view === "recursos" && <RecursosScreen />}
-          {view === "perfil" && <PerfilScreen />}
-          {view === "metricas" && <MetricasScreen />}
-          {view === "gestion" && <GestionScreen />}
+        <div key={vista} data-vista="" style={css("flex:1;min-width:0;")}>
+          {vista === "inicio" && <ConsultaScreen />}
+          {faltaEstudio && <SinEstudio vista={vista} />}
+          {vista === "panel" && !faltaEstudio && <PanelScreen />}
+          {vista === "estudio" && !faltaEstudio && <EstudioScreen />}
+          {vista === "pareja" && !faltaEstudio && <ParejaScreen />}
+          {vista === "leads" && <LeadsScreen />}
+          {vista === "agenda" && <AgendaScreen />}
+          {vista === "clientes" && <ClientesScreen />}
+          {vista === "facturas" && <FacturasScreen />}
+          {vista === "escuela" && <EscuelaScreen />}
+          {vista === "cursos" && <CursosScreen />}
+          {vista === "comunidad" && <ComunidadScreen />}
+          {vista === "recursos" && <RecursosScreen />}
+          {vista === "perfil" && <PerfilScreen />}
+          {vista === "metricas" && <MetricasScreen />}
+          {vista === "gestion" && <GestionScreen />}
         </div>
       </div>
 
@@ -246,8 +292,13 @@ export default function Shell() {
       {/* Los avisos que aparecen solos cuando entra alguien por la web. Van
           aquí, al final y fuera de todo, porque son una capa que flota encima:
           dentro de cualquier bloque heredarían su `overflow` o su `z-index` y
-          acabarían recortados por una tarjeta. */}
-      <Novedades />
+          acabarían recortados por una tarjeta.
+
+          Y con la misma llave que los avisos de arriba, por lo mismo: dejaba
+          dos orejas puestas en `leads` y en `citas` que para un alumno sólo
+          podían recibir un no. Éstas ni se quejaban —tienen su propio manejo
+          de error, que calla— así que el gasto no se veía por ninguna parte. */}
+      {puede("despacho") && <Novedades />}
 
       <DetalleModal />
     </div>

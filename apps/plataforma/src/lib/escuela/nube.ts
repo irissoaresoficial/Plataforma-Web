@@ -15,6 +15,8 @@
  */
 
 import {
+  arrayRemove,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -118,16 +120,53 @@ export const avanceNube: RepoAvance = {
     const d = await getDoc(doc(b, "avance", `${uid}__${cursoId}`));
     return d.exists() ? conId<Avance>(d.id, d.data()) : null;
   },
+  /**
+   * SE ESCRIBE PRIMERO Y SE PREGUNTA DESPUÉS.
+   *
+   * Aquí había lo que parece de sentido común: leer cómo va el avance, añadir
+   * o quitar la lección a mano, y guardar la lista entera. Tenía dos defectos,
+   * y uno de ellos rompía la función del todo.
+   *
+   * EL QUE LA ROMPÍA. La lectura iba antes de que el documento existiera, y
+   * leer un documento que no existe no era «no hay nada»: era un no de las
+   * reglas (el porqué está escrito entero en `firebase/firestore.rules`, en el
+   * bloque de `avance`). Así que la primera lección de cada curso no se podía
+   * marcar nunca. La regla ya está arreglada; esta lectura, además, ya no
+   * hace falta.
+   *
+   * EL OTRO. Dos pestañas abiertas en el mismo curso —que pasa más de lo que
+   * parece: una en el móvil y otra en el ordenador— leían las dos la misma
+   * lista y la guardaban las dos enteras. La segunda borraba lo que había
+   * marcado la primera, sin avisar.
+   *
+   * `arrayUnion` y `arrayRemove` no tienen ninguno de los dos problemas:
+   * dicen «añade esto» y «quita esto», y es el servidor quien junta. No hay
+   * lista que pisar y no hay que leer para escribir. Con `merge` el documento
+   * se crea si no estaba.
+   *
+   * La lectura de después sí hace falta, y es la razón por la que esto
+   * devuelve el avance entero y no nada: quien llama necesita repintar la
+   * barra de progreso con lo que de verdad hay guardado, no con lo que supone.
+   * Ahí el documento ya existe, así que esa lectura no tropieza con nada.
+   */
   async marcar(uid, cursoId, leccionId, hecha) {
     const b = base();
     const id = `${uid}__${cursoId}`;
-    const d = await getDoc(doc(b, "avance", id));
-    const hechas = new Set<string>(d.exists() ? ((d.data().hechas as string[]) ?? []) : []);
-    if (hecha) hechas.add(leccionId);
-    else hechas.delete(leccionId);
-    const nuevo: Avance = { id, uid, cursoId, hechas: [...hechas], tocado: new Date().toISOString() };
-    await setDoc(doc(b, "avance", id), nuevo);
-    return nuevo;
+    const referencia = doc(b, "avance", id);
+    await setDoc(
+      referencia,
+      {
+        id,
+        uid,
+        cursoId,
+        hechas: hecha ? arrayUnion(leccionId) : arrayRemove(leccionId),
+        tocado: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+    const d = await getDoc(referencia);
+    const hechas = (d.data()?.hechas as string[]) ?? [];
+    return { id, uid, cursoId, hechas, tocado: (d.data()?.tocado as string) ?? new Date().toISOString() };
   },
 };
 

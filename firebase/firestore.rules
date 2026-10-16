@@ -318,9 +318,40 @@ service cloud.firestore {
      * Con `resource` la primera lección terminada de cada curso fallaría, y
      * sería de esos fallos que sólo pasan la primera vez y no se reproducen al
      * ir a mirarlos.
+     *
+     * Y ESO ES EXACTAMENTE LO QUE PASABA AL LEER. La trampa estaba avisada
+     * aquí arriba para escribir, se esquivó para escribir, y la línea de leer
+     * se quedó con ella dentro: `resource.data.uid` sobre un documento que
+     * todavía no existe no es false, es un error de evaluación, y un error de
+     * evaluación es un no.
+     *
+     * Consecuencia, encontrada probando con una cuenta de alumna de verdad el
+     * 16 de octubre de 2026: la PRIMERA lección de CADA curso no se podía
+     * marcar nunca. La pantalla leía el avance antes de escribirlo, esa lectura
+     * recibía un no, y el botón «Marcar como terminada» se quedaba quieto sin
+     * decir nada. No fallaba una vez de cada cien: fallaba siempre, y en
+     * silencio, porque el único sitio donde se veía era la consola del
+     * navegador.
+     *
+     * Así que al leer hay dos casos y se dicen los dos:
+     *
+     *   · El documento existe   → es tuyo si su `uid` es el tuyo.
+     *   · El documento no existe → es tuyo si su NOMBRE empieza por tu `uid`,
+     *     porque el nombre es `uid__cursoId` y lo pone el código, no la
+     *     persona.
+     *
+     * El segundo caso podría escribirse simplemente «si no existe, pasa»: no
+     * hay nada dentro que llevarse. Pero sí se llevaría algo: saber que NO
+     * existe. Con la lista de alumnas delante, cualquiera podría preguntar
+     * documento a documento quién ha empezado qué curso y quién no. Cuesta una
+     * línea no regalarlo.
      */
     match /avance/{id} {
-      allow read: if esAdmin() || (dentro() && resource.data.uid == request.auth.uid);
+      allow read: if esAdmin() || (dentro() && (
+        resource == null
+          ? id.split('__')[0] == request.auth.uid
+          : resource.data.uid == request.auth.uid
+      ));
       allow write: if dentro() && request.resource.data.uid == request.auth.uid;
     }
 
