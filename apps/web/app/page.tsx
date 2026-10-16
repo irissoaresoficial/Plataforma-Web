@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import Cursor from '@/components/Cursor';
-import Cortina from '@/components/Cortina';
 import CampoNumeros from '@/components/CampoNumeros';
 /*
  * `Aparece` en vez de `Reveal`, en toda la web.
@@ -36,7 +35,7 @@ import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
-import PortadaArbol from '@/components/PortadaArbol';
+import Portal from '@/components/Portal';
 import QueEs from '@/components/QueEs';
 import SinergiaAqui from '@/components/SinergiaAqui';
 import { useLang } from '@/lib/i18n';
@@ -160,7 +159,9 @@ export default function Home() {
   return (
     <div id="app" className="claro" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor />
-      <Cortina />
+      {/* La cortina de dos franjas se va: el portal trae su propia antesala,
+          que además cuenta de 0 a 100 lo que tardan en cargar los vídeos. Dos
+          aperturas seguidas es una de más. */}
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <Nav
         cta={t.book}
@@ -180,85 +181,21 @@ export default function Home() {
       />
 
       {/* ── APERTURA ─────────────────────────────────────────── */}
-      {/*
-          EL ÁRBOL CRECE CUANDO TÚ BAJAS.
-          --------------------------------------------------------------------
-          Aquí ha habido, por este orden: un retrato con dos fichas al lado, un
-          titular grande en serif con una línea en cursiva dorada —«invitación
-          de boda», dijo Gerson, y tenía razón— y un árbol dibujado con SVG que
-          se pintaba solo al entrar.
+      {/* LA PORTADA: EL PORTAL.
 
-          Ninguno hacía lo que hace éste: RESPONDER. El vídeo del árbol no se
-          reproduce; avanza al ritmo de la rueda del ratón. Bajas y crece, subes
-          y vuelve atrás. Quien entra tarda dos segundos en darse cuenta de que
-          el dibujo le hace caso, y ese descubrimiento es lo que le hace seguir
-          bajando — que es exactamente lo que esta portada necesita que haga.
+          Cinco tramos de scroll sobre una película que no se corta — los
+          números de tinta se vuelven hilos de oro, los hilos se vuelven el
+          árbol de luz, y al final aparece ella. Ocupa las primeras cuatro
+          pantallas y media; de ahí para abajo sigue la página entera, que no
+          se ha tocado: «hola, soy Iris», las consultas, las dudas y el pie.
 
-          Y mientras crece, el texto va contando: primero de qué va, después por
-          qué le ha llegado a él, y solo al final —cuando el árbol ya está
-          entero y lleno de oro— el precio y el botón.
+          Antes aquí estaba `PortadaArbol`, el dibujo del árbol con las tres
+          frases escribiéndose al bajar. Sigue en el repositorio y se puede
+          volver a poner cambiando esta línea; no se ha borrado nada.
 
-          El detalle está en components/PortadaArbol.tsx. */}
+          El detalle está en components/Portal.tsx. */}
       <div id="top">
-        <PortadaArbol
-          pasos={[
-            /* El titular sale ENTERO desde el primer fotograma: es lo que ve
-               quien comparte el enlace y quien tiene el móvil en modo ahorro.
-               Los otros dos se escriben palabra a palabra al bajar. */
-            {
-              nodo: (
-                <>
-                  <h1 className="portada-h1">
-                    {t.h1a}
-                    <br />
-                    <b>{t.h1b}</b>
-                  </h1>
-                  {/* «Sigue bajando» era letra pequeña, y la letra pequeña se
-                      ha ido de toda la web. Lo dice mejor sin decirlo: una
-                      ranura hundida en el papel y una gota dorada cayendo. */}
-                  <span className="portada-baja" aria-hidden>
-                    <i />
-                  </span>
-                </>
-              ),
-            },
-            { texto: t.h1p1 },
-            {
-              texto: t.h1p2,
-              fuerte: t.h1p2b,
-              /*
-               * EL BOTÓN DEJA DE SER UNA PASTILLA.
-               *
-               * Era una cápsula granate con la flecha dentro y, debajo, el
-               * precio en letra pequeña. Dos cosas mal: la pastilla es el gesto
-               * de cualquier plantilla, y la letra pequeña ya no existe en esta
-               * web.
-               *
-               * Ahora es la frase y una flecha en un disco que SOBRESALE del
-               * papel. Y sobresale a propósito: la gota que avisa está hundida,
-               * ésta se levanta. Lo que se hunde es contenido, lo que sobresale
-               * es acción — y al pulsarla se hunde, que es lo que hace un botón
-               * de verdad.
-               *
-               * El precio no se pierde: está en la ficha de la consulta con
-               * cuerpo de texto normal, y el chat lo dice en la primera
-               * respuesta.
-               */
-              accion: (
-                <button
-                  type="button"
-                  className="portada-cta cta-solida"
-                  onClick={abrirConsulta}
-                  data-mag
-                  data-cur-label={t.cbook}
-                >
-                  <span>{t.hcta}</span>
-                  <i aria-hidden>→</i>
-                </button>
-              ),
-            },
-          ]}
-        />
+        <Portal />
       </div>
 
       {/* LA MARQUESINA DE DOCE NÚMEROS ESTABA AQUÍ, y se ha quitado.
