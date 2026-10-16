@@ -56,7 +56,10 @@
   --tinta-3:#6d6467;
   --vino:#451a25;
   --oro:#a9884f;
-  --oro-honda:#7d5f1e;      /* el dorado que SÍ se lee como texto */
+  /* MEDIDO, NO ELEGIDO. Con #7d5f1e las etiquetas caían a 3,79 sobre el
+     plano del árbol — por debajo del 4,5 que pide la norma para letra
+     pequeña. Este da 4,6 encima del metraje y 5,9 sobre el papel. */
+  --oro-honda:#6d5319;      /* el dorado que SÍ se lee como texto */
   --marfil:#efe9dd;
   --marfil-hondo:#e3dbcb;
   --papel:#fbf8f2;
@@ -82,9 +85,16 @@ body:not(.antesala-lista){overflow:hidden;height:100%}
   background:
     radial-gradient(120% 86% at 50% 34%, var(--papel) 0%, var(--marfil) 52%, var(--marfil-hondo) 100%)}
 
+/* EL VELO: papel subiendo desde abajo, y desde la izquierda para el raíl.
+   LAS PARADAS ESTÁN MEDIDAS. Con el corte en el 56% las etiquetas doradas de
+   la ficha caían a 3,47 sobre los focos del árbol, y la norma pide 4,5 para
+   letra de ese tamaño. Subiéndolo al 50% y con más cuerpo dan 5,4, y encima
+   la pieza gana: el metraje se queda arriba, que es donde se mira, y el texto
+   se apoya en papel. */
 .velo{position:absolute;inset:0;z-index:3;pointer-events:none;
   background:
-    linear-gradient(to bottom,transparent 56%,rgba(239,233,221,.88) 84%,var(--marfil) 100%),
+    linear-gradient(to bottom,transparent 50%,rgba(239,233,221,.62) 66%,
+      rgba(239,233,221,.94) 80%,var(--marfil) 100%),
     linear-gradient(to right,rgba(239,233,221,.95) 0%,rgba(239,233,221,.6) 12%,transparent 25%)}
 
 .marco{position:absolute;z-index:4;transition:opacity .45s ease,filter .45s ease}
@@ -249,15 +259,26 @@ body:not(.abierto) .contenido .dato{opacity:0}
   .ventana-zona{top:42%;width:min(248px,62vw)}
   .contenido{left:max(18px,env(safe-area-inset-left,0px));right:max(18px,env(safe-area-inset-right,0px));
     bottom:max(18px,env(safe-area-inset-bottom,0px));display:block}
-  .contenido h1{font-size:clamp(56px,16vw,106px);margin-bottom:16px}
+  .contenido h1{font-size:clamp(38px,12.4vw,92px);letter-spacing:-.035em;margin-bottom:14px}
   .contenido dl{width:100%;font-size:13px}
-  .dato{grid-template-columns:104px 1fr;gap:12px;padding:7px 0}
+  .dato{grid-template-columns:96px 1fr;gap:10px;padding:6px 0}
+  .contenido{bottom:max(26px,calc(env(safe-area-inset-bottom,0px) + 14px))}
   .entrar{height:38px;padding:0 17px}
   .ventana{border-radius:70px}
   /* En vertical el retrato no cabe al lado: se va arriba y el texto debajo. */
-  .recorrido[data-etapa="iris"] .ventana-zona{left:50%;right:auto;top:30%;width:min(200px,50vw);
+  /* El retrato, más grande y más abajo: a 200px y al 30% quedaban 170px de
+     papel vacío entre su barbilla y el titular, y se leía como un descuido. */
+  .recorrido[data-etapa="iris"] .ventana-zona{left:50%;right:auto;top:34.5%;width:min(226px,58vw);
     transform:translate(-50%,-50%)}
   .recorrido[data-etapa="iris"] .contenido{width:auto}
+  /* EL VELO, REHECHO PARA VERTICAL. El de ancho tiene dos capas: una abajo y
+     otra a la izquierda para que se lea el raíl de etapas. Aquí el raíl no
+     existe (`.etapas{display:none}`), así que esa segunda capa sólo ensuciaba
+     el borde. Y la de abajo entraba demasiado tarde: en el tramo del árbol el
+     texto caía sobre los focos de luz. Ahora el metraje se queda arriba, donde
+     se mira, y la ficha se apoya en papel limpio. */
+  .velo{background:linear-gradient(to bottom,transparent 44%,rgba(239,233,221,.5) 59%,
+    rgba(239,233,221,.93) 72%,var(--marfil) 85%)}
 }
 @media(prefers-reduced-motion:reduce){
   *{transition-duration:.01ms!important;animation-duration:.01ms!important}
@@ -427,16 +448,101 @@ function midelienzo() {
   ctx.setTransform(d, 0, 0, d, 0, 0);
 }
 
-/* El metraje se pinta a pantalla completa y quieto, no dentro de la ventana.
-   Esa es toda la gracia: la imagen se queda donde está y lo que se mueve es
-   el agujero por donde se ve. */
+/* En pantalla ancha el metraje se pinta a pantalla completa y quieto, no
+   dentro de la ventana. Esa es toda la gracia: la imagen se queda donde está
+   y lo que se mueve es el agujero por donde se ve. */
+const ESTRECHO = () => window.innerWidth < 760;
+
 function cubre(c, media) {
   const mw = media.videoWidth || media.naturalWidth;
   const mh = media.videoHeight || media.naturalHeight;
   if (!mw || !mh) return false;
   const w = window.innerWidth, h = window.innerHeight;
-  const e = Math.max(w / mw, h / mh);
-  c.drawImage(media, (w - mw * e) / 2, (h - mh * e) / 2, mw * e, mh * e);
+  const grande = Math.max(w / mw, h / mh);
+  c.drawImage(media, (w - mw * grande) / 2, (h - mh * grande) / 2, mw * grande, mh * grande);
+  return true;
+}
+
+/* ------------------------------------------------------ EL MÓVIL, APARTE
+ *
+ * EN UN TELÉFONO LO DE ARRIBA SE CARGA LA PIEZA, y hay que verlo para
+ * creerlo. El plano es apaisado y un teléfono es vertical: recortarlo para
+ * que llene la pantalla se come dos tercios del ancho. Y lo que hay a los
+ * lados no es relleno, es el árbol. En el móvil salían tres puntos de luz
+ * sueltos y ni un camino entero — justo lo contrario de lo que el plano
+ * cuenta.
+ *
+ * Aquí el encuadre VIAJA con la ventana, y por eso no hay un solo corte:
+ *
+ *   ventana cerrada → el plano llena la ventana (es casi cuadrada: recortarlo
+ *                     a eso cuesta un 19% de ancho, nada)
+ *   ventana abierta → el plano CABE DE ANCHO y se queda como una franja
+ *                     encima del texto, con el árbol entero dentro
+ *
+ * Entre una cosa y otra se interpola el tamaño y el centro, así que la
+ * transformación se ve como un movimiento de cámara y no como un salto.
+ *
+ * Y DETRÁS, UN LAVADO: el mismo fotograma pintado diminuto y estirado a toda
+ * la pantalla. Queda una mancha suave, sin dibujo que compita, pero con el
+ * color exacto del papel de ESE segundo del plano. Un relleno de color plano
+ * no vale: el papel tiene luz y sombra y cambia según avanza la cinta.
+ * El borde de la franja se desvanece contra ese lavado (ver `pluma`), que es
+ * lo que mata la costura: antes había dos líneas rectas cruzando la pantalla.
+ */
+const CHICO = document.createElement('canvas');
+CHICO.width = 48; CHICO.height = 86;
+const cctx = CHICO.getContext('2d');
+const FRANJA = document.createElement('canvas');
+const fctx = FRANJA.getContext('2d');
+let franjaW = 0, franjaH = 0;
+
+function midefranja() {
+  const d = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth, h = window.innerHeight;
+  if (franjaW === w && franjaH === h) return;
+  franjaW = w; franjaH = h;
+  FRANJA.width = w * d; FRANJA.height = h * d;
+  fctx.setTransform(d, 0, 0, d, 0, 0);
+}
+
+function cubreMovil(c, media, cx, cy, cw, ch, e) {
+  const mw = media.videoWidth || media.naturalWidth;
+  const mh = media.videoHeight || media.naturalHeight;
+  if (!mw || !mh) return false;
+  const w = window.innerWidth, h = window.innerHeight;
+
+  /* 1. el lavado */
+  const gc = Math.max(CHICO.width / mw, CHICO.height / mh);
+  cctx.drawImage(media, (CHICO.width - mw * gc) / 2, (CHICO.height - mh * gc) / 2, mw * gc, mh * gc);
+  c.imageSmoothingEnabled = true;
+  c.drawImage(CHICO, 0, 0, w, h);
+
+  /* 2. el plano nítido, encuadrado entre los dos extremos */
+  const sA = Math.max(cw / mw, ch / mh);          // lleno de la ventana
+  const sB = w / mw;                              // cabe de ancho
+  const s = entre(sA, sB, e);
+  const px = entre(cx, w / 2, e);
+  const py = entre(cy, h * .37, e);               // .37: encima del texto
+  const dw = mw * s, dh = mh * s;
+  const x0 = px - dw / 2, y0 = py - dh / 2;
+
+  /* La pluma sólo aparece cuando la franja ya no llena la ventana; con la
+     ventana cerrada desvanecería un borde que no se ve. */
+  const pluma = Math.min(110, dh * .26) * e;
+  if (pluma < 1) { c.drawImage(media, x0, y0, dw, dh); return true; }
+
+  midefranja();
+  fctx.clearRect(0, 0, w, h);
+  fctx.drawImage(media, x0, y0, dw, dh);
+  fctx.globalCompositeOperation = 'destination-out';
+  const ga = fctx.createLinearGradient(0, y0, 0, y0 + pluma);
+  ga.addColorStop(0, 'rgba(0,0,0,1)'); ga.addColorStop(1, 'rgba(0,0,0,0)');
+  fctx.fillStyle = ga; fctx.fillRect(0, y0, w, pluma);
+  const gb = fctx.createLinearGradient(0, y0 + dh - pluma, 0, y0 + dh);
+  gb.addColorStop(0, 'rgba(0,0,0,0)'); gb.addColorStop(1, 'rgba(0,0,0,1)');
+  fctx.fillStyle = gb; fctx.fillRect(0, y0 + dh - pluma, w, pluma);
+  fctx.globalCompositeOperation = 'source-over';
+  c.drawImage(FRANJA, 0, 0, w, h);
   return true;
 }
 
@@ -526,6 +632,7 @@ function pinta(ahora) {
   ctx.fillStyle = '#e3dbcb';
   ctx.fillRect(0, 0, w, h);
   if (d.retrato) cubreVentana(ctx, ventanaImagen, cx, cy, cw, ch, d.foco);
+  else if (ESTRECHO()) cubreMovil(ctx, ventanaVideo, cx, cy, cw, ch, e);
   else cubre(ctx, ventanaVideo);
   ctx.restore();
 
