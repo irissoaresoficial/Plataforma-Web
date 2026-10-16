@@ -14,7 +14,6 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
-import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
 import { useLang } from '@/lib/i18n';
 import { KABALA, eur } from '@/content/site';
@@ -236,7 +235,6 @@ export default function Kabala() {
       </div>
 
       <ChatWidget ref={chatRef} />
-      <Susurros />
     </div>
   );
 }

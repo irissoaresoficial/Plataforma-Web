@@ -14,7 +14,6 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
-import Susurros from '@/components/Susurros';
 import { FOTOS, SESION, eur } from '@/content/site';
 
 /*
@@ -253,7 +252,6 @@ export default function Numerologia() {
       </div>
 
       <ChatWidget ref={chatRef} />
-      <Susurros />
     </div>
   );
 }

@@ -153,7 +153,7 @@ body:not(.antesala-lista){overflow:hidden;height:100%}
 /* El tamaño del titular lo manda la palabra más larga: «NUMEROLOGÍA» son once
    letras y a 13,5vw ocupaba la fila entera, echando la ficha fuera de la
    pantalla. Se veía un titular precioso y ni uno de los cuatro renglones. */
-.portal .contenido h1{font-family:var(--serif);font-size:clamp(54px,9vw,132px);font-weight:400;line-height:.84;
+.portal .contenido h1{font-family:var(--serif);font-size:clamp(54px,9vw,132px);font-weight:300;line-height:.84;
   margin:0 0 -.02em;letter-spacing:-.032em;color:var(--vino);transform:translateX(-6px);opacity:0;
   flex:0 1 auto;min-width:0}
 .portal .contenido dl{width:min(420px,32vw);flex:none;margin:0;font-size:15px;min-width:0}

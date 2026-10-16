@@ -33,7 +33,6 @@ import useSiteScroll from '@/components/useSiteScroll';
 import Nav from '@/components/Nav';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/ChatWidget';
-import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
 import Portal from '@/components/Portal';
 import QueEs from '@/components/QueEs';
@@ -568,7 +567,6 @@ export default function Home() {
       <ChatWidget ref={chatRef} />
       {/* Las frases que asoman por los márgenes mientras se baja. Van aquí, al
           final y fuera de todo: son de la página entera, no de ningún bloque. */}
-      <Susurros />
     </div>
   );
 }
