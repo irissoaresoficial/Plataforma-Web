@@ -3,7 +3,8 @@
  * React necesita para no dejar escuchas colgando al cambiar de página. */
 /* eslint-disable */
 // @ts-nocheck
-export function arrancaPortal(): () => void {
+export function arrancaPortal(opciones: { precio: string }): () => void {
+const PRECIO_SESION = opciones.precio;
 
 'use strict';
 
@@ -37,34 +38,60 @@ const luego = (fn: () => void, ms: number) => {
    la fecha y la base 9 del nombre completo; el árbol tiene diez puntos y
    veintidós caminos. Un dato inventado en una pantalla que vende se nota, y
    no hacía falta: lo que hay ya es bastante. */
-const ETAPAS = ['Numerología', 'Kábala', 'Iris Soares'];
+/* El raíl de la izquierda es el índice del recorrido, así que tiene que
+   nombrar lo que hay en cada parada. Se quedó diciendo «Numerología / Kábala»
+   cuando los titulares ya no dicen eso: un índice que no coincide con la
+   página es peor que no tener índice. Van cortos a propósito — ahí no cabe
+   una frase. */
+const ETAPAS = ['El patrón', 'La cuenta', 'Iris Soares'];
 
 const DATOS = {
+  /* ==========================================================================
+   * EL TEXTO DEL RECORRIDO
+   * ==========================================================================
+   * Antes esto era una ficha técnica: «Base 22», «imagen del alma», «ciclos
+   * vitales». Son los nombres que usa Iris entre colegas, y para quien entra
+   * por primera vez no significan nada — describen el MECANISMO, y nadie
+   * compra un mecanismo.
+   *
+   * Las tres paradas son ahora los tres golpes de un argumento:
+   *
+   *   1. NO EMPIEZA EN TI   le quita la culpa. Es la frase que hace seguir
+   *      bajando, porque convierte «qué mala suerte tengo» en «entonces hay
+   *      algo que se puede mirar».
+   *   2. Y SE PUEDE MIRAR   la prueba, en humano. Lo que convence no es la
+   *      numerología: es que los dos datos que hacen falta no los eligió.
+   *   3. HOLA, SOY IRIS     la persona, y el precio. Que el precio esté aquí
+   *      y no detrás de una puerta es a propósito: quien ve el número y sigue
+   *      bajando es quien de verdad va a reservar.
+   */
   numerologia: {
-    nombre: 'Numerología', orden: 0,
+    nombre: 'No empieza en ti', orden: 0,
     datos: [
-      ['Base 22:', 'Sale de tu fecha de nacimiento. Dice cómo te comportas.'],
-      ['Base 9:', 'Sale de tu nombre completo. Dice de qué estás hecho.'],
-      ['Lo que se mira:', 'Las repeticiones, los huecos y lo que se salta una generación.'],
-      ['Desde:', 'Consulta online desde 2010.'],
+      ['Lo que te han dicho:', 'Que es mala suerte. O que eres tú.'],
+      ['Lo que pasa:', 'Que ya pasaba antes de que tú llegaras.'],
+      ['Qué se hereda:', 'No lo que ocurrió. La manera de salir de ello.'],
+      ['Y la buena noticia:', 'Que si viene de algún sitio, se puede ir a mirar.'],
     ],
   },
   kabala: {
-    nombre: 'Kábala', orden: 1,
+    nombre: 'Y se puede mirar', orden: 1,
     datos: [
-      ['El árbol:', 'Diez puntos y veintidós caminos. La carta entera cabe ahí.'],
-      ['Imagen del alma:', 'Lo que traías antes de que nadie te pusiera un nombre.'],
-      ['Cuentas abiertas:', 'Lo que en tu familia nunca se contó, y lo estás pagando tú.'],
-      ['Ciclos vitales:', 'En qué tramo estás y qué toca ahora.'],
+      ['Qué hace falta:', 'Tu fecha de nacimiento y tu nombre completo. Nada más.'],
+      ['Por qué esos dos:', 'Porque no los elegiste tú. Son lo único tuyo que ya estaba escrito.'],
+      ['Qué sale:', 'Qué se repite, desde qué generación, y qué toca ahora.'],
+      ['Qué no sale:', 'El futuro. Esto explica el presente.'],
     ],
   },
   iris: {
-    nombre: 'Iris Soares', orden: 2, retrato: true, foco: .3,
+    nombre: 'Hola, soy Iris', orden: 2, retrato: true, foco: .3,
     datos: [
-      ['Quién:', 'Iris Soares, numerología transgeneracional.'],
-      ['Qué hace:', 'Levanta tu carta y te enseña a leerla.'],
-      ['Para qué:', 'Para que las cuentas las hagas tú, no con apuntes.'],
-      ['Por dónde empezar:', 'Una sesión, o la prueba gratis de la sinergia.'],
+      ['Quién soy:', 'Iris Soares. Llevo desde 2010 levantando cartas.'],
+      ['Qué hacemos:', 'La tuya, contigo delante y en directo.'],
+      ['Qué te llevas:', 'Las cuentas hechas y sabiendo repetirlas tú sola.'],
+      /* El precio y su motivo salen de `content/site.ts`, no escritos aquí:
+         el día que Iris cambie el número, cambia también en la portada. */
+      ['Cuánto cuesta:', 'PRECIO_SESION'],
     ],
   },
 };
@@ -133,6 +160,18 @@ const punto = document.querySelector('.cursor-punto');
   forma.addEventListener('change', reparte);
   basura.push(() => forma.removeEventListener('change', reparte));
 })();
+
+/* EL PRECIO, DESDE `content/site.ts` Y NO A MANO.
+   El guion del portal es texto plano porque viene de una página suelta, así
+   que el número se mete aquí al arrancar. Si algún día no hay oferta, la fila
+   dice sólo el precio normal y el motivo desaparece solo — que es lo que
+   impide que la portada anuncie una rebaja que ya no existe. */
+{
+  const f = DATOS.iris.datos.find((d) => d[1] === 'PRECIO_SESION');
+  if (f) {
+    f[1] = PRECIO_SESION;
+  }
+}
 
 let actual = 'numerologia';
 let expansion = 0;

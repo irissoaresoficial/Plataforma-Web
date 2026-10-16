@@ -102,11 +102,11 @@ export const COPY = {
     hcta: 'Reservar mi consulta', hcta2: 'Ver mi número gratis', hbadge: 'Online · ES / PT / EN',
     s1: 'personas atendidas', s2: 'desde', s3: 'idiomas',
     p_lab: 'A ver si te suena',
-    p1: 'Cambias de trabajo y a los seis meses te sientes igual.',
+    p1: 'Cambias de trabajo y a los seis meses estás igual.',
     p2: 'Cambias de pareja y discutís por lo mismo.',
     p3: 'Ganas más y a fin de mes sigue sin quedar nada.',
-    p4: 'Cargas con algo que ni siquiera te pasó a ti.',
-    p_punch: 'Y llevas años jurando que tú no ibas a ser así.',
+    p4: 'Y lo que peor sienta: que esto ya lo viste en casa.',
+    p_punch: 'Llevas años jurando que tú no ibas a ser así.',
     b_lab: 'Por qué pasa',
     b_h: 'No es tu carácter. Es una historia que nadie cerró.',
     b_p1: 'En toda familia hay algo que no se habló: un amante que nunca se reconoció, una enfermedad psiquiátrica, alguien que estuvo preso. Nadie lo cuenta, y aun así pasa de generación en generación.',
@@ -123,9 +123,9 @@ export const COPY = {
      * duda número uno de quien llega de un anuncio, y contestarla aquí es lo
      * que permite que el resto de la página se lea sin sospecha.
      */
-    q_h: 'Se llama numerología transgeneracional.',
-    q_p1: 'Tu nombre y tu fecha guardan lo que pasó en tu familia. En números se ve el patrón: qué se repite y desde cuándo.',
-    q_p2: 'No adivina el futuro. Explica el presente.',
+    q_h: 'Una hora mirando de dónde viene.',
+    q_p1: 'Nos sentamos con tu fecha y tu nombre delante y sale el mapa: qué se repite en tu familia, desde qué generación y qué te toca a ti de todo eso.',
+    q_p2: 'No se adivina nada. Se hace una cuenta, se mira, y te la enseño para que puedas rehacerla sin mí.',
     /*
      * EL REGALO.
      *
@@ -226,12 +226,12 @@ export const COPY = {
      */
     cu_h: 'Déjame mirarlo contigo.',
     cu_p: 'Online, con tu historia ya preparada antes de vernos.',
-    cu_num: 'Qué es la numerología transgeneracional',
-    cu_kab: 'Qué es la Kábala',
+    cu_num: 'La sesión con Iris',
+    cu_kab: 'La carta con Kábala',
     /* Lo que se lee debajo del nombre de cada puerta, ahora que son dos fichas
        y no dos enlaces sueltos: sin esto, «Kábala» es una palabra a secas. */
-    cu_num_p: 'De dónde sale lo que se repite, y el precio.',
-    cu_kab_p: 'El árbol, las diez puertas y el precio.',
+    cu_num_p: 'Tu carta levantada y leída contigo. Desde 111 €.',
+    cu_kab_p: 'Lo que traías antes de que nadie te pusiera un nombre.',
     w_lab: 'Quién soy', w_h: 'Soy Iris. Te ayudo a liberarte de los patrones que no te pertenecen.', w_h2: 'Y a devolverlos a su origen.',
     /*
      * EL SALUDO, EN CUANTO TERMINA EL ÁRBOL.
@@ -273,7 +273,7 @@ export const COPY = {
      * se cree. Es la única prueba que esta página va a tener, y no necesita
      * ninguna cifra ni ningún testimonio para sostenerse.
      */
-    w_que: 'A lo largo de muchos años y de muchas consultas entendí una cosa: lo que se repite no empieza en quien lo sufre. Viene de atrás. Y se ve en los números.',
+    w_que: 'Llevo desde 2010 levantando cartas, y en todas aparece lo mismo: lo que se repite no empieza en quien lo sufre. Ya venía de antes. Lo que yo hago es enseñarte dónde se ve, para que la próxima vez la cuenta la hagas tú.',
     w_p1: 'Pasé años observando patrones en el mundo corporativo y descifrando qué sucede cuando nadie mira.',
     w_p2: 'En 2010 uní lo mejor de la numerología, la psicosomática clínica, las constelaciones y las terapias integrativas para crear un método práctico y profundo. El objetivo de mi consulta es solo uno: que salgas sabiendo quién eres y qué decisión tomar hoy.',
     w1: 'Derecho', w2: 'Psicología', w3: 'Psicosomática', w4: 'Descodificación', w5: 'Numerología', w6: 'Transgeneracional',

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import './portal/portal.css';
 import { MARCADO } from './portal/marcado';
 import { arrancaPortal } from './portal/guion';
+import { SESION } from '@/content/site';
 
 /**
  * ============================================================================
@@ -42,7 +43,20 @@ import { arrancaPortal } from './portal/guion';
  */
 export default function Portal() {
   useEffect(() => {
-    const parar = arrancaPortal();
+    /* EL PRECIO DE LA ÚLTIMA PARADA, DESDE LOS DATOS.
+       Con oferta: «150 € · 111 € las 16 primeras, por los años de consulta».
+       Sin oferta, sólo el precio. El motivo va pegado al número a propósito:
+       una rebaja con motivo se lee como una condición y una sin motivo se lee
+       como que mañana seguirá ahí. */
+    const anos = new Date().getFullYear() - SESION.desde;
+    const precio =
+      SESION.precioOferta !== null && SESION.precio !== null
+        ? `${SESION.precio} €. Ahora ${SESION.precioOferta} € para las ${SESION.plazasOferta} primeras, por los ${anos} años de consulta.`
+        : SESION.precio !== null
+          ? `${SESION.precio} € la sesión.`
+          : 'Te lo digo en la reserva.';
+
+    const parar = arrancaPortal({ precio });
 
     /* LOS SUSURROS, CALLADOS MIENTRAS SE VE EL PORTAL.
        Son las burbujas del chat contando cosas de la Kábala. En medio de una
