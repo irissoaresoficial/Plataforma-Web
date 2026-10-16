@@ -1,5 +1,11 @@
 # Iris Soares · Escuela de Sabiduría 33
 
+> **Antes de tocar nada de diseño, copy o marca: [MARCA.md](MARCA.md).**
+> Tipografía, color, formas, botón, voz y lo que no se hace nunca. Manda ese
+> archivo, en la web y en la plataforma.
+
+@MARCA.md
+
 Next.js 15 (App Router) + TypeScript + Framer Motion. Se despliega solo en Vercel
 con cada push a `main`.
 
