@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Instrument_Sans, Cormorant_Garamond, Cinzel, Karla } from "next/font/google";
+import { Inter, Cormorant_Garamond, Cinzel, Karla } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/lib/app-context";
 import { SesionProvider } from "@/lib/sesion";
@@ -31,19 +31,26 @@ import Guardia from "@/components/Guardia";
  * Las dos por `next/font`: se descargan al compilar y se sirven desde el propio
  * dominio, sin pedirle nada a Google en cada visita.
  */
-const display = Fraunces({
+/*
+ * LA MISMA LETRA QUE LA WEB, Y POR LA MISMA RAZÓN.
+ *
+ * Aquí había Fraunces e Instrument Sans, igual que en la web. Gerson: «que
+ * todo quede con la misma línea visual, tanto la plataforma como la web», y
+ * «la tipografía es minimalista Apple style modern light».
+ *
+ * Así que manda la del sistema: en el Mac y el iPad desde los que Iris
+ * trabaja, `-apple-system` ES San Francisco, ya instalada. Donde no esté entra
+ * Inter. El nombre de la variable se queda en `--f-texto` a propósito: está
+ * escrito en media hoja de estilos y en `--font-ui` y `--font-display`, y
+ * renombrarlo era tocar cien sitios para el mismo resultado.
+ *
+ * Las tres letras del documento de abajo NO se tocan: ésas no son interfaz,
+ * son el estudio que se imprime y se entrega, y ahí la serif es la decisión
+ * correcta.
+ */
+const texto = Inter({
   subsets: ["latin"],
-  axes: ["SOFT", "WONK", "opsz"],
-  variable: "--f-display",
-  display: "swap",
-});
-
-const texto = Instrument_Sans({
-  subsets: ["latin"],
-  /* El 700 entró con los titulares en palo seco: con una sola familia, el
-     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["300", "400", "500", "600"],
   variable: "--f-texto",
   display: "swap",
 });
@@ -138,7 +145,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${display.variable} ${texto.variable} ${lectura.variable} ${cifra.variable} ${rotulo.variable}`}
+      className={`${texto.variable} ${lectura.variable} ${cifra.variable} ${rotulo.variable}`}
       suppressHydrationWarning
     >
       <head>
