@@ -45,9 +45,8 @@ export type View =
   | "estudio"
   | "pareja"
   | "agenda"
-  | "clientes"
+  | "personas"
   | "facturas"
-  | "leads"
   | "metricas"
   | "gestion";
 
@@ -72,9 +71,8 @@ const RUTA: Record<View, string> = {
   panel: "/panel",
   estudio: "/estudio",
   pareja: "/pareja",
-  leads: "/leads",
   agenda: "/agenda",
-  clientes: "/clientes",
+  personas: "/personas",
   facturas: "/facturas",
 };
 const VISTA: Record<string, View> = {
@@ -88,9 +86,8 @@ const VISTA: Record<string, View> = {
   "/panel": "panel",
   "/estudio": "estudio",
   "/pareja": "pareja",
-  "/leads": "leads",
   "/agenda": "agenda",
-  "/clientes": "clientes",
+  "/personas": "personas",
   "/facturas": "facturas",
 };
 /**
@@ -116,9 +113,8 @@ const LLAVE: Record<View, Capacidad> = {
   estudio: "estudio",
   pareja: "estudio",
   /* El despacho */
-  leads: "despacho",
   agenda: "despacho",
-  clientes: "despacho",
+  personas: "despacho",
   facturas: "despacho",
   metricas: "metricas",
   gestion: "gestion",
@@ -155,7 +151,7 @@ export const PESTANAS: Pestana[] = [
   { k: "panel", label: "Panel", grupo: "estudio" },
   { k: "estudio", label: "Estudio", grupo: "estudio" },
   { k: "agenda", label: "Agenda", grupo: "despacho" },
-  { k: "clientes", label: "Clientes", grupo: "despacho" },
+  { k: "personas", label: "Personas", grupo: "despacho" },
   { k: "facturas", label: "Facturas", grupo: "despacho" },
 ];
 

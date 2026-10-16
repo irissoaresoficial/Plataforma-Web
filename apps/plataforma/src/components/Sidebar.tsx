@@ -24,7 +24,6 @@ import {
   IcoDocumento,
   IcoEstructura,
   IcoFacturas,
-  IcoLeads,
   IcoNumerologia,
   IcoNumeros,
   IcoPareja,
@@ -70,9 +69,8 @@ export const DISCIPLINAS: Array<{ k: Disciplina; label: string; Ico: Ico }> = [
 /** El despacho: lo que no es leer una carta. Nunca se bloquea — una factura no
  *  depende de que haya un estudio abierto. */
 const DESPACHO: Array<{ k: View; label: string; Ico: Ico }> = [
-  { k: "leads", label: "Leads", Ico: IcoLeads },
   { k: "agenda", label: "Agenda", Ico: IcoAgenda },
-  { k: "clientes", label: "Clientes", Ico: IcoClientes },
+  { k: "personas", label: "Personas", Ico: IcoClientes },
   { k: "facturas", label: "Facturas", Ico: IcoFacturas },
 ];
 

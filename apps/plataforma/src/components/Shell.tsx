@@ -7,9 +7,8 @@ import ConsultaScreen from "./screens/ConsultaScreen";
 import PanelScreen from "./screens/PanelScreen";
 import EstudioScreen from "./screens/EstudioScreen";
 import ParejaScreen from "./screens/ParejaScreen";
-import LeadsScreen from "./screens/LeadsScreen";
 import AgendaScreen from "./screens/AgendaScreen";
-import ClientesScreen from "./screens/ClientesScreen";
+import PersonasScreen from "./screens/PersonasScreen";
 import FacturasScreen from "./screens/FacturasScreen";
 import EscuelaScreen from "./screens/EscuelaScreen";
 import CursosScreen from "./screens/CursosScreen";
@@ -38,7 +37,7 @@ export default function Shell() {
    * El menú ya no enseña lo que no se puede abrir, y eso basta para que nadie
    * se tropiece con el despacho de Iris sin querer. Pero no basta para nada
    * más: la dirección se escribe a mano, se pega de un chat, se queda en el
-   * historial del navegador. Un alumno que haya visto `/clientes` una vez lo
+   * historial del navegador. Un alumno que haya visto `/personas` una vez lo
    * vuelve a escribir y entra.
    *
    * Así que la puerta se cierra aquí también, y a quien no puede pasar no se
@@ -66,7 +65,7 @@ export default function Shell() {
    * Y MIENTRAS SE LA LLEVA, NO SE PINTA LA PANTALLA PROHIBIDA.
    *
    * El efecto de arriba corre DESPUÉS de pintar. Eso significaba que un alumno
-   * que escribía /clientes veía la pantalla de clientes montarse durante un
+   * que escribía /personas veía la pantalla de personas montarse durante un
    * fotograma, y un fotograma es tiempo de sobra para que esa pantalla pida a
    * Firestore la lista de clientes de Iris. El servidor contestaba no —que es
    * lo que tiene que pasar— pero la petición ya iba de camino y su rechazo
@@ -80,7 +79,7 @@ export default function Shell() {
    *
    * Así que la vista que se PINTA se decide aquí, antes de pintar, y no espera
    * al efecto. El efecto sigue haciendo falta —es quien cambia la dirección en
-   * la barra para que no se quede /clientes escrito— pero ya no es él quien
+   * la barra para que no se quede /personas escrito— pero ya no es él quien
    * protege la pantalla.
    *
    * `usuario` aquí nunca es null: `<Guardia>` no deja montar nada de esto
@@ -273,9 +272,8 @@ export default function Shell() {
           {vista === "panel" && !faltaEstudio && <PanelScreen />}
           {vista === "estudio" && !faltaEstudio && <EstudioScreen />}
           {vista === "pareja" && !faltaEstudio && <ParejaScreen />}
-          {vista === "leads" && <LeadsScreen />}
           {vista === "agenda" && <AgendaScreen />}
-          {vista === "clientes" && <ClientesScreen />}
+          {vista === "personas" && <PersonasScreen />}
           {vista === "facturas" && <FacturasScreen />}
           {vista === "escuela" && <EscuelaScreen />}
           {vista === "cursos" && <CursosScreen />}

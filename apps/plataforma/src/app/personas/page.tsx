@@ -1,6 +1,6 @@
 import Shell from "@/components/Shell";
 
-/** Los clientes: la ficha de cada persona, sus estudios, sus sesiones y las notas. */
+/** Las personas: lo que entra por la web y las fichas de Iris, en una lista. */
 export default function Pagina() {
   return <Shell />;
 }

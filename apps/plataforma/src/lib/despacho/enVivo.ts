@@ -44,11 +44,14 @@ export type Novedad = {
   titulo: string;
   detalle: string;
   /** A dónde lleva pulsarlo. */
-  pantalla: "leads" | "agenda";
+  pantalla: "personas" | "agenda";
 };
 
 /** Cómo se llama cada origen cuando se avisa de él. Las mismas palabras que en
- *  la pantalla de Leads: dos nombres para lo mismo obligan a traducir. */
+ *  la pantalla de Personas: dos nombres para lo mismo obligan a traducir.
+ *  (Se llamaba Leads hasta que esa pantalla y la de Clientes se juntaron en
+ *  una: la colección de Firestore sigue siendo `leads`, que es de dónde sale
+ *  el aviso, pero a dónde lleva ya es otra.) */
 const ORIGENES: Record<string, string> = {
   sinergia: "ha hecho la prueba gratis",
   membresia: "se ha apuntado a la lista de espera",
@@ -89,7 +92,7 @@ export function escuchaNovedades(alLlegar: (n: Novedad) => void): Unsubscribe {
             id: `lead:${c.doc.id}`,
             titulo: nombre,
             detalle: ORIGENES[String(d.origen || "")] || "ha dejado su correo",
-            pantalla: "leads",
+            pantalla: "personas",
           });
         });
       },

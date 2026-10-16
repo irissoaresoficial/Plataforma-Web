@@ -470,7 +470,7 @@ export default function FacturasScreen() {
                     onClick={() => abrir(f)}
                     style={css(
                       /* La línea va siempre puesta y cambia de color; ver la nota
-                         en ClientesScreen sobre por qué no se quita y se pone. */
+                         en PersonasScreen sobre por qué no se quita y se pone. */
                       "display:flex;align-items:center;gap:var(--s3);width:100%;text-align:left;padding:var(--s3) var(--s2);border:none;cursor:pointer;border-radius:var(--r-sm);border-top:1px solid " +
                         (i ? "var(--border)" : "transparent") +
                         ";" +
@@ -550,7 +550,7 @@ export default function FacturasScreen() {
                   <button
                     onClick={() => {
                       setClienteAbierto(abierta.clienteId);
-                      setView("clientes");
+                      setView("personas");
                     }}
                     style={css(BOTON_PLANO + "margin-left:auto;")}
                   >

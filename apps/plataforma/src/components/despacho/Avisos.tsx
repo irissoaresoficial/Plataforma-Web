@@ -209,7 +209,7 @@ export default function Avisos() {
     if (d.pantalla === "clientes") {
       setClienteAbierto(d.clienteId);
       setFocoFicha(d.foco ?? null);
-      return setView("clientes");
+      return setView("personas");
     }
     setFacturaAbierta(d.facturaId);
     setView("facturas");

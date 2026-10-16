@@ -55,7 +55,7 @@ export default function Despacho() {
                 : `Hoy tienes ${vivas.length} sesiones`,
         },
         {
-          k: "clientes",
+          k: "personas",
           label: "Clientes",
           Ico: IcoClientes,
           pie:

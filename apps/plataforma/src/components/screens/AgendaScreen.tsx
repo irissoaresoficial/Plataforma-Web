@@ -914,7 +914,7 @@ export default function AgendaScreen() {
               <button
                 onClick={() => {
                   setClienteAbierto(sesionAbierta.personaId);
-                  setView("clientes");
+                  setView("personas");
                 }}
                 style={css(BOTON_PLANO)}
               >
