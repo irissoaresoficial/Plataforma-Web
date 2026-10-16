@@ -6635,8 +6635,15 @@ body[data-nav-claro='si'] .sello-color {
 
    Se aplica hasta 1000 px, no hasta 760: un iPad en vertical son 768 y tenía
    exactamente el mismo problema.
+
+   PERO SÓLO EN PANTALLA DE PIE, Y ESO HAY QUE MEDIRLO PARA VERLO. Un teléfono
+   TUMBADO son 844 × 390: entra por el ancho, pero de alto no hay nada. Partido
+   en dos, al dibujo le quedaban 156 px y salía un sello de 280 × 156 flotando
+   en medio de la pantalla con sus cuatro cantos a la vista. Tumbado sobra sitio
+   a la izquierda —que es justo lo que falta de pie—, así que ahí vale el
+   reparto de siempre: el dibujo de fondo y el texto encima, a un lado.
    =================================================================== */
-@media (max-width: 1000px) {
+@media (max-width: 1000px) and (max-aspect-ratio: 1/1) {
   .portada-escena {
     display: grid;
     /*
@@ -6668,6 +6675,91 @@ body[data-nav-claro='si'] .sello-color {
      sobre el dibujo, y ahora el texto no está encima. Dejarlo sólo aclara el
      tercio de abajo del árbol sin ninguna razón. */
   .portada-velo { display: none; }
+
+  /* ===================================================================
+     EL DIBUJO ENTERO, SIN RECORTAR Y SIN EMPALMES
+     ===================================================================
+     Aquí el marco ya no es la pantalla: es la mitad de arriba. Y en un marco
+     propio no hace falta recortar nada, así que `contain` en vez de `cover`.
+
+     ASÍ SE VA LA RAYA DE LA FOTO DE GERSON. Con `cover` el móvil se llevaba el
+     vídeo vertical, cuyo papel de arriba y de abajo está ESTIRADO desde las
+     filas del borde: contra el fotograma de verdad deja un canto recto, y a
+     mitad de animación se ve un rectángulo nítido dentro de un borrón.
+
+     Con `contain` sobra papel arriba y abajo del dibujo — y no se nota, porque
+     ese papel es `--portada-fondo`, que el bucle saca promediando el ANILLO DE
+     FUERA del propio fotograma. O sea: el papel de la página ES el papel del
+     borde del dibujo, y la sombra que cruza el vídeo cruza la pantalla con él.
+     No hay nada que empalmar porque no hay dos papeles.
+
+     Y de regalo: la rama dorada —la de la derecha, la que cuenta la historia—
+     sale entera en cualquier teléfono y en cualquier giro, que con `cover` era
+     siempre la primera en caer. */
+  .portada-lienzo,
+  .portada-vertical .portada-lienzo {
+    /* DOS CAPAS, Y EL ORDEN IMPORTA: delante el cartel, detrás el papel.
+       El papel no es un color: es el del BORDE DE ARRIBA del fotograma hasta
+       la mitad y el del BORDE DE ABAJO a partir de ahí, los dos medidos en
+       vivo. El corte cae en el 50%, que siempre queda TAPADO por el dibujo
+       —va centrado—, así que nunca se ve una raya: arriba se ve el color de
+       su borde de arriba y abajo el de su borde de abajo.
+
+       Con un color único el dibujo se veía como un rectángulo blanco pegado
+       sobre papel gris, porque en el tramo ampliado las esquinas están en
+       sombra y los bordes no. */
+    background-image:
+      url('/images/arbol-scroll-cartel.jpg'),
+      linear-gradient(
+        to bottom,
+        var(--portada-arriba, #ebe9e5) 0 50%,
+        var(--portada-abajo, #ebe9e5) 50% 100%
+      );
+    background-size: contain, 100% 100%;
+    background-position: center, center;
+  }
+  .portada-video,
+  .portada-vertical .portada-video {
+    object-fit: contain;
+    object-position: center;
+  }
+  /* LA PLUMA: EL CANTO DEL DIBUJO, DESVANECIDO.
+     Con un color plano arriba y otro abajo la junta ya no se ve en el primer
+     fotograma (medido: 0 a 5 puntos de 255). Pero a mitad de animación la
+     sombra cruza el borde de lado a lado y un color único no puede seguirla:
+     quedaban escalones de 30 y pico justo en la raya. Dos dedos de degradado
+     y no hay raya que ver — medido otra vez: 8 como mucho, y eso ya es el
+     propio papel cambiando.
+
+     La caja del degradado ES la franja: ancho entero y alto 56,25vw, que es
+     16:9 del ancho de la pantalla, centrada. Así los dos cantos caen donde
+     tienen que caer sin saber cuánto mide el marco. Y el `min(100%, …)` es
+     para el móvil tumbado, donde la franja la limita el alto y no el ancho. */
+  /* Y LA PÁGINA, DEL COLOR DEL CANTO DE ABAJO DEL DIBUJO.
+     De fondo iba `--portada-fondo`, el promedio del anillo entero. Mientras el
+     dibujo llenaba la pantalla daba igual; ahora que es una franja, ese
+     promedio arrastra las ESQUINAS —que están en sombra— y dejaba la página
+     gris debajo de un dibujo blanco: tres tonos a la vista y el dibujo como un
+     parche pegado encima.
+
+     Debajo de la franja sólo hay una cosa que tenga que casar: su propio canto
+     de abajo. Así el texto se lee sobre el mismo papel en el que acaba el
+     dibujo, y la sombra que cruza el vídeo sigue cruzando la pantalla. */
+  .portada {
+    background: var(--portada-abajo, #ebe9e5);
+  }
+  .portada-lienzo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to bottom, var(--portada-arriba, #ebe9e5) 0, transparent 22px),
+      linear-gradient(to top, var(--portada-abajo, #ebe9e5) 0, transparent 22px);
+    background-size: 100% min(100%, 56.25vw);
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 
   .portada-textos {
     position: static;

@@ -43,6 +43,21 @@ import { Fragment, useEffect, useRef } from 'react';
  * es de los que unos navegadores respetan y otros no. Cada persona se descarga
  * uno solo: el que va a ver.
  *
+ * EN UN TELÉFONO YA NO SE USA EL VERTICAL, Y ESO ES UN ARREGLO, NO UN OLVIDO.
+ * El papel estirado de sus bordes no empalma: contra el fotograma de verdad
+ * deja una raya recta cruzando la pantalla, y en el medio de la animación —con
+ * el dibujo ampliado— se ve un rectángulo nítido metido dentro de un borrón.
+ * Es justo lo que Gerson fotografió.
+ *
+ * Abajo de 1000 px el dibujo ya no va de fondo: tiene su propio marco en la
+ * mitad de arriba (ver el CSS). Ahí cabe el apaisado ENTERO, sin recortar,
+ * sobre el papel de la propia página — que es el color que el bucle acaba de
+ * medir del borde del fotograma, o sea el mismo papel. No hay nada que
+ * empalmar porque no hay dos papeles.
+ *
+ * Al vertical le queda su caso: una ventana de ordenador alta y estrecha, donde
+ * el dibujo sí ocupa el fondo entero y `cover` se comería la rama dorada.
+ *
  * ---------------------------------------------------------------------------
  * POR QUÉ EL VÍDEO ESTÁ CODIFICADO APARTE
  * ---------------------------------------------------------------------------
@@ -99,7 +114,7 @@ const PERSIGUE = 0.16;
  * dibujo. Un pelo más estrecha y empezaría a comerse ramas — y la primera en
  * caer sería la dorada, que está a la derecha.
  */
-const ES_VERTICAL = '(max-aspect-ratio: 5/4)';
+const ES_VERTICAL = '(max-aspect-ratio: 5/4) and (min-width: 1001px)';
 
 /**
  * Un paso de la portada.
@@ -229,25 +244,53 @@ export default function PortadaArbol({ pasos }: { pasos: [PasoPortada, PasoPorta
      * ser el fondo del bloque: la página y el dibujo son el mismo papel, y la
      * sombra que cruza el vídeo cruza también la pantalla.
      */
+    const LADO = 16;
     const lienzo = document.createElement('canvas');
-    lienzo.width = 8;
-    lienzo.height = 8;
+    lienzo.width = LADO;
+    lienzo.height = LADO;
     const pincel = lienzo.getContext('2d', { willReadFrequently: true });
     let mide = pincel !== null;
+
+    /*
+     * Y DOS COLORES MÁS: EL DEL BORDE DE ARRIBA Y EL DEL BORDE DE ABAJO.
+     *
+     * En el teléfono el dibujo ya no llena su marco: se enseña ENTERO, así que
+     * por arriba y por abajo queda papel de la página. Con el promedio del
+     * anillo no basta —en el tramo ampliado las esquinas están en sombra y el
+     * borde de arriba no—, y el dibujo se veía como un rectángulo blanco
+     * pegado encima de un papel gris. Justo lo que no puede pasar.
+     *
+     * De cada borde se coge la celda MÁS CLARA, no el promedio. En este dibujo
+     * el papel es siempre lo más claro que hay: la tinta es negra y el dorado
+     * queda en medio. Así una rama que cruce el borde no ensucia la medida.
+     */
+    const masClara = (d: Uint8ClampedArray, fila: number) => {
+      let mejor = -1;
+      let rgb = '';
+      for (let x = 0; x < LADO; x++) {
+        const i = (fila * LADO + x) * 4;
+        const luz = d[i] * 0.2126 + d[i + 1] * 0.7152 + d[i + 2] * 0.0722;
+        if (luz > mejor) {
+          mejor = luz;
+          rgb = `rgb(${d[i]},${d[i + 1]},${d[i + 2]})`;
+        }
+      }
+      return rgb;
+    };
 
     const tomaLaLuz = () => {
       if (!mide || !pincel || v.readyState < 2) return;
       try {
-        pincel.drawImage(v, 0, 0, 8, 8);
-        const d = pincel.getImageData(0, 0, 8, 8).data;
+        pincel.drawImage(v, 0, 0, LADO, LADO);
+        const d = pincel.getImageData(0, 0, LADO, LADO).data;
         let r = 0;
         let g = 0;
         let b = 0;
         let n = 0;
-        for (let y = 0; y < 8; y++) {
-          for (let x = 0; x < 8; x++) {
-            if (x > 0 && x < 7 && y > 0 && y < 7) continue;
-            const i = (y * 8 + x) * 4;
+        for (let y = 0; y < LADO; y++) {
+          for (let x = 0; x < LADO; x++) {
+            if (x > 0 && x < LADO - 1 && y > 0 && y < LADO - 1) continue;
+            const i = (y * LADO + x) * 4;
             r += d[i];
             g += d[i + 1];
             b += d[i + 2];
@@ -255,6 +298,8 @@ export default function PortadaArbol({ pasos }: { pasos: [PasoPortada, PasoPorta
           }
         }
         c.style.setProperty('--portada-fondo', `rgb(${Math.round(r / n)},${Math.round(g / n)},${Math.round(b / n)})`);
+        c.style.setProperty('--portada-arriba', masClara(d, 0));
+        c.style.setProperty('--portada-abajo', masClara(d, LADO - 1));
       } catch {
         mide = false;
       }
