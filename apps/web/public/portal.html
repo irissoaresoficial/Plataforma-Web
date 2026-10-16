@@ -302,17 +302,17 @@ body:not(.abierto) .contenido .dato{opacity:0}
 
   <div class="fondos" aria-hidden="true">
     <video id="fondo-numerologia" class="fondo se-ve" muted playsinline preload="auto" loop>
-      <source src="/video/codigo-sagrado.mp4" type="video/mp4">
+      <source src="/video/numerologia.mp4" type="video/mp4"><source src="/video/codigo-sagrado.mp4" type="video/mp4">
     </video>
     <video id="fondo-kabala" class="fondo" muted playsinline preload="auto" loop>
-      <source src="/video/arbol-scroll.webm" type="video/webm"><source src="/video/arbol-scroll.mp4" type="video/mp4">
+      <source src="/video/kabala.mp4" type="video/mp4"><source src="/video/arbol-scroll.webm" type="video/webm"><source src="/video/arbol-scroll.mp4" type="video/mp4">
     </video>
     <div id="fondo-iris" class="fondo" style="background:radial-gradient(120% 92% at 68% 38%,#2b1b21 0%,#160f12 58%,#100b0d 100%)"></div>
   </div>
 
   <div class="antesala" id="antesala" aria-label="Abriendo">
     <video id="antesala-video" muted playsinline preload="auto">
-      <source src="/video/codigo-sagrado.mp4" type="video/mp4">
+      <source src="/video/numerologia.mp4" type="video/mp4"><source src="/video/codigo-sagrado.mp4" type="video/mp4">
     </video>
     <div class="antesala-velo"></div>
   </div>
@@ -345,7 +345,7 @@ body:not(.abierto) .contenido .dato{opacity:0}
     </div>
     <div class="ventana" id="ventana" aria-hidden="true">
       <video id="ventana-video" muted playsinline preload="auto" loop>
-        <source src="/video/arbol-scroll.webm" type="video/webm"><source src="/video/arbol-scroll.mp4" type="video/mp4">
+        <source src="/video/kabala.mp4" type="video/mp4"><source src="/video/arbol-scroll.webm" type="video/webm"><source src="/video/arbol-scroll.mp4" type="video/mp4">
       </video>
       <img id="ventana-imagen" src="/images/iris-consulta.jpg" alt="">
     </div>
@@ -386,7 +386,7 @@ const DATOS = {
     siguiente: 'Kábala',
     numero: '[II]',
     fondo: 'fondo-numerologia',
-    portal: 'arbol-scroll',
+    portal: 'kabala',
     datos: [
       ['Base 22:', 'Sale de tu fecha de nacimiento. Dice cómo te comportas.'],
       ['Base 9:', 'Sale de tu nombre completo. Dice de qué estás hecho.'],
@@ -433,16 +433,34 @@ const CADENA = { numerologia: 'kabala', kabala: 'iris' };
    la pantalla se queda en negro SIN decir nada, que es la peor forma de
    fallar—. Con el webm delante, el navegador coge el que sabe leer. */
 const CON_WEBM = new Set(['arbol-scroll', 'arbol-vertical']);
+
+/*
+ * LOS PLANOS NUEVOS VAN DELANTE, Y LOS DE AHORA DETRÁS.
+ *
+ * Cada vídeo lleva una lista de fuentes y el navegador baja por ella hasta
+ * que una carga. Primero pide el plano nuevo —`numerologia.mp4`,
+ * `kabala.mp4`—; si todavía no está, ese 404 no rompe nada: pasa al de abajo
+ * y se ve el que ya teníamos.
+ *
+ * Esto no es una precaución: es el mecanismo del cambio. Dejar los dos
+ * archivos nuevos en `public/video/` con esos nombres es TODO lo que hay que
+ * hacer para que entren. Ni tocar código, ni publicar otra vez a mano, ni
+ * acordarse de nada.
+ */
+const RELEVO = { 'numerologia': ['codigo-sagrado'], 'kabala': ['arbol-scroll'] };
+
 function ponFuentes(video, base) {
   video.innerHTML = '';
-  if (CON_WEBM.has(base)) {
-    const w = document.createElement('source');
-    w.src = '/video/' + base + '.webm'; w.type = 'video/webm';
-    video.append(w);
+  for (const n of [base, ...(RELEVO[base] || [])]) {
+    if (CON_WEBM.has(n)) {
+      const w = document.createElement('source');
+      w.src = '/video/' + n + '.webm'; w.type = 'video/webm';
+      video.append(w);
+    }
+    const m = document.createElement('source');
+    m.src = '/video/' + n + '.mp4'; m.type = 'video/mp4';
+    video.append(m);
   }
-  const m = document.createElement('source');
-  m.src = '/video/' + base + '.mp4'; m.type = 'video/mp4';
-  video.append(m);
   video.load();
 }
 
@@ -459,7 +477,7 @@ const aro = document.querySelector('.cursor-aro');
 const punto = document.querySelector('.cursor-punto');
 const palabra = document.querySelector('.cursor-palabra');
 
-ventanaVideo.dataset.base = 'arbol-scroll';
+ventanaVideo.dataset.base = 'kabala';
 let actual = 'numerologia';
 let expansion = 0;      /* 0 = ventana pequeña, 1 = pantalla entera */
 let escala = 1;         /* 0 → 1 al abrirse la ventana */
