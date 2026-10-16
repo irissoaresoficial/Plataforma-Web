@@ -15,6 +15,7 @@ import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 import Pendiente, { Hueco } from '@/components/Pendiente';
 import CursoDetalle from '@/components/CursoDetalle';
+import Catalogo from '@/components/Catalogo';
 import CuentaAtras from '@/components/CuentaAtras';
 import MarcaCurso from '@/components/MarcaCurso';
 import Foto from '@/components/Foto';
@@ -194,8 +195,23 @@ export default function Cursos() {
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
       <Nav cta="La membresía" ctaHref="/membresia" extra={CURSOS.map((c) => ({ href: `#${c.id}`, label: falta(c.titulo) ? 'Próximo curso' : c.titulo }))} />
 
-      {/* HERO */}
-      <div className="claro" style={{ position: 'relative', color: 'var(--tx)', background: 'var(--bg)', padding: 'clamp(104px,16vh,170px) clamp(14px,3vw,36px) clamp(40px,5vw,70px)', overflow: 'hidden' }}>
+      {/* ── EL CATÁLOGO, LO PRIMERO ──────────────────────────
+          Esta página se llamaba «cursos» y era la landing de UNO. El titular
+          de entrada era el reclamo de ese curso —«Dos días que cambian la
+          conversación en tu casa»— y no había ni rastro de que fuese a haber
+          más. Gerson lo ha pedido tres veces: Desórdenes Amorosos es un curso
+          más de tantos que habrá.
+
+          Así que ahora se entra por la lista, con su buscador y sus filtros
+          —que aparecen solos a partir de tres cursos—, y la ficha larga del
+          curso destacado se queda debajo, en su ancla de siempre. Nada de lo
+          que había se ha perdido: ha dejado de ser la portada de la página. */}
+      <div style={{ paddingTop: 'clamp(84px,13vh,140px)' }}>
+        <Catalogo rotulo="Escuela de Sabiduría 33" titulo="Cursos y talleres" />
+      </div>
+
+      {/* HERO del curso destacado */}
+      <div className="claro" style={{ position: 'relative', color: 'var(--tx)', background: 'var(--bg)', padding: 'clamp(20px,4vw,48px) clamp(14px,3vw,36px) clamp(40px,5vw,70px)', overflow: 'hidden', borderTop: '1px solid var(--linea)' }}>
         <CampoNumeros intensidad={0.7} />
         <div
           style={{

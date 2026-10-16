@@ -47,8 +47,14 @@
    * curva de la página es la de las cosas que se pulsan: se distinguen sin
    * necesidad de ningún color más.
    */
-  --radio: 4px;
-  --radio-chico: 3px;
+  /* LOS RADIOS, SUBIDOS. Estaban en 4 y 3 px con una idea detrás: que lo
+     único curvo de la página fuera lo que se pulsa. Es una idea bonita y no es
+     la que se ha pedido tres veces — «minimalista Apple style». Apple redondea,
+     y bastante: una tarjeta a 4 px se lee como una tabla, no como una tarjeta.
+     Cambiarlo aquí lo cambia en toda la web y en la plataforma a la vez, que
+     es justo lo que quiere decir «todo es todo». */
+  --radio: 14px;
+  --radio-chico: 10px;
   --radio-pildora: 100px;
 
   /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo

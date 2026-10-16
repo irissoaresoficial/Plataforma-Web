@@ -35,6 +35,8 @@ import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle, type Servicio } from '@/components/ChatWidget';
 import ArbolVida from '@/components/ArbolVida';
 import Portal from '@/components/Portal';
+import Escuela from '@/components/Escuela';
+import Catalogo from '@/components/Catalogo';
 import QueEs from '@/components/QueEs';
 import SinergiaAqui from '@/components/SinergiaAqui';
 import { useLang } from '@/lib/i18n';
@@ -201,6 +203,16 @@ export default function Home() {
           Ocupaba el sitio más caro de la página —entre el titular y el primer
           bloque de verdad— y no daba ni un motivo para seguir bajando. */}
 
+      {/* ── QUÉ ES LA ESCUELA DE SABIDURÍA 33 ────────────────
+          Faltaba, y era el agujero gordo: la web se llama Iris Soares, vende
+          consultas y cursos, y en ninguna pantalla decía qué es la escuela.
+          Quien llegaba por el anuncio de un curso no tenía dónde enterarse.
+
+          Va aquí y no más abajo porque es la primera pregunta de quien acaba
+          de ver el portal: «vale, ¿y esto qué es?». Si la respuesta llega
+          después de tres bloques, ya se ha ido. */}
+      <Escuela />
+
       {/* ── EL DOLOR ─────────────────────────────────────────
           Anclado: la sección se queda quieta y cada frase se lee sola. Es el
           mejor texto que tiene la web y como lista pasaba desapercibido. */}
@@ -347,6 +359,16 @@ export default function Home() {
           lo que sí importa. Lo que de verdad se hace paso a paso ya está contado
           donde toca: la cuenta se ve en la portada, el temario en la ficha del
           curso y las capas del árbol en la landing de la comunidad. */}
+
+      {/* ── LOS CURSOS ───────────────────────────────────────
+          Lo tercero que pidió Gerson para la portada: «que tenga un apartado
+          de los cursos». Aquí va en corto —los tres primeros y un enlace— y
+          entero en /cursos.
+
+          Y va ANTES de la consulta a propósito: la consulta es de uno en uno
+          y tiene techo; los cursos escalan. Quien no se decide a sentarse con
+          Iris a lo mejor sí se apunta a dos tardes. */}
+      <Catalogo compacto titulo="Lo que se puede estudiar" />
 
       {/* ── LA CONSULTA ──────────────────────────────────────
           UN BOTÓN. NO DOS FICHAS CON PRECIO.
