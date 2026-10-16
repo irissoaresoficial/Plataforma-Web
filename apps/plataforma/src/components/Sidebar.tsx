@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp, type Base, type Seccion, type Disciplina, type View } from "@/lib/app-context";
@@ -147,27 +147,64 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
   const { r, re, view, setView, seccion, setSeccion, disciplina, setDisciplina, base, setBase } = useApp();
   const { puede } = useSesion();
   const quieto = useReducedMotion();
-  // Qué disciplinas están desplegadas. Se abre la que se está mirando, y
-  // pulsando su nombre se cierra.
-  const [abiertas, setAbiertas] = useState<Disciplina[]>(["kabala"]);
   /*
-   * EL PLEGADO DEL DESPACHO.
+   * QUÉ DISCIPLINAS ESTÁN DESPLEGADAS.
    *
-   * Empieza cerrado, salvo que ya se esté dentro de una de sus pantallas: abrir
-   * la plataforma en /facturas y ver el grupo cerrado sería no saber dónde
-   * estás. Por eso el estado arranca mirando la vista, y no en `false` a secas.
+   * Aquí ponía `useState(["kabala"])`: Kábala salía abierta SIEMPRE, mirara
+   * Iris lo que mirara. Con un estudio cargado eso son siete renglones más
+   * —resumen, árbol, números, estructura, imagen del alma, cuentas abiertas y
+   * ciclos vitales— colgando debajo, también cuando se está en la escuela, en
+   * la agenda o en las facturas, donde no sirven para nada.
    *
-   * Y se vuelve a abrir si se entra desde fuera —desde un aviso de la campana,
-   * por ejemplo— porque entonces la vista cambia sin que nadie haya tocado el
-   * menú. Sólo abre: cerrarlo a mano estando dentro sigue valiendo, que es lo
-   * que hace falta para mirar el estudio sin perder el sitio.
+   * Gerson: «el tema de la consulta, donde está el cabal, la numerología,
+   * quiero que lo resumas un poco, que no se vea tan extenso». Tenía razón, y
+   * la forma de resumirlo no es quitar partes —cada una es una parte de la
+   * carta y hay que poder llegar a ella— sino enseñarlas CUANDO SE ESTÁ AHÍ.
+   *
+   * Es exactamente la regla que ya sigue el despacho unas líneas más abajo, y
+   * que las dos cosas se comporten igual es la mitad del valor: en este menú
+   * un grupo con flecha se abre cuando entras y se puede cerrar a mano, y eso
+   * se aprende una vez.
+   *
+   * Fuera del panel, las dos disciplinas son dos renglones. Dentro, se abre la
+   * que se está mirando y la otra se queda recogida.
+   */
+  const enElPanel = view === "panel";
+  /*
+   * NO SE GUARDA QUÉ ESTÁ ABIERTO: SE GUARDA QUÉ HA TOCADO IRIS.
+   *
+   * La primera versión de esto guardaba la lista de abiertas y un efecto se
+   * encargaba de meter dentro la disciplina al entrar en el panel. Funcionaba
+   * y era más fácil de leer, pero es la forma de hacerlo que React desaconseja
+   * —cambiar estado dentro de un efecto por algo que ya se puede deducir— y la
+   * propia comprobación del proyecto la marca en rojo.
+   *
+   * Aquí sólo se guarda lo que NO se puede deducir: si Iris pulsó el nombre
+   * para plegar o desplegar ese grupo. Lo demás sale solo de dónde está.
+   *
+   * Y tiene memoria a propósito: si plegó Kábala, se queda plegada aunque
+   * entre y salga. Un menú que vuelve a abrir lo que acabas de cerrar es un
+   * menú con el que se pelea.
+   */
+  const [tocadas, setTocadas] = useState<Partial<Record<Disciplina, boolean>>>({});
+  const estaAbierta = (d: Disciplina) => tocadas[d] ?? (enElPanel && disciplina === d);
+  /*
+   * EL PLEGADO DEL DESPACHO. Exactamente la misma regla que las disciplinas,
+   * y escrita de la misma forma a propósito: cerrado, abierto cuando se está
+   * dentro de una de sus pantallas, y lo que Iris pliegue a mano se respeta.
+   *
+   * A /facturas se llega también desde un aviso de la campana, sin tocar el
+   * menú, y ver el grupo cerrado sería no saber dónde estás. Por eso no se
+   * guarda si está abierto —eso se deduce— sino sólo si ella lo tocó.
+   *
+   * Aquí había un efecto que hacía lo mismo. Funcionaba, pero es la forma que
+   * React desaconseja y que la comprobación del proyecto marca en rojo: lo que
+   * se puede deducir no se guarda.
    */
   const dentroDespacho = DESPACHO.some((d) => d.k === view);
-  const [despachoAbierto, setDespachoAbierto] = useState(dentroDespacho);
-  useEffect(() => {
-    if (dentroDespacho) setDespachoAbierto(true);
-  }, [dentroDespacho]);
-  const alternaDespacho = () => setDespachoAbierto((x) => !x);
+  const [despachoTocado, setDespachoTocado] = useState<boolean | null>(null);
+  const despachoAbierto = despachoTocado ?? dentroDespacho;
+  const alternaDespacho = () => setDespachoTocado(!despachoAbierto);
   /* Plegada a iconos no hay flecha ni sitio para una: el grupo va abierto. */
   const verDespachoAbierto = compacta || despachoAbierto;
 
@@ -177,9 +214,13 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
   const partesKabala = re ? KABALA.slice(0, 1) : KABALA;
 
   const alterna = (d: Disciplina) => {
+    /* Se mira si estaba abierta ANTES de movernos, no después: al entrar en
+       el panel la disciplina se abriría sola, y entonces pulsar su nombre
+       desde fuera la abriría y la cerraría en el mismo gesto. */
+    const estaba = estaAbierta(d);
     setView("panel");
     setDisciplina(d);
-    setAbiertas((s) => (s.includes(d) ? s.filter((x) => x !== d) : [...s, d]));
+    setTocadas((s) => ({ ...s, [d]: !estaba }));
   };
 
   const fila = (
@@ -371,13 +412,20 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
                     setBase(x.k);
                   },
                 }));
-          const abierta = partes.length > 0 && (compacta || abiertas.includes(d.k));
+          const abierta = partes.length > 0 && (compacta || estaAbierta(d.k));
           return (
             <div key={d.k} style={css("display:flex;flex-direction:column;gap:2px;")}>
               {/* La disciplina abierta no se resalta si tiene partes: ya se ve
-                  cuál está por la sección marcada de dentro. */}
+                  cuál está por la sección marcada de dentro.
+
+                  PERO PLEGADA SÍ. Antes la condición era «no tiene partes», y
+                  desde que las disciplinas nacen plegadas eso dejaba un caso
+                  nuevo y malo: estar trabajando dentro de Kábala con el grupo
+                  recogido y que el menú no marcara nada en absoluto. La regla
+                  de verdad es ésta: se resalta cuando estás dentro y no se ve
+                  por otro sitio. */}
               {fila(
-                dentro && !partes.length,
+                dentro && !abierta,
                 d.Ico,
                 d.label,
                 () => {
