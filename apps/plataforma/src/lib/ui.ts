@@ -94,6 +94,29 @@ export const PASTILLA_ELEGIDA =
   "background:var(--accion-suave);border:1px solid var(--accion-borde);border-radius:var(--r);";
 
 /** Relleno estándar y el más apretado, para tarjetas secundarias. */
+/**
+ * EL MARCO DE UNA PANTALLA ENTERA.
+ *
+ * Gerson, mirando el recibidor: «acomoda bien las márgenes, eso está
+ * pegándose enseguida al banner; ajusta bien todo centrado».
+ *
+ * Tenía razón y el motivo era tonto: las pantallas viejas —Agenda, Clientes,
+ * el panel— llevaban este mismo marco escrito a mano, y las nuevas no lo
+ * llevaban. No había un sitio donde estuviera escrito, así que cada pantalla
+ * nueva salía sin él y nadie se daba cuenta hasta verla.
+ *
+ * Tres cosas, y las tres hacen falta:
+ *   · `max-width` + `margin:0 auto` — el texto no se estira hasta el infinito
+ *     en un monitor ancho. Una línea de ciento cincuenta caracteres no se lee:
+ *     se pierde el renglón al volver a la izquierda.
+ *   · el relleno de arriba — es lo que separa del encabezado. Sin él, el
+ *     primer bloque se pega a la barra como si se hubiera caído.
+ *   · el de abajo, más grande — para que el último bloque no quede rozando el
+ *     borde de la ventana al terminar de bajar.
+ */
+export const PANTALLA =
+  "max-width:var(--ancho);margin:0 auto;min-width:0;padding:var(--s6) var(--gutter) var(--s8);";
+
 export const PAD = "padding:var(--pad-card);";
 export const PAD_SM = "padding:var(--pad-card-sm);";
 

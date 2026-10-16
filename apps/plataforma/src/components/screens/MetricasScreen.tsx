@@ -47,7 +47,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO } from "@/lib/ui";
+import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO , PANTALLA} from "@/lib/ui";
 import { Barras, Linea, type Punto } from "../escuela/Grafico";
 import { listaUsuarios } from "@/lib/despacho/usuarios";
 import { rolesDe } from "@/lib/roles";
@@ -135,7 +135,7 @@ export default function MetricasScreen() {
   const vacio = d && d.dias.every((x) => x.valor === 0) && d.lecciones === 0;
 
   return (
-    <div style={css("display:flex;flex-direction:column;gap:var(--s4);max-width:1060px;")}>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
         <h1 style={css(TITULO + "margin:0;")}>Métricas</h1>
         <span style={css(NOTA)}>últimos 30 días</span>

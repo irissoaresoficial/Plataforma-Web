@@ -43,8 +43,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp, type View } from "@/lib/app-context";
 import { useSesion } from "@/lib/sesion";
-import { CABECERA, NOTA, TITULO, botonPrincipal } from "@/lib/ui";
+import { CABECERA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
 import { IcoComunidad, IcoCursos, IcoRecursos } from "../Iconos";
+import PanelInicio from "../escuela/PanelInicio";
 import {
   avance as repoAvance,
   cursos as repoCursos,
@@ -149,6 +150,22 @@ export default function EscuelaScreen() {
   const abiertas = PUERTAS.filter((p) => puede(p.llave));
   const nombre = (usuario ? usuario.nombre : "").split(" ")[0];
 
+  /*
+   * LA MISMA DIRECCIÓN, DOS PANTALLAS.
+   *
+   * Para Iris el Inicio es su panel de mando: cómo va la escuela. Para un
+   * alumno es su recibidor: por dónde iba y qué puede abrir. No es el mismo
+   * contenido con unos trozos escondidos — son dos preguntas distintas, y
+   * mezclarlas daría una pantalla que no contesta bien ninguna.
+   */
+  if (esAdmin) {
+    return (
+      <div style={css(PANTALLA)}>
+        <PanelInicio nombre={nombre} />
+      </div>
+    );
+  }
+
   /* Un solo ancho y un solo arranque para todo lo de esta pantalla: es lo que
      hacía que los textos empezaran en tres verticales distintas. */
   return (
@@ -156,7 +173,7 @@ export default function EscuelaScreen() {
       initial={quieto ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      style={css("display:flex;flex-direction:column;gap:var(--s6);max-width:1060px;")}
+      style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s6);")}
     >
       {/* ------------------------------------------------------- El saludo */}
       {/*

@@ -40,7 +40,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL, BOTON_PLANO, CAMPO, NOTA, TITULO, botonPrincipal } from "@/lib/ui";
+import { BOTON_NORMAL, BOTON_PLANO, CAMPO, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
 import { useSesion } from "@/lib/sesion";
 import { NOMBRE_ROL, ROLES, rolesDe, type Rol } from "@/lib/roles";
 import { cambiaUsuario, listaUsuarios, type FichaUsuario } from "@/lib/despacho/usuarios";
@@ -148,7 +148,7 @@ export default function GestionScreen() {
       : "background:transparent;color:var(--text-3);");
 
   return (
-    <div style={css("display:flex;flex-direction:column;gap:var(--s4);max-width:1000px;")}>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
         <h1 style={css(TITULO + "margin:0;")}>Gestión</h1>
         {gente !== null && !roto && (

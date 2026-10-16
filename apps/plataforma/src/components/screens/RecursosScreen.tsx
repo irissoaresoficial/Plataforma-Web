@@ -26,7 +26,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL, BOTON_PLANO, CABECERA, CAMPO, LECTURA, NOTA, TITULO, botonPrincipal } from "@/lib/ui";
+import { BOTON_NORMAL, BOTON_PLANO, CABECERA, CAMPO, LECTURA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
 import { useSesion } from "@/lib/sesion";
 import Confirmar from "../Confirmar";
 import {
@@ -188,7 +188,7 @@ export default function RecursosScreen() {
       : "background:transparent;color:var(--text-3);");
 
   return (
-    <div style={css("display:flex;flex-direction:column;gap:var(--s4);max-width:1000px;")}>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
         <h1 style={css(TITULO + "margin:0;")}>Recursos</h1>
         {lista !== null && !roto && lista.length > 0 && (

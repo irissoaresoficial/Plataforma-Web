@@ -274,3 +274,67 @@ export function Barras({ datos, sufijo = "" }: { datos: Barra[]; sufijo?: string
     </div>
   );
 }
+
+/* ──────────────────────────────────────────────────────── columnas de pie ── */
+
+/**
+ * Lo mismo que `Barras` pero de pie, para cuando el eje es el TIEMPO.
+ *
+ * Por qué dos formas y no una: una serie por meses se lee de pie porque el
+ * tiempo va de izquierda a derecha, igual que se lee. Echada habría que girar
+ * la cabeza para seguir el orden. Y al revés, una lista de países se lee
+ * echada porque «Reino Unido» de pie hay que girarlo o cortarlo.
+ *
+ * LAS COLUMNAS ARRANCAN EN CERO Y NO SE NEGOCIA. Cortar la base es el truco
+ * más viejo que hay: una diferencia del 3 % parece del 300 %. Si algún día
+ * alguien quiere «que se note más la subida», se cambian los datos, no el eje.
+ */
+export function Columnas({ datos, prefijo = "", sufijo = "" }: { datos: Barra[]; prefijo?: string; sufijo?: string }) {
+  const quieto = useReducedMotion();
+  const max = Math.max(...datos.map((d) => d.valor), 1);
+  /* El techo redondeado a una cifra limpia, por lo mismo que en la línea: un
+     eje que acaba en 47 obliga a leer el número para situar el resto. */
+  const techo = Math.ceil(max / 10) * 10 || 10;
+
+  return (
+    <div>
+      <div style={css("display:flex;align-items:flex-end;gap:clamp(6px,1.4vw,16px);height:190px;")}>
+        {datos.map((d, i) => (
+          <div
+            key={d.etiqueta}
+            style={css("flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:7px;")}
+          >
+            {/* El valor en la punta, y sólo ahí: un número dentro de cada
+                columna compite con la propia columna por decir lo mismo. */}
+            <span style={css("font-size:var(--t-micro);font-weight:600;color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap;")}>
+              {prefijo}
+              {d.valor}
+              {sufijo}
+            </span>
+            <motion.div
+              initial={quieto ? false : { height: 0 }}
+              animate={{ height: `${(d.valor / techo) * 100}%` }}
+              transition={{ delay: 0.05 + i * 0.04, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={css(
+                /* Redondeada arriba y recta abajo: el canto recto es la línea
+                   de base, y redondearla también haría que la columna pareciera
+                   flotar por encima del cero. */
+                "width:100%;max-width:38px;background:var(--accion);border-radius:var(--r-xs) var(--r-xs) 0 0;"
+              )}
+            />
+          </div>
+        ))}
+      </div>
+      <div style={css("display:flex;gap:clamp(6px,1.4vw,16px);margin-top:9px;")}>
+        {datos.map((d) => (
+          <span
+            key={d.etiqueta}
+            style={css("flex:1;min-width:0;text-align:center;" + NOTA + "white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}
+          >
+            {d.etiqueta}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}

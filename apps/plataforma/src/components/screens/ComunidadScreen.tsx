@@ -31,7 +31,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL, BOTON_PLANO, CAMPO, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal } from "@/lib/ui";
+import { BOTON_NORMAL, BOTON_PLANO, CAMPO, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
 import { useSesion } from "@/lib/sesion";
 import Confirmar from "../Confirmar";
 import {
@@ -306,7 +306,7 @@ export default function ComunidadScreen() {
   const resto = (temas ?? []).filter((t) => !t.fijado);
 
   return (
-    <div style={css("display:flex;flex-direction:column;gap:var(--s4);max-width:820px;")}>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);max-width:min(var(--ancho),860px);")}>
       <h1 style={css(TITULO + "margin:0;")}>Comunidad</h1>
 
       {!guardadoEnLaNube && (

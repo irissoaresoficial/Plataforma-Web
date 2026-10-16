@@ -30,7 +30,7 @@ import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
-import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal } from "@/lib/ui";
+import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
 import EditorCurso, { cursoNuevo } from "../escuela/EditorCurso";
 import Reproductor from "../escuela/Reproductor";
 import {
@@ -138,7 +138,7 @@ export default function CursosScreen() {
   /* ------------------------------------------------------------- la lista */
 
   return (
-    <div style={css("display:flex;flex-direction:column;gap:var(--s4);max-width:1000px;")}>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
         <h1 style={css(TITULO + "margin:0;")}>{esAdmin ? "Cursos" : "Mis cursos"}</h1>
         {esAdmin && (

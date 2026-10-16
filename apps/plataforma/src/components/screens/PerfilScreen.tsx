@@ -42,7 +42,7 @@ import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
-import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO } from "@/lib/ui";
+import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO , PANTALLA} from "@/lib/ui";
 import { NOMBRE_ROL } from "@/lib/roles";
 import {
   avance as repoAvance,
@@ -138,7 +138,7 @@ export default function PerfilScreen() {
   );
 
   return (
-    <div style={css("display:flex;flex-direction:column;gap:var(--s5);max-width:900px;")}>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s5);max-width:min(var(--ancho),960px);")}>
       <h1 style={css(TITULO + "margin:0;")}>Tu perfil</h1>
 
 
