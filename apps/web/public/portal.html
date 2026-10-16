@@ -256,7 +256,14 @@ body:not(.abierto) .contenido .dato{opacity:0}
 @media(max-width:640px){
   .recorrido{min-height:600px}
   .etapas{display:none}
-  .ventana-zona{top:42%;width:min(248px,62vw)}
+  /* LA MIRILLA, CENTRADA SOBRE LO QUE HAY QUE VER.
+     En el plano vertical la parte nítida va en la franja del medio, así que a
+     pantalla completa los números caen hacia el 51% del alto. Con la ventana
+     al 42% se veía papel y los números asomando por el canto de abajo,
+     cortados. Medido en el propio fotograma: la tinta está entre el 48% y el
+     55% de la cinta. Y más pequeña, para que su borde de abajo quede 20 px
+     por encima del titular. */
+  .ventana-zona{top:51%;width:min(206px,53vw);transform:translate(-50%,-50%)}
   .contenido{left:max(18px,env(safe-area-inset-left,0px));right:max(18px,env(safe-area-inset-right,0px));
     bottom:max(18px,env(safe-area-inset-bottom,0px));display:block}
   .contenido h1{font-size:clamp(38px,12.4vw,92px);letter-spacing:-.035em;margin-bottom:14px}
@@ -290,9 +297,7 @@ body:not(.abierto) .contenido .dato{opacity:0}
 <main class="recorrido" id="recorrido" data-etapa="numerologia">
 
   <div class="antesala" id="antesala" aria-label="Abriendo">
-    <video id="antesala-video" muted playsinline preload="auto">
-      <source src="/video/antesala.webm" type="video/webm"><source src="/video/antesala.mp4" type="video/mp4">
-    </video>
+    <video id="antesala-video" muted playsinline preload="auto"></video>
     <div class="antesala-velo"></div>
   </div>
 
@@ -319,9 +324,7 @@ body:not(.abierto) .contenido .dato{opacity:0}
 
   <section class="ventana-zona marco" aria-hidden="true">
     <div class="ventana" id="ventana">
-      <video id="ventana-video" muted playsinline preload="auto">
-        <source src="/video/recorrido.webm" type="video/webm"><source src="/video/recorrido.mp4" type="video/mp4">
-      </video>
+      <video id="ventana-video" muted playsinline preload="auto"></video>
       <img id="ventana-imagen" src="/images/iris-consulta.jpg" alt="">
     </div>
   </section>
@@ -421,6 +424,31 @@ const cursor = document.querySelector('.cursor');
 const aro = document.querySelector('.cursor-aro');
 const punto = document.querySelector('.cursor-punto');
 
+/* --------------------------------------------------- qué plano se baja */
+(function planos() {
+  const mp4 = ventanaVideo.canPlayType('video/mp4; codecs="avc1.42E01E"') !== '';
+  const ext = mp4 ? 'mp4' : 'webm';
+  const forma = window.matchMedia('(max-width: 759px)');
+  const antesalaVideo = $('antesala-video');
+
+  const pon = (v, nombre, vertical) => {
+    const nueva = `/video/${nombre}${vertical ? '-vertical' : ''}.${ext}`;
+    if (v.src.endsWith(nueva)) return;
+    /* Al girar el móvil se cambia de plano, y hay que devolverlo al mismo
+       punto: si no, al girar el recorrido se va al principio. Los dos duran
+       lo mismo, así que basta con el segundo. */
+    const donde = v.currentTime;
+    v.src = nueva;
+    if (donde > 0) v.addEventListener('loadedmetadata', () => { v.currentTime = donde; }, { once: true });
+  };
+  const reparte = () => {
+    pon(ventanaVideo, 'recorrido', forma.matches);
+    pon(antesalaVideo, 'antesala', forma.matches);
+  };
+  reparte();
+  forma.addEventListener('change', reparte);
+})();
+
 let actual = 'numerologia';
 let expansion = 0;
 let girX = 0, girY = 0, metaX = 0, metaY = 0;
@@ -448,9 +476,25 @@ function midelienzo() {
   ctx.setTransform(d, 0, 0, d, 0, 0);
 }
 
-/* En pantalla ancha el metraje se pinta a pantalla completa y quieto, no
-   dentro de la ventana. Esa es toda la gracia: la imagen se queda donde está
-   y lo que se mueve es el agujero por donde se ve. */
+/* El metraje se pinta a pantalla completa y quieto, no dentro de la ventana.
+   Esa es toda la gracia: la imagen se queda donde está y lo que se mueve es
+   el agujero por donde se ve.
+
+   DOS JUEGOS DE PLANOS, NO UNO. El metraje es apaisado y un teléfono es
+   vertical: recortarlo para que llene la pantalla se comía dos tercios del
+   ancho, y lo que hay a los lados no es relleno —es el árbol—. En el móvil
+   salían tres puntos de luz sueltos.
+
+   Así que hay una versión 9:16 de verdad de los dos planos. Están hechos del
+   mismo fotograma: el plano cabe de ancho, y el papel de arriba y de abajo es
+   ese mismo fotograma ampliado, desenfocado y DESVANECIDO contra él (78 px de
+   pluma). Como sale del propio fotograma, la luz y la sombra que cruzan el
+   plano cruzan también el relleno, y no hay canto que disimular — que es
+   exactamente lo que le pasaba al vertical viejo de la portada, donde el
+   papel iba estirado desde las filas del borde y dejaba una raya recta.
+
+   Cuál se baja se decide aquí y no con el atributo `media` de `<source>`, que
+   unos navegadores respetan y otros no. Cada persona se descarga uno solo. */
 const ESTRECHO = () => window.innerWidth < 760;
 
 function cubre(c, media) {
@@ -460,89 +504,6 @@ function cubre(c, media) {
   const w = window.innerWidth, h = window.innerHeight;
   const grande = Math.max(w / mw, h / mh);
   c.drawImage(media, (w - mw * grande) / 2, (h - mh * grande) / 2, mw * grande, mh * grande);
-  return true;
-}
-
-/* ------------------------------------------------------ EL MÓVIL, APARTE
- *
- * EN UN TELÉFONO LO DE ARRIBA SE CARGA LA PIEZA, y hay que verlo para
- * creerlo. El plano es apaisado y un teléfono es vertical: recortarlo para
- * que llene la pantalla se come dos tercios del ancho. Y lo que hay a los
- * lados no es relleno, es el árbol. En el móvil salían tres puntos de luz
- * sueltos y ni un camino entero — justo lo contrario de lo que el plano
- * cuenta.
- *
- * Aquí el encuadre VIAJA con la ventana, y por eso no hay un solo corte:
- *
- *   ventana cerrada → el plano llena la ventana (es casi cuadrada: recortarlo
- *                     a eso cuesta un 19% de ancho, nada)
- *   ventana abierta → el plano CABE DE ANCHO y se queda como una franja
- *                     encima del texto, con el árbol entero dentro
- *
- * Entre una cosa y otra se interpola el tamaño y el centro, así que la
- * transformación se ve como un movimiento de cámara y no como un salto.
- *
- * Y DETRÁS, UN LAVADO: el mismo fotograma pintado diminuto y estirado a toda
- * la pantalla. Queda una mancha suave, sin dibujo que compita, pero con el
- * color exacto del papel de ESE segundo del plano. Un relleno de color plano
- * no vale: el papel tiene luz y sombra y cambia según avanza la cinta.
- * El borde de la franja se desvanece contra ese lavado (ver `pluma`), que es
- * lo que mata la costura: antes había dos líneas rectas cruzando la pantalla.
- */
-const CHICO = document.createElement('canvas');
-CHICO.width = 48; CHICO.height = 86;
-const cctx = CHICO.getContext('2d');
-const FRANJA = document.createElement('canvas');
-const fctx = FRANJA.getContext('2d');
-let franjaW = 0, franjaH = 0;
-
-function midefranja() {
-  const d = Math.min(window.devicePixelRatio || 1, 2);
-  const w = window.innerWidth, h = window.innerHeight;
-  if (franjaW === w && franjaH === h) return;
-  franjaW = w; franjaH = h;
-  FRANJA.width = w * d; FRANJA.height = h * d;
-  fctx.setTransform(d, 0, 0, d, 0, 0);
-}
-
-function cubreMovil(c, media, cx, cy, cw, ch, e) {
-  const mw = media.videoWidth || media.naturalWidth;
-  const mh = media.videoHeight || media.naturalHeight;
-  if (!mw || !mh) return false;
-  const w = window.innerWidth, h = window.innerHeight;
-
-  /* 1. el lavado */
-  const gc = Math.max(CHICO.width / mw, CHICO.height / mh);
-  cctx.drawImage(media, (CHICO.width - mw * gc) / 2, (CHICO.height - mh * gc) / 2, mw * gc, mh * gc);
-  c.imageSmoothingEnabled = true;
-  c.drawImage(CHICO, 0, 0, w, h);
-
-  /* 2. el plano nítido, encuadrado entre los dos extremos */
-  const sA = Math.max(cw / mw, ch / mh);          // lleno de la ventana
-  const sB = w / mw;                              // cabe de ancho
-  const s = entre(sA, sB, e);
-  const px = entre(cx, w / 2, e);
-  const py = entre(cy, h * .37, e);               // .37: encima del texto
-  const dw = mw * s, dh = mh * s;
-  const x0 = px - dw / 2, y0 = py - dh / 2;
-
-  /* La pluma sólo aparece cuando la franja ya no llena la ventana; con la
-     ventana cerrada desvanecería un borde que no se ve. */
-  const pluma = Math.min(110, dh * .26) * e;
-  if (pluma < 1) { c.drawImage(media, x0, y0, dw, dh); return true; }
-
-  midefranja();
-  fctx.clearRect(0, 0, w, h);
-  fctx.drawImage(media, x0, y0, dw, dh);
-  fctx.globalCompositeOperation = 'destination-out';
-  const ga = fctx.createLinearGradient(0, y0, 0, y0 + pluma);
-  ga.addColorStop(0, 'rgba(0,0,0,1)'); ga.addColorStop(1, 'rgba(0,0,0,0)');
-  fctx.fillStyle = ga; fctx.fillRect(0, y0, w, pluma);
-  const gb = fctx.createLinearGradient(0, y0 + dh - pluma, 0, y0 + dh);
-  gb.addColorStop(0, 'rgba(0,0,0,0)'); gb.addColorStop(1, 'rgba(0,0,0,1)');
-  fctx.fillStyle = gb; fctx.fillRect(0, y0 + dh - pluma, w, pluma);
-  fctx.globalCompositeOperation = 'source-over';
-  c.drawImage(FRANJA, 0, 0, w, h);
   return true;
 }
 
@@ -632,7 +593,6 @@ function pinta(ahora) {
   ctx.fillStyle = '#e3dbcb';
   ctx.fillRect(0, 0, w, h);
   if (d.retrato) cubreVentana(ctx, ventanaImagen, cx, cy, cw, ch, d.foco);
-  else if (ESTRECHO()) cubreMovil(ctx, ventanaVideo, cx, cy, cw, ch, e);
   else cubre(ctx, ventanaVideo);
   ctx.restore();
 
