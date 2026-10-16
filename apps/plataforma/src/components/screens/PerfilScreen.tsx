@@ -42,7 +42,9 @@ import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
-import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO , PANTALLA} from "@/lib/ui";
+import { BOTON_NORMAL, BOTON_PLANO, CABECERA, CAMPO, LECTURA, NOTA, TITULO, PANTALLA, botonPrincipal } from "@/lib/ui";
+import Confirmar from "@/components/Confirmar";
+import { cambiaNombre, descarga, miBaja, misDatos, pideBaja, type Baja } from "@/lib/escuela/micuenta";
 import { NOMBRE_ROL } from "@/lib/roles";
 import {
   avance as repoAvance,
@@ -52,6 +54,15 @@ import {
 } from "@/lib/escuela";
 import { marcador, medallas, racha, visitasDe, type Marcador, type Medalla } from "@/lib/escuela/trofeos";
 
+/** Una fecha como la diría una persona. En español y sin la hora, que en una
+ *  solicitud de baja no aporta nada y sí ruido. */
+function fecha(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+}
+
 export default function PerfilScreen() {
   const { usuario, esAdmin } = useSesion();
   const quieto = useReducedMotion();
@@ -59,6 +70,27 @@ export default function PerfilScreen() {
 
   const [marca, setMarca] = useState<Marcador | null>(null);
   const [lista, setLista] = useState<Medalla[]>([]);
+
+  /*
+   * LO QUE LA LEY OBLIGA A QUE FUNCIONE.
+   *
+   * Estos tres botones existían desde el primer día, en el sitio correcto y
+   * con el texto correcto, y NO HACÍAN NADA. Ni un `onClick`. Un botón que
+   * dice «Borrar mi cuenta» y no borra es peor que no tenerlo: es una promesa
+   * legal incumplida justo donde la persona va a buscarla.
+   *
+   * El cómo está en `lib/escuela/micuenta.ts`, incluida la explicación de por
+   * qué la baja se PIDE en vez de ejecutarse en el momento.
+   */
+  const [editando, setEditando] = useState(false);
+  const [nombreNuevo, setNombreNuevo] = useState("");
+  const [guardando, setGuardando] = useState(false);
+  const [nombreVivo, setNombreVivo] = useState<string | null>(null);
+  const [descargando, setDescargando] = useState(false);
+  const [pidiendo, setPidiendo] = useState(false);
+  const [baja, setBaja] = useState<Baja | null>(null);
+  const [aviso, setAviso] = useState("");
+  const [fallo, setFallo] = useState("");
 
   /*
    * TODO ESTO SE CALCULA, NO SE GUARDA. El porqué está en `trofeos.ts`: dos
@@ -107,7 +139,73 @@ export default function PerfilScreen() {
     };
   }, [uid, esAdmin]);
 
+  /* Si ya pidió la baja, el botón no vuelve a ofrecerla: enseña cuándo la
+     pidió. Falla en silencio porque no saberlo no rompe la pantalla. */
+  useEffect(() => {
+    if (!uid || esAdmin) return;
+    let vivo = true;
+    miBaja(uid)
+      .then((b) => vivo && setBaja(b))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [uid, esAdmin]);
+
+  async function guardaNombre() {
+    setFallo("");
+    setGuardando(true);
+    try {
+      await cambiaNombre(uid, nombreNuevo);
+      /* Se pinta el nombre nuevo aquí mismo. La sesión guarda el que leyó al
+         entrar y no se vuelve a preguntar hasta la próxima vez, así que sin
+         esto se guardaría bien y se seguiría viendo el viejo — que es
+         exactamente la forma de que alguien lo cambie tres veces pensando que
+         no funciona. */
+      setNombreVivo(nombreNuevo.trim());
+      setEditando(false);
+      setAviso("Nombre cambiado.");
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido cambiar el nombre.");
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  async function bajaLosDatos() {
+    setFallo("");
+    setAviso("");
+    setDescargando(true);
+    try {
+      const datos = await misDatos(uid);
+      const dia = new Date().toISOString().slice(0, 10);
+      descarga(datos, `mis-datos-escuela33-${dia}.json`);
+      setAviso("Descargado.");
+    } catch {
+      setFallo("No se han podido reunir tus datos. Mira la conexión y vuelve a probar.");
+    } finally {
+      setDescargando(false);
+    }
+  }
+
+  async function pideLaBaja() {
+    setFallo("");
+    setAviso("");
+    setPidiendo(true);
+    try {
+      setBaja(await pideBaja(uid, email, nombreQueSeVe));
+    } catch {
+      setFallo("No se ha podido registrar tu solicitud. Vuelve a probar, y si sigue sin ir escribe a la escuela.");
+    } finally {
+      setPidiendo(false);
+    }
+  }
+
   const nombre = usuario ? usuario.nombre : "";
+  /** El que se acaba de guardar, si se ha guardado alguno; si no, el de la
+   *  sesión. Un solo sitio del que leerlo, para que la inicial del círculo y
+   *  el nombre de debajo no puedan decir cosas distintas. */
+  const nombreQueSeVe = nombreVivo ?? nombre;
   const email = usuario ? usuario.email : "";
   const roles = usuario ? usuario.roles : [];
   const abiertas = lista.filter((m) => m.abierta).length;
@@ -152,11 +250,11 @@ export default function PerfilScreen() {
               "font-family:var(--font-display);"
           )}
         >
-          {(nombre.trim()[0] || "·").toUpperCase()}
+          {(nombreQueSeVe.trim()[0] || "·").toUpperCase()}
         </span>
 
         <div style={css("flex:1 1 200px;min-width:0;")}>
-          <div style={css("font-size:var(--t-read);font-weight:600;color:var(--text);")}>{nombre || "Sin nombre"}</div>
+          <div style={css("font-size:var(--t-read);font-weight:600;color:var(--text);")}>{nombreQueSeVe || "Sin nombre"}</div>
           <div style={css(NOTA + "overflow-wrap:anywhere;margin-top:3px;")}>{email}</div>
           <div style={css("display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;")}>
             {roles.length === 0 ? (
@@ -179,7 +277,52 @@ export default function PerfilScreen() {
           </div>
         </div>
 
-        <button style={css(BOTON_NORMAL + "flex:none;")}>Cambiar mis datos</button>
+        <button
+          onClick={() => {
+            setNombreNuevo(nombreQueSeVe);
+            setFallo("");
+            setAviso("");
+            setEditando((x) => !x);
+          }}
+          style={css(BOTON_NORMAL + "flex:none;")}
+        >
+          {editando ? "Dejarlo" : "Cambiar mis datos"}
+        </button>
+
+        {/*
+            SÓLO EL NOMBRE, Y SE DICE POR QUÉ.
+            
+            El correo es con el que se entra y el rol es lo que se compró: los
+            dos los cambia Iris. Enseñarlos en gris y bloqueados sería más
+            trabajo y peor información que una línea que lo explique.
+        */}
+        {editando && (
+          <div style={css("flex:1 1 100%;border-top:1px solid var(--border);padding-top:var(--s4);margin-top:var(--s2);")}>
+            <label style={css(NOTA + "display:block;margin-bottom:7px;")} htmlFor="mi-nombre">
+              Tu nombre
+            </label>
+            <div style={css("display:flex;gap:var(--s3);flex-wrap:wrap;align-items:flex-start;")}>
+              <input
+                id="mi-nombre"
+                value={nombreNuevo}
+                onChange={(e) => setNombreNuevo(e.target.value)}
+                maxLength={80}
+                style={css(CAMPO + "flex:1 1 220px;")}
+              />
+              <button
+                onClick={guardaNombre}
+                disabled={guardando || !nombreNuevo.trim() || nombreNuevo.trim() === nombreQueSeVe}
+                style={css(botonPrincipal(!guardando && !!nombreNuevo.trim() && nombreNuevo.trim() !== nombreQueSeVe) + "flex:none;")}
+              >
+                {guardando ? "Guardando…" : "Guardar"}
+              </button>
+            </div>
+            <p style={css(NOTA + "margin:10px 0 0;line-height:1.5;max-width:58ch;")}>
+              El correo con el que entras y los cursos a los que tienes acceso los cambia la escuela. Si alguno está
+              mal, escríbelo en la comunidad o por correo y se arregla.
+            </p>
+          </div>
+        )}
       </section>
 
       {/* --------------------------------------------------- lo que llevas */}
@@ -265,10 +408,71 @@ export default function PerfilScreen() {
           Puedes descargarte todo lo que la escuela guarda de ti, o pedir que se borre. Si lo borras se va todo: tu
           avance, tus mensajes de la comunidad y el acceso a los cursos que hayas comprado. No hay vuelta atrás.
         </p>
-        <div style={css("display:flex;gap:var(--s3);flex-wrap:wrap;")}>
-          <button style={css(BOTON_NORMAL)}>Descargar mis datos</button>
-          <button style={css(BOTON_NORMAL + "color:var(--alarma, #C0392B);")}>Borrar mi cuenta</button>
-        </div>
+        {baja ? (
+          /*
+              YA LA PIDIÓ. No se vuelve a ofrecer el botón: ofrecerlo otra vez
+              hace dudar de si la primera vez contó, y eso en una pantalla de
+              borrar la cuenta es angustia gratis.
+          */
+          <div
+            style={css(
+              "border:1px solid var(--border-strong);border-radius:var(--r-sm);padding:var(--s3) var(--s4);" +
+                "background:color-mix(in srgb, var(--melocoton) 40%, var(--surface));"
+            )}
+          >
+            <div style={css("font-size:var(--t-body);font-weight:600;color:var(--text);")}>
+              {baja.hecha ? "Tu cuenta está borrada." : "Has pedido que se borre tu cuenta."}
+            </div>
+            <p style={css(NOTA + "margin:7px 0 0;line-height:1.55;max-width:58ch;")}>
+              {baja.hecha
+                ? `Se completó el ${fecha(baja.hecha)}.`
+                : `Lo pediste el ${fecha(baja.pedida)}. Tu avance en los cursos ya se ha borrado. El resto —tu ficha, ` +
+                  `tus accesos y tus mensajes— lo borra la escuela a mano, y por ley tiene un mes como máximo para ` +
+                  `hacerlo. Hasta entonces puedes seguir entrando; si cambias de idea, dilo y no se ejecuta.`}
+            </p>
+          </div>
+        ) : (
+          <div style={css("display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;")}>
+            <button onClick={bajaLosDatos} disabled={descargando} style={css(BOTON_NORMAL)}>
+              {descargando ? "Reuniéndolos…" : "Descargar mis datos"}
+            </button>
+
+            {/*
+                BORRAR PREGUNTA ANTES. Es la única acción de toda la escuela
+                que no se puede deshacer, así que es la que más derecho tiene a
+                un «¿seguro?». Se reutiliza el mismo diálogo que el resto de la
+                plataforma para que la pregunta se lea igual en todas partes.
+            */}
+            {!esAdmin && (
+              <Confirmar
+                estilo={BOTON_NORMAL + "color:var(--alarma, #C0392B);"}
+                pregunta={
+                  "Se borrará tu avance ahora mismo, y la escuela borrará tu ficha, tus accesos y tus mensajes en " +
+                  "menos de un mes. Pierdes los cursos que hayas comprado y no se puede deshacer."
+                }
+                confirmar="Sí, bórrala"
+                alConfirmar={() => void pideLaBaja()}
+              >
+                {pidiendo ? "Pidiéndolo…" : "Borrar mi cuenta"}
+              </Confirmar>
+            )}
+          </div>
+        )}
+
+        {/* Iris no se borra a sí misma desde aquí: es la única administradora
+            y se quedaría la escuela sin dueña. Lo suyo se hace en la consola
+            de Firebase, a mano y a propósito. */}
+        {esAdmin && !baja && (
+          <p style={css(NOTA + "margin:var(--s3) 0 0;line-height:1.55;max-width:58ch;")}>
+            Tu propia cuenta no se borra desde aquí: eres la única administradora y la escuela se quedaría sin
+            puerta. Lo que sí sale aquí son las bajas que te piden los alumnos, en Gestión.
+          </p>
+        )}
+
+        {aviso && <p style={css(NOTA + "margin:var(--s3) 0 0;color:var(--text-2);")}>{aviso}</p>}
+        {fallo && (
+          <p style={css(NOTA + "margin:var(--s3) 0 0;color:var(--alarma, #C0392B);line-height:1.5;")}>{fallo}</p>
+        )}
       </section>
     </div>
   );

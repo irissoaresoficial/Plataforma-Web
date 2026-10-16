@@ -45,6 +45,8 @@ import { useSesion } from "@/lib/sesion";
 import { NOMBRE_ROL, ROLES, rolesDe, type Rol } from "@/lib/roles";
 import { cambiaUsuario, listaUsuarios, type FichaUsuario } from "@/lib/despacho/usuarios";
 import { cursos as repoCursos, inscripciones as repoInscripciones, type Curso, type Inscripcion } from "@/lib/escuela";
+import { bajasPendientes, cierraBaja, type Baja } from "@/lib/escuela/micuenta";
+import Confirmar from "@/components/Confirmar";
 
 export default function GestionScreen() {
   const { usuario } = useSesion();
@@ -60,11 +62,28 @@ export default function GestionScreen() {
   /** Qué no se pudo leer. Distinto de «no hay nada». */
   const [roto, setRoto] = useState(false);
 
+  /*
+   * LAS BAJAS QUE HAN PEDIDO.
+   *
+   * Van en Gestión y arriba del todo, no al final: es lo único de esta
+   * pantalla con un plazo legal encima —un mes desde que se pide— y lo único
+   * que, si no se mira, se incumple sin que nada avise. Todo lo demás de aquí
+   * puede esperar a mañana.
+   */
+  const [bajas, setBajas] = useState<Baja[]>([]);
+
   const carga = useCallback(async () => {
     setFallo("");
     setRoto(false);
     try {
-      const [g, c] = await Promise.all([listaUsuarios(), repoCursos.listar()]);
+      const [g, c, b] = await Promise.all([
+        listaUsuarios(),
+        repoCursos.listar(),
+        /* Que no haya ninguna baja es lo normal, y que falle esta lectura no
+           puede tirar la pantalla entera de accesos. */
+        bajasPendientes().catch(() => [] as Baja[]),
+      ]);
+      setBajas(b);
       /* Las inscripciones se piden por curso porque es como están indexadas.
          Con cuatro cursos son cuatro consultas; con cuarenta habría que darle
          una vuelta, y ese día se nota y se arregla. */
@@ -87,6 +106,27 @@ export default function GestionScreen() {
     inscritos.some((i) => i.uid === uid && i.cursoId === cursoId);
 
   /* ------------------------------------------------------------- cambios */
+
+  /**
+   * «YA LA HE BORRADO.» Lo marca Iris a mano, cuando de verdad lo ha hecho.
+   *
+   * No borra nada por su cuenta a propósito: borrar la ficha, las
+   * inscripciones y los mensajes de alguien son cuatro acciones encadenadas y
+   * ninguna se puede deshacer. Que las haga quien ha leído el caso, con los
+   * botones que ya hay en esta misma pantalla, y que esto sólo deje la fecha
+   * de cuándo quedó hecho.
+   */
+  async function cierra(uid: string) {
+    setFallo("");
+    const antes = bajas;
+    setBajas((xs) => xs.filter((x) => x.uid !== uid));
+    try {
+      await cierraBaja(uid);
+    } catch (e) {
+      setBajas(antes);
+      setFallo(e instanceof Error ? e.message : "No se ha podido cerrar la solicitud.");
+    }
+  }
 
   async function alternaCurso(uid: string, cursoId: string) {
     const antes = inscritos;
@@ -167,6 +207,57 @@ export default function GestionScreen() {
         <p role="alert" style={css(NOTA + "margin:0;color:var(--alarma, #C0392B);")}>
           {fallo}
         </p>
+      )}
+
+      {/* ------------------------------------------------- bajas pedidas */}
+      {bajas.length > 0 && (
+        <section
+          style={css(
+            "background:var(--surface);border:1px solid var(--alarma, #C0392B);border-radius:var(--r);" +
+              "box-shadow:var(--nm);padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:var(--s3);"
+          )}
+        >
+          <div>
+            <h2 style={css("font-size:var(--t-head);margin:0 0 6px;")}>
+              {bajas.length === 1 ? "Alguien ha pedido que borres su cuenta" : `${bajas.length} personas han pedido que borres su cuenta`}
+            </h2>
+            <p style={css(NOTA + "margin:0;line-height:1.55;max-width:70ch;")}>
+              Por ley tienes un mes desde la fecha de la solicitud. Su avance en los cursos ya se borró solo. Lo que
+              queda por hacer es: quitarle los cursos y desactivarla aquí abajo, borrar sus mensajes de la comunidad si
+              los tiene, y borrar su cuenta de acceso en la consola de Firebase. Cuando lo hayas hecho, márcalo.
+            </p>
+          </div>
+
+          {bajas.map((b) => (
+            <div
+              key={b.uid}
+              style={css(
+                "display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap;" +
+                  "border-top:1px solid var(--border);padding-top:var(--s3);"
+              )}
+            >
+              <div style={css("flex:1 1 220px;min-width:0;")}>
+                <div style={css("font-size:var(--t-body);font-weight:600;color:var(--text);")}>{b.nombre || "Sin nombre"}</div>
+                <div style={css(NOTA + "overflow-wrap:anywhere;margin-top:3px;")}>{b.email}</div>
+              </div>
+              <span style={css(NOTA + "flex:none;")}>
+                pedida el{" "}
+                {new Date(b.pedida).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+              </span>
+              <Confirmar
+                estilo={BOTON_NORMAL + "flex:none;"}
+                pregunta={
+                  "Esto no borra nada: sólo apunta que ya lo has borrado tú. Si todavía no lo has hecho, déjalo " +
+                  "pendiente para que no se te olvide."
+                }
+                confirmar="Ya está hecho"
+                alConfirmar={() => void cierra(b.uid)}
+              >
+                Ya lo he borrado
+              </Confirmar>
+            </div>
+          ))}
+        </section>
       )}
 
       <input

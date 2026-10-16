@@ -156,10 +156,37 @@ service cloud.firestore {
          su propia administración. Si Iris lo hiciera por error, no quedaría
          nadie capaz de devolvérselo sin entrar a mano en la consola. */
       allow create: if esAdmin() || arranque(uid);
-      allow update: if esAdmin()
+      allow update: if (esAdmin()
         && (uid != request.auth.uid
             || (request.resource.data.activo == true
-                && 'admin' in request.resource.data.get('roles', ['admin'])));
+                && 'admin' in request.resource.data.get('roles', ['admin'])))
+        )
+        /*
+         * O TÚ, PERO SÓLO TU NOMBRE.
+         *
+         * El artículo 16 del reglamento europeo es el derecho a que te
+         * corrijan un dato equivocado, y tener que escribirle a Iris para que
+         * te arregle una letra no es ejercerlo: es pedir un favor.
+         *
+         * `affectedKeys().hasOnly(['nombre'])` es lo que hace que esto sea
+         * seguro, y conviene entender por qué es tan estrecho. Sin eso, la
+         * misma puerta que deja corregir «Rakel» por «Raquel» deja escribir
+         * `roles: ['admin']` — porque desde el navegador no se manda «cambia
+         * el nombre», se manda un documento entero, y el documento entero lo
+         * escribe quien quiera lo que quiera. La regla no mira lo que la
+         * pantalla pretendía hacer; mira QUÉ CAMPOS han cambiado. Si ha
+         * cambiado alguno que no sea `nombre`, no pasa.
+         *
+         * Lo que queda fuera, dicho: el rol (quién eres), `activo` (si
+         * entras) y el correo (con el que entras). Los tres son de la
+         * administración, y los tres serían una forma de colarse.
+         */
+        || (request.auth != null
+            && uid == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nombre'])
+            && request.resource.data.nombre is string
+            && request.resource.data.nombre.size() > 0
+            && request.resource.data.nombre.size() <= 80);
       allow delete: if esAdmin() && uid != request.auth.uid;
     }
 
@@ -352,7 +379,21 @@ service cloud.firestore {
           ? id.split('__')[0] == request.auth.uid
           : resource.data.uid == request.auth.uid
       ));
-      allow write: if dentro() && request.resource.data.uid == request.auth.uid;
+      /*
+       * ESCRIBIR Y BORRAR SE DICEN APARTE, y no por gusto de partir reglas.
+       *
+       * `allow write` es las tres cosas a la vez —crear, cambiar y borrar— y
+       * al borrar NO HAY `request.resource`: se está mandando quitar, no
+       * poner. Preguntarle su `uid` es la misma trampa que había dos párrafos
+       * más arriba, con el error en el otro extremo: aquí `resource` sí
+       * existe y es `request.resource` el que está vacío.
+       *
+       * Importa porque borrar el avance propio es parte de darse de baja (el
+       * artículo 17 del reglamento europeo), y con `write` a secas la baja
+       * dejaba el avance dentro para siempre.
+       */
+      allow create, update: if dentro() && request.resource.data.uid == request.auth.uid;
+      allow delete: if esAdmin() || (dentro() && resource.data.uid == request.auth.uid);
     }
 
     /*
@@ -455,6 +496,44 @@ service cloud.firestore {
     match /visitas/{uid} {
       allow read: if esAdmin() || (dentro() && uid == request.auth.uid);
       allow write: if dentro() && uid == request.auth.uid;
+    }
+
+    /*
+     * LAS BAJAS: «quiero que me borres».
+     *
+     * El artículo 17 del reglamento europeo, y la única colección de todo
+     * esto que nace de que alguien quiera DEJAR la escuela. Por eso tiene una
+     * forma distinta de todas las demás.
+     *
+     * CREAR, CUALQUIERA, PERO SÓLO LA SUYA. El nombre del documento es el uid
+     * de quien la pide, así que no hay dos bajas de la misma persona y no hay
+     * forma de pedir la baja de otra: el nombre tendría que ser el uid de esa
+     * otra, y eso es justo lo que se compara.
+     *
+     * LEER, ella y la administración. Ella, para que la pantalla pueda decir
+     * «ya la pediste el día tal» en vez de ofrecer otra vez el botón. Iris,
+     * porque es quien tiene que ejecutarla.
+     *
+     * CERRARLA, SÓLO IRIS, y sólo poniendo la fecha de cuándo lo hizo. Si la
+     * pudiera cerrar quien la pidió, la solicitud sería un papel que se firma
+     * y se rompe uno mismo.
+     *
+     * BORRARLA, NADIE. Ni Iris. Una baja ejecutada es el comprobante de que
+     * se ejecutó, y es lo que habría que poder enseñar si la persona —o quien
+     * vigila esto— preguntara. Se queda con su fecha de petición y su fecha
+     * de cumplimiento, y no contiene nada que no se pueda guardar: un uid, un
+     * correo y un nombre, que es exactamente lo que hay que conservar para
+     * demostrar que se atendió a la persona correcta.
+     */
+    match /bajas/{uid} {
+      allow read: if esAdmin() || (request.auth != null && uid == request.auth.uid);
+      allow create: if dentro()
+        && uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid
+        && !('hecha' in request.resource.data);
+      allow update: if esAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hecha']);
+      allow delete: if false;
     }
 
     /* ---------------------------------------------------------------- */
