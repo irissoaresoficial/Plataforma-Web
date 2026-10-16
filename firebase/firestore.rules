@@ -499,6 +499,29 @@ service cloud.firestore {
     }
 
     /*
+     * LOS ESTUDIOS DE IRIS. Las cartas de Kábala y numerología que levanta en
+     * la consulta, con lo que ella escribe encima de cada una.
+     *
+     * Hasta el 16 de octubre de 2026 esto no existía porque las cartas vivían
+     * sólo en el navegador. Eso no era una decisión, era una bomba de relojería:
+     * limpiar el historial, cambiar de ordenador o abrirlo en el móvil y no
+     * hay nada. Ahora se guardan aquí.
+     *
+     * SÓLO IRIS, Y NO ES LO MISMO QUE «SÓLO QUIEN ESTÉ DENTRO». Aquí hay
+     * nombres completos y fechas de nacimiento de SUS CLIENTES — datos de
+     * terceros que ella custodia y que nadie le ha autorizado a enseñar a los
+     * alumnos de la escuela. Un alumno que ha pagado un curso no tiene nada
+     * que hacer en esta colección, y por eso la llave es `esAdmin()` y no
+     * `dentro()`.
+     *
+     * Y por eso mismo esto es un sitio MEJOR que un portátil: en Firestore
+     * está cifrado, en europe-west1 —dentro de la Unión Europea, que es lo
+     * que pide el reglamento— y con copia. En un disco no está ninguna de las
+     * tres cosas.
+     */
+    match /estudios/{id} { allow read, write: if esAdmin(); }
+
+    /*
      * LAS BAJAS: «quiero que me borres».
      *
      * El artículo 17 del reglamento europeo, y la única colección de todo

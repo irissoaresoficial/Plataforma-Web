@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { usePathname, useRouter } from "next/navigation";
 import { analizaNombre, calcula, calculaEmpresa, comparaPareja, ficha as fichaDe, type Resultado, type ResultadoEmpresa, type Comparativa, type Ficha, type Genero } from "./engine";
 import { cargaHistorial, guardaHistorial, cargaEdits, guardaEdits, cargaActual, guardaActual, type HistItem, type Edits } from "./storage";
+import { borraUno as borraDeLaNube, funde, guardaUno, guardaVarios, hayNube, leeTodo } from "./estudios";
 import { descargaRespaldo, importaRespaldo, type ResultadoImportar } from "./respaldo";
 import type { Capacidad } from "./roles";
 
@@ -431,12 +432,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       fecha: empresa ? "" : `${f.dia}/${f.mes}/${f.anio}`,
       corazon: empresa ? analizaNombre(f.nombre, true).total : calcula(entradaDe(f, anioUniversal)).corazon.valor,
       f: empresa ? { tipo: "empresa", nombre: f.nombre, ap1: "", ap2: "", dia: "", mes: "", anio: "", genero: "n" } : { ...f },
+      tocado: new Date().toISOString(),
     };
     setHist((s) => {
       const next = [item].concat(s.filter((h) => h.id !== hid)).slice(0, 40);
       guardaHistorial(next);
       return next;
     });
+    /* Y a la nube. Sin `await` y sin romper nada si falla: el estudio ya está
+       guardado en el navegador y en la lista, así que un fallo de red no puede
+       quitarle a Iris lo que acaba de levantar. Se vuelve a subir solo la
+       próxima vez que se abra la plataforma, al fundir. */
+    if (hayNube()) void guardaUno(item).catch(() => {});
     aplica(f);
     setId(hid);
     setView("panel");
@@ -482,6 +489,63 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 
+  /*
+   * Y DESPUÉS, LA NUBE.
+   *
+   * Va en un efecto aparte y no dentro del de arriba por una razón de las que
+   * se notan: el de arriba es instantáneo —lee el disco— y éste tarda lo que
+   * tarde la red. Juntarlos haría esperar la pantalla entera a Firebase para
+   * enseñar algo que ya se tiene delante.
+   *
+   * Así, al abrir, los estudios aparecen de inmediato y un momento después se
+   * completan con lo que hubiera en otro ordenador. Si no hay red, no pasa
+   * nada: se queda lo que hay.
+   *
+   * Corre una sola vez, al montar, igual que el anterior. Y a diferencia del
+   * anterior no necesita silenciar a eslint: los `setHist` de aquí dentro van
+   * dentro de una función asíncrona, no en el cuerpo del efecto, y eso la
+   * regla ya lo da por bueno.
+   */
+  useEffect(() => {
+    if (!hayNube()) return;
+    let vivo = true;
+    (async () => {
+      try {
+        const arriba = await leeTodo();
+        if (!vivo) return;
+        const aqui = cargaHistorial();
+        const aquiEdits = cargaEdits();
+        const r = funde(aqui, aquiEdits, arriba);
+
+        /* Si lo de la nube no añade ni cambia nada, no se toca el estado: un
+           `setHist` con una lista equivalente vuelve a pintar la pantalla
+           entera por nada, y en la lista de estudios eso se ve como un
+           parpadeo justo al entrar. */
+        const igual =
+          r.estudios.length === aqui.length &&
+          r.estudios.every((h, i) => aqui[i]?.id === h.id && (aqui[i]?.tocado ?? "") === (h.tocado ?? ""));
+        if (!igual) {
+          setHist(r.estudios);
+          guardaHistorial(r.estudios);
+          setEdits(r.correcciones);
+          guardaEdits(r.correcciones);
+        }
+
+        /* LA MUDANZA, que ocurre sola y una sola vez. La primera vez que Iris
+           abre esto sus estudios están aquí y la nube está vacía, así que
+           `faltanArriba` son todos y suben. A partir de ahí casi siempre está
+           vacío y esto no hace nada. */
+        if (r.faltanArriba.length) await guardaVarios(r.faltanArriba, r.correcciones);
+      } catch {
+        /* Sin red, o con las reglas sin publicar, se sigue trabajando con lo
+           del navegador. Lo que no se puede es dejar la consulta en blanco. */
+      }
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, []);
+
   useEffect(() => {
     if (rehidratado) guardaActual(id);
   }, [id, rehidratado]);
@@ -492,6 +556,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       guardaHistorial(next);
       return next;
     });
+    /* Borrar SÍ se propaga a la nube, al revés que la ausencia al fundir.
+       Que un estudio falte en un lado no significa que se haya borrado —puede
+       ser un navegador que todavía no lo ha visto— pero pulsar el botón de
+       borrar sí significa exactamente eso. Si no se quitara de arriba,
+       reaparecería en el siguiente fundido, que es la forma más desquiciante
+       de que algo esté roto. */
+    if (hayNube()) void borraDeLaNube(h.id).catch(() => {});
   }, []);
 
   /* --- la copia de seguridad ---
@@ -505,20 +576,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (res.ok) {
       setHist(res.estudios);
       setEdits(res.correcciones);
+      /* Lo que entra por un fichero sube también. Si no, traer una copia en un
+         ordenador dejaría esos estudios viviendo sólo ahí — justo el problema
+         que esto venía a quitar. */
+      if (hayNube()) void guardaVarios(res.estudios, res.correcciones).catch(() => {});
     }
     return res;
   }, []);
 
+  /*
+   * LO QUE IRIS ESCRIBE ENCIMA DE UNA CARTA.
+   *
+   * Esto es, de todo lo que hay aquí, lo más caro de perder: la carta se
+   * vuelve a calcular en un segundo —el motor es determinista— pero el
+   * párrafo que ella escribió sobre esa persona concreta no se recupera de
+   * ningún sitio. Por eso sube a la nube igual que el estudio.
+   *
+   * Sube el estudio ENTERO con sus correcciones, no la corrección suelta: así
+   * el documento de arriba nunca queda a medias, con una corrección nueva y
+   * una ficha vieja.
+   */
   const guardaEdit = useCallback(
     (bloqueId: string, texto: string) => {
       if (!id) return;
       setEdits((s) => {
         const next: Edits = { ...s, [id]: { ...(s[id] || {}), [bloqueId]: texto } };
         guardaEdits(next);
+        if (hayNube()) {
+          const h = hist.find((x) => x.id === id);
+          if (h) void guardaUno({ ...h, tocado: new Date().toISOString() }, next[id]).catch(() => {});
+        }
         return next;
       });
     },
-    [id]
+    [id, hist]
   );
   const txt = useCallback((bloqueId: string, def: string) => (id && edits[id] && edits[id][bloqueId] !== undefined ? edits[id][bloqueId] : def), [id, edits]);
   const restablecer = useCallback(() => {
@@ -527,9 +618,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const next = { ...s };
       delete next[id];
       guardaEdits(next);
+      if (hayNube()) {
+        const h = hist.find((x) => x.id === id);
+        /* Se sube con las correcciones vacías, no se deja de subir: si no, el
+           documento de arriba se quedaría con las de antes y volverían solas
+           al abrir en otro ordenador. */
+        if (h) void guardaUno({ ...h, tocado: new Date().toISOString() }, {}).catch(() => {});
+      }
       return next;
     });
-  }, [id]);
+  }, [id, hist]);
 
   const verNumero = useCallback((n: number) => {
     const F = fichaDe(n);

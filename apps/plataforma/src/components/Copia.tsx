@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
+import { guardadoEnLaNube } from "@/lib/escuela";
 
 /**
  * Guardar los estudios en un fichero y volver a traerlos.
@@ -29,7 +30,9 @@ export default function Copia() {
     const { estudios, nombre } = guardaCopia();
     setAviso({
       bien: true,
-      texto: `${estudios === 1 ? "1 estudio guardado" : `${estudios} estudios guardados`} en «${nombre}». Déjalo en un sitio que no sea este ordenador.`,
+      texto: `${estudios === 1 ? "1 estudio guardado" : `${estudios} estudios guardados`} en «${nombre}». ${
+        guardadoEnLaNube ? "Ya los tenías a salvo; esto es una copia aparte." : "Déjalo en un sitio que no sea este ordenador."
+      }`,
     });
   };
 
@@ -68,9 +71,27 @@ export default function Copia() {
         <input ref={entrada} type="file" accept="application/json,.json" onChange={alElegirFichero} style={css("display:none;")} />
       </div>
 
+      {/*
+          ESTE PÁRRAFO CAMBIA SOLO, Y NO SE SUAVIZA: SE SUSTITUYE.
+
+          Decía «los estudios viven sólo en este navegador… esa copia es lo
+          único que queda», y desde que se guardan en Firebase eso es falso.
+          Un aviso de alarma que miente hace un daño concreto: enseña a no
+          leer los avisos, y el día que haya uno de verdad nadie lo mirará.
+
+          Con nube, el fichero sigue teniendo sentido —es la copia que se
+          lleva uno a otro sitio y la que se puede abrir sin internet— pero ya
+          no es lo único que hay. Decirlo así, y no callarlo, es lo que hace
+          que se siga usando por el motivo correcto.
+
+          Se decide con el mismo dato que decide dónde se guarda, no a mano:
+          un cartel que hay que acordarse de cambiar acabará mintiendo en una
+          de las dos direcciones.
+      */}
       <p style={css("font-size:var(--t-mini);line-height:1.5;color:var(--text-4);margin:var(--s3) 0 0;")}>
-        Los estudios viven sólo en este navegador. Guarda una copia de vez en cuando y llévatela a otro sitio: si se borran los
-        datos del navegador, esa copia es lo único que queda.
+        {guardadoEnLaNube
+          ? "Los estudios se guardan solos y los tienes en cualquier ordenador donde entres. Esta copia es para llevártela aparte: sirve si algún día no hay internet, o si quieres el trabajo fuera de aquí."
+          : "Los estudios viven sólo en este navegador. Guarda una copia de vez en cuando y llévatela a otro sitio: si se borran los datos del navegador, esa copia es lo único que queda."}
       </p>
 
       <AnimatePresence initial={false}>

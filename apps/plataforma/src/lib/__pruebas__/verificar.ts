@@ -40,6 +40,7 @@ const PRUEBAS: Array<[string, string]> = [
   ["Lo que se escribe en el formulario", "entrada.ts"],
   ["El enlace del vídeo", "video.ts"],
   ["La racha y las medallas", "trofeos.ts"],
+  ["Fundir los estudios con los de la nube", "estudios.ts"],
 ];
 
 let mal = 0;

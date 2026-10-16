@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import { guardadoEnLaNube } from "@/lib/escuela";
 import { css } from "@/lib/css";
 import Copia from "../Copia";
 import Confirmar from "../Confirmar";
@@ -342,7 +343,11 @@ botonPrincipal(listo) + "width:100%;margin-top:var(--s5);"
             <div style={css(TARJETA)}>
               <div style={css(ROTULO + "margin-bottom:var(--s4);")}>Estudios guardados</div>
               {hist.length === 0 ? (
-                <p style={css("font-size:var(--t-body);line-height:1.55;color:var(--text-4);margin:0;")}>Todavía no hay estudios guardados. Los que generes se quedan aquí, en este equipo.</p>
+                <p style={css("font-size:var(--t-body);line-height:1.55;color:var(--text-4);margin:0;")}>
+                  {guardadoEnLaNube
+                    ? "Todavía no hay estudios guardados. Los que generes se quedan aquí y los tendrás en cualquier ordenador donde entres."
+                    : "Todavía no hay estudios guardados. Los que generes se quedan aquí, en este equipo."}
+                </p>
               ) : (
                 <div style={css("display:flex;flex-direction:column;gap:var(--s2);max-height:320px;overflow-y:auto;")}>
                   {hist.map((h) => (

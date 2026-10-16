@@ -10,6 +10,15 @@ export type HistItem = {
   nombre: string;
   fecha: string;
   corazon: number;
+  /**
+   * Cuándo se tocó por última vez. Entró con la copia en Firebase y es lo que
+   * decide quién gana cuando el mismo estudio está en el navegador y en la
+   * nube con dos versiones distintas.
+   *
+   * Es opcional porque los estudios de antes no lo tienen, y al faltar se
+   * leen como «lo más viejo que hay» — que es exactamente lo que son.
+   */
+  tocado?: string;
   /** Los estudios guardados antes de que existieran empresas no traen `tipo`
    *  ni `genero`; al faltar se leen como persona, que es lo que eran. */
   f: { tipo?: string; nombre: string; ap1: string; ap2: string; dia: string; mes: string; anio: string; genero?: string };
