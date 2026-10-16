@@ -259,7 +259,11 @@ body:not(.abierto) .portal .cabecera, body:not(.abierto) .portal .etapas, body:n
      cortados. Medido en el propio fotograma: la tinta está entre el 48% y el
      55% de la cinta. Y más pequeña, para que su borde de abajo quede 20 px
      por encima del titular. */
-.portal .ventana-zona{top:51%;width:min(206px,53vw);transform:translate(-50%,-50%)}
+/* MEDIDO EN LAS SEIS PARADAS. Con la mirilla al 51% y 206 px pisaba el
+     titular: 48 px en «¿Por qué se repite?» —que con la letra de la casa va a
+     dos renglones—, 20 en el árbol y 16 en los cursos. Al 43% y 176 px no
+     toca en ninguna, y sigue centrada sobre la tinta del plano vertical. */
+  .portal .ventana-zona{top:43%;width:min(176px,46vw);transform:translate(-50%,-50%)}
 .portal .contenido{left:max(18px,env(safe-area-inset-left,0px));right:max(18px,env(safe-area-inset-right,0px));
     bottom:max(18px,env(safe-area-inset-bottom,0px));display:block}
 .portal .contenido h1{font-size:clamp(38px,12.4vw,92px);letter-spacing:-.035em;margin-bottom:14px}
@@ -333,7 +337,25 @@ body:not(.abierto) .portal .cabecera, body:not(.abierto) .portal .etapas, body:n
 }
 .portal .reserva:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(69, 26, 37, .28); }
 .portal .reserva span { font-size: 19px; line-height: 1; }
-.portal .recorrido[data-etapa="iris"] .reserva { display: inline-flex; }
+.portal .reserva[data-puesto='si'] { display: inline-flex; }
+
+/* 2. EL PARPADEO AL CAMBIAR DE PLANO.
+   Entre dos paradas de retrato la mirilla mide lo mismo y sólo cambia la
+   foto: sin esto es un corte seco en mitad de una pieza que no tiene ni uno.
+   Doscientas milésimas, que es lo que tarda un ojo en no notarlo. */
+@keyframes portal-cambia {
+  0% { opacity: 1; }
+  38% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.portal .lienzo-ventana.cambia-plano {
+  animation: portal-cambia .5s ease both;
+}
+
+/* 3. LOS TITULARES, CON LA LETRA DE LA CASA.
+   Aquí hubo un rato una serif de acento. Fuera: la regla es una sola letra
+   en la web y en la plataforma, y una segunda familia —por bonita que sea—
+   es exactamente lo que hace que dos pantallas parezcan de dos sitios. */
 
 /* La ficha no recibe clics —es un panel que cruza media pantalla y se comería
    todo lo que hay debajo—, así que el botón tiene que devolvérselos él solo.

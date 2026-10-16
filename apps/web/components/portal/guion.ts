@@ -37,20 +37,52 @@ const luego = (fn: () => void, ms: number) => {
    la fecha y la base 9 del nombre completo; el árbol tiene diez puntos y
    veintidós caminos. Un dato inventado en una pantalla que vende se nota, y
    no hacía falta: lo que hay ya es bastante. */
-const ETAPAS = ['Numerología', 'Kábala', 'Iris Soares'];
+const ETAPAS = ['La pregunta', 'Numerología', 'Kábala', 'Iris Soares', 'La escuela', 'Los cursos'];
 
+/* ============================================================================
+ * LA HISTORIA, EN SEIS PARADAS
+ * ============================================================================
+ * Gerson: «que a medida del scrolling vaya contando como una historia, que
+ * inicie con una pregunta, en la mitad presentes a Iris, y al finalizar un
+ * CTA redirigiendo a los cursos».
+ *
+ * Eso es exactamente este orden, y cada parada hace una cosa:
+ *
+ *   1. LA PREGUNTA   engancha. No se presenta nadie ni se vende nada: se dice
+ *                    en voz alta lo que le está pasando a quien entra. Si no
+ *                    se reconoce aquí, lo demás da igual.
+ *   2. NUMEROLOGÍA   la primera respuesta: de dónde sale.
+ *   3. KÁBALA        la segunda: dónde se ve entero.
+ *   4. IRIS          justo en la mitad, que es donde tiene que ir. Antes es un
+ *                    folleto —alguien presentándose sin que le hayas
+ *                    preguntado—; después, nadie llega.
+ *   5. LA ESCUELA    el giro: no te la lee, te enseña a leerla.
+ *   6. LOS CURSOS    el único botón de la pieza, y sale al final.
+ *
+ * Antes empezaba en «Numerología». Era bonito y no contaba nada: una ficha
+ * técnica de algo que todavía no sabes para qué sirve.
+ */
 const DATOS = {
-  numerologia: {
-    nombre: 'Numerología', orden: 0,
+  pregunta: {
+    nombre: '¿Por qué se repite?', orden: 0,
     datos: [
-      ['Base 22:', 'Sale de tu fecha de nacimiento. Dice cómo te comportas.'],
-      ['Base 9:', 'Sale de tu nombre completo. Dice de qué estás hecho.'],
-      ['Lo que se mira:', 'Las repeticiones, los huecos y lo que se salta una generación.'],
-      ['Desde:', 'Consulta online desde 2010.'],
+      ['En el trabajo:', 'Cambias, y a los seis meses te sientes igual.'],
+      ['En la pareja:', 'La misma discusión, con otra persona.'],
+      ['Con el dinero:', 'Entra, y se va siempre por el mismo sitio.'],
+      ['Lo que nadie dice:', 'Que eso ya le pasaba a alguien antes que a ti.'],
+    ],
+  },
+  numerologia: {
+    nombre: 'Numerología', orden: 1,
+    datos: [
+      ['De dónde sale:', 'De tu fecha y de tu nombre completo. Nada más.'],
+      ['Base 22:', 'La fecha. Dice cómo te comportas.'],
+      ['Base 9:', 'El nombre. Dice de qué estás hecho.'],
+      ['Lo que se mira:', 'Lo que se repite, los huecos, y lo que salta una generación.'],
     ],
   },
   kabala: {
-    nombre: 'Kábala', orden: 1,
+    nombre: 'Kábala', orden: 2,
     datos: [
       ['El árbol:', 'Diez puntos y veintidós caminos. La carta entera cabe ahí.'],
       ['Imagen del alma:', 'Lo que traías antes de que nadie te pusiera un nombre.'],
@@ -59,41 +91,66 @@ const DATOS = {
     ],
   },
   iris: {
-    nombre: 'Iris Soares', orden: 2, retrato: true, foco: .3,
+    nombre: 'Iris Soares', orden: 3, retrato: true, foco: .3,
+    imagen: '/images/iris-consulta.jpg',
     datos: [
       ['Quién:', 'Iris Soares, numerología transgeneracional.'],
-      ['Qué hace:', 'Levanta tu carta y te enseña a leerla.'],
-      ['Para qué:', 'Para que las cuentas las hagas tú, no con apuntes.'],
-      ['Por dónde empezar:', 'Una sesión, o la prueba gratis de la sinergia.'],
+      ['Desde:', 'Consulta online desde 2010.'],
+      ['Qué hace:', 'Levanta tu carta y la lee contigo, en directo.'],
+      ['Lo que no hace:', 'Adivinar el futuro. Esto explica el presente.'],
     ],
+  },
+  escuela: {
+    nombre: 'La escuela', orden: 4, retrato: true, foco: .5,
+    imagen: '/images/la-cuenta.jpg',
+    datos: [
+      ['Qué es:', 'Escuela de Sabiduría 33.'],
+      ['La diferencia:', 'Aquí no te leen la carta. Aprendes a leerla tú.'],
+      ['Cómo:', 'En directo, con tu caso encima de la mesa.'],
+      ['Qué te llevas:', 'Tu carta, la de tu pareja y la de tus hijos. Hechas por ti.'],
+    ],
+  },
+  cursos: {
+    nombre: 'Los cursos', orden: 5, retrato: true, foco: .5,
+    imagen: '/images/desordenes-amorosos-cartel.jpg',
+    datos: [
+      ['Qué hay:', 'Cursos y talleres en directo, y quedan grabados.'],
+      ['Ahora mismo:', 'Desórdenes Amorosos. Fechas por confirmar.'],
+      ['Lo que viene:', 'Van saliendo poco a poco. Están todos en el catálogo.'],
+    ],
+    accion: { texto: 'Ver los cursos', href: '/cursos' },
   },
 };
 
 /*
- * LOS CINCO TRAMOS, Y LOS DOS NÚMEROS QUE LLEVA CADA UNO.
+ * LOS TRAMOS, Y LOS DOS NÚMEROS QUE LLEVA CADA UNO.
  *
  * `ventana` dice cuánto está abierta la ventana al empezar y al acabar el
  * tramo: 0 es pequeña en el centro, 1 es la pantalla entera. `cinta` dice por
  * qué segundo va la película, de 0 a 1.
  *
- * Leídos en vertical se ve la pieza entera: la ventana se abre (0→1), te deja
- * dentro del árbol (1), y se cierra sobre ella (1→0). Y la cinta corre sin
- * parar de 0 a 1 mientras tanto, así que los números se vuelven el árbol sin
- * un solo corte. Eso es lo que no se puede hacer con tres vídeos pegados.
+ * Leídos en vertical se ve la pieza entera: la mirilla pequeña mientras se
+ * hace la pregunta, se abre con la cuenta (0→1), te deja dentro del árbol
+ * (1), y se cierra sobre ella (1→0) para quedarse de retrato en las tres
+ * últimas. Y la cinta corre sin parar de 0 a 1 mientras tanto, así que los
+ * números se vuelven el árbol sin un solo corte.
+ *
+ * IRIS CAE EN EL 0,56 DEL RECORRIDO. No es casualidad: es «en la mitad».
  */
 const TRAMOS = [
+  { etapa: 'pregunta',    desde: 0,   hasta: .14, ventana: [0, 0], cinta: [0, .10] },
+  { etapa: 'numerologia', desde: .14, hasta: .28, ventana: [0, 0], cinta: [.10, .30] },
   /* EL CORTE ESTÁ MEDIDO, NO PUESTO A OJO. Contando píxeles de luz en el
      plano, el árbol no está formado hasta el 0,84 de la cinta: con la Kábala
      empezando antes, el titular decía KÁBALA y en pantalla seguía habiendo
-     números sueltos. Así que la etapa del árbol empieza donde hay árbol, y
-     todo el armado —los hilos creciendo, los puntos encendiéndose— cae
-     dentro del paso. El paso ES la transcendencia, no un corte entre dos
+     números sueltos. El paso ES la transcendencia, no un corte entre dos
      cosas. */
-  { etapa: 'numerologia', desde: 0,   hasta: .24, ventana: [0, 0], cinta: [0, .30] },
-  { etapa: 'numerologia', desde: .24, hasta: .42, ventana: [0, 1], cinta: [.30, .84] },
-  { etapa: 'kabala',      desde: .42, hasta: .68, ventana: [1, 1], cinta: [.84, 1] },
-  { etapa: 'iris',        desde: .68, hasta: .82, ventana: [1, 0], cinta: [1, 1] },
-  { etapa: 'iris',        desde: .82, hasta: 1,   ventana: [0, 0], cinta: [1, 1] },
+  { etapa: 'numerologia', desde: .28, hasta: .42, ventana: [0, 1], cinta: [.30, .84] },
+  { etapa: 'kabala',      desde: .42, hasta: .52, ventana: [1, 1], cinta: [.84, 1] },
+  { etapa: 'iris',        desde: .52, hasta: .60, ventana: [1, 0], cinta: [1, 1] },
+  { etapa: 'iris',        desde: .60, hasta: .70, ventana: [0, 0], cinta: [1, 1] },
+  { etapa: 'escuela',     desde: .70, hasta: .86, ventana: [0, 0], cinta: [1, 1] },
+  { etapa: 'cursos',      desde: .86, hasta: 1,   ventana: [0, 0], cinta: [1, 1] },
 ];
 
 /* ---------------------------------------------------------------- piezas */
@@ -305,6 +362,29 @@ function dibuja() {
   const d = DATOS[actual];
   recorrido.dataset.etapa = actual;
   $('titulo').textContent = d.nombre.toUpperCase();
+
+  /* LA FOTO DE LA VENTANA, POR ETAPA. Antes había una sola y estaba escrita
+     en el HTML; ahora las tres últimas paradas enseñan cosas distintas. Se
+     cambia sólo si de verdad cambia: asignar el mismo `src` vuelve a cargar
+     la imagen en algunos navegadores y se ve el parpadeo. */
+  if (d.imagen && !ventanaImagen.src.endsWith(d.imagen)) ventanaImagen.src = d.imagen;
+
+  /* EL BOTÓN SALE DONDE TOCA Y NO ANTES. Pedirle algo a alguien que lleva
+     catorce píxeles de página es la forma más rápida de que se vaya. */
+  const boton = document.querySelector('.reserva');
+  if (boton) {
+    if (d.accion) {
+      boton.textContent = d.accion.texto;
+      boton.setAttribute('href', d.accion.href);
+      boton.dataset.puesto = 'si';
+    } else {
+      boton.dataset.puesto = 'no';
+    }
+  }
+
+  /* Un parpadeo cortito al cambiar de plano. Entre dos etapas de retrato la
+     mirilla mide lo mismo y sólo cambia la foto: sin esto es un corte seco. */
+  if (!primera) reaviva(lienzo, 'cambia-plano');
 
   const dl = $('datos');
   dl.innerHTML = '';
