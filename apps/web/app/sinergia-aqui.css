@@ -18,11 +18,11 @@
   /* El disco de la flecha del botón es papel levantado, del mismo color que el
      bloque. `.portada-cta` lo lee de aquí. */
   --relieve: var(--bg);
-  padding: clamp(84px, 11vw, 168px) clamp(16px, 4vw, 56px);
+  padding: var(--aire) var(--hueco);
 }
 
 .sinaqui-dentro {
-  max-width: 680px;
+  max-width: var(--ancho-lectura);
   margin: 0 auto;
   display: flex;
   flex-direction: column;

@@ -105,7 +105,7 @@ export const COPY = {
     p1: 'Cambias de trabajo y a los seis meses estás igual.',
     p2: 'Cambias de pareja y discutís por lo mismo.',
     p3: 'Ganas más y a fin de mes sigue sin quedar nada.',
-    p4: 'Y lo que peor sienta: que esto ya lo viste en casa.',
+    p4: 'Y un día te oyes decir una frase de tu madre.',
     p_punch: 'Llevas años jurando que tú no ibas a ser así.',
     b_lab: 'Por qué pasa',
     b_h: 'No es tu carácter. Es una historia que nadie cerró.',
@@ -123,9 +123,9 @@ export const COPY = {
      * duda número uno de quien llega de un anuncio, y contestarla aquí es lo
      * que permite que el resto de la página se lea sin sospecha.
      */
-    q_h: 'Una hora mirando de dónde viene.',
-    q_p1: 'Nos sentamos con tu fecha y tu nombre delante y sale el mapa: qué se repite en tu familia, desde qué generación y qué te toca a ti de todo eso.',
-    q_p2: 'No se adivina nada. Se hace una cuenta, se mira, y te la enseño para que puedas rehacerla sin mí.',
+    q_h: 'Lo que no se habla, se hereda.',
+    q_p1: 'Tu abuela tomó una decisión para sobrevivir a lo suyo: callarse, aguantar, irse, no fiarse de nadie. Tu madre creció con esa decisión puesta en casa, aunque nadie se la explicara nunca. Y tú no repites lo que les pasó a ellas: repites la salida que encontraron.',
+    q_p2: 'Eso es lo que se ve en los números. En qué generación empezó, quién lo pasó, y qué parte te ha tocado cargar a ti sin haberlo elegido.',
     /*
      * EL REGALO.
      *
@@ -273,7 +273,7 @@ export const COPY = {
      * se cree. Es la única prueba que esta página va a tener, y no necesita
      * ninguna cifra ni ningún testimonio para sostenerse.
      */
-    w_que: 'Llevo desde 2010 levantando cartas, y en todas aparece lo mismo: lo que se repite no empieza en quien lo sufre. Ya venía de antes. Lo que yo hago es enseñarte dónde se ve, para que la próxima vez la cuenta la hagas tú.',
+    w_que: 'Llevo desde 2010 levantando cartas, y en todas aparece lo mismo: lo que se repite no empieza en quien lo sufre. Viene de tu madre, de tu abuela, de alguien que hace tres generaciones tomó una decisión para poder seguir adelante. Lo que yo hago es enseñarte dónde se ve, para que la próxima vez la cuenta la hagas tú.',
     w_p1: 'Pasé años observando patrones en el mundo corporativo y descifrando qué sucede cuando nadie mira.',
     w_p2: 'En 2010 uní lo mejor de la numerología, la psicosomática clínica, las constelaciones y las terapias integrativas para crear un método práctico y profundo. El objetivo de mi consulta es solo uno: que salgas sabiendo quién eres y qué decisión tomar hoy.',
     w1: 'Derecho', w2: 'Psicología', w3: 'Psicosomática', w4: 'Descodificación', w5: 'Numerología', w6: 'Transgeneracional',

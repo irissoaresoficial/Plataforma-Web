@@ -69,9 +69,9 @@ const DATOS = {
     nombre: 'No empieza en ti', orden: 0,
     datos: [
       ['Lo que te han dicho:', 'Que es mala suerte. O que eres tú.'],
-      ['Lo que pasa:', 'Que ya pasaba antes de que tú llegaras.'],
-      ['Qué se hereda:', 'No lo que ocurrió. La manera de salir de ello.'],
-      ['Y la buena noticia:', 'Que si viene de algún sitio, se puede ir a mirar.'],
+      ['De quién viene:', 'De tu madre. Y de la suya. Y de la de antes.'],
+      ['Qué se hereda:', 'No lo que les pasó. La manera que encontraron de aguantarlo.'],
+      ['Por qué sigue:', 'Porque en tu familia nadie lo ha dicho todavía en voz alta.'],
     ],
   },
   kabala: {

@@ -43,6 +43,24 @@
    * curva de la página es la de las cosas que se pulsan: se distinguen sin
    * necesidad de ningún color más.
    */
+  /* ========================================================================
+   * EL RITMO DE LAS SECCIONES
+   * ========================================================================
+   * Antes cada bloque traía su medida del día que se escribió: anchos de
+   * 1320, 820, 780 y 680, márgenes izquierdos de 60, 310, 330 y 380, y aires
+   * de 216, 158, 144 y 72 px. Medido así se ve lo que se veía de ojo — que
+   * nada se alinea con nada y la página parece montada a trozos.
+   *
+   * De aquí en adelante hay DOS anchos y UN aire. Dos y no uno porque son dos
+   * trabajos distintos: un bloque de sólo texto a 1180 px obliga a barrer la
+   * cabeza para leer un renglón, y una ficha de cuatro columnas a 720 no
+   * cabe. Pero son DOS, no cinco, y eso ya es un sistema.
+   */
+  --ancho: 1180px;          /* rejillas, fichas, pie: lo que necesita ancho */
+  --ancho-lectura: 720px;   /* bloques de leer: nunca pasan de aquí */
+  --hueco: clamp(16px, 4vw, 56px);   /* el margen lateral, el mismo siempre */
+  --aire: clamp(84px, 11vw, 150px);  /* lo que respira una sección arriba y abajo */
+
   --radio: 4px;
   --radio-chico: 3px;
   --radio-pildora: 100px;
@@ -5534,9 +5552,9 @@ body[data-nav-claro='si'] .sello-color {
   grid-template-columns: 1fr;
   align-items: center;
   gap: clamp(34px, 5vw, 72px);
-  max-width: 1320px;
+  max-width: var(--ancho);
   margin: 0 auto;
-  padding: clamp(76px, 10vw, 150px) clamp(16px, 4vw, 56px);
+  padding: var(--aire) var(--hueco);
 }
 @media (min-width: 900px) {
   .hola-marco {
@@ -5583,7 +5601,7 @@ body[data-nav-claro='si'] .sello-color {
   margin: 0;
   font-family: var(--sans);
   font-weight: 600;
-  font-size: var(--t-h1);
+  font-size: var(--t-seccion);
   line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--tinta);
@@ -7042,7 +7060,7 @@ body[data-nav-claro='si'] .sello-color {
   overflow: hidden;
   background: var(--arena);
   color: var(--tx);
-  padding: clamp(84px, 11vw, 160px) clamp(16px, 4vw, 56px);
+  padding: var(--aire) var(--hueco);
 }
 /* El halo. Muy abierto y muy bajo de opacidad: tiene que notarse que la esquina
    de arriba está más caliente, no verse un círculo. */
@@ -7056,7 +7074,7 @@ body[data-nav-claro='si'] .sello-color {
 .cierre2-dentro {
   position: relative;
   z-index: 2;
-  max-width: 820px;
+  max-width: var(--ancho-lectura);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -7368,7 +7386,7 @@ body[data-nav-claro='si'] .sello-color {
   position: relative;
   z-index: 3;
   background: var(--bg);
-  padding: clamp(110px, 15vw, 220px) clamp(16px, 4vw, 56px);
+  padding: var(--aire) var(--hueco);
   overflow: hidden;
 }
 /* El lienzo va por detrás de todo y no se puede tocar ni seleccionar: es
@@ -7383,7 +7401,7 @@ body[data-nav-claro='si'] .sello-color {
 }
 .quees-dentro {
   position: relative;
-  max-width: 780px;
+  max-width: var(--ancho-lectura);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -7394,7 +7412,7 @@ body[data-nav-claro='si'] .sello-color {
 .quees-h {
   margin: 0;
   font-family: var(--sans);
-  font-size: var(--t-h1);
+  font-size: var(--t-seccion);
   font-weight: 600;
   line-height: 1.0;
   letter-spacing: -0.045em;

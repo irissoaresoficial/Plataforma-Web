@@ -46,8 +46,8 @@ import Pendiente from '@/components/Pendiente';
    entre seis mil líneas. */
 import './sinergia-aqui.css';
 
-const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
-const ANCHO = 1320;
+const PAD = 'var(--aire) var(--hueco)';
+const ANCHO = 'var(--ancho)';
 
 /** Rótulo de sección: línea fina + palabra pequeña.
  *
