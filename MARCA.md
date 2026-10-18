@@ -29,30 +29,45 @@ De ahí salen las tres prohibiciones:
 
 ## 2. Tipografía
 
-Dos familias, las dos por `next/font` (se sirven desde el propio dominio, no
-desde Google en caliente).
+**UNA familia. Una sola, en la web y en la plataforma.**
+
+Lo decidió Gerson el 18 de octubre: «veo muchas tipografías, ajusta máximo una
+sola tipografía en toda la página web y la plataforma, pero hazlo bien». Y
+antes, dos veces: «la tipografía es minimalista, Apple style modern light».
+
+Es lo que hace Apple y es lo que pedía: una familia, y el contraste se saca de
+los pesos, los tamaños y la cursiva — no de meter una segunda letra.
 
 | Para qué | Familia | Variable |
 |---|---|---|
-| Titulares | **Fraunces** | `--f-display` → `--serif` |
-| Todo lo demás | **Instrument Sans** | `--f-texto` → `--sans` |
+| Todo, en la web | **Instrument Sans** | `--f-texto` → `--sans` y `--serif` |
+| Todo, en la plataforma | **Instrument Sans** | `--f-texto` → `--font-ui` y `--font-display` |
+
+`--serif` SE QUEDA COMO NOMBRE en la web y apunta a la sans. Son más de
+trescientas reglas en seis mil líneas las que lo usan: renombrarlas una a una
+es buscar y reemplazar con riesgo de dejarse alguna, y no gana nada. El token
+manda, y hoy manda la sans.
+
+Fraunces **ya no se descarga en la web**: desde que `--serif` apunta a la sans
+no la usa ni una regla, así que pedírsela a `next/font` era traerse una familia
+variable entera en cada visita para no pintar con ella ni una letra.
+
+Y la cursiva de los titulares no se pierde: Instrument Sans tiene itálica, así
+que «siempre lo mismo» o «que no elegiste» siguen en cursiva — en la misma
+letra, que es justo de lo que se trataba.
 
 En CSS se usan **siempre** `var(--serif)` y `var(--sans)` en la web, y
 `var(--font-display)` y `var(--font-ui)` en la plataforma. Nunca el nombre de
 la familia a pelo: el día que cambie una, cambia en un sitio.
 
-> **Segunda cosa que no cuadra, y también está pendiente de que la decidas.**
-> En la web los titulares van en Fraunces. En la plataforma **no**:
-> `--font-display` apunta hoy a la sans (`--f-texto`), así que allí un titular
-> es sólo texto grande. Fraunces sí está importada, pero sólo la usa
-> `--font-doc`, la del estudio que se imprime.
->
-> O sea: las dos aplicaciones **no** se ven iguales hoy. Para igualarlas basta
-> con apuntar `--font-display` a `--f-display` en la plataforma. Es una línea.
-> No la toco por mi cuenta — es una decisión de marca, no un arreglo.
+> **Esto ya está resuelto.** Aquí decía que las dos aplicaciones no se veían
+> iguales: en la web los titulares iban en Fraunces y en la plataforma en la
+> sans. Con la decisión de una sola familia, las dos van igual y la
+> discrepancia desaparece — que era lo que esta nota pedía que se decidiera.
 
-Fraunces es variable y sus ejes se ponen una sola vez:
-`--display-ejes: 'SOFT' 62, 'WONK' 0`.
+Fraunces sigue viva en **un** sitio y sólo en uno: `--font-doc`, en la
+plataforma, que es el estudio que se imprime y se le entrega a la clienta. Eso
+es un documento, no interfaz, y va con las tres letras de abajo.
 
 ### Los pesos
 

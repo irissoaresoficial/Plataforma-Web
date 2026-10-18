@@ -12,7 +12,31 @@
    * verdad: si la letra tardara, lo que se ve mientras tanto tiene que
    * parecerse, no ser otra cosa.
    */
-  --serif: var(--f-display), 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  /* ==================================================================
+   * UNA SOLA TIPOGRAFÍA EN TODA LA CASA
+   * ==================================================================
+   * Gerson, el 18 de octubre: «veo muchas tipografías, ajusta máximo una
+   * sola tipografía en toda la página web y la plataforma, pero hazlo bien».
+   * Y antes, dos veces: «la tipografía es minimalista, Apple style modern
+   * light».
+   *
+   * Eso es exactamente lo que hace Apple y lo que pedía: UNA familia, y el
+   * contraste se saca de los pesos y los tamaños, no de meter una segunda
+   * letra. La plataforma ya iba así —allí `--font-display` y `--font-ui`
+   * apuntan los dos a la sans—, o sea que la web era la única de las dos
+   * aplicaciones con dos voces. Ahora las dos tienen una.
+   *
+   * `--serif` SE QUEDA COMO NOMBRE y pasa a apuntar a la sans. Son
+   * trescientas y pico reglas en seis mil líneas las que lo usan: cambiarle
+   * el nombre a cada una es trabajo de buscar y reemplazar con riesgo de
+   * dejarse una, y no gana nada. El token manda, y hoy manda la sans.
+   * El día que se decida volver a dos voces, se cambia aquí y vuelve.
+   *
+   * La cursiva de los titulares no se va: Instrument Sans tiene itálica, así
+   * que «siempre lo mismo» o «que no elegiste» siguen en cursiva — en la
+   * misma letra, que es de lo que se trataba.
+   */
+  --serif: var(--f-texto), -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --sans: var(--f-texto), -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 
   /*

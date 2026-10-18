@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fraunces, Instrument_Sans } from 'next/font/google';
+import { Instrument_Sans } from 'next/font/google';
 import { LangProvider } from '@/lib/i18n';
 import Medicion from '@/components/Medicion';
 import Ficha from '@/components/Ficha';
@@ -44,13 +44,18 @@ import './movimiento.css';
 /* Sin lista de pesos: pidiendo ejes hay que traerse la fuente variable entera,
    que además es lo que queremos —el peso se mueve de 300 a 500 según el sitio— y
    pesa menos que tres archivos sueltos. */
-const display = Fraunces({
-  subsets: ['latin'],
-  axes: ['SOFT', 'WONK', 'opsz'],
-  variable: '--f-display',
-  display: 'swap',
-});
-
+/* FRAUNCES YA NO SE DESCARGA, y ésa es la otra mitad de «una sola
+   tipografía». Desde que `--serif` apunta a la sans no la usa ni una regla
+   —comprobado con un grep de `var(--f-display)` en todo `app/` y
+   `components/`: cero resultados—, así que seguir pidiéndosela a next/font
+   era traerse una familia variable entera en cada visita para no pintar con
+   ella ni una letra.
+   La importación se queda escrita arriba y comentada aquí: el día que se
+   decida volver a dos voces son dos líneas, no una arqueología.
+   Fraunces NO desaparece de la casa: la plataforma la sigue usando en
+   `--font-doc`, que es el estudio que se imprime y se le entrega a la
+   clienta. Eso es un documento, no interfaz, y tiene sus propias letras
+   (MARCA.md §2). */
 const texto = Instrument_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
@@ -131,7 +136,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${display.variable} ${texto.variable}`}>
+    <html lang="es" className={texto.variable}>
       <body>
         {/*
             QUIÉN ES LA CASA Y QUIÉN ES IRIS, ESCRITO PARA GOOGLE.

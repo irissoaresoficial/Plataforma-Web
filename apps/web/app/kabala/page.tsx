@@ -74,7 +74,7 @@ function PillCTA({ a, variant, label }: { a: string; variant: 'gold' | 'cream'; 
   );
 }
 
-const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
+const PAD = 'clamp(76px,10vw,150px) var(--hueco)';
 
 export default function Kabala() {
   useSiteScroll();
@@ -108,7 +108,7 @@ export default function Kabala() {
 
       <div className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(104px,13vh,168px) clamp(16px,4vw,56px) clamp(60px,8vw,110px)', overflow: 'hidden' }}>
         <CampoNumeros intensidad={1.5} densidad={150_000} />
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: 1320, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,44px)' }}>
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: 'var(--ancho)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,44px)' }}>
           <Aparece>
             <Rotulo claro>Qué es la Kábala</Rotulo>
           </Aparece>
@@ -214,7 +214,7 @@ export default function Kabala() {
           antes del pie: primero se entiende qué es, y entonces el precio tiene
           con qué compararse. */}
       <div className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD }}>
-        <div style={{ maxWidth: 1320, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
+        <div style={{ maxWidth: 'var(--ancho)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
           <Aparece><Rotulo>La consulta de Kábala</Rotulo></Aparece>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(22px,3vw,52px)', alignItems: 'start' }}>
             <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '15ch' }}>
@@ -254,7 +254,7 @@ export default function Kabala() {
             rompe este patrón en media internet: nunca llega a subir del todo
             porque ya no se puede bajar más. El componente lo tiene resuelto
             recortando el recorrido por lo que queda de página. */}
-        <Aparece className="com-pie" style={{ maxWidth: 1320, margin: '0 auto' }}>
+        <Aparece className="com-pie" style={{ maxWidth: 'var(--ancho)', margin: '0 auto' }}>
           <Link href="/" aria-label="Ir al inicio"><Marca tam={30} claro /></Link>
           <span>
             <Link href="/">Inicio</Link>

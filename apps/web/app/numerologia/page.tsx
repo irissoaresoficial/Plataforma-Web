@@ -158,7 +158,7 @@ export default function Numerologia() {
           Cinco piezas, en columnas. Es lo que la plataforma calcula de verdad
           para cada persona; ni una de las cinco está de adorno. */}
       <div className="claro bloque-limpio num-cinta-bloque">
-        <div style={{ maxWidth: 1180, margin: '0 auto 0', paddingInline: 'clamp(0px,1vw,10px)' }}>
+        <div style={{ maxWidth: 'var(--ancho)', margin: '0 auto', paddingInline: 'clamp(0px,1vw,10px)' }}>
           <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '15ch', marginBottom: 'clamp(26px,3.2vw,44px)' }}>
             Qué sale de tu nombre y de tu fecha.
           </Aparece>
@@ -266,7 +266,7 @@ export default function Numerologia() {
         {/* Lo último de la página también se mueve. El recorrido se recorta
             por lo que queda de scroll, así que llega puesto del todo aunque no
             haya más página por debajo para terminar de subirlo. */}
-        <Aparece style={{ maxWidth: 1180, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 28, alignItems: 'center', justifyContent: 'space-between' }}>
+        <Aparece style={{ maxWidth: 'var(--ancho)', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 28, alignItems: 'center', justifyContent: 'space-between' }}>
           <Marca tam={68} apilado />
           <Link href="/" data-mag style={{ fontSize: 'var(--t-cuerpo)', color: 'var(--tx-2)' }}>
             ← Volver al inicio

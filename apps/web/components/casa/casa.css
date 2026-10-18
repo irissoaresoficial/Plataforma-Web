@@ -1159,11 +1159,19 @@ html[data-portada='si'] #chat-launcher {
    convence y el formulario recoge, sin que haya que bajar para apuntarse.
    Por debajo de 960 px se apilan —vídeo y luego formulario—, que en el móvil
    es el orden en que se leen. */
+/* `center` Y NO `start`, que es lo que señaló Gerson: «veo el vídeo por allá
+   arriba y el formulario por allá abajo».
+   Medido: el vídeo mide 364 px y el formulario 564. Arrancando los dos
+   arriba, el vídeo acababa a los 780 y el formulario a los 980 — doscientos
+   píxeles de cola colgando a la derecha y un agujero a la izquierda.
+   Centrados uno contra otro comparten eje: el vídeo se queda a cien píxeles
+   por debajo del borde de arriba del formulario y a cien por encima del de
+   abajo, y las dos piezas se leen como una fila y no como dos cosas sueltas. */
 .casa-mc-rejilla {
   display: grid;
   grid-template-columns: 1fr;
   gap: clamp(28px, 4vw, 48px);
-  align-items: start;
+  align-items: center;
 }
 @media (min-width: 960px) {
   .casa-mc-rejilla {
@@ -1185,11 +1193,16 @@ html[data-portada='si'] #chat-launcher {
   display: block;
 }
 
+/* El `max-width: 62ch` que había aquí estrangulaba el titular: 62 caracteres
+   medidos en el tamaño del padre son unos 660 px, y «Hay una forma de amar» a
+   68 px en la sans no cabe — se partía en tres renglones y empujaba el
+   formulario por debajo del borde de la pantalla, que en una landing de
+   campaña es perderlo. El ancho de lectura va donde hace falta, que es el
+   párrafo, no el titular. */
 .casa-mc-texto {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-width: 62ch;
 }
 .casa-mc-rotulo {
   font-family: var(--sans);
@@ -1213,7 +1226,7 @@ html[data-portada='si'] #chat-launcher {
 }
 .casa-mc-p {
   margin: 0;
-  max-width: 48ch;
+  max-width: 54ch;
   font-family: var(--sans);
   font-size: var(--t-cuerpo);
   line-height: 1.6;
