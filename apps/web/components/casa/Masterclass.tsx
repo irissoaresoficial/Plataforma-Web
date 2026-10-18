@@ -35,7 +35,12 @@ import Image from 'next/image';
 import Barra from './Barra';
 import Pie from './Pie';
 import Registro from './Registro';
+import { SESION } from '@/content/site';
 import './casa.css';
+
+/* Los años salen de la fecha y no escritos a mano: una frase de autoridad
+   que se queda vieja deja de sostener nada. */
+const ANOS = new Date().getFullYear() - SESION.desde;
 
 const PARA_QUIEN = [
   {
@@ -116,12 +121,47 @@ export default function Masterclass() {
           </ul>
         </section>
 
-        {/* ── 3. EL FORMULARIO OTRA VEZ ────────────────────── */}
-        {/* Quien se convence aquí abajo está a dos pantallas del formulario
-            de arriba. Hacerle subir es perderlo. */}
-        <section className="casa-mc-cierre" aria-label="Apuntarse a la masterclass">
-          <div className="casa-mc-caja">
-            <Registro />
+        {/* ── 3. QUIÉN DA LA MASTERCLASS ───────────────────
+            AQUÍ HABÍA EL FORMULARIO OTRA VEZ. Gerson: «cuando hay otra vez
+            el formulario, sí que es cierto que ya no tiene relevancia; tienes
+            que colocar otro tipo de información».
+            Y es verdad: el de arriba está a la vista desde el primer segundo,
+            al lado del vídeo. Repetirlo aquí no convence a nadie que no
+            estuviera convencido ya — sólo ocupa una pantalla entera diciendo
+            lo mismo. Lo que falta a esta altura no es otro formulario: es
+            saber quién va a dar la clase.
+            Así que va ella, con su foto y los años, y un botón que sube al
+            formulario de arriba en vez de un formulario nuevo. */}
+        <section className="casa-mc-quien-da" aria-labelledby="iris-h">
+          <div className="casa-mc-da-dentro">
+            <div className="casa-mc-da-foto">
+              <Image
+                src="/images/iris-consulta.jpg"
+                alt="Iris Soares, sonriendo, en su consulta."
+                width={900}
+                height={1599}
+                sizes="(max-width: 860px) 100vw, 380px"
+              />
+            </div>
+            <div className="casa-mc-da-texto">
+              <span className="casa-mc-rotulo">Quién la da</span>
+              <h2 className="casa-mc-da-h" id="iris-h">
+                Iris Soares
+              </h2>
+              <p>
+                Creadora de la Escuela de Sabiduría 33. Numerología
+                transgeneracional y Kábala desde {SESION.desde}: {ANOS} años
+                mirando la misma cuenta en gente que no se parece en nada.
+              </p>
+              <p>
+                No te entrega un informe y adiós. Te enseña a hacer la cuenta
+                —tu fecha, tu nombre— para que la repitas tú el día que te
+                haga falta.
+              </p>
+              <a href="#top" className="casa-mc-da-boton casa-brillo">
+                Apuntarme a la masterclass
+              </a>
+            </div>
           </div>
         </section>
       </main>

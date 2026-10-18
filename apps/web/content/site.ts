@@ -28,8 +28,18 @@ export const PENDIENTE = 'PENDIENTE';
  * Las dos constantes se quedan porque `Marca` sabe pedir una u otra según el
  * fondo, y el día que haya una versión de una tinta se cambia sólo aquí.
  */
-export const LOGO = '/images/flor-de-lis.png';
-export const LOGO_COLOR = '/images/flor-de-lis.png';
+/* ESTE ES EL LOGO DE LA ESCUELA, y la flor de lis no lo era.
+   Gerson, el 18 de octubre: «el logo del header no es ese pico, sino que es
+   el de Escuela de Sabiduría, recuerda que era uno circular».
+   Tenía razón y era un fallo de fondo: la flor de lis es un adorno de la
+   marca —sale dentro del propio logo, a los lados— pero el logo es el sello
+   circular con «IRIS SOARES · ESCUELA DE SABIDURÍA 33» alrededor de la flor
+   de la vida. Firmar la web con el adorno en vez de con el sello es firmar
+   con media marca.
+   Hay versión blanca para los fondos oscuros, así que aquí sí son dos
+   archivos distintos de verdad. */
+export const LOGO = '/images/logo-33-blanco.png';
+export const LOGO_COLOR = '/images/logo-33.png';
 
 /**
  * FOTOS DE IRIS

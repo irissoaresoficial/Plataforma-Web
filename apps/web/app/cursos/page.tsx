@@ -26,6 +26,7 @@
 import Link from 'next/link';
 import Cursor from '@/components/Cursor';
 import Entrada from '@/components/casa/Entrada';
+import Discografia from '@/components/casa/Discografia';
 import Pie from '@/components/casa/Pie';
 import '@/components/casa/casa.css';
 
@@ -57,32 +58,13 @@ export default function Cursos() {
       />
 
       <main>
-        <section className="casa-pronto" aria-labelledby="pronto-h">
-          <div className="casa-pronto-dentro">
-            <span className="casa-pronto-rotulo">Lo que hay ahora</span>
-            <h2 className="casa-pronto-h" id="pronto-h">
-              Un taller abierto.
-              <br />
-              <em>Y van saliendo más.</em>
-            </h2>
-            <p className="casa-pronto-p">
-              La escuela empieza por Desórdenes Amorosos: lo que se repite en
-              tu forma de querer, y de dónde viene. Es una masterclass
-              gratuita y se puede apuntar cualquiera.
-            </p>
-            <p className="casa-pronto-p">
-              Los siguientes talleres van saliendo poco a poco. Si te apuntas
-              a éste, te aviso de los que vengan sin que tengas que estar
-              mirando.
-            </p>
-            <Link href="/masterclass" className="casa-pronto-boton casa-brillo">
-              Apuntarme a la masterclass
-            </Link>
-            <p className="casa-pronto-nota">
-              Gratuita. Te aviso de la fecha en cuanto esté.
-            </p>
-          </div>
-        </section>
+        {/* LA ESTANTERÍA. Aquí había un bloque que decía «un taller
+            abierto, y van saliendo más» en un párrafo. Gerson lo quiso en
+            fichas: «bloques cuadraditos en figuras de 3D, como una especie de
+            discografía, con "busca el curso que más te llame la atención"».
+            Y es mejor: un párrafo se lee; una estantería se elige. */}
+        <Discografia />
+
       </main>
 
       <Pie />

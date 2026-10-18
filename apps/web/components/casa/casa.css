@@ -1383,6 +1383,13 @@ html[data-portada='si'] #chat-launcher {
   color: var(--tinta);
   padding: clamp(56px, 8vw, 104px) var(--hueco);
 }
+/* UNA SOLA ALINEACIÓN POR PÁGINA, que es lo que pidió Gerson: «si no va a
+   estar alineado centrado, pues se queda alineado hacia un lado».
+   Esta página arranca alineada a la izquierda —el rótulo, el titular y el
+   párrafo de la entrada— así que todo lo que viene debajo va a la izquierda
+   también, y pegado al mismo borde de 130 px. Antes este bloque centraba su
+   titular y el de abajo centraba el formulario: tres alineaciones en una
+   página es lo que se lee como «descuadrado» aunque cada pieza esté bien. */
 .casa-mc-quien-h {
   max-width: var(--ancho);
   margin: 0 auto clamp(28px, 4vw, 48px);
@@ -1390,6 +1397,7 @@ html[data-portada='si'] #chat-launcher {
   font-size: var(--t-h2);
   font-weight: var(--peso-fino);
   letter-spacing: -0.02em;
+  text-align: left;
 }
 .casa-mc-lista {
   max-width: var(--ancho);
@@ -1424,9 +1432,73 @@ html[data-portada='si'] #chat-launcher {
   color: #4a4443;
 }
 
-.casa-mc-cierre {
+/* ------------------------------------------------------ quién la da */
+.casa-mc-quien-da {
   background: var(--tinta);
+  color: var(--papel);
   padding: clamp(56px, 8vw, 104px) var(--hueco);
+}
+.casa-mc-da-dentro {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+}
+@media (min-width: 860px) {
+  .casa-mc-da-dentro {
+    grid-template-columns: 340px 1fr;
+  }
+}
+.casa-mc-da-foto {
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radio-suave);
+  overflow: hidden;
+}
+.casa-mc-da-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Su cara va del píxel 300 al 950 de 1599: al 8 % queda a la altura
+     correcta, ni descabezada ni hundida. Medido, no a ojo. */
+  object-position: center 8%;
+  display: block;
+}
+.casa-mc-da-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.casa-mc-da-h {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.025em;
+  color: var(--papel);
+}
+.casa-mc-da-texto p {
+  margin: 0;
+  max-width: 54ch;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+}
+.casa-mc-da-boton {
+  margin-top: 8px;
+  padding: 14px 28px;
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  color: var(--vino);
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: 600;
+  text-decoration: none;
 }
 
 /* ------------------------------------------------- un taller, y vienen más */
@@ -1492,4 +1564,179 @@ html[data-portada='si'] #chat-launcher {
   font-family: var(--sans);
   font-size: 13px;
   color: #6b6564;
+}
+
+/* ====================================================================== */
+/*  LA DISCOGRAFÍA — los cursos como una estantería de discos             */
+/* ====================================================================== */
+.casa-disco {
+  background: var(--arena);
+  color: var(--tinta);
+  padding: clamp(64px, 9vw, 128px) var(--hueco);
+}
+.casa-disco-dentro {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.casa-disco-rotulo {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  /* `--oro-tinta` y no `--oro`: el dorado de adorno no llega al 4,5:1 sobre
+     claro (MARCA.md §3). */
+  color: var(--oro-tinta);
+}
+.casa-disco-h {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  font-weight: var(--peso-fino);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+.casa-disco-h em {
+  font-style: italic;
+}
+.casa-disco-p {
+  margin: 0 0 clamp(22px, 3vw, 38px);
+  max-width: 54ch;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: #4a4443;
+}
+
+/* La rejilla. `perspective` va en el contenedor y no en cada ficha: puesta
+   en cada una, todas giran contra su propio centro y el conjunto se ve
+   plano. Aquí comparten punto de fuga y se lee como una estantería de
+   verdad. */
+.casa-disco-rejilla {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(14px, 2vw, 26px);
+  perspective: 1200px;
+}
+@media (min-width: 760px) {
+  .casa-disco-rejilla {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.casa-disco-rejilla li {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.casa-disco-dentro-ok li {
+  opacity: 1;
+  transform: none;
+}
+
+.casa-disco-ficha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+/* EL 3D. Ocho grados y no cuarenta: un cartel que se tuerce mucho deja de
+   leerse como un cartel y pasa a leerse como un truco. Lo que tiene que
+   destacar es el curso, no el efecto. */
+.casa-disco-cara {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radio-suave);
+  overflow: hidden;
+  background: var(--vino);
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
+  box-shadow: 0 10px 24px rgba(34, 29, 31, 0.18);
+}
+a.casa-disco-ficha:hover .casa-disco-cara {
+  transform: rotateX(8deg) rotateY(-8deg) translateY(-8px) scale(1.02);
+  box-shadow: 0 26px 50px rgba(34, 29, 31, 0.34);
+}
+.casa-disco-cara img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* El brillo del canto: una lengua de luz que cruza la portada al girar. Es
+   lo que hace que el giro se lea como un objeto con volumen y no como una
+   imagen inclinada. */
+.casa-disco-brillo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.22) 50%, transparent 62%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+a.casa-disco-ficha:hover .casa-disco-brillo {
+  transform: translateX(100%);
+}
+.casa-disco-cara-vacia {
+  background: rgba(34, 29, 31, 0.08);
+  border: 1px dashed rgba(34, 29, 31, 0.22);
+  box-shadow: none;
+}
+.casa-disco-cara-vacia .casa-sello {
+  opacity: 0.35;
+}
+
+.casa-disco-pie {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--sans);
+}
+.casa-disco-pie strong {
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  letter-spacing: -0.01em;
+}
+.casa-disco-pie small {
+  font-size: 13px;
+  /* #5d5756 sobre arena da 6,1:1. Es la línea que dice si está abierto, así
+     que no puede quedarse en un gris de adorno. */
+  color: #5d5756;
+}
+.casa-disco-hueco .casa-disco-pie strong,
+.casa-disco-hueco .casa-disco-pie small {
+  color: #6b6564;
+}
+
+.casa-disco-nota {
+  margin: clamp(22px, 3vw, 38px) 0 0;
+  max-width: 56ch;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  color: #4a4443;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .casa-disco-rejilla li,
+  .casa-disco-cara,
+  .casa-disco-brillo {
+    transition: none;
+  }
+  .casa-disco-rejilla li {
+    opacity: 1;
+    transform: none;
+  }
+  a.casa-disco-ficha:hover .casa-disco-cara {
+    transform: none;
+  }
 }

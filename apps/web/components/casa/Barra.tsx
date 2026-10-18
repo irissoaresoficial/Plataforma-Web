@@ -35,12 +35,19 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LOGO_COLOR } from '@/content/site';
 
+/* «ENTRAR» YA NO ESTÁ AQUÍ, y es a propósito.
+   Gerson: «cuando le das a entrar, la idea es que ese entrar no aparezca
+   allí; eso es solamente un acceso interno para las personas, para ir
+   directamente».
+   O sea: app.escueladesabiduria33.com se alcanza escribiéndolo o con el
+   enlace que se le manda a cada alumna, no desde el menú de una web cuyo
+   trabajo es que alguien que no la conoce se apunte. Una puerta de empleados
+   en el escaparate es una puerta que el 99 % de quien entra no puede abrir. */
 const PUERTAS = [
   { href: '/numerologia', texto: 'Numerología', nota: 'Qué es y para qué sirve' },
   { href: '/kabala', texto: 'Kábala', nota: 'El árbol y sus diez puntos' },
   { href: '/cursos', texto: 'Talleres y cursos', nota: 'Lo que hay abierto ahora' },
   { href: '/membresia', texto: 'La escuela', nota: 'Dentro de Sabiduría 33' },
-  { href: 'https://app.escueladesabiduria33.com', texto: 'Entrar', nota: 'Si ya eres alumna', fuera: true },
 ];
 
 export default function Barra({ fija = false }: { fija?: boolean }) {
@@ -200,11 +207,10 @@ export default function Barra({ fija = false }: { fija?: boolean }) {
                golpe se leen como un bloque; escalonadas, se leen como una
                lista. */
             const retardo = { transitionDelay: `${90 + i * 55}ms` } as const;
-            return p.fuera ? (
-              <a key={p.href} href={p.href} style={retardo} onClick={() => setAbierto(false)}>
-                {contenido}
-              </a>
-            ) : (
+            /* Las cuatro puertas que quedan son de esta web, así que todas
+               van por `Link`. La rama de enlace externo era sólo para
+               «Entrar», que ya no está aquí. */
+            return (
               <Link key={p.href} href={p.href} style={retardo} onClick={() => setAbierto(false)}>
                 {contenido}
               </Link>
