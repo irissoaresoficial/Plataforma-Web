@@ -50,8 +50,8 @@ const FICHAS = [
        sala detrás. Un vídeo abstracto de números dorados no demuestra que
        alguien enseñe; una foto suya delante de una sala, sí. La autoridad se
        enseña, no se escribe. */
-    foto: '/images/iris-hablando.jpg',
-    alt: 'Iris Soares, con micrófono de solapa, dando una formación ante una sala con público.',
+    foto: '/images/iris-consulta.jpg',
+    alt: 'Iris Soares, sonriendo, en su consulta.',
     fuentes: [],
     cartel: '',
     texto:
@@ -199,8 +199,8 @@ export default function Claves() {
                   <Image
                     src={f.foto}
                     alt={f.alt}
-                    width={361}
-                    height={562}
+                    width={900}
+                    height={1599}
                     sizes="(max-width: 1023px) 100vw, 520px"
                     priority={false}
                   />

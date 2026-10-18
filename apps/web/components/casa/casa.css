@@ -647,8 +647,13 @@
   aspect-ratio: 4 / 5;
   max-width: 340px;
 }
+/* EL ENCUADRE, CALCULADO Y NO A OJO.
+   La foto es de 900×1599 y el hueco es 4:5, así que al llenarlo sobran 474 px
+   de alto. Su cara va del píxel 300 al 950, o sea centrada en el 625; con el
+   encuadre al 8 % la ventana visible va del 38 al 1163 y la cara queda a la
+   altura correcta, ni descabezada ni hundida. */
 .casa-ficha-retrato img {
-  object-position: center 22%;
+  object-position: center 8%;
 }
 .casa-ficha-p {
   margin: 0;
@@ -804,7 +809,7 @@
   }
 }
 
-.casa-camino-video {
+.casa-camino-img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -812,21 +817,22 @@
   object-fit: cover;
   transition: transform 0.7s ease;
 }
-.casa-camino:hover .casa-camino-video {
+.casa-camino:hover .casa-camino-img {
   transform: scale(1.05);
 }
-/* El velo. La plantilla pedía negro al 10 %, y al 20 % por encima. Aquí van
-   más hondos: nuestros vídeos son crema y dorado, casi blancos, y con un 10 %
-   el nombre en blanco encima no se leía ni de lejos. Medido sobre el píxel
-   pintado, que es lo que manda MARCA.md §3. */
+/* El velo, ahora casi el de la plantilla: 18 % en vez del 46 % que hacía falta
+   antes. Y ésa es la ganancia de haber hecho las imágenes a medida en vez de
+   reaprovechar vídeos claros: con un fondo que ya nace negro, el velo deja de
+   ser un parche para que se lea el texto y vuelve a ser lo que debe, un
+   matiz al pasar por encima. Medido sobre el píxel pintado (MARCA.md §3). */
 .casa-camino-velo {
   position: absolute;
   inset: 0;
-  background: rgba(23, 18, 14, 0.46);
+  background: rgba(23, 18, 14, 0.18);
   transition: background 0.5s ease;
 }
 .casa-camino:hover .casa-camino-velo {
-  background: rgba(23, 18, 14, 0.56);
+  background: rgba(23, 18, 14, 0.3);
 }
 
 /* EL NOMBRE EN VERTICAL, que es lo que hace la sección.
@@ -1008,13 +1014,13 @@
     transform: none;
     transition: none;
   }
-  .casa-camino-video,
+  .casa-camino-img,
   .casa-camino-velo,
   .casa-brillo,
   .casa-brillo::before {
     transition: none;
   }
-  .casa-camino:hover .casa-camino-video {
+  .casa-camino:hover .casa-camino-img {
     transform: none;
   }
   .casa-camino:hover .casa-camino-nombre {

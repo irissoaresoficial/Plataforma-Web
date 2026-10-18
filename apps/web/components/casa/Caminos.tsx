@@ -24,6 +24,7 @@
  * pantalla necesita saber el idioma para pronunciar «kábala» y no deletrearlo.
  */
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
@@ -31,42 +32,31 @@ const CAMINOS = [
   {
     id: 'numerologia',
     nombre: 'numerología',
-    /* Vertical y ligero. Los de la plantilla viven en el CloudFront de otra
-       cuenta: ni son nuestros ni se alcanzan desde aquí. */
-    fuentes: ['recorrido-vertical.webm', 'recorrido-vertical.mp4'],
-    cartel: '/images/arbol-vertical-cartel.jpg',
+    img: '/images/camino-numerologia.jpg',
     a: '/numerologia',
     boton: 'ver numerología',
-    /* Para quien no ve el vídeo: lo que se oye no puede ser menos que lo que
+    /* Para quien no ve la imagen: lo que se oye no puede ser menos que lo que
        se ve. */
-    alt: 'Números de tinta que se van convirtiendo en hilos de oro.',
+    alt: 'Una ficha de papel con una fecha descompuesta en cifras y sumada a mano en tinta dorada, sobre una mesa de madera oscura.',
   },
   {
     id: 'kabala',
     nombre: 'kábala',
-    /* EL APAISADO, NO EL VERTICAL, y el motivo se ve en una captura.
-       `arbol-vertical` se fabricó metiendo el apaisado dentro de un marco
-       vertical, así que lleva dos bandas grises pegadas arriba y abajo. En
-       una ficha a sangre esas bandas no se recortan —`cover` sólo quita 51 px
-       y las bandas miden cuatro veces eso— y la ficha salía con dos franjas.
-       El apaisado recortado al centro llena de borde a borde, y el árbol está
-       centrado, que es lo que hace que funcione. */
-    fuentes: ['arbol-scroll.mp4', 'arbol-scroll.webm'],
-    cartel: '/images/arbol-scroll-cartel.jpg',
+    img: '/images/camino-kabala.jpg',
     a: '/kabala',
     boton: 'ver kábala',
-    alt: 'El árbol de la vida dibujándose con diez puntos de luz.',
+    alt: 'Diez puntos de luz dorada unidos por hilos finos, dibujando el árbol de la vida sobre un fondo negro.',
   },
   {
     id: 'escuela',
     nombre: 'la escuela',
-    fuentes: ['antesala-vertical.webm', 'antesala-vertical.mp4'],
-    cartel: '/images/arbol-scroll-cartel.jpg',
+    img: '/images/camino-escuela.jpg',
     a: '/membresia',
     boton: 'ver la escuela',
-    alt: 'Una luz que se abre despacio sobre un fondo crema.',
+    alt: 'Un escritorio de noche bajo una lámpara de latón, con cuadernos abiertos y libros antiguos.',
   },
 ];
+
 
 export default function Caminos() {
   const zona = useRef<HTMLElement>(null);
@@ -111,20 +101,22 @@ export default function Caminos() {
             className="casa-camino"
             style={{ transitionDelay: `${i * 150}ms` }}
           >
-            <video
-              className="casa-camino-video"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              poster={c.cartel}
-              aria-label={c.alt}
-            >
-              {c.fuentes.map((n) => (
-                <source key={n} src={`/video/${n}`} type={n.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
-              ))}
-            </video>
+            {/* IMAGEN Y NO VÍDEO, y es lo que arregla esta sección.
+                Aquí había tres vídeos de la casa y los tres eran claros —crema
+                y dorado—, así que el nombre en blanco encima pedía un velo tan
+                espeso que ya no se veía el vídeo: se pagaba el peso sin
+                recibir la imagen. Éstas están hechas a medida del problema:
+                negras, con la luz a la derecha y el tercio izquierdo vacío,
+                que es justo donde cae el nombre.
+                Y pesan 120 KB en vez de 1,6 MB entre las tres. */}
+            <Image
+              className="casa-camino-img"
+              src={c.img}
+              alt={c.alt}
+              width={1200}
+              height={1600}
+              sizes="(max-width: 767px) 100vw, 33vw"
+            />
             <div className="casa-camino-velo" aria-hidden="true" />
 
             <h3 className="casa-camino-nombre" lang="es">
