@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { CONTACTO } from '@/content/site';
 import { useEffect, useState } from 'react';
 import Cursor from '@/components/Cursor';
 import Cortina from '@/components/Cortina';
@@ -436,11 +437,11 @@ export default function Sinergia() {
                     Esto es lo que hay entre dos personas. De dónde viene está más atrás: en tu línea familiar, y hay que
                     mirarla entera. Eso es lo que hacemos en una sesión.
                   </p>
-                  <Link href="/#cita" data-mag data-cur-label="Reservar" className="pill pill-gold" style={{ justifyContent: 'center' }}>
+                  <a href={`mailto:${CONTACTO.email}?subject=Quiero%20mirar%20mi%20%C3%A1rbol`} data-mag data-cur-label="Escribir" className="pill pill-gold" style={{ justifyContent: 'center' }}>
                     <span>Mirar mi árbol con Iris</span>
                     <span>→</span>
-                  </Link>
-                  <Link href="/#lista-espera" style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-3)', textAlign: 'center' }}>
+                  </a>
+                  <Link href="/membresia" style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-3)', textAlign: 'center' }}>
                     ¿Prefieres esperar al grupo? Entra en la lista de la comunidad →
                   </Link>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -448,9 +449,9 @@ export default function Sinergia() {
                       <span>Descargar el informe</span>
                       <span className="pill-arrow">↓</span>
                     </button>
-                    <Link href="/#cita" data-mag className="btn-outline btn-outline-dark" style={{ flex: 1, minWidth: 148, justifyContent: 'center' }}>
+                    <a href={`mailto:${CONTACTO.email}?subject=Sesi%C3%B3n%20con%20Iris`} data-mag className="btn-outline btn-outline-dark" style={{ flex: 1, minWidth: 148, justifyContent: 'center' }}>
                       Sesión con Iris
-                    </Link>
+                    </a>
                   </div>
                   {leadOk === false && (
                     <span style={{ fontSize: 'var(--t-nota)', lineHeight: 1.6, color: '#A33B3B' }}>
@@ -505,11 +506,11 @@ export default function Sinergia() {
           </Aparece>
           <Aparece retraso={1}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-              <Link href="/#cita" data-mag data-cur-label="Reservar" className="pill pill-dark">
+              <a href={`mailto:${CONTACTO.email}?subject=Reservar%20una%20sesi%C3%B3n`} data-mag data-cur-label="Escribir" className="pill pill-dark">
                 <span>Reservar una sesión</span>
                 <span className="pill-arrow" style={{ background: 'var(--acento)', color: '#FBF6EE' }}>→</span>
-              </Link>
-              <Link href="/#lista-espera" data-mag className="btn-outline btn-outline-dark">
+              </a>
+              <Link href="/membresia" data-mag className="btn-outline btn-outline-dark">
                 O ver la comunidad
               </Link>
             </div>

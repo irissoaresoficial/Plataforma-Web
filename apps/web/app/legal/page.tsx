@@ -21,6 +21,21 @@ import { Texto } from '@/components/Pendiente';
 export const metadata = {
   title: 'Aviso legal · Iris Soares',
   description: 'Quién está detrás de esta web, qué se ofrece aquí y bajo qué condiciones.',
+  /*
+   * EL CANONICAL, QUE FALTABA, Y NO ES UN DETALLE.
+   *
+   * El layout raíz declara `alternates: { canonical: '/' }` y eso se hereda
+   * hacia abajo. O sea que esta página venía sirviendo
+   *
+   *     <link rel="canonical" href="https://escueladesabiduria33.com">
+   *
+   * que es una nota firmada diciéndole a Google «no me indexes a mí, la buena
+   * es la portada». Las seis páginas con `layout.tsx` propio ya lo arreglaron
+   * en su día; estas dos se quedaron fuera porque no tienen layout — exportan
+   * `metadata` desde la propia página, que también vale, pero nadie volvió a
+   * mirarlas. Está contado entero en `lib/seo.ts`.
+   */
+  alternates: { canonical: '/legal' },
 };
 
 export default function Legal() {

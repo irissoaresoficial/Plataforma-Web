@@ -94,7 +94,13 @@ export default function Kabala() {
                 página y el único que se lee entero antes de decidir seguir
                 bajando: que se escriba al ritmo al que se baja es exactamente
                 lo que hace que se lea en vez de saltárselo. */}
-            <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '16ch' }}>
+            {/* `as="h1"`, QUE FALTABA, Y NO ES UN DETALLE DE MAQUETA.
+                Esta página servía CERO `<h1>`: el titular de entrada salía en
+                un `<div>` con pinta de titular. Para un buscador —y para un
+                lector de pantalla— eso no es el título de la página, es texto
+                grande. Era la única de las nueve páginas sin `h1`. Lo demás no
+                cambia: `Aparece` acepta la etiqueta y pinta igual. */}
+            <Aparece as="h1" modo="letras" className="titular-seccion" style={{ maxWidth: '16ch' }}>
               Un mapa de ti que tiene tres mil años.
             </Aparece>
             <Aparece retraso={1}>

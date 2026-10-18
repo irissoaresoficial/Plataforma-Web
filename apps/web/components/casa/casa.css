@@ -36,44 +36,98 @@
  */
 
 /* --------------------------------------------------------------- la barra */
+/* OJO CON EL `transform` DE ESTA CAJA. Aquí había un `translateX(-50%)` para
+   centrar la pastilla, y se cargaba el menú entero sin dar ningún error: un
+   ancestro con `transform` se convierte en el bloque contenedor de todo lo que
+   lleve `position: fixed` dentro. O sea que el panel de pantalla completa
+   dejaba de medirse contra la ventana y pasaba a medirse contra la pastilla
+   —cuarenta píxeles de alto— y encima lo recortaba el `overflow: hidden` de la
+   portada. Se abría el círculo y no se veía nada.
+   Se centra con flex, que no crea bloque contenedor. */
 .casa-barra {
   position: absolute;
   top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
+  left: 0;
+  right: 0;
+  z-index: 90;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  justify-content: center;
+  /* La caja cruza la pantalla de lado a lado, así que no puede comerse los
+     clics de lo que hay debajo. Los recuperan la pastilla y el panel. */
+  pointer-events: none;
+}
+/* En las páginas sin portada a pantalla completa la barra va clavada a la
+   ventana. Y aquí `fixed` sí vale sin romper el menú, porque esta caja no
+   lleva `transform`: lo que mataba el panel era el `translateX(-50%)` de
+   antes, no el `fixed`. */
+.casa-barra-fija {
+  position: fixed;
+  top: 18px;
+}
+/* Se aparta hacia arriba al bajar y vuelve al subir. El `transform` va en la
+   pastilla y no en la caja de fuera: la caja es la que contiene el panel de
+   pantalla completa, y un `transform` ahí volvería a romperlo —es el mismo
+   fallo que ya costó una vez (ver arriba). */
+.casa-barra-fija .casa-pastilla {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+.casa-barra-fuera .casa-pastilla {
+  transform: translateY(-140%);
+  opacity: 0;
 }
 
 .casa-pastilla {
+  position: relative;
+  /* Por encima del panel: el aspa tiene que seguir pulsándose con el menú
+     abierto, que es como se cierra con el ratón. */
+  z-index: 2;
+  pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 10px 12px 10px 22px;
+  gap: 16px;
+  padding: 8px 8px 8px 18px;
   border-radius: var(--radio-pildora);
   background: var(--papel);
   box-shadow: 0 10px 28px rgba(34, 29, 31, 0.16);
 }
 
 .casa-marca {
-  font-family: var(--sans);
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--tinta);
   text-decoration: none;
+}
+.casa-marca-sello {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.casa-marca span {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   white-space: nowrap;
+}
+.casa-marca small {
+  font-size: 10.5px;
+  font-weight: var(--peso-texto);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(34, 29, 31, 0.5);
 }
 
 /* Las dos rayas. Cada una gira sobre su propio centro, así que para que se
    crucen en el mismo punto hay que juntarlas primero —de ahí el translateY— y
    girarlas después. Si se gira sin juntar, sale un aspa descentrada. */
 .casa-rayas {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border: 0;
   border-radius: var(--radio-pildora);
   background: var(--arena);
@@ -83,52 +137,130 @@
   gap: 6px;
   cursor: pointer;
   padding: 0;
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+}
+.casa-rayas:hover {
+  background: #e6e0d4;
 }
 .casa-rayas span {
   display: block;
-  width: 16px;
-  height: 1.5px;
+  width: 17px;
+  height: 1.6px;
   border-radius: 2px;
   background: var(--tinta);
-  transition: transform 0.3s cubic-bezier(0.77, 0, 0.175, 1);
+  transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
 }
 .casa-rayas-abierta span:first-child {
-  transform: translateY(3.75px) rotate(45deg);
+  transform: translateY(3.8px) rotate(45deg);
 }
 .casa-rayas-abierta span:last-child {
-  transform: translateY(-3.75px) rotate(-45deg);
+  transform: translateY(-3.8px) rotate(-45deg);
 }
 
+/* ---------------------------------------- el menú, a toda la pantalla */
+/* El panel está siempre puesto y recortado a un círculo de radio cero centrado
+   en el botón. Al abrir, el círculo crece hasta pasarse de la esquina más
+   lejana (150 %). No se ve un panel que aparece: se ve el botón abriéndose y
+   comiéndose la pantalla.
+   `--casa-x` y `--casa-y` las mide el componente al pulsar, porque la pastilla
+   va centrada y su sitio depende del ancho de la ventana. */
 .casa-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
-  min-width: 210px;
-  padding: 8px;
-  border-radius: var(--radio-suave);
-  background: var(--papel);
-  box-shadow: 0 16px 40px rgba(34, 29, 31, 0.2);
-  opacity: 0;
-  transform: translateY(-8px) scale(0.97);
-  pointer-events: none;
-  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  justify-content: center;
+  gap: clamp(28px, 5vh, 56px);
+  padding: 112px var(--hueco) 40px;
+  background: var(--tinta);
+  clip-path: circle(0px at var(--casa-x, 50%) var(--casa-y, 46px));
+  transition: clip-path 0.72s cubic-bezier(0.76, 0, 0.24, 1);
+  overflow-y: auto;
 }
-.casa-menu-abierto {
+.casa-barra-abierta .casa-menu {
+  clip-path: circle(150% at var(--casa-x, 50%) var(--casa-y, 46px));
+}
+
+.casa-menu-lista {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--ancho);
+  margin: 0 auto;
+}
+.casa-menu-lista a {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(16px, 3vw, 34px);
+  padding: clamp(14px, 2.2vh, 22px) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--papel);
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
+.casa-barra-abierta .casa-menu-lista a {
   opacity: 1;
   transform: none;
-  pointer-events: auto;
 }
-.casa-menu a {
-  padding: 11px 14px;
-  border-radius: var(--radio-medio);
+.casa-menu-lista a:hover .casa-menu-texto {
+  color: var(--oro-luz);
+}
+.casa-menu-num {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.38);
+  flex-shrink: 0;
+}
+.casa-menu-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--serif);
+  font-size: clamp(30px, 6vw, 62px);
+  font-weight: var(--peso-fino);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  transition: color 0.25s ease;
+}
+.casa-menu-texto small {
   font-family: var(--sans);
   font-size: var(--t-nota);
-  font-weight: 500;
-  color: var(--tinta);
-  text-decoration: none;
-  transition: background 0.2s ease;
+  font-weight: var(--peso-texto);
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.5);
 }
-.casa-menu a:hover {
-  background: var(--arena);
+
+.casa-menu-pie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  width: 100%;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.casa-barra-abierta .casa-menu-pie {
+  opacity: 1;
+  transform: none;
+}
+.casa-menu-pie a {
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+}
+.casa-menu-pie a:hover {
+  color: var(--papel);
+  text-decoration: underline;
 }
 
 /* -------------------------------------------------------------- la portada */
@@ -498,11 +630,25 @@
   overflow: hidden;
   background: rgba(0, 0, 0, 0.3);
 }
-.casa-ficha-video video {
+.casa-ficha-video video,
+.casa-ficha-video img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+/* LA FICHA DE IRIS LLEVA FOTO, Y LA FOTO ES VERTICAL (361×562).
+   En el hueco de 16:9 de las otras dos, un retrato vertical se recorta por la
+   frente y la barbilla: sale una tira de cara. Así que cuando hay foto el
+   hueco cambia de forma —4:5, que es formato de retrato— y el encuadre se
+   sube, porque en esa foto ella no está en el centro de la imagen sino en la
+   mitad de arriba. */
+.casa-ficha-retrato {
+  aspect-ratio: 4 / 5;
+  max-width: 340px;
+}
+.casa-ficha-retrato img {
+  object-position: center 22%;
 }
 .casa-ficha-p {
   margin: 0;
@@ -545,7 +691,10 @@
     font-family: var(--sans);
     font-size: var(--t-nota);
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.45);
+    /* 0.56 y no 0.45. Un botón apagado del índice sigue siendo un botón: se
+       lee y se pulsa, así que le toca el 4,5:1 de texto pequeño. Con 0.45 se
+       quedaba en 4,46 — a cuatro centésimas, pero por debajo. */
+    color: rgba(255, 255, 255, 0.56);
     cursor: pointer;
     transition: color 0.3s ease, background 0.3s ease;
   }
@@ -592,46 +741,260 @@
   }
 }
 
+/* --------------------------------------------------------- los tres caminos */
+/* La plantilla era un «Categories» de tienda. Aquí son las tres puertas de la
+   casa, y el sitio es éste: cuando alguien ya ha entendido el patrón, de dónde
+   viene y quién es Iris, lo único que queda es «¿y por dónde entro?». */
+.casa-caminos {
+  background: var(--papel);
+  padding: clamp(64px, 8vw, 110px) 0 0;
+}
+.casa-caminos-h {
+  margin: 0 auto clamp(40px, 5vw, 64px);
+  max-width: var(--ancho);
+  padding: 0 var(--hueco);
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.02em;
+  color: var(--tinta);
+  text-align: center;
+}
+
+.casa-caminos-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.casa-caminos-dentro {
+  opacity: 1;
+  transform: none;
+}
+@media (min-width: 768px) {
+  .casa-caminos-rejilla {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.casa-camino {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 400px;
+  padding: 24px;
+  overflow: hidden;
+  /* El retardo escalonado lo pone el componente en el `style`, uno por ficha:
+     entran de izquierda a derecha en vez de las tres de golpe. */
+  transition: inherit;
+}
+@media (min-width: 640px) {
+  .casa-camino {
+    min-height: 500px;
+    padding: 32px;
+  }
+}
+@media (min-width: 768px) {
+  .casa-camino {
+    min-height: 750px;
+    padding: 48px;
+  }
+}
+
+.casa-camino-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+.casa-camino:hover .casa-camino-video {
+  transform: scale(1.05);
+}
+/* El velo. La plantilla pedía negro al 10 %, y al 20 % por encima. Aquí van
+   más hondos: nuestros vídeos son crema y dorado, casi blancos, y con un 10 %
+   el nombre en blanco encima no se leía ni de lejos. Medido sobre el píxel
+   pintado, que es lo que manda MARCA.md §3. */
+.casa-camino-velo {
+  position: absolute;
+  inset: 0;
+  background: rgba(23, 18, 14, 0.46);
+  transition: background 0.5s ease;
+}
+.casa-camino:hover .casa-camino-velo {
+  background: rgba(23, 18, 14, 0.56);
+}
+
+/* EL NOMBRE EN VERTICAL, que es lo que hace la sección.
+   `vertical-lr` lo pone de arriba abajo y el giro de media vuelta lo deja
+   leyéndose de abajo arriba, como el lomo de un libro en español. Sin el giro
+   se lee al revés y parece un fallo de maqueta. */
+.casa-camino-nombre {
+  position: relative;
+  z-index: 10;
+  margin: 0;
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  font-family: var(--serif);
+  font-size: clamp(44px, 7vw, 92px);
+  font-weight: var(--peso-texto);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--papel);
+  transition: transform 0.5s ease;
+}
+.casa-camino:hover .casa-camino-nombre {
+  transform: rotate(180deg) translateY(-8px);
+}
+
+.casa-camino-boton {
+  position: relative;
+  z-index: 10;
+  margin-top: auto;
+  padding: 12px 28px;
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  text-decoration: none;
+}
+
 /* ------------------------------------------------------------------ el pie */
-/* Gerson pidió quitar el pie, y el pie de siete columnas se ha ido entero. Esta
-   línea no es aquel pie: es el mínimo que la ley obliga a tener a la vista.
-   La LSSI-CE (art. 10) pide que quien vende diga quién es y cómo se le escribe,
-   y el RGPD que la política de privacidad se alcance desde cualquier página.
-   Sin esto la web queda fuera de norma, así que se queda —callada y en una
-   línea. */
 .casa-pie {
   background: var(--tinta);
-  color: rgba(255, 255, 255, 0.55);
-  /* 96 px por abajo, y no 26: la pastilla del chat mide 59 px y flota a 24 px
-     del borde, así que tapaba los tres enlaces —«Aviso legal», «Privacidad» y
-     el correo— justo cuando se llega al final, que es donde se les busca.
-     Tapar el aviso legal no es un roce de maqueta: son los enlaces que la ley
-     obliga a tener alcanzables. Medido con la caja de los dos elementos, no a
-     ojo. */
-  padding: 26px var(--hueco) 96px;
+  color: rgba(255, 255, 255, 0.62);
+  padding: clamp(56px, 7vw, 88px) var(--hueco) 0;
   font-family: var(--sans);
-  font-size: 14px;
+  font-size: var(--t-nota);
 }
 .casa-pie-dentro {
   max-width: var(--ancho);
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+@media (min-width: 720px) {
+  .casa-pie-dentro {
+    grid-template-columns: 1.3fr 1fr 1fr 1fr;
+    gap: 32px;
+  }
+}
+.casa-pie-firma {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.casa-pie-nombre {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-weight: var(--peso-medio);
+  color: var(--papel);
+}
+.casa-pie-nombre span {
+  font-weight: var(--peso-texto);
+  color: rgba(255, 255, 255, 0.62);
+}
+.casa-pie-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+}
+.casa-pie-rotulo {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  /* 0.52 y no 0.45: a 12 px esto es texto pequeño y la norma pide 4,5:1.
+     Con 0.45 se quedaba en 4,41. Medido sobre el píxel pintado. */
+  color: rgba(255, 255, 255, 0.52);
+}
+.casa-pie-col a {
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.casa-pie-col a:hover {
+  color: var(--papel);
+  text-decoration: underline;
+}
+
+.casa-pie-raya {
+  max-width: var(--ancho);
+  margin: clamp(40px, 5vw, 64px) auto 0;
+  padding: 22px 0;
+  /* 96 px por abajo no hacen falta ya: el chat se ha quitado. Lo que queda es
+     el aire normal de un pie. */
+  padding-bottom: clamp(26px, 3vw, 36px);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 20px;
+  gap: 12px 28px;
+  align-items: flex-end;
+  justify-content: space-between;
 }
-.casa-pie a {
-  color: rgba(255, 255, 255, 0.78);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
-  transition: color 0.2s ease, border-color 0.2s ease;
+.casa-pie-raya p {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.5);
 }
-.casa-pie a:hover {
-  color: var(--papel);
-  border-color: rgba(255, 255, 255, 0.6);
+.casa-pie-raya span {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
 }
-.casa-pie-hueco {
-  flex: 1;
+
+/* Un titular que está ahí para los buscadores y los lectores de pantalla, no
+   para verse. NO se usa `display:none` ni `visibility:hidden`: eso lo borra
+   también para el lector de pantalla, que es justo a quien va dirigido. */
+.casa-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------- el brillo de un botón */
+/* Una lengua de luz que cruza el botón al pasar por encima. Va en los botones
+   que piden algo, no en todos: si brilla todo, no destaca nada. */
+.casa-brillo {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.25s ease;
+}
+.casa-brillo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(0, 0, 0, 0.05) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+.casa-brillo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+.casa-brillo:hover::before {
+  transform: translateX(100%);
+}
+.casa-brillo:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* ------------------------------------------------ cuando se pide quietud */
@@ -639,12 +1002,31 @@
    o le dispara algo. Se apagan las entradas, las transiciones y el fondo fijo;
    el contenido se queda donde tiene que estar y se lee igual. */
 @media (prefers-reduced-motion: reduce) {
-  .casa-ficha {
+  .casa-ficha,
+  .casa-caminos-rejilla {
     opacity: 1;
     transform: none;
     transition: none;
   }
+  .casa-camino-video,
+  .casa-camino-velo,
+  .casa-brillo,
+  .casa-brillo::before {
+    transition: none;
+  }
+  .casa-camino:hover .casa-camino-video {
+    transform: none;
+  }
+  .casa-camino:hover .casa-camino-nombre {
+    transform: rotate(180deg);
+  }
+  .casa-brillo:hover {
+    transform: none;
+  }
   .casa-menu,
+  .casa-barra-fija .casa-pastilla,
+  .casa-menu-lista a,
+  .casa-menu-pie,
   .casa-rayas span {
     transition: none;
   }

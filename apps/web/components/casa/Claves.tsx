@@ -28,6 +28,7 @@
  * principio y no se mueve nada. No es un extra, es la norma.
  */
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { SESION } from '@/content/site';
@@ -40,28 +41,44 @@ const ANOS = new Date().getFullYear() - SESION.desde;
 const FICHAS = [
   {
     id: 'quien',
-    titulo: 'Quién soy',
-    /* El orden de las fuentes es el del archivo MÁS LIGERO primero, y por eso
-       no es el mismo en las tres: el navegador se queda con la primera que
-       sabe leer, no con la más pequeña. En `antesala` y `recorrido` gana el
-       webm; en `arbol-scroll` el webm pesa 300 KB MÁS que el mp4, así que ahí
-       va el mp4 delante. Medido con `ls`, no supuesto. */
-    fuentes: ['antesala.webm', 'antesala.mp4'],
+    /* Lo pidió Gerson con estas palabras: aquí no va «Quién soy», va ella
+       presentándose. Y es mejor: un rótulo abstracto no presenta a nadie. */
+    titulo: 'Hola, soy Iris Soares',
+    corto: 'Quién es Iris',
+    /* ÉSTA ES LA ÚNICA FICHA CON FOTO Y NO CON VÍDEO, y es a propósito. Es la
+       foto de verdad de Iris dando una formación, con el micro puesto y la
+       sala detrás. Un vídeo abstracto de números dorados no demuestra que
+       alguien enseñe; una foto suya delante de una sala, sí. La autoridad se
+       enseña, no se escribe. */
+    foto: '/images/iris-hablando.jpg',
+    alt: 'Iris Soares, con micrófono de solapa, dando una formación ante una sala con público.',
+    fuentes: [],
     cartel: '',
     texto:
-      `Iris Soares. Numerología transgeneracional y Kábala. Desde ${SESION.desde}, y siempre en consulta: ${ANOS} años mirando la misma cuenta en gente que no se parece en nada.`,
+      `Creadora de la Escuela de Sabiduría 33. Numerología transgeneracional y Kábala, desde ${SESION.desde}: ${ANOS} años mirando la misma cuenta en gente que no se parece en nada.`,
   },
   {
     id: 'distinto',
     titulo: 'Qué hago distinto',
+    corto: 'Qué hago distinto',
+    foto: '',
+    alt: '',
     fuentes: ['recorrido.webm', 'recorrido.mp4'],
     cartel: '',
     texto:
-      'No te leo la carta y ya. Te enseño la cuenta —tu fecha, tu nombre— para que la rehagas tú el día que te haga falta. Si la lectura depende de que yo esté delante, no te he enseñado nada.',
+      'No te entrego un informe y adiós. Te enseño a hacer la cuenta —tu fecha, tu nombre— para que la repitas tú el día que te haga falta. Si depende de que yo esté delante, no te he enseñado nada.',
   },
   {
     id: 'llevas',
     titulo: 'Qué te llevas',
+    corto: 'Qué te llevas',
+    foto: '',
+    alt: '',
+    /* El orden de las fuentes es el del archivo MÁS LIGERO primero, y no es el
+       mismo en las dos: el navegador se queda con la primera que sabe leer, no
+       con la más pequeña. En `recorrido` gana el webm; en `arbol-scroll` el
+       webm pesa 300 KB MÁS que el mp4, así que ahí va el mp4 delante. Medido
+       con `ls`, no supuesto. */
     fuentes: ['arbol-scroll.mp4', 'arbol-scroll.webm'],
     cartel: '/images/arbol-scroll-cartel.jpg',
     texto:
@@ -132,10 +149,13 @@ export default function Claves() {
 
       <div className="casa-claves-rejilla">
         <div className="casa-claves-izq">
+          {/* Decía «aquí no te leo la carta», y nombraba justo lo que no
+              queremos que se piense. Dice lo mismo sin la carta: el trabajo
+              no es darte el resultado, es que lo sepas ver tú. */}
           <h2 className="casa-claves-h">
-            Aquí no te leo la carta.
+            No te digo cuál es tu patrón.
             <br />
-            Te enseño a leerla.
+            Te enseño a verlo.
           </h2>
 
           <nav className="casa-indice" aria-label="Las tres fichas">
@@ -147,14 +167,14 @@ export default function Claves() {
                 aria-current={activa === i}
                 onClick={() => ir(i)}
               >
-                {f.titulo}
+                {f.corto}
               </button>
             ))}
           </nav>
 
           <div className="casa-claves-pide">
-            <p>Sin cartas y sin adivinación. Dos datos que no elegiste y una cuenta que puedes rehacer.</p>
-            <Link href="/cursos" className="casa-pide-boton">
+            <p>El patrón se ve en tu fecha y en tu nombre. En los talleres se aprende a leerlo.</p>
+            <Link href="/cursos" className="casa-pide-boton casa-brillo">
               Ver los talleres
             </Link>
           </div>
@@ -171,20 +191,30 @@ export default function Claves() {
             >
               <Sello tam={40} claro />
               <h3 className="casa-ficha-h">{f.titulo}</h3>
-              <div className="casa-ficha-video">
-                {/* Vídeos de la casa, no los de la plantilla. Los de la
-                    plantilla viven en el CloudFront de otra cuenta: ni son
-                    nuestros ni se alcanzan desde aquí. Éstos ya están medidos
-                    y son 16:9, que es lo que pide el hueco. */}
-                <video autoPlay muted loop playsInline preload="metadata" poster={f.cartel || undefined}>
-                  {f.fuentes.map((n) => (
-                    <source
-                      key={n}
-                      src={`/video/${n}`}
-                      type={n.endsWith('.webm') ? 'video/webm' : 'video/mp4'}
-                    />
-                  ))}
-                </video>
+              <div className={`casa-ficha-video${f.foto ? ' casa-ficha-retrato' : ''}`}>
+                {/* Vídeos de la casa, no los de la plantilla: los suyos viven
+                    en el CloudFront de otra cuenta y ni son nuestros ni se
+                    alcanzan desde aquí. La primera ficha lleva foto. */}
+                {f.foto ? (
+                  <Image
+                    src={f.foto}
+                    alt={f.alt}
+                    width={361}
+                    height={562}
+                    sizes="(max-width: 1023px) 100vw, 520px"
+                    priority={false}
+                  />
+                ) : (
+                  <video autoPlay muted loop playsInline preload="metadata" poster={f.cartel || undefined}>
+                    {f.fuentes.map((n) => (
+                      <source
+                        key={n}
+                        src={`/video/${n}`}
+                        type={n.endsWith('.webm') ? 'video/webm' : 'video/mp4'}
+                      />
+                    ))}
+                  </video>
+                )}
               </div>
               <p className="casa-ficha-p">{f.texto}</p>
             </article>

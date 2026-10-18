@@ -29,9 +29,12 @@ export default function Sobre() {
   return (
     <section className="casa-sobre" id="esto">
       <div className="casa-sobre-alto">
+        {/* «No hace falta creer en nada» se ha ido: ponía la fe sobre la
+            mesa, y aquí la fe no pinta nada. Esto va de algo que se repite y
+            de dónde viene. */}
         <p className="casa-sobre-entrada">
-          No hace falta creer en nada. Hace falta mirar una cuenta que ya estaba
-          hecha antes de que llegaras tú.
+          Lo que se repite no es mala suerte. Es un patrón. Y los patrones se
+          heredan.
         </p>
 
         <div className="casa-sobre-botones">

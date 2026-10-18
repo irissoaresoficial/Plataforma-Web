@@ -9,8 +9,9 @@ import CampoNumeros from '@/components/CampoNumeros';
    la rueda. Explicado en components/Aparece.tsx. */
 import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
-import Nav from '@/components/Nav';
-import ChatWidget from '@/components/ChatWidget';
+import Barra from '@/components/casa/Barra';
+import Pie from '@/components/casa/Pie';
+import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 import Pendiente, { Hueco } from '@/components/Pendiente';
@@ -193,7 +194,12 @@ export default function Cursos() {
       <Cursor hitSelector="[data-mag],a,input,label,[data-card]" />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta="La membresía" ctaHref="/membresia" extra={CURSOS.map((c) => ({ href: `#${c.id}`, label: falta(c.titulo) ? 'Próximo curso' : c.titulo }))} />
+      {/* La barra nueva, la misma que la portada: pastilla con el sello que se
+          abre a toda la pantalla. Va `fija` porque esta página no tiene
+          portada a pantalla completa a la que pegarse.
+          El menú de la barra ya lleva las cinco puertas de la casa, así que
+          aquí no hace falta repetirlas. */}
+      <Barra fija />
 
       {/* ── EL CATÁLOGO, LO PRIMERO ──────────────────────────
           Esta página se llamaba «cursos» y era la landing de UNO. El titular
@@ -423,38 +429,15 @@ export default function Cursos() {
               </Link>
             </div>
           </Aparece>
-          {/* El pie también entra: es lo último de la página, y ahí es donde
-              este patrón suele dejar contenido a media opacidad para siempre
-              porque ya no queda scroll con el que terminar de subirlo. El
-              componente lo resuelve recortando el recorrido por lo que queda. */}
-          <Aparece style={{ borderTop: '1px solid var(--linea)', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <Link href="/" style={{ fontSize: 'var(--t-nota)', fontWeight: 700, color: 'var(--tx)' }}>
-                <Marca tam={52} apilado />
-              </Link>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
-                <Link href="/sinergia" style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-2)' }}>Prueba gratis</Link>
-                <Link href="/membresia" style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-2)' }}>La membresía</Link>
-                <Link href="/#cita" style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-2)' }}>Sesión con Iris</Link>
-              </div>
-              <span style={{ display: 'flex', gap: 14, fontSize: 'var(--t-nota)', marginBottom: 4 }}>
-              <Link href="/legal" style={{ color: 'var(--tx-2)' }}>Aviso legal</Link>
-              <Link href="/privacidad" style={{ color: 'var(--tx-2)' }}>Tus datos</Link>
-            </span>
-            <span style={{ fontSize: 'var(--t-nota)', lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
-                Los cursos no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
-              </span>
-            </div>
-            <span style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-4)' }}>© 2026 · Cursos</span>
-          </Aparece>
         </div>
       </div>
-      {/* EL CHAT, TAMBIÉN AQUÍ.
-          Estaba sólo en la portada, y es la única forma de reservar una sesión
-          en toda la web: quien entra directo a esta página desde una búsqueda o
-          desde un enlace compartido no tenía dónde reservar sin volver al
-          principio. */}
-      <ChatWidget />
+
+      {/* EL PIE DE LA CASA, el mismo que la portada y que las páginas legales.
+          Aquí había uno escrito a mano, con sus propios enlaces y su propio
+          descargo: tres pies distintos en la misma web son tres sitios donde
+          corregir lo mismo, y el día que cambie un enlace se corrige en dos.
+          Uno de los suyos, además, iba a `/#cita`, que ya no existe. */}
+      <Pie />
     </div>
   );
 }

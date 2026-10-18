@@ -1,5 +1,6 @@
 'use client';
 
+import { CONTACTO } from '@/content/site';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { CURSOS, falta, type Curso } from '@/content/site';
@@ -215,7 +216,16 @@ export default function Catalogo({ compacto = false, titulo, rotulo = 'Cursos y 
           {aEnseñar.length > 0 && (
             <div className="cat-pronto" aria-hidden={false}>
               <p>Próximamente, más cursos.</p>
-              <span>Van saliendo poco a poco. Si quieres que te avise, dímelo en la consulta.</span>
+              {/* Decía «dímelo en la consulta», y la consulta era el chat, que
+                  ya no está en esta página. Una web que te manda a un sitio
+                  que no existe es peor que una que no te manda a ninguno. */}
+              <span>
+                Van saliendo poco a poco. Si quieres que te avise,{' '}
+                <a href={`mailto:${CONTACTO.email}?subject=Avisadme%20de%20los%20cursos%20nuevos`} style={{ color: 'var(--acento)' }}>
+                  escríbeme
+                </a>
+                .
+              </span>
             </div>
           )}
 

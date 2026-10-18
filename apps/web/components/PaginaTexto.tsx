@@ -1,8 +1,9 @@
 'use client';
 
-import Nav from './Nav';
-import ChatWidget from './ChatWidget';
+import Barra from './casa/Barra';
+import Pie from './casa/Pie';
 import { CONTACTO } from '@/content/site';
+import './casa/casa.css';
 
 /**
  * El molde de las páginas de texto legal. Una columna, mucho aire y nada que
@@ -20,9 +21,20 @@ import { CONTACTO } from '@/content/site';
  * correo, no tiene forma de seguir a los cursos, a la prueba gratis ni a la
  * comunidad: sólo puede volver al principio y empezar de cero.
  *
- * Con el `<Nav>` normal recuperan las cuatro salidas de la casa y el botón de
- * reservar, que es lo que hacen las otras cuatro páginas. No hace falta nada
- * especial: `Nav` ya sabe funcionar sin enlaces propios de página.
+ * ---------------------------------------------------------------------------
+ * 18 DE OCTUBRE: LA MISMA ROPA QUE LA PORTADA
+ * ---------------------------------------------------------------------------
+ * Gerson: «me gustaría que adaptaras el apartado de talleres y todos los links
+ * de políticas y demás con ese estilo». Así que estas páginas dejan el `Nav` de
+ * siempre y se ponen la barra nueva —la pastilla con el sello, que se abre a
+ * toda la pantalla— y el pie nuevo.
+ *
+ * La barra va en su variante `fija`: aquí no hay portada a pantalla completa a
+ * la que pegarse, así que se clava a la ventana y acompaña al bajar.
+ *
+ * Y el chat se va, que es lo que se pidió. No deja un callejón: la barra lleva
+ * a las cinco puertas y el pie al correo de Iris, que es más salidas de las que
+ * tenía esta página antes de todo esto.
  */
 export default function PaginaTexto({
   titulo,
@@ -36,10 +48,14 @@ export default function PaginaTexto({
   children: React.ReactNode;
 }) {
   return (
-    <div className="claro" style={{ minHeight: '100vh' }}>
-      <Nav cta="Reservar" ctaHref="/#cita" />
+    <div className="claro casa" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <Barra fija />
 
-      <div style={{ maxWidth: 820, margin: '0 auto', padding: 'clamp(104px,12vw,140px) clamp(16px,4vw,32px) clamp(64px,9vw,120px)' }}>
+      {/* `main` de verdad, no un `div`: es el contenido principal de la
+          página y es lo que busca el salto de «ir al contenido» de un lector
+          de pantalla. Y 124 px por arriba como mínimo, que es lo que mide la
+          barra flotante más su aire. */}
+      <main style={{ maxWidth: 'var(--ancho-lectura)', margin: '0 auto', padding: 'clamp(124px,13vw,160px) var(--hueco) clamp(64px,9vw,110px)' }}>
         <p style={{ margin: '0 0 14px', fontSize: 'var(--rotulo-tam)', fontWeight: 'var(--rotulo-peso)', letterSpacing: 'var(--rotulo-esp)', textTransform: 'uppercase', color: 'var(--acento)' }}>
           Actualizado el {actualizado}
         </p>
@@ -53,12 +69,9 @@ export default function PaginaTexto({
           ¿Alguna duda con esto? Escribe a{' '}
           <a href={`mailto:${CONTACTO.email}`} style={{ color: 'var(--acento)' }}>{CONTACTO.email}</a>.
         </div>
-      </div>
+      </main>
 
-      {/* El chat, también aquí. Era la única página desde la que no se podía
-          reservar sin volver al principio, y a la política de privacidad se
-          llega justo cuando alguien está decidiendo si deja su correo. */}
-      <ChatWidget />
+      <Pie />
     </div>
   );
 }
