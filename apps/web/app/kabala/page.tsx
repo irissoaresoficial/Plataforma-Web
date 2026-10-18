@@ -15,11 +15,10 @@ import Entrada from '@/components/casa/Entrada';
 import Pie from '@/components/casa/Pie';
 import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
-import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
 import ArbolVida from '@/components/ArbolVida';
 import { useLang } from '@/lib/i18n';
-import { KABALA, eur } from '@/content/site';
+import { CONTACTO, KABALA, eur } from '@/content/site';
 
 /*
  * ============================================================================
@@ -61,12 +60,17 @@ function Rotulo(_p: { children: React.ReactNode; claro?: boolean; className?: st
   return null;
 }
 
-function PillCTA({ onClick, variant, label }: { onClick: () => void; variant: 'gold' | 'cream'; label: string }) {
+/* ENLACE Y NO BOTÓN, desde que el chat ya no está.
+   Estos tres botones abrían el chat, que era la única forma de reservar en
+   toda la web. Gerson: «eso de que el chat está, erradícalo, borra ya ese
+   chat». Así que ahora llevan al correo de Iris, que es el camino que
+   funciona hoy — y un `mailto` es un enlace, no un botón. */
+function PillCTA({ a, variant, label }: { a: string; variant: 'gold' | 'cream'; label: string }) {
   return (
-    <button type="button" onClick={onClick} data-mag className={`pill pill-${variant}`}>
+    <a href={a} data-mag className={`pill pill-${variant}`}>
       <span>{label}</span>
       <span className="pill-arrow">→</span>
-    </button>
+    </a>
   );
 }
 
@@ -75,8 +79,7 @@ const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
 export default function Kabala() {
   useSiteScroll();
   const { t } = useLang();
-  const chatRef = useRef<ChatWidgetHandle>(null);
-  const abrirKabala = () => chatRef.current?.open('kabala');
+  const escribir = `mailto:${CONTACTO.email}?subject=Consulta%20de%20K%C3%A1bala`;
 
   return (
     <div className="pagina-oscura" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
@@ -195,7 +198,7 @@ export default function Kabala() {
                   en la mano.
                 </p>
                 <PillCTA
-                  onClick={abrirKabala}
+                  a={escribir}
                   variant="gold"
                   label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
                 />
@@ -234,7 +237,7 @@ export default function Kabala() {
                 <span style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(30px,3.4vw,42px)', fontWeight: 'var(--peso-fino)', lineHeight: 1, letterSpacing: '-.02em' }}>
                   {eur(KABALA.precio)}
                 </span>
-                <PillCTA onClick={abrirKabala} variant="cream" label="Reservar la consulta de Kábala" />
+                <PillCTA a={escribir} variant="cream" label="Reservar la consulta de Kábala" />
               </Aparece>
               <Aparece retraso={3}>
                 <p style={{ margin: 0, fontSize: 'var(--t-mini)', color: 'var(--tx-3)' }}>
@@ -262,7 +265,6 @@ export default function Kabala() {
       </div>
 
       <Pie />
-      <ChatWidget ref={chatRef} />
       <Susurros />
     </div>
   );

@@ -894,92 +894,72 @@
 }
 
 /* ------------------------------------------------------------------ el pie */
+/* Una fila y una línea. Nada más: el menú entero vive en la barra, que está
+   en todas las páginas y se abre a pantalla completa, así que repetirlo aquí
+   abajo sólo añadía altura. */
 .casa-pie {
   background: var(--tinta);
   color: rgba(255, 255, 255, 0.62);
-  padding: clamp(56px, 7vw, 88px) var(--hueco) 0;
+  padding: clamp(32px, 4vw, 48px) var(--hueco) clamp(26px, 3vw, 34px);
   font-family: var(--sans);
   font-size: var(--t-nota);
 }
 .casa-pie-dentro {
   max-width: var(--ancho);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 40px;
-}
-@media (min-width: 720px) {
-  .casa-pie-dentro {
-    grid-template-columns: 1.3fr 1fr 1fr 1fr;
-    gap: 32px;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 32px;
 }
 .casa-pie-firma {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-.casa-pie-nombre {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-weight: var(--peso-medio);
+  align-items: center;
+  gap: 12px;
   color: var(--papel);
+  text-decoration: none;
 }
-.casa-pie-nombre span {
-  font-weight: var(--peso-texto);
-  color: rgba(255, 255, 255, 0.62);
-}
-.casa-pie-col {
+.casa-pie-firma span {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 11px;
+  line-height: 1.25;
+  font-weight: var(--peso-medio);
 }
-.casa-pie-rotulo {
-  font-size: 12px;
-  font-weight: 600;
+.casa-pie-firma small {
+  font-size: 11px;
+  font-weight: var(--peso-texto);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  /* 0.52 y no 0.45: a 12 px esto es texto pequeño y la norma pide 4,5:1.
-     Con 0.45 se quedaba en 4,41. Medido sobre el píxel pintado. */
-  color: rgba(255, 255, 255, 0.52);
+  color: rgba(255, 255, 255, 0.5);
 }
-.casa-pie-col a {
+.casa-pie-enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+}
+.casa-pie-enlaces a {
   color: rgba(255, 255, 255, 0.82);
   text-decoration: none;
   transition: color 0.2s ease;
 }
-.casa-pie-col a:hover {
+.casa-pie-enlaces a:hover {
   color: var(--papel);
   text-decoration: underline;
 }
-
-.casa-pie-raya {
+.casa-pie-ano {
+  color: rgba(255, 255, 255, 0.5);
+}
+.casa-pie-nota {
   max-width: var(--ancho);
-  margin: clamp(40px, 5vw, 64px) auto 0;
-  padding: 22px 0;
-  /* 96 px por abajo no hacen falta ya: el chat se ha quitado. Lo que queda es
-     el aire normal de un pie. */
-  padding-bottom: clamp(26px, 3vw, 36px);
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 28px;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-.casa-pie-raya p {
-  margin: 0;
-  max-width: 62ch;
-  font-size: 14px;
+  margin: clamp(22px, 3vw, 32px) auto 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 13px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.5);
-}
-.casa-pie-raya span {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
+  /* 0.58 y no menos: a 13 px esto es texto pequeño y la norma pide 4,5:1.
+     Es letra legal, pero letra legal que no se lee no cumple nada. */
+  color: rgba(255, 255, 255, 0.58);
 }
 
 /* Un titular que está ahí para los buscadores y los lectores de pantalla, no
@@ -1139,4 +1119,364 @@ html[data-portada='si'] #chat-launcher {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* ====================================================================== */
+/*  LA LANDING DE LA MASTERCLASS                                          */
+/* ====================================================================== */
+/* La página que recibe el tráfico de la campaña. No es una portada: es un
+   formulario con una promesa al lado, y por eso la primera pantalla NO va a
+   pantalla completa —`100svh` dejaría el formulario por debajo del borde en
+   un portátil— sino al alto que necesite su contenido. */
+.casa-mc-alto {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(104px, 14vh, 150px) var(--hueco) clamp(56px, 8vw, 96px);
+  overflow: hidden;
+}
+.casa-mc-fondo {
+  object-fit: cover;
+  z-index: -2;
+}
+/* El velo va hondo a propósito: el fotograma de fondo lleva el titular del
+   curso rotulado encima, y a poco que se vea compite con el titular de
+   verdad. Al 78 % se queda en textura y color, que es para lo que está. */
+.casa-mc-velo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, rgba(23, 18, 14, 0.9) 0%, rgba(23, 18, 14, 0.78) 55%, rgba(23, 18, 14, 0.86) 100%);
+}
+
+.casa-mc-dentro {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 4vw, 44px);
+}
+/* El vídeo y el formulario, uno al lado del otro y los dos arriba: el vídeo
+   convence y el formulario recoge, sin que haya que bajar para apuntarse.
+   Por debajo de 960 px se apilan —vídeo y luego formulario—, que en el móvil
+   es el orden en que se leen. */
+.casa-mc-rejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(28px, 4vw, 48px);
+  align-items: start;
+}
+@media (min-width: 960px) {
+  .casa-mc-rejilla {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(36px, 4vw, 56px);
+  }
+}
+.casa-mc-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radio-suave);
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+.casa-mc-video video {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.casa-mc-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 62ch;
+}
+.casa-mc-rotulo {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--oro-luz);
+}
+.casa-mc-h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(36px, 5.6vw, 68px);
+  font-weight: var(--peso-fino);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--papel);
+}
+.casa-mc-h1 em {
+  font-style: italic;
+}
+.casa-mc-p {
+  margin: 0;
+  max-width: 48ch;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* ------------------------------------------------------- el formulario */
+.casa-mc-caja {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+}
+/* Pegado arriba junto al vídeo en escritorio, centrado en el móvil. */
+@media (min-width: 960px) {
+  .casa-mc-rejilla .casa-mc-caja {
+    margin: 0;
+    max-width: none;
+  }
+}
+.casa-registro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(22px, 3vw, 32px);
+  border-radius: var(--radio-suave);
+  background: var(--papel);
+  box-shadow: 0 24px 60px rgba(23, 18, 14, 0.4);
+}
+.casa-registro-h {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-h3);
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.02em;
+  color: var(--tinta);
+}
+.casa-registro-p {
+  margin: 0 0 4px;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  line-height: 1.55;
+  color: var(--tx-2, #55504f);
+}
+
+.casa-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: var(--peso-medio);
+  color: var(--tinta);
+}
+.casa-campo em {
+  font-style: normal;
+  font-weight: var(--peso-texto);
+  color: #6b6564;
+}
+.casa-campo input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-medio);
+  background: var(--arena);
+  font-family: var(--sans);
+  font-size: 16px; /* 16 px o menos y el iPhone hace zoom al enfocar. */
+  color: var(--tinta);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.casa-campo input:focus {
+  outline: 2px solid var(--vino);
+  outline-offset: 1px;
+  background: var(--papel);
+}
+
+.casa-acepto {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 2px;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.5;
+  /* #55504f sobre el papel da 7,4:1. La letra del consentimiento es la que
+     más se tiende a dejar gris claro, y es justo la que hay que poder leer:
+     un consentimiento que no se lee no es informado. */
+  color: #55504f;
+}
+.casa-acepto input {
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  flex-shrink: 0;
+  accent-color: var(--vino);
+}
+.casa-acepto a {
+  color: var(--vino);
+  text-decoration: underline;
+}
+
+.casa-registro-mal {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.45;
+  color: #9b1c2c;
+}
+
+.casa-registro-boton {
+  margin-top: 4px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: var(--radio-medio);
+  background: var(--vino);
+  color: var(--papel);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.casa-registro-boton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.casa-registro-hecho {
+  align-items: flex-start;
+  text-align: left;
+}
+.casa-registro-hecho p {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  color: #55504f;
+}
+.casa-registro-hecho a {
+  color: var(--vino);
+}
+.casa-registro-tic {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radio-pildora);
+  background: var(--vino);
+  color: var(--papel);
+  font-size: 20px;
+}
+
+/* ------------------------------------------------------- para quién es */
+.casa-mc-quien {
+  background: var(--arena);
+  color: var(--tinta);
+  padding: clamp(56px, 8vw, 104px) var(--hueco);
+}
+.casa-mc-quien-h {
+  max-width: var(--ancho);
+  margin: 0 auto clamp(28px, 4vw, 48px);
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.02em;
+}
+.casa-mc-lista {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(22px, 3vw, 40px);
+}
+@media (min-width: 820px) {
+  .casa-mc-lista {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.casa-mc-lista li {
+  padding-top: 18px;
+  border-top: 2px solid var(--oro);
+}
+.casa-mc-lista h3 {
+  margin: 0 0 8px;
+  font-family: var(--sans);
+  font-size: var(--t-bloque);
+  font-weight: var(--peso-medio);
+  letter-spacing: -0.02em;
+}
+.casa-mc-lista p {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.6;
+  color: #4a4443;
+}
+
+.casa-mc-cierre {
+  background: var(--tinta);
+  padding: clamp(56px, 8vw, 104px) var(--hueco);
+}
+
+/* ------------------------------------------------- un taller, y vienen más */
+/* Donde estaba el catálogo. Con un solo curso, una lista con buscador es una
+   estantería vacía con un cartel de estantería: aquí se dice lo que hay, se
+   manda a apuntarse y se avisa de que vienen más. */
+.casa-pronto {
+  background: var(--arena);
+  color: var(--tinta);
+  padding: clamp(64px, 9vw, 128px) var(--hueco);
+}
+.casa-pronto-dentro {
+  max-width: var(--ancho-lectura);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.casa-pronto-rotulo {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  /* `--oro-tinta` y no `--oro`: el dorado de adorno no llega al 4,5:1 sobre
+     claro. Está escrito en MARCA.md §3 y es la trampa en la que se cae sola. */
+  color: var(--oro-tinta);
+}
+.casa-pronto-h {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  font-weight: var(--peso-fino);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+.casa-pronto-h em {
+  font-style: italic;
+}
+.casa-pronto-p {
+  margin: 0;
+  max-width: 56ch;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: #4a4443;
+}
+.casa-pronto-boton {
+  margin-top: clamp(12px, 2vw, 22px);
+  padding: 15px 30px;
+  border-radius: var(--radio-pildora);
+  background: var(--vino);
+  color: var(--papel);
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: 600;
+  text-decoration: none;
+}
+.casa-pronto-nota {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: #6b6564;
 }

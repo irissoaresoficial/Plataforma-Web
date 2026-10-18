@@ -8,8 +8,9 @@ import CampoNumeros from '@/components/CampoNumeros';
    la rueda. Explicado en components/Aparece.tsx. */
 import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
-import Nav from '@/components/Nav';
-import ChatWidget from '@/components/ChatWidget';
+import Barra from '@/components/casa/Barra';
+import Pie from '@/components/casa/Pie';
+import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 
@@ -81,7 +82,14 @@ export default function Membresia() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta="Apuntarme" ctaHref="#avisar" />
+      {/* LA BARRA DE LA CASA, la misma que la portada: la pastilla con el
+          sello que se abre a toda la pantalla. Gerson: «cada apartado de la
+          web (servicios) necesito que lo adaptes a la home, no quiero que se
+          vea como estaba antes».
+          Va `fija` porque esta página no tiene portada a pantalla completa a
+          la que pegarse; se aparta al bajar y vuelve al subir. El menú ya
+          lleva las cinco puertas, así que no hace falta repetirlas aquí. */}
+      <Barra fija />
 
       {/* ═══════════════════════════════════════════════ LA ÚNICA PANTALLA */}
       <div className="vino com-hero">
@@ -193,25 +201,12 @@ export default function Membresia() {
           </Aparece>
         </div>
 
-        {/* El pie, dentro de la misma pantalla oscura. Una página de un solo
-            bloque no puede llevar un pie claro debajo: sería una segunda
-            pantalla, que es justo lo que se ha quitado. */}
-        <Aparece className="com-pie">
-          <Link href="/" aria-label="Ir al inicio">
-            <Marca tam={30} claro />
-          </Link>
-          <span>
-            <Link href="/legal">Aviso legal</Link>
-            <Link href="/privacidad">Tus datos</Link>
-          </span>
-        </Aparece>
       </div>
-      {/* EL CHAT, TAMBIÉN AQUÍ.
-          Estaba sólo en la portada, y es la única forma de reservar una sesión
-          en toda la web: quien entra directo a esta página desde una búsqueda o
-          desde un enlace compartido no tenía dónde reservar sin volver al
-          principio. */}
-      <ChatWidget />
+        {/* EL PIE DE LA CASA, el mismo que la portada. Aquí había uno
+            escrito a mano, con sus enlaces y su descargo: cuatro pies
+            distintos en la misma web son cuatro sitios donde corregir lo
+            mismo, y el día que cambie un enlace se corrige en tres. */}
+      <Pie />
     </div>
   );
 }

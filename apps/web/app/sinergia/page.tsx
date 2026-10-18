@@ -10,8 +10,9 @@ import CampoNumeros from '@/components/CampoNumeros';
    la rueda. Explicado en components/Aparece.tsx. */
 import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
-import Nav from '@/components/Nav';
-import ChatWidget from '@/components/ChatWidget';
+import Barra from '@/components/casa/Barra';
+import Pie from '@/components/casa/Pie';
+import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
 import { estudio, emailValido, limpiar, SENTIDO, type Estudio } from '@/lib/numerologia';
 import { correoSinergia } from '@/lib/correo-sinergia';
@@ -159,7 +160,14 @@ export default function Sinergia() {
     <div id="page" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor hitSelector="[data-mag],a,input,[data-card]" />
       <Cortina />
-      <Nav cta="Empezar gratis" ctaHref="#calc" />
+      {/* LA BARRA DE LA CASA, la misma que la portada: la pastilla con el
+          sello que se abre a toda la pantalla. Gerson: «cada apartado de la
+          web (servicios) necesito que lo adaptes a la home, no quiero que se
+          vea como estaba antes».
+          Va `fija` porque esta página no tiene portada a pantalla completa a
+          la que pegarse; se aparta al bajar y vuelve al subir. El menú ya
+          lleva las cinco puertas, así que no hace falta repetirlas aquí. */}
+      <Barra fija />
 
       <div className="claro" style={{ position: 'relative', color: 'var(--tx)', minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'var(--bg)', padding: 'clamp(86px,11vh,124px) clamp(14px,3vw,36px) clamp(30px,5vh,54px)', overflow: 'hidden' }}>
         <CampoNumeros intensidad={0.7} />
@@ -518,33 +526,13 @@ export default function Sinergia() {
         </div>
       </div>
 
-      <div style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(34px,5vw,60px) clamp(14px,3vw,36px) 26px' }}>
-        {/* Lo último de la página también entra; el recorrido se recorta por
-            lo que queda de scroll para que llegue puesto del todo. */}
-        <Aparece style={{ maxWidth: 1240, margin: '0 auto', display: 'flex', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <Link href="/" style={{ fontSize: 'var(--t-nota)', fontWeight: 700, color: 'var(--tx)' }}>
-                <Marca tam={52} apilado />
-            </Link>
-            <span style={{ display: 'flex', gap: 14, fontSize: 'var(--t-nota)', marginBottom: 4 }}>
-              <Link href="/legal" style={{ color: 'var(--tx-2)' }}>Aviso legal</Link>
-              <Link href="/privacidad" style={{ color: 'var(--tx-2)' }}>Tus datos</Link>
-            </span>
-            <span style={{ fontSize: 'var(--t-nota)', lineHeight: 1.7, color: 'var(--tx-4)', maxWidth: '58ch' }}>
-              Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
-            </span>
-          </div>
-          <span style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-4)' }}>© 2026</span>
-        </Aparece>
-      </div>
+      {/* EL PIE DE LA CASA, el mismo que la portada. Aquí había uno
+          escrito a mano, con sus enlaces y su descargo: cuatro pies
+          distintos en la misma web son cuatro sitios donde corregir lo
+          mismo, y el día que cambie un enlace se corrige en tres. */}
+      <Pie />
 
       {res && <Informe e={res} />}
-      {/* EL CHAT, TAMBIÉN AQUÍ.
-          Estaba sólo en la portada, y es la única forma de reservar una sesión
-          en toda la web: quien entra directo a esta página desde una búsqueda o
-          desde un enlace compartido no tenía dónde reservar sin volver al
-          principio. */}
-      <ChatWidget />
     </div>
   );
 }

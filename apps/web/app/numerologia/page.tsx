@@ -15,9 +15,8 @@ import Entrada from '@/components/casa/Entrada';
 import Pie from '@/components/casa/Pie';
 import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
-import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
-import { FOTOS, SESION, eur } from '@/content/site';
+import { CONTACTO, FOTOS, SESION, eur } from '@/content/site';
 
 /*
  * ============================================================================
@@ -75,8 +74,6 @@ const QUE_SALE: { rotulo: string; titulo: string; texto: string }[] = [
 
 export default function Numerologia() {
   useSiteScroll();
-  const chatRef = useRef<ChatWidgetHandle>(null);
-  const abrirConsulta = () => chatRef.current?.open('consulta');
   const ofertaViva = SESION.precioOferta != null && SESION.plazasOferta != null;
 
   return (
@@ -247,10 +244,12 @@ export default function Numerologia() {
             </Aparece>
           )}
           <Aparece retraso={4}>
-            <button type="button" className="portada-cta" onClick={abrirConsulta} data-mag data-cur-label="Reservar">
+            {/* Enlace al correo y no botón de chat: el chat se ha borrado
+                de toda la web, y éste era de los que lo abrían. */}
+            <a href={`mailto:${CONTACTO.email}?subject=Reservar%20mi%20consulta`} className="portada-cta" data-mag data-cur-label="Escribir">
               <span>Reservar mi consulta</span>
               <i aria-hidden>→</i>
-            </button>
+            </a>
           </Aparece>
           <Aparece retraso={5}>
             <p className="cierre-uno-puertas">
@@ -276,7 +275,6 @@ export default function Numerologia() {
       </div>
 
       <Pie />
-      <ChatWidget ref={chatRef} />
       <Susurros />
     </div>
   );

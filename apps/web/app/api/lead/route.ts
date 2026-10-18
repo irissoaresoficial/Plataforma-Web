@@ -42,6 +42,30 @@ function rateLimited(ip: string) {
   return recent.length > MAX_PER_WINDOW;
 }
 
+/**
+ * Recorta una IP para que deje de señalar a una persona y siga diciendo de
+ * dónde viene la visita.
+ *
+ *   IPv4: se pone a cero el último octeto. 88.12.34.56 -> 88.12.34.0
+ *   IPv6: se deja el prefijo /48, que es la red. El resto se descarta.
+ *
+ * Lo que no reconozca como IP se guarda como 'desconocida': antes que
+ * arriesgarse a dejar pasar algo entero.
+ */
+function recortaIp(ip: string): string {
+  if (!ip || ip === 'local') return ip || 'desconocida';
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) {
+    const partes = ip.split('.');
+    partes[3] = '0';
+    return partes.join('.');
+  }
+  if (ip.includes(':')) {
+    const grupos = ip.split(':').filter(Boolean).slice(0, 3);
+    return grupos.length ? `${grupos.join(':')}::` : 'desconocida';
+  }
+  return 'desconocida';
+}
+
 export async function POST(request: Request) {
   const url = process.env.APPS_SCRIPT_URL;
   const secret = process.env.APPS_SCRIPT_SECRET;
@@ -68,7 +92,21 @@ export async function POST(request: Request) {
      Apps Script sí va, que es quien tiene que mandarlo. */
   const { asunto: _a, parrafos: _p, ...paraGuardar } = lead;
   const enBase = await guardaLead(paraGuardar, {
-    ip: ip.slice(0, 45),
+    /* LA IP VA RECORTADA, Y NO ES UN CAPRICHO.
+       Aquí se guardaba entera. Una IP completa identifica a una persona: es
+       dato personal del artículo 4.1 del RGPD, y guardarla «por si acaso»,
+       sin que haga falta para nada y sin decirlo en la política de
+       privacidad, es exactamente lo que multa la Agencia Española de
+       Protección de Datos. MARCA.md §7 ya lo tenía escrito: «no se guarda la
+       IP entera de nadie».
+       Para lo único que se usa es para frenar a quien envíe el formulario
+       cien veces, y para eso el recorte sirve igual — ese control vive más
+       arriba, en memoria, y no toca esto.
+       Se recorta como manda la práctica estándar: en IPv4 se borra el último
+       octeto (88.12.34.56 -> 88.12.34.0) y en IPv6 se deja el prefijo de red.
+       Sigue valiendo para saber de qué país y provincia entra la gente, que
+       es para lo que se quería, y deja de señalar a una persona. */
+    ip: recortaIp(ip),
     agente: (request.headers.get('user-agent') || '').slice(0, 200),
   });
 

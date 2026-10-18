@@ -1,209 +1,45 @@
 'use client';
 
+/**
+ * TALLERES Y CURSOS.
+ * ============================================================================
+ *
+ * Esta página tenía 443 líneas: un catálogo con buscador y filtros, la ficha
+ * larga del curso destacado, una cuenta atrás, un formulario de lista de
+ * espera y un pie propio. Gerson, señalando una captura: «la landing de
+ * cursos quiero que quites desde aquí hasta lo último del footer».
+ *
+ * Y tiene sentido más allá del gusto: HOY HAY UN CURSO. Un catálogo con
+ * buscador, filtros y la cuenta «1 curso» es una estantería vacía con un
+ * cartel de estantería. Lo honesto con un solo taller abierto es decir que
+ * hay uno, mandar a apuntarse y avisar de que vienen más.
+ *
+ * NO SE HA BORRADO NADA. `Catalogo`, `CursoDetalle`, `CartelCurso`,
+ * `CuentaAtras` y `MarcaCurso` siguen enteros en el repositorio y vuelven el
+ * día que haya cinco cursos: es cambiar una línea. Lo que se ha ido es la
+ * decisión de pintarlos hoy (MARCA.md §8.4).
+ *
+ * El vídeo tampoco está ya aquí: se mudó a `/masterclass`, que es la landing
+ * de registro —donde pidió que estuviera y donde tiene un trabajo que hacer.
+ */
+
 import Link from 'next/link';
-import { useState } from 'react';
 import Cursor from '@/components/Cursor';
-import Cortina from '@/components/Cortina';
-import CampoNumeros from '@/components/CampoNumeros';
-/* Antes `Reveal`, un fundido de duración fija. `Aparece` ata el movimiento a
-   la rueda. Explicado en components/Aparece.tsx. */
-import Aparece from '@/components/Aparece';
-import useSiteScroll from '@/components/useSiteScroll';
 import Entrada from '@/components/casa/Entrada';
 import Pie from '@/components/casa/Pie';
 import '@/components/casa/casa.css';
-import Marca from '@/components/Marca';
-import LeadForm from '@/components/LeadForm';
-import Pendiente, { Hueco } from '@/components/Pendiente';
-import CursoDetalle from '@/components/CursoDetalle';
-import Catalogo from '@/components/Catalogo';
-import CuentaAtras from '@/components/CuentaAtras';
-import MarcaCurso from '@/components/MarcaCurso';
-import Foto from '@/components/Foto';
-import CartelCurso from '@/components/CartelCurso';
-import { CURSOS, MEMBRESIA, PENDIENTE, eur, falta, type Curso } from '@/content/site';
-
-/** Texto real, o etiqueta roja si todavía está sin rellenar. */
-function T({ v, style }: { v: string; style?: React.CSSProperties }) {
-  if (falta(v)) return <Pendiente />;
-  return <span style={style}>{v}</span>;
-}
-
-/**
- * La tarjeta de un curso en la página.
- *
- * Solo lo justo para decidir si te interesa: cuándo es, cómo se llama, qué te
- * llevas en una frase, cuánto falta y un botón. Todo el detalle —el vídeo, el
- * programa, para quién es, la reserva— vive en la ficha que abre ese botón.
- * Antes la página enseñaba también todo eso y encima el botón que lo abría: el
- * mismo contenido dos veces, y en el móvil quedaba un revoltijo sin jerarquía.
- */
-function CursoBloque({ curso }: { curso: Curso }) {
-  const [detalle, setDetalle] = useState(false);
-  const sinFecha = falta(curso.fechas);
-
-  return (
-    <>
-      {/* La tarjeta del curso no se movía en absoluto: era el único bloque
-          grande de la web que aparecía de golpe. Se acerca en vez de subir
-          porque es una ficha de producto —una cosa que se pone delante de ti—
-          y porque lo de arriba y lo de abajo ya suben. */}
-      <Aparece
-        as="article"
-        modo="escala"
-        id={curso.id}
-        className={`curso-card${curso.cartel ? ' curso-card-cartel' : ''}`}
-        style={{ scrollMarginTop: 96 }}
-      >
-        {/* EL CARTEL, TAMBIÉN AQUÍ.
-            En la portada ya se ve, pero quien llega directo a esta página
-            —desde un enlace de Instagram, por ejemplo— no ha pasado por la
-            portada y se encontraba la tarjeta con medio metro de blanco al
-            lado de la lista. Un curso que se anuncia con un cartel tiene que
-            enseñarlo donde se vende.
-
-            Es un botón y no una imagen quieta: abre la misma ficha que «Ver el
-            curso». Nadie mira un cartel y espera que no pase nada al tocarlo. */}
-        {curso.cartel && (
-          <button
-            type="button"
-            onClick={() => setDetalle(true)}
-            className="curso-cartel"
-            data-mag
-            data-cur-label="Ver"
-            aria-label={`Ver ${falta(curso.titulo) ? 'el curso' : curso.titulo}`}
-          >
-            <CartelCurso
-              cartel={curso.cartel}
-              video={curso.cartelVideo}
-              alt={`Cartel de ${curso.titulo}`}
-              sizes="(max-width:1099px) 90vw, 240px"
-            />
-          </button>
-        )}
-        <div className="curso-texto">
-          <div className="curso-cab">
-            <span className="curso-eyebrow">Próximo curso</span>
-            {sinFecha ? <Pendiente>Fechas por confirmar</Pendiente> : <span className="curso-fecha">{curso.fechas}</span>}
-          </div>
-
-          {falta(curso.titulo) ? (
-            <div style={{ marginBottom: 22 }}>
-              <Hueco lineas={2} alto={34} etiqueta="Falta el título" />
-            </div>
-          ) : (
-            <h2 className="curso-titulo">{curso.titulo}</h2>
-          )}
-          {falta(curso.claim) ? (
-            <Hueco lineas={2} alto={15} etiqueta="Falta la frase" />
-          ) : (
-            <p className="curso-claim">{curso.claim}</p>
-          )}
-
-          {/* LO QUE INCLUYE, AL LADO DEL PRECIO Y NO ESCONDIDO EN LA FICHA.
-              Debajo del reclamo había medio metro de tarjeta vacía mientras el
-              precio estaba solo en la columna de al lado, sin nada que lo
-              sostuviera. Un número sin lista al lado se compara con cero; con
-              la lista al lado se compara con lo que cuesta. */}
-          {curso.incluye.length > 0 && (
-            <ul className="curso-incluye">
-              {curso.incluye.map((x) => (
-                <li key={x}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="m4 12 5.5 5.5L20 6" />
-                  </svg>
-                  <span>{x}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="curso-panel">
-          {/* EL PRECIO, FUERA DE LA LISTA DE DATOS.
-              Estaba en la tercera fila de un `dl`, del mismo tamaño que el
-              horario, y así el número por el que se decide la compra pesaba lo
-              mismo que un dato de agenda. Aquí manda: la cifra grande, el
-              precio de antes pegado a ella y, debajo, lo que se ahorra — que
-              es lo que de verdad se recuerda.
-
-              Las dos cuentas salen de los dos precios, no escritas a mano: el
-              día que cambie uno, el porcentaje y el ahorro cambian solos y no
-              hay forma de que la página anuncie un descuento que no existe. */}
-          {curso.precio === null ? (
-            <div className="curso-oferta">
-              <Pendiente>Precio por confirmar</Pendiente>
-            </div>
-          ) : (
-            <div className="curso-oferta">
-              {curso.precioAntes ? (
-                <span className="oferta-badge">−{Math.round(((curso.precioAntes - curso.precio) / curso.precioAntes) * 100)} %</span>
-              ) : null}
-              <div className="oferta-fila">
-                <b>{eur(curso.precio)}</b>
-                {curso.precioAntes ? <s>{eur(curso.precioAntes)}</s> : null}
-              </div>
-              {curso.precioAntes ? (
-                <span className="oferta-ahorro">Te ahorras {eur(curso.precioAntes - curso.precio)}</span>
-              ) : null}
-            </div>
-          )}
-
-          <dl className="curso-datos">
-            <div>
-              <dt>Duración</dt>
-              <dd><T v={curso.duracion} /></dd>
-            </div>
-            <div>
-              <dt>Horario</dt>
-              <dd><T v={curso.horario} /></dd>
-            </div>
-          </dl>
-
-          <div className="curso-pie">
-            <CuentaAtras fechaISO={curso.fechaISO} abiertoDesdeISO={curso.inscripcionDesdeISO} compacto />
-            <button onClick={() => setDetalle(true)} data-mag data-cur-label="Ver" className="pill pill-cream">
-              <span>Ver el curso</span>
-              <span className="pill-arrow">→</span>
-            </button>
-          </div>
-        </div>
-      </Aparece>
-
-      <CursoDetalle curso={curso} abierto={detalle} onCerrar={() => setDetalle(false)} />
-    </>
-  );
-}
-
-/* La fecha en letra, sacada del dato. Escrita a mano se queda vieja en cuanto
-   la fecha se mueva, y entonces la web anuncia un día y la cuenta atrás otro. */
-const enLetra = (iso: string) =>
-  new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' }).format(
-    new Date(iso.includes('T') ? iso : `${iso}T00:00:00`),
-  );
 
 export default function Cursos() {
-  useSiteScroll();
-  const abre = enLetra(MEMBRESIA.abreISO);
-  /* El primero de la lista es el que se anuncia arriba. Si algún día no hay
-     ninguno, el bloque de urgencia no se dibuja y la página sigue en pie. */
-  const proximo = CURSOS[0];
-
   return (
-    <div style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
-      <Cursor hitSelector="[data-mag],a,input,label,[data-card]" />
-      <Cortina />
-      <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
+    <div id="app" className="claro casa" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
+      <Cursor />
+
       {/* LA MISMA ENTRADA QUE LA PORTADA, categorizada a lo de aquí.
-          Gerson: «la página de talleres tiene que ir con base a lo que ya has
-          hecho, prácticamente duplica el home, pero categorizado a donde va a
-          ir directamente».
-          EL FONDO NO ES EL CARTEL DEL VÍDEO, aunque lo parezca lo suyo: ese
+          El fondo NO es el cartel del vídeo, aunque lo pareciera lo suyo: ese
           fotograma lleva rotulados encima el titular del curso, el logo y la
           barra de progreso, así que salían dos titulares pisándose. Va la
-          imagen del escritorio de noche: limpia, oscura, y habla de lo mismo
-          —aquí se estudia—.
-          La barra va dentro de la entrada, como en la portada. */}
+          imagen del escritorio de noche: limpia, oscura y habla de lo mismo
+          —aquí se estudia. */}
       <Entrada
         foto="/images/camino-escuela.jpg"
         alt="Un escritorio de noche bajo una lámpara de latón, con cuadernos abiertos y libros antiguos."
@@ -217,287 +53,38 @@ export default function Cursos() {
         texto="Se trabaja con tu fecha y con tu nombre, en vivo. Queda grabado, así que si un día no puedes, no lo pierdes."
         nota="El que está abierto ahora mismo: Desórdenes Amorosos."
         notaCorta="Abierto: Desórdenes Amorosos."
-        cta={{ a: '#desordenes-amorosos', texto: 'Ver el curso' }}
+        cta={{ a: '/masterclass', texto: 'Apuntarme gratis' }}
       />
 
-      {/* ── EL CATÁLOGO, LO PRIMERO ──────────────────────────
-          Esta página se llamaba «cursos» y era la landing de UNO. El titular
-          de entrada era el reclamo de ese curso —«Dos días que cambian la
-          conversación en tu casa»— y no había ni rastro de que fuese a haber
-          más. Gerson lo ha pedido tres veces: Desórdenes Amorosos es un curso
-          más de tantos que habrá.
-
-          Así que ahora se entra por la lista, con su buscador y sus filtros
-          —que aparecen solos a partir de tres cursos—, y la ficha larga del
-          curso destacado se queda debajo, en su ancla de siempre. Nada de lo
-          que había se ha perdido: ha dejado de ser la portada de la página. */}
-      {/* ── EL VÍDEO DEL CURSO ───────────────────────────────
-          Lo mandó Gerson el 18 de octubre: dos minutos de la escuela
-          contando de qué va Desórdenes Amorosos, con voz.
-          NO se reproduce solo, y es a propósito: lleva voz, dura dos minutos
-          y nadie quiere que una página le empiece a hablar sin pedirlo. Va
-          con `preload="none"` y su cartel, así que hasta que no se pulsa no
-          se descarga ni un byte de los seis megas. */}
-      <section className="casa-cinta" id="desordenes-amorosos" aria-labelledby="da-h">
-        <div className="casa-cinta-dentro">
-          <span className="casa-cinta-rotulo">El curso que está abierto</span>
-          {/* El titular NO repite la frase del vídeo. Decía «Hay una forma
-              de amar que no elegiste», que es exactamente lo que está
-              rotulado dentro del propio vídeo justo debajo: la misma frase
-              dos veces, una encima de la otra. Aquí va el nombre del curso y
-              el vídeo se queda con su frase, que así llega nueva. */}
-          <h2 className="casa-cinta-h" id="da-h">
-            Desórdenes
-            <br />
-            <em>Amorosos</em>
-          </h2>
-          <p className="casa-cinta-p">
-            Lo que se repite en tu forma de querer no empezó contigo: estaba en
-            casa antes de que llegaras. Dos minutos para ver de qué va.
-          </p>
-          <div className="casa-cinta-video">
-            <video
-              controls
-              playsInline
-              preload="none"
-              poster="/images/desordenes-aterrizaje-cartel.jpg"
-            >
-              <source src="/video/desordenes-aterrizaje.mp4" type="video/mp4" />
-              Tu navegador no puede reproducir este vídeo.
-            </video>
-          </div>
-        </div>
-      </section>
-
-      <div style={{ paddingTop: 'clamp(64px,8vh,110px)' }}>
-        <Catalogo rotulo="Escuela de Sabiduría 33" titulo="Cursos y talleres" />
-      </div>
-
-      {/* HERO del curso destacado */}
-      <div className="claro" style={{ position: 'relative', color: 'var(--tx)', background: 'var(--bg)', padding: 'clamp(20px,4vw,48px) clamp(14px,3vw,36px) clamp(40px,5vw,70px)', overflow: 'hidden', borderTop: '1px solid var(--linea)' }}>
-        <CampoNumeros intensidad={0.7} />
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'radial-gradient(ellipse 60% 55% at 12% 0%,rgba(200,163,92,.13),transparent 60%)',
-            pointerEvents: 'none',
-          }}
-        />
-        {/*
-            TODO LO QUE HACE FALTA PARA DECIDIR, EN LA PRIMERA PANTALLA.
-            ------------------------------------------------------------------
-            La versión anterior apilaba las cosas una debajo de otra: un titular
-            de cuatro líneas ocupando media pantalla, una frase, y debajo un
-            vídeo a todo lo ancho que ya se salía por abajo. Medido a 1440×900,
-            lo único que se veía al entrar era el titular y un tercio del vídeo
-            — ni la fecha, ni el precio, ni un botón.
-
-            Y esa era la pantalla que iba a recibir a la gente que llegue de un
-            anuncio, para un curso que empieza en menos de dos semanas.
-
-            Ahora va en dos columnas: a la izquierda lo que hay que saber y lo
-            que hay que pulsar, a la derecha la cara de Iris contándolo. Cabe
-            todo de una vez. En el móvil se apila —titular, vídeo, datos— porque
-            ahí la cara vende más que la ficha. */}
-        <div className="cur-hero-dentro">
-          <div className="cur-hero-texto">
-            {/* Aquí iba el rótulo «CURSOS Y TALLERES EN DIRECTO» en versalitas.
-                Fuera, como los otros siete de la web: no decía nada que el
-                titular no diga ya, y ponía una línea de ruido delante. */}
-            {/* LA CHAPA DE ARRIBA, CON EL PUNTO QUE LATE.
-                Es la misma pieza que corona la página de la comunidad, y eso es
-                lo que se buscaba: dos páginas distintas que se reconocen como de
-                la misma casa. Aquí no dice «próximamente» — dice el día, que es
-                el dato por el que se entra a esta página. */}
-            {proximo && !falta(proximo.fechas) && (
-              <Aparece className="cur-chapa">
-                <i aria-hidden />
-                {proximo.fechas}
-              </Aparece>
-            )}
-
-            {/* `h2` y no `h1`: desde que la página tiene su entrada arriba,
-                el `h1` es el de ahí. Dos `h1` en una página es como poner dos
-                títulos a un libro — ni el buscador ni un lector de pantalla
-                saben entonces de qué va la página. */}
-            <Aparece as="h2" modo="letras" className="cur-h1" retraso={1}>
-              Dos días que cambian la conversación en tu casa.
-            </Aparece>
-            <Aparece retraso={2}>
-              <p className="cur-entrada">
-                En directo y con tu caso encima de la mesa: sales sabiendo hacer las cuentas tú, no con apuntes.
-              </p>
-            </Aparece>
-
-            {/*
-                LOS DATOS, EN UNA FICHA HUNDIDA, Y NO EN UNA LISTA PELADA.
-
-                Antes eran tres parejas `dt`/`dd` sueltas, una debajo de otra:
-                CUÁNDO, HORARIO, SON, cada rótulo en versalitas del mismo tamaño
-                que el dato. En un teléfono eso no se lee como la ficha de un
-                curso — se lee como un formulario a medio rellenar, que es
-                literalmente lo que Gerson vio.
-
-                Ahora es una sola pieza hundida en la pared, con el rótulo a la
-                izquierda y el dato a la derecha, separados por una raya de un
-                píxel. La regla de la casa: lo que se hunde es contenido. Y de
-                paso se lee como lo que es —la entrada de un curso— en vez de
-                como una lista.
-
-                Cada línea se dibuja sólo si existe: a un curso al que le falte
-                el horario le falta esa línea, no le sale un hueco raro. */}
-            {proximo && (
-              <Aparece retraso={3}>
-                <dl className="cur-ficha">
-                  {!falta(proximo.fechas) && (
-                    <div><dt>Cuándo</dt><dd>{proximo.fechas}</dd></div>
-                  )}
-                  {!falta(proximo.horario) && (
-                    <div><dt>Horario</dt><dd>{proximo.horario}</dd></div>
-                  )}
-                  {!falta(proximo.duracion) && (
-                    <div><dt>Son</dt><dd>{proximo.duracion}</dd></div>
-                  )}
-                </dl>
-              </Aparece>
-            )}
-
-            {/* EL PRECIO Y EL BOTÓN, JUNTOS Y EN EL MISMO RENGLÓN. Separados,
-                el precio se lee como un dato más; pegado al botón es la última
-                cosa que se mira antes de pulsar, que es donde tiene que estar. */}
-            {proximo && (
-              <Aparece retraso={4}>
-                <div className="cur-cerrar">
-                  {proximo.precio != null && (
-                    <span className="cur-precio">
-                      <b>{eur(proximo.precio)}</b>
-                      {proximo.precioAntes != null && (
-                        <span className="cur-precio-antes">
-                          <s>{eur(proximo.precioAntes)}</s>
-                          {/* El porcentaje sale de los dos números, no escrito a
-                              mano: el día que cambie el precio, el descuento
-                              cambia solo y no hay manera de que la página
-                              anuncie una rebaja que no existe. */}
-                          <b>−{Math.round(((proximo.precioAntes - proximo.precio) / proximo.precioAntes) * 100)} %</b>
-                        </span>
-                      )}
-                    </span>
-                  )}
-                  <a href={`#${proximo.id}`} data-mag data-cur-label="Ver" className="portada-cta cta-solida cur-boton">
-                    <span>Ver el curso y apuntarme</span>
-                    <i aria-hidden>↓</i>
-                  </a>
-                </div>
-              </Aparece>
-            )}
-
-            {proximo?.fechaISO && (
-              <Aparece retraso={5}>
-                <div className="cur-reloj">
-                  <CuentaAtras fechaISO={proximo.fechaISO} abiertoDesdeISO={proximo.inscripcionDesdeISO} compacto />
-                </div>
-              </Aparece>
-            )}
-          </div>
-
-          {/*
-            AQUÍ ESTABA IRIS PRESENTANDO EL CURSO DE SEPTIEMBRE.
-
-            Ese curso se dio en septiembre y está borrado de la web, así que su
-            vídeo de presentación anunciaba algo que ya no existe. Gerson, el 15
-            de octubre de 2026: «el vídeo de septiembre, quítalo, erradícalo».
-            Borrado el archivo, no sólo desenchufado.
-
-            En su sitio, la marca del curso que SÍ viene. Se acerca al aparecer
-            en vez de subir: es la cara de la página —una cosa que se pone
-            delante— y lo de arriba y lo de abajo ya suben.
-
-            CUANDO IRIS GRABE SU PRESENTACIÓN DE ESTE CURSO, su enlace va en
-            `videoUrl` dentro de la ficha del curso y sale dentro de la ficha,
-            que es donde ya lo enseña `CursoDetalle`. Una persona hablando vende
-            más que un rótulo; esto es lo mejor que hay mientras no la haya.
-
-            Con el vídeo se fue también `VideoPresenta`, el componente que lo
-            ponía: era el único sitio que lo usaba y su archivo ya no existe. Un
-            componente que no usa nadie y que apunta a un archivo borrado no es
-            una opción guardada para más adelante — es una trampa para quien lo
-            encuentre. Está en el historial si vuelve a hacer falta.
-          */}
-          <Aparece modo="escala" retraso={2} className="cur-hero-video">
-            <MarcaCurso
-              video="/video/desordenes-amorosos.mp4"
-              cartel="/images/desordenes-amorosos-cartel.jpg"
-              alt="Desórdenes Amorosos · Escuela de Sabiduría 33"
-            />
-          </Aparece>
-        </div>
-      </div>
-
-      {/* Las tarjetas van sobre arena: es lo que separa "el cartel de la página"
-          de "los cursos", sin necesidad de una línea ni de un titular más. */}
-      <div className="arena banda">
-        <div className="banda-dentro" style={{ display: 'grid', gap: 'clamp(16px,2.2vw,26px)' }}>
-          <Aparece style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 4 }}>
-            <h2 style={{ margin: 0, fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em' }}>
-              Lo que hay abierto ahora
+      <main>
+        <section className="casa-pronto" aria-labelledby="pronto-h">
+          <div className="casa-pronto-dentro">
+            <span className="casa-pronto-rotulo">Lo que hay ahora</span>
+            <h2 className="casa-pronto-h" id="pronto-h">
+              Un taller abierto.
+              <br />
+              <em>Y van saliendo más.</em>
             </h2>
-            <span style={{ fontSize: 'var(--t-nota)', color: 'var(--tx-2)' }}>
-              {CURSOS.length === 1 ? '1 convocatoria' : `${CURSOS.length} convocatorias`}
-            </span>
-          </Aparece>
-          {CURSOS.map((curso) => (
-            <CursoBloque key={curso.id} curso={curso} />
-          ))}
-        </div>
-      </div>
+            <p className="casa-pronto-p">
+              La escuela empieza por Desórdenes Amorosos: lo que se repite en
+              tu forma de querer, y de dónde viene. Es una masterclass
+              gratuita y se puede apuntar cualquiera.
+            </p>
+            <p className="casa-pronto-p">
+              Los siguientes talleres van saliendo poco a poco. Si te apuntas
+              a éste, te aviso de los que vengan sin que tengas que estar
+              mirando.
+            </p>
+            <Link href="/masterclass" className="casa-pronto-boton casa-brillo">
+              Apuntarme a la masterclass
+            </Link>
+            <p className="casa-pronto-nota">
+              Gratuita. Te aviso de la fecha en cuanto esté.
+            </p>
+          </div>
+        </section>
+      </main>
 
-      {/* PUENTE A LA MEMBRESÍA + FOOTER */}
-      <div className="claro banda banda-corta">
-        <div className="banda-dentro" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(34px,5vw,56px)' }}>
-          {/* El único bloque de granate de la página: es el cierre, y por eso
-              es el que pesa. Al llevar la clase, dentro de él los colores se
-              recalculan solos y nada hereda la tinta oscura de fuera. */}
-          <Aparece
-            modo="escala"
-            className="vino"
-            style={{
-              display: 'grid',
-              gap: 'clamp(20px,2.6vw,44px)',
-              alignItems: 'center',
-              borderRadius: 'var(--radio)',
-              padding: 'clamp(26px,3.4vw,44px)',
-            }}
-          >
-            <div className="puente-caja">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <span className="espaciado" style={{ fontSize: 'var(--t-nota)', fontWeight: 700, color: 'var(--acento)' }}>La membresía</span>
-                <span style={{ fontSize: 'var(--t-bloque)', fontWeight: 'var(--peso-medio)', letterSpacing: '-.025em', lineHeight: 1.1, maxWidth: '26ch', textWrap: 'balance' }}>
-                  Un curso son dos días. La comunidad es cada mes.
-                </span>
-                {/* Aquí iba el precio de la lista. La membresía ya no cobra
-                    nada —es un próximamente— así que el argumento deja de ser
-                    «entra por la mitad» y pasa a ser el único que queda en pie:
-                    que te avisan a ti antes que a nadie. Prometer un precio que
-                    ya no existe sería lo peor que puede hacer esta línea. */}
-                <span style={{ fontSize: 'var(--t-nota)', fontWeight: 300, lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '40ch' }}>
-                  Abre el {abre}, y abre pequeña. Deja tu correo y te aviso antes que a nadie.
-                </span>
-              </div>
-              <Link href="/membresia" data-mag data-cur-label="Ver" className="pill pill-cream">
-                <span>Avisadme cuando abra</span>
-                <span className="pill-arrow">→</span>
-              </Link>
-            </div>
-          </Aparece>
-        </div>
-      </div>
-
-      {/* EL PIE DE LA CASA, el mismo que la portada y que las páginas legales.
-          Aquí había uno escrito a mano, con sus propios enlaces y su propio
-          descargo: tres pies distintos en la misma web son tres sitios donde
-          corregir lo mismo, y el día que cambie un enlace se corrige en dos.
-          Uno de los suyos, además, iba a `/#cita`, que ya no existe. */}
       <Pie />
     </div>
   );

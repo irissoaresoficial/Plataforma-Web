@@ -8,8 +8,9 @@ import CampoNumeros from '@/components/CampoNumeros';
    la rueda. Explicado en components/Aparece.tsx. */
 import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
-import Nav from '@/components/Nav';
-import ChatWidget from '@/components/ChatWidget';
+import Barra from '@/components/casa/Barra';
+import Pie from '@/components/casa/Pie';
+import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
 import LeadForm from '@/components/LeadForm';
 import CuentaAtras from '@/components/CuentaAtras';
@@ -77,7 +78,14 @@ export default function Taller() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta={hayFecha ? 'Guardar mi plaza' : 'Avísame del día'} ctaHref="#apuntarme" />
+      {/* LA BARRA DE LA CASA, la misma que la portada: la pastilla con el
+          sello que se abre a toda la pantalla. Gerson: «cada apartado de la
+          web (servicios) necesito que lo adaptes a la home, no quiero que se
+          vea como estaba antes».
+          Va `fija` porque esta página no tiene portada a pantalla completa a
+          la que pegarse; se aparta al bajar y vuelve al subir. El menú ya
+          lleva las cinco puertas, así que no hace falta repetirlas aquí. */}
+      <Barra fija />
 
       <div className="vino tal-hero">
         <CampoNumeros intensidad={1.7} densidad={130_000} />
@@ -189,17 +197,12 @@ export default function Taller() {
           </Aparece>
         </div>
 
-        <Aparece className="com-pie">
-          <Link href="/" aria-label="Ir al inicio">
-            <Marca tam={30} claro />
-          </Link>
-          <span>
-            <Link href="/legal">Aviso legal</Link>
-            <Link href="/privacidad">Tus datos</Link>
-          </span>
-        </Aparece>
       </div>
-      <ChatWidget />
+        {/* EL PIE DE LA CASA, el mismo que la portada. Aquí había uno
+            escrito a mano, con sus enlaces y su descargo: cuatro pies
+            distintos en la misma web son cuatro sitios donde corregir lo
+            mismo, y el día que cambie un enlace se corrige en tres. */}
+      <Pie />
     </div>
   );
 }
