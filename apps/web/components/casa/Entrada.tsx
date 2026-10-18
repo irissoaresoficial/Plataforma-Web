@@ -38,7 +38,7 @@ export default function Entrada({
   foto,
   alt = '',
 }: {
-  /** El titular. Lleva un <em> dentro para la palabra en cursiva. */
+  /** El titular. Dos líneas partidas con <br>, sin cursiva (ver casa.css). */
   titulo: ReactNode;
   texto: string;
   cta: { a: string; texto: string };

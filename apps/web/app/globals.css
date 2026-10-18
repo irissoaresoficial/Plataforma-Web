@@ -673,9 +673,23 @@ textarea::placeholder {
   letter-spacing: -0.038em;
   line-height: 1.04;
 }
+/* FUERA LA CURSIVA, EN TODA LA WEB.
+   Gerson, el 18 de octubre: «no quiero tipografía cursiva en NADA». Así que
+   `em` e `i` dejan de inclinarse aquí, que es donde nacían, y no hay que ir a
+   buscar cada `<em>` del marcado: siguen siendo énfasis para un buscador y
+   para un lector de pantalla, sólo que ya no se dibujan torcidos. */
+em,
+i,
+cite,
+dfn,
+var,
+address {
+  font-style: normal;
+}
+
 .display em,
 .display i {
-  font-style: italic;
+  font-style: normal;
 }
 
 /* Tamaño de lectura: aquí sí se queda la serif. A dieciocho píxeles Fraunces
@@ -4451,7 +4465,6 @@ body[data-nav-claro='si'] .sello-color {
 }
 .com-titular em {
   font-family: var(--serif);
-  font-style: italic;
   font-weight: var(--peso-fino);
   letter-spacing: -0.02em;
   color: var(--oro-luz);
@@ -4478,7 +4491,6 @@ body[data-nav-claro='si'] .sello-color {
 .com-condicion {
   margin: 0;
   font-family: var(--serif);
-  font-style: italic;
   font-size: var(--t-entrada);
   line-height: 1.5;
   color: var(--oro-luz);
@@ -5074,7 +5086,6 @@ body[data-nav-claro='si'] .sello-color {
   margin-right: 9px;
 }
 .arbol-pie-es {
-  font-style: italic;
   color: var(--tx-2);
   margin-right: 9px;
 }
@@ -5825,7 +5836,6 @@ body[data-nav-claro='si'] .sello-color {
   text-wrap: balance;
 }
 .tal-titular em {
-  font-style: italic;
   color: var(--oro-luz);
 }
 
@@ -6173,7 +6183,6 @@ body[data-nav-claro='si'] .sello-color {
    arriba: es el remate, no el golpe. */
 .titular-remate {
   font-size: 0.72em;
-  font-style: italic;
 }
 
 .hero-historia {

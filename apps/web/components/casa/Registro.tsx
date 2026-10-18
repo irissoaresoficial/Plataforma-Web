@@ -44,8 +44,18 @@ import { CONTACTO } from '@/content/site';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/* EL TEXTO QUE SE ACEPTA TIENE QUE SER LO QUE DE VERDAD PASA.
+   Ahora, además del aviso de la fecha, la persona recibe un correo de
+   confirmación con el enlace del grupo de WhatsApp. Eso es tratamiento de su
+   correo, así que se nombra aquí: el consentimiento del artículo 7 del RGPD
+   tiene que ser informado, y «informado» quiere decir que no haya ni un envío
+   que no estuviera en la frase que marcó.
+   Y se guarda literal dentro de `detalle` junto con la fecha y la hora, que es
+   la prueba que exige el artículo 7.1. Si esta frase cambia, los
+   consentimientos viejos siguen guardando la suya: cada uno conserva el texto
+   que se aceptó ese día, no el de hoy. */
 const TEXTO_CONSENTIMIENTO =
-  'Acepto que Iris Soares guarde mi nombre y mi correo para avisarme de la fecha de esta masterclass y de los talleres que abra.';
+  'Acepto que Iris Soares guarde mi nombre y mi correo para mandarme la confirmación, avisarme de la fecha y contarme los talleres que abra.';
 
 export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: string }) {
   const id = useId();
@@ -98,17 +108,80 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
   };
 
   if (hecho) {
-    /* `role="status"` para que quien no ve la pantalla se entere de que ha
-       entrado: si no, el formulario simplemente desaparece sin más. */
+    /*
+     * LA PANTALLA DE GRACIAS, QUE NO ES UN «LISTO» Y YA.
+     *
+     * Gerson: «si yo dejo los datos, eso tiene que hacer un gracias y debe
+     * haber un link de un grupo de WhatsApp para que entren».
+     *
+     * Y es el momento más valioso de toda la web: la persona acaba de decir
+     * que sí y está mirando la pantalla. Si aquí sólo pone «apuntado», se va y
+     * la siguiente vez que sepa de nosotros será un correo dentro de dos
+     * semanas que ya no recuerda haber pedido. Un grupo al que entra AHORA la
+     * mantiene dentro hasta el día de la clase, y de paso le enseña que hay
+     * más gente en lo mismo, que es lo que más sostiene a quien duda.
+     *
+     * El orden es el que tiene que ser: primero que ha entrado (que es lo que
+     * venía a saber), después el paso siguiente —el grupo, en el botón— y por
+     * último el correo al que escribir si algo falla.
+     *
+     * `role="status"` para que quien no ve la pantalla se entere de que ha
+     * entrado: si no, el formulario simplemente desaparece sin más.
+     */
     return (
       <div className="casa-registro casa-registro-hecho" role="status">
         <span className="casa-registro-tic" aria-hidden="true">
           ✓
         </span>
-        <h2 className="casa-registro-h">Apuntado.</h2>
+        <h2 className="casa-registro-h">
+          Gracias{nombre.trim() ? `, ${nombre.trim().split(/\s+/)[0]}` : ''}.
+        </h2>
         <p>
-          Te escribo a <strong>{email.trim()}</strong> en cuanto haya fecha. Si
-          no te llega nada, mira en «correo no deseado» y escríbeme a{' '}
+          Ya tienes tu plaza. Te he mandado un correo a{' '}
+          <strong>{email.trim()}</strong> con la confirmación.
+        </p>
+
+        {CONTACTO.grupo ? (
+          <>
+            {/* EL GRUPO. Es lo único que se le pide hacer ahora, así que va
+                solo y con el peso del botón principal: dos acciones aquí
+                serían dos dudas (MARCA.md §5).
+                `rel="noreferrer"` además de `noopener` porque esto sale de la
+                web hacia fuera. */}
+            <a
+              className="casa-registro-grupo casa-brillo"
+              href={CONTACTO.grupo}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="casa-registro-grupo-disco" aria-hidden="true">
+                {/* Un bocadillo de conversación. Dos trazos, como los demás
+                    iconos de la casa: la marca de WhatsApp es suya y no se
+                    dibuja aquí a ojo. La palabra ya dice de qué grupo es. */}
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-3.9-.9L3 21l2-4.1A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5Z" />
+                </svg>
+              </span>
+              Entrar al grupo de WhatsApp
+            </a>
+            <p className="casa-registro-letra">
+              Ahí aviso de la fecha y contesto dudas antes de la clase. Puedes
+              salirte cuando quieras.
+            </p>
+          </>
+        ) : (
+          /* Sin enlace de grupo no se inventa uno ni se promete un botón que
+             no está: se dice lo que sí va a pasar. En cuanto Gerson pegue la
+             invitación en `CONTACTO.grupo`, el botón de arriba sale solo y
+             esta frase desaparece. */
+          <p className="casa-registro-letra">
+            En ese correo va también el enlace del grupo de WhatsApp de la
+            masterclass, que es donde aviso de la fecha y contesto dudas.
+          </p>
+        )}
+
+        <p className="casa-registro-letra">
+          Si no te llega nada, mira en «correo no deseado» y escríbeme a{' '}
           <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
         </p>
       </div>
@@ -118,10 +191,13 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
   return (
     <form className="casa-registro" onSubmit={enviar} noValidate>
       <h2 className="casa-registro-h">Apúntate gratis</h2>
-      <p className="casa-registro-p">
-        Déjame tu nombre y tu correo y te escribo en cuanto haya fecha. La
-        masterclass es gratuita.
-      </p>
+      {/* UNA LÍNEA Y NO TRES. Decía «déjame tu nombre y tu correo y te
+          escribo en cuanto haya fecha, la masterclass es gratuita», y de ahí
+          «tu nombre y tu correo» lo dicen las dos casillas de debajo y «es
+          gratuita» lo dicen el rótulo de arriba y el botón. Eran cincuenta
+          píxeles repitiendo lo que ya está a la vista, y en esta caja cada
+          píxel que sobra empuja el botón de enviar fuera de la pantalla. */}
+      <p className="casa-registro-p">Te escribo en cuanto haya fecha.</p>
 
       <label className="casa-campo" htmlFor={`${id}-n`}>
         <span>Tu nombre</span>

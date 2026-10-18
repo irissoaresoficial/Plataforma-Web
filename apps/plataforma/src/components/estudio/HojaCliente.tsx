@@ -350,7 +350,7 @@ export default function HojaCliente({ r, marca, idioma = "es" }: { r: Resultado;
 
       <div style={css("margin-top:auto;padding-top:8px;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:baseline;gap:10px;")}>
         <span style={css(`font-size:${fs(9.5)};color:#8A8296;`)}>{marca}</span>
-        <span style={css("margin-left:auto;font-size:9.5px;color:#8A8296;font-style:italic;")}>{T.pieLema}</span>
+        <span style={css("margin-left:auto;font-size:9.5px;color:#8A8296;font-style:normal;")}>{T.pieLema}</span>
       </div>
     </section>
   );

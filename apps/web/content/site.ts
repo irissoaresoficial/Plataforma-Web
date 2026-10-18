@@ -124,6 +124,30 @@ export const CONTACTO = {
   email: 'irissoaresoficial@gmail.com',
   /** Con prefijo y sin espacios: 34600111222. Vacío = no se muestra el botón de WhatsApp. */
   whatsapp: '',
+
+  /*
+   * EL GRUPO DE WHATSAPP DE LA MASTERCLASS.
+   *
+   * Gerson, el 18 de octubre: «si yo dejo los datos, eso tiene que hacer un
+   * gracias y debe haber un link de un grupo de WhatsApp para que entren».
+   *
+   * AQUÍ VA EL ENLACE DE INVITACIÓN DEL GRUPO, el que empieza por
+   * https://chat.whatsapp.com/ y sale en WhatsApp con:
+   *   el grupo → el nombre del grupo arriba → Invitar con enlace → Copiar.
+   *
+   * MIENTRAS ESTÉ VACÍO NO SE INVENTA NINGUNO, y la web no finge que existe:
+   * la pantalla de gracias dice que el enlace va por correo, y el correo no
+   * habla del grupo. Es la misma regla del enlace de pago de la consulta
+   * (`PAGO_URL` en el script de Google) y está en MARCA.md §7: un enlace
+   * prometido que no llega es peor que no prometer nada, porque quien lo lea
+   * se pondrá a buscar un correo que no existe.
+   *
+   * EN CUANTO SE PEGUE AQUÍ, sale solo: el botón verde de la pantalla de
+   * gracias y el párrafo del correo aparecen sin tocar nada más. OJO: hay que
+   * pegarlo en DOS sitios, porque el correo lo manda Google y no esta web —
+   * el otro es `GRUPO_WHATSAPP` en google-apps-script/reservas.gs.
+   */
+  grupo: '',
 };
 
 /* ------------------------------------------------------------------ */

@@ -267,7 +267,7 @@ export default function EstudioScreen() {
             {empresa ? D.estudio.portadaEmpresa : D.estudio.portadaPersonal}
           </div>
           <h1 style={css("font-family:var(--font-ui);font-weight:700;font-size:var(--t-hero);line-height:1.22;letter-spacing:-.022em;color:#2B1119;margin:30px 0 0;max-width:560px;")}>{titulo(nombreTexto)}</h1>
-          <div style={css("font-family:var(--font-ui);font-size:var(--t-title);font-style:italic;color:#7A7288;margin-top:var(--s4);")}>
+          <div style={css("font-family:var(--font-ui);font-size:var(--t-title);font-style:normal;color:#7A7288;margin-top:var(--s4);")}>
             {r ? fechaLarga(r.fecha.dia, r.fecha.mes, r.fecha.anio, D.locale) : D.estudio.portadaSinFecha}
           </div>
         </section>}

@@ -1,90 +1,136 @@
-'use client';
-
-import Link from 'next/link';
-import { useRef } from 'react';
-import Cursor from '@/components/Cursor';
-import Cortina from '@/components/Cortina';
-/* Antes `Reveal`, un fundido de duración fija. `Aparece` ata el movimiento a
-   la rueda: si paras de bajar, para. Explicado en components/Aparece.tsx. */
-import Aparece from '@/components/Aparece';
-import Foto from '@/components/Foto';
-import Cinta from '@/components/Cinta';
-import TuNumero from '@/components/TuNumero';
-import useSiteScroll from '@/components/useSiteScroll';
-import Entrada from '@/components/casa/Entrada';
-import Pie from '@/components/casa/Pie';
-import '@/components/casa/casa.css';
-import Marca from '@/components/Marca';
-import Susurros from '@/components/Susurros';
-import { CONTACTO, FOTOS, SESION, eur } from '@/content/site';
-
-/*
+/**
  * ============================================================================
  * QUÉ ES LA NUMEROLOGÍA TRANSGENERACIONAL — LA PÁGINA
  * ============================================================================
  *
- * La portada no lleva precios. Ni uno. Lo que hace es contar un problema,
- * presentar a Iris y dejar una sola acción: hablar con ella. Todo lo que es
- * «qué se compra exactamente y cuánto cuesta» vive en dos páginas, ésta y la de
- * la Kábala, y se llega desde el pie, desde el cierre de la portada o buscando
- * en Google.
+ * ESTA PÁGINA SE HA REHECHO ENTERA DE LA ENTRADA PARA ABAJO.
  *
- * Y es la manera correcta de repartirlo. Una tabla de tarifas en medio de una
- * historia le hace a la persona la pregunta equivocada —«¿cuál de las dos y por
- * cuánto?»— cuando todavía no ha decidido lo primero, que es si esto le
- * interesa. Aquí ya ha decidido que sí: por eso ha entrado.
+ * Gerson, el 18 de octubre: «esos espacios de numerología y kábala deben
+ * quitarse, erradícalo; debes de poner, insisto, el mismo diseño que tenemos
+ * en la home adaptado a la comunicación del apartado». Y antes, señalando esta
+ * misma página: «el giro es lo único que está bien; de ahí para abajo tienes
+ * que borrar lo que ya está viejo y reemplazarlo por lo nuevo».
  *
- * Aquí sí hay sitio para lo largo. Qué es, de dónde sale la cuenta, qué se ve
- * en una sesión, qué NO es y cuánto cuesta. La calculadora va dentro porque
- * ésta es su casa: es la misma cuenta de la que habla el texto, hecha delante
- * de quien lee.
+ * LO QUE HABÍA. Un bloque de texto a dos columnas con una foto que se acercaba,
+ * una cinta de cinco piezas a todo lo ancho, la calculadora metida en una
+ * banda granate suelta, tres párrafos de «qué no es» y un precio en una línea.
+ * Cada pieza con su maqueta, sus márgenes y su manera de entrar — cinco
+ * lenguajes distintos en una sola página, y ninguno el de la portada.
+ *
+ * LO QUE HAY AHORA. Las mismas cuatro formas de la casa, en el mismo orden en
+ * que se usan en la portada:
+ *
+ *   1. LA ENTRADA ....... el vídeo a pantalla completa, la barra y una frase.
+ *   2. EL CREMA ......... la afirmación de la sección, en el bloque crema que
+ *                         monta sobre el vídeo.
+ *   3. LAS FICHAS ....... la columna quieta a la izquierda y las cinco cosas
+ *                         que salen de la cuenta pasando por la derecha.
+ *   4. LAS FRANJAS ...... la cuenta hecha delante, qué no es y el precio.
+ *   5. EL PIE ........... el mismo de toda la web.
+ *
+ * Y NO ES UNA IMITACIÓN: son los MISMOS componentes de la portada, con otro
+ * contenido. `Sobre` y `Claves` llevan parámetros desde hoy justo para esto.
+ * Si mañana se arregla el bloque crema, se arregla aquí también.
+ *
+ * LO QUE SE HA QUEDADO, Y POR QUÉ. La calculadora. Es la única pieza de toda
+ * la web que hace delante de quien mira exactamente lo que la página promete,
+ * sin pedir nada a cambio — y después de haber leído qué sale de la cuenta, es
+ * una prueba. Lo que sobraba era la página vieja de alrededor, no ella.
+ *
+ * ESTA PÁGINA YA NO LLEVA 'use client'. Todo lo que necesita manos vive en sus
+ * propios componentes, así que la página en sí es de servidor. El título y la
+ * ficha de datos estructurados están en `layout.tsx` — el porqué, en
+ * `lib/seo.ts`.
  */
 
-const PAD = 'clamp(76px,10vw,150px) clamp(16px,4vw,56px)';
+import Cursor from '@/components/Cursor';
+import TuNumero from '@/components/TuNumero';
+import Banda from '@/components/casa/Banda';
+import Claves, { type FichaClave } from '@/components/casa/Claves';
+import Entrada from '@/components/casa/Entrada';
+import Pie from '@/components/casa/Pie';
+import Sobre from '@/components/casa/Sobre';
+import '@/components/casa/casa.css';
+import { CONTACTO, FOTOS, SESION, eur } from '@/content/site';
 
-/** Qué sale de la cuenta. Nada de esto es de adorno: son las cinco cosas que la
- *  plataforma calcula de verdad para cada persona. */
-const QUE_SALE: { rotulo: string; titulo: string; texto: string }[] = [
+/*
+ * QUÉ SALE DE LA CUENTA. Son las cinco cosas que la plataforma calcula de
+ * verdad para cada persona; ni una está de adorno.
+ *
+ * `corto` es el nombre del botón del índice de la izquierda, el que se enciende
+ * según se baja. Por eso son dos palabras y no cinco: es un botón, no un
+ * titular.
+ */
+const QUE_SALE: FichaClave[] = [
   {
-    rotulo: 'Tu número',
+    id: 'camino',
+    corto: 'Tu número',
     titulo: 'Camino de vida',
-    texto: 'Sale de tu fecha de nacimiento: se reducen por separado el día, el mes y el año, y después se suman. Es el terreno en el que juegas toda la vida.',
+    texto:
+      'Sale de tu fecha de nacimiento: se reducen por separado el día, el mes y el año, y después se suman. Es el terreno en el que juegas toda la vida.',
   },
   {
-    rotulo: 'Tu nombre',
+    id: 'nombre',
+    corto: 'Tu nombre',
     titulo: 'Expresión, alma y personalidad',
-    texto: 'Cada letra tiene un número. Con el nombre entero sale lo que se te da de fábrica; con solo las vocales, lo que quieres de verdad; con solo las consonantes, lo que los demás ven de ti.',
+    texto:
+      'Cada letra tiene un número. Con el nombre entero sale lo que se te da de fábrica; con solo las vocales, lo que quieres de verdad; con solo las consonantes, lo que los demás ven de ti.',
   },
   {
-    rotulo: 'Los tramos',
+    id: 'tramos',
+    corto: 'Los tramos',
     titulo: 'Realizaciones y ciclos',
-    texto: 'La vida no va en línea recta: va por tramos, y cada uno tiene su asunto. Saber en cuál estás cambia lo que merece la pena intentar este año.',
+    texto:
+      'La vida no va en línea recta: va por tramos, y cada uno tiene su asunto. Saber en cuál estás cambia lo que merece la pena intentar este año.',
   },
   {
-    rotulo: 'Lo difícil',
+    id: 'dificil',
+    corto: 'Lo difícil',
     titulo: 'Desafíos y deudas',
-    texto: 'Los números que salen de las restas —y los kármicos, el 13, el 14, el 16, el 19 y el 26— señalan lo que se te va a repetir hasta que lo mires.',
+    texto:
+      'Los números que salen de las restas —y los kármicos, el 13, el 14, el 16, el 19 y el 26— señalan lo que se te va a repetir hasta que lo mires.',
   },
   {
-    rotulo: 'Tu línea',
+    /* LA ÚNICA DE LAS CINCO CON IMAGEN, y es la que la pide: es la parte
+       transgeneracional, la que dice que esto no empezó en ti. La foto es la
+       fila de hombres repitiéndose hacia el fondo, que cuenta esa frase sin
+       tener que explicarla. En las otras cuatro no hay nada que enseñar, y un
+       rectángulo de relleno en cada una sería ruido cuatro veces. */
+    id: 'herencia',
+    corto: 'Tu línea',
     titulo: 'La herencia',
-    texto: 'Con las fechas de tus padres y tus abuelos se ve qué número viene de dónde. Es la parte transgeneracional: lo que no empezó en ti.',
+    texto:
+      'Con las fechas de tus padres y tus abuelos se ve qué número viene de dónde. Es la parte transgeneracional: lo que no empezó en ti.',
+    foto: FOTOS.generaciones,
+    alt: 'Una fila de hombres de distintas edades, uno detrás de otro, en la misma postura y con las mismas manos sobre la mesa, repitiéndose hacia el fondo.',
+  },
+];
+
+/** Qué NO es. La primera duda de quien llega de un anuncio, contestada antes
+ *  del precio: es lo que permite leer lo de abajo sin sospechar. */
+const QUE_NO_ES = [
+  {
+    t: 'No adivina el futuro',
+    d: 'Mira hacia atrás, no hacia delante. Nadie te va a decir con quién te vas a casar ni cuándo te va a tocar la lotería.',
+  },
+  {
+    t: 'No hay que creer en nada',
+    d: 'No hay religión, ni grupo, ni nada a lo que apuntarse. La cuenta se hace con números, delante de ti, y la puedes rehacer tú.',
+  },
+  {
+    t: 'No sustituye a un psicólogo',
+    d: 'Si estás en terapia, sigue con ella. Esto acompaña y no interfiere.',
   },
 ];
 
 export default function Numerologia() {
-  useSiteScroll();
   const ofertaViva = SESION.precioOferta != null && SESION.plazasOferta != null;
 
   return (
     <div id="app" className="claro casa" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor />
-      <Cortina />
-      {/* LA MISMA ENTRADA QUE LA PORTADA, con lo de aquí.
-          Gerson, el 18 de octubre: «arregla los apartados de numerología, de
-          kábala». Lo que fallaba no era el contenido —que es bueno y se
-          queda entero— sino que llevaban la ropa vieja: la barra de antes, un
-          titular suelto sobre papel blanco y ningún pie.
+
+      {/* ── 1. LA ENTRADA ──────────────────────────────────────
           El vídeo de fondo es el del recorrido: números de tinta que se
           vuelven hilos de oro. Dice de qué va la página sin una palabra. */}
       <Entrada
@@ -94,7 +140,7 @@ export default function Numerologia() {
           <>
             Tu fecha y tu nombre
             <br />
-            <em>ya lo dicen</em>
+            ya lo dicen
           </>
         }
         texto="Puestos en números, se ve qué se repite, en qué generación empezó y por dónde te llegó a ti."
@@ -103,179 +149,143 @@ export default function Numerologia() {
         cta={{ a: '#prueba', texto: 'Hacer la cuenta' }}
       />
 
-      {/* ── QUÉ ES ───────────────────────────────────────────── */}
-      <div className="claro bloque-limpio" style={{ paddingTop: 'clamp(128px,15vw,200px)' }}>
-        <div className="limpio-dentro">
-          <div className="limpio-texto">
-            {/* El titular de la página, escrito palabra a palabra según se
-                baja. Es lo primero que se lee y es largo: entero de golpe se
-                salta, escribiéndose se lee. */}
-            <Aparece as="h2" modo="letras" className="titular-seccion limpio-h">
-              Numerología transgeneracional: qué es y para qué sirve.
-            </Aparece>
-            <Aparece retraso={1}>
-              <p className="limpio-p">
-                Tu nombre y tu fecha de nacimiento guardan lo que ha ido pasando en tu familia. Puestos en números, el
-                patrón se ve: qué se repite, en qué generación empezó y por dónde te llegó a ti.
-              </p>
-            </Aparece>
-            <Aparece retraso={2}>
-              <p className="limpio-p">
-                Un hijo que no se reconoció, alguien que estuvo preso, una muerte de la que no se volvió a hablar. Cosas
-                que pasaron de verdad y que nadie cerró. Nadie tuvo la culpa, pero una historia que no se cierra sigue
-                bajando hasta que alguien la mira de frente.
-              </p>
-            </Aparece>
+      <main>
+        {/* ── 2. LA AFIRMACIÓN ─────────────────────────────── */}
+        <Sobre
+          id="esto"
+          entrada="Tu fecha de nacimiento no es un número de la suerte. Es el resumen de lo que ya estaba pasando en tu familia el día que llegaste."
+          texto="Un hijo que no se reconoció. Alguien que estuvo preso. Una muerte de la que no se volvió a hablar. Cosas que pasaron de verdad y que nadie cerró. Nadie tuvo la culpa, pero una historia que no se cierra sigue bajando: se convierte en una manera de hacer las cosas que en tu casa parecía lo normal, y que tú repites sin haberla elegido nunca."
+          botones={[
+            { a: '#prueba', texto: 'Hacer la cuenta', icono: 'abajo' },
+            { a: '/cursos', texto: 'Ver los talleres', icono: 'mas' },
+          ]}
+        />
+
+        {/* ── 3. QUÉ SALE DE LA CUENTA ─────────────────────
+            El orden importa y es el arreglo de fondo de esta página: antes
+            venía primero la calculadora y después qué sale. O sea, se le
+            ponía una máquina de calcular delante a alguien que todavía no
+            sabía qué se calcula ni para qué. Una calculadora sin contexto es
+            un juguete; la misma después de leer esto es una prueba.
+            El fondo quieto es la cuenta escrita a mano sobre la madera — el
+            de la portada, que aquí además es literalmente el tema. */}
+        <Claves
+          id="que-sale"
+          titulo={
+            <>
+              Qué sale de tu nombre
+              <br />
+              y de tu fecha.
+            </>
+          }
+          fichas={QUE_SALE}
+          pide={{
+            texto: 'La cuenta es aritmética y se hace delante de ti. En los talleres se aprende a hacerla sin que nadie esté delante.',
+            boton: { a: '/cursos', texto: 'Ver los talleres' },
+          }}
+        />
+
+        {/* ── 4. LA CUENTA, HECHA DELANTE ──────────────────
+            LA FRANJA VA SIN TITULAR, Y ES A PROPÓSITO. La calculadora trae el
+            suyo —«Antes de cambiar nada, hay que saber qué traes»— y su
+            párrafo. Puesto otro encima salían dos titulares pisándose y dos
+            párrafos diciendo lo mismo, que es el fallo que más veces ha habido
+            que arreglar en esta web. Cuando la pieza ya habla, la franja se
+            queda en lo que es: el granate, los márgenes y el sitio.
+
+            `tn-banda` es el vestido de la calculadora sobre fondo oscuro —las
+            casillas excavadas, el dorado de los rótulos—: eso se queda, que
+            está medido. Lo que se le quita es su relleno lateral, porque
+            ahora quien pone los márgenes es la franja, y si lo pusieran los
+            dos la calculadora se metería noventa píxeles hacia dentro
+            respecto a todo lo demás de la página. */}
+        <Banda id="prueba" tono="vino" apilado>
+          <div className="casa-pieza casa-pieza-primera tn-banda">
+            <TuNumero />
           </div>
-          {/* La foto se acerca en vez de subir: es la fila de hombres
-              repitiéndose, y acercándose se lee como que enfoca en ella. */}
-          <Aparece modo="escala" retraso={1} className="limpio-foto">
-            <Foto
-              src={FOTOS.generaciones}
-              alt="Una fila de hombres de distintas edades, uno detrás de otro, en la misma postura y con las mismas manos sobre la mesa, repitiéndose hacia el fondo"
-              ratio="4/5"
-              radius="0"
-              sizes="(max-width:900px) 100vw, 40vw"
-            />
-          </Aparece>
-        </div>
-      </div>
+        </Banda>
 
-      {/*
-          EL ORDEN HA CAMBIADO, Y ES EL ARREGLO MÁS IMPORTANTE DE ESTA PÁGINA.
-
-          Antes venía primero la calculadora y después «qué sale». O sea: se le
-          ponía delante una máquina de calcular a alguien que todavía no sabía
-          qué se calcula ni para qué. Una calculadora sin contexto es un
-          juguete; la misma calculadora después de haber leído qué sale de ahí
-          es una prueba.
-
-          Ahora: qué es → qué sale de la cuenta → la cuenta, hecha delante →
-          qué NO es → el precio. Cada bloque contesta a la pregunta que deja
-          abierta el anterior.
-      */}
-      {/* ── QUÉ SALE ─────────────────────────────────────────
-          Cinco piezas, en columnas. Es lo que la plataforma calcula de verdad
-          para cada persona; ni una de las cinco está de adorno. */}
-      <div className="claro bloque-limpio num-cinta-bloque">
-        <div style={{ maxWidth: 'var(--ancho)', margin: '0 auto', paddingInline: 'clamp(0px,1vw,10px)' }}>
-          <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '15ch', marginBottom: 'clamp(26px,3.2vw,44px)' }}>
-            Qué sale de tu nombre y de tu fecha.
-          </Aparece>
-        </div>
-        {/* La cinta va a TODO EL ANCHO DE LA PANTALLA, fuera del contenedor.
-            Recortada a 1180 px se lee como una tabla que se ha salido; llegando
-            a los dos bordes se lee como lo que es: algo que sigue. */}
-        <Aparece>
-          <Cinta piezas={QUE_SALE} />
-        </Aparece>
-      </div>
-
-      {/* ── LA CUENTA, HECHA DELANTE ─────────────────────────
-          La calculadora vive aquí y no en la portada. Es la misma cuenta de la
-          que habla el texto de arriba: enseñarla en el momento en que se acaba
-          de explicar es lo que la convierte en prueba en vez de en juguete. */}
-      <div id="prueba" className="vino banda tn-banda" style={{ scrollMarginTop: 80 }}>
-        {/* La calculadora se acerca. Es una pieza con la que se INTERACTÚA:
-            que suba como un párrafo la iguala con el texto de al lado, y
-            acercándose se lee como que se pone delante. */}
-        <Aparece modo="escala" className="banda-dentro">
-          <TuNumero />
-        </Aparece>
-      </div>
-
-      {/* ── QUÉ NO ES ────────────────────────────────────────
-          La duda número uno de quien llega de un anuncio. Contestarla en alto y
-          antes del precio es lo que permite leer el resto sin sospecha. */}
-      <div className="arena bloque-limpio">
-        <div className="cierre-uno">
-          <Aparece modo="letras" className="titular-seccion cierre-uno-h">Y qué no es.</Aparece>
-          <Aparece retraso={1}>
-            <p className="cierre-uno-p">
-              No adivina el futuro. Mira hacia atrás, no hacia delante: nadie te va a decir con quién te vas a casar ni
-              cuándo te va a tocar la lotería.
+        {/* ── 5. Y QUÉ NO ES ───────────────────────────────── */}
+        <Banda
+          id="no-es"
+          tono="claro"
+          rotulo="Para que no haya dudas"
+          titulo="Y qué no es"
+          texto={
+            <p>
+              Es la primera pregunta de quien llega sin conocer esto. Va aquí y
+              no enterrada al final, porque contestarla antes del precio es lo
+              que permite leer el resto sin sospechar.
             </p>
-          </Aparece>
-          <Aparece retraso={2}>
-            <p className="cierre-uno-p">
-              No hay que creer en nada. No hay religión, ni grupo, ni nada a lo que apuntarse. La cuenta se hace delante
-              de ti, con números, y la puedes rehacer tú.
-            </p>
-          </Aparece>
-          <Aparece retraso={3}>
-            <p className="cierre-uno-p">
-              Y no sustituye a un psicólogo. Si estás en terapia, sigue con ella: esto acompaña y no interfiere.
-            </p>
-          </Aparece>
-        </div>
-      </div>
+          }
+        >
+          <ul className="casa-lista">
+            {QUE_NO_ES.map((x) => (
+              <li key={x.t}>
+                <h3>{x.t}</h3>
+                <p>{x.d}</p>
+              </li>
+            ))}
+          </ul>
+        </Banda>
 
-      {/* ── LA CONSULTA Y SU PRECIO ──────────────────────────
-          El precio vive aquí, con cuerpo de texto normal y su motivo al lado.
-          En la portada no está: allí lo que se decide es si esto interesa, no
-          cuánto cuesta. */}
-      <div id="consulta" className="claro bloque-limpio" style={{ scrollMarginTop: 80 }}>
-        <div className="cierre-uno">
-          <Aparece modo="letras" className="titular-seccion cierre-uno-h">La consulta.</Aparece>
-          <Aparece retraso={1}>
-            <p className="cierre-uno-p">
-              Online, con tu carta ya preparada antes de vernos. Miramos de dónde viene lo que se repite en tu familia,
-              en qué generación empezó y qué parte te toca soltar a ti. Sales con tu historia puesta en números y
-              explicada delante de ti — no con una lista de consejos.
-            </p>
-          </Aparece>
-          <Aparece retraso={2}>
-            <p className="num-precio">
+        {/* ── 6. LA CONSULTA Y SU PRECIO ───────────────────
+            El precio vive aquí y no en la portada: allí lo que se decide es
+            si esto interesa, no cuánto cuesta. */}
+        <Banda
+          id="consulta"
+          tono="arena"
+          rotulo="La consulta"
+          titulo="Tu historia, puesta en números y explicada delante de ti"
+          texto={
+            <>
+              <p>
+                Online, con tu carta ya preparada antes de vernos. Miramos de
+                dónde viene lo que se repite, en qué generación empezó y qué
+                parte te toca soltar a ti.
+              </p>
+              <p>
+                Sales con tu patrón por escrito y con nombres. No con una lista
+                de consejos.
+              </p>
+            </>
+          }
+          nota="¿Y la consulta de Kábala, qué es? Está en su propia página, en el menú de arriba."
+        >
+          <div className="casa-precio">
+            <p className="casa-precio-cifra">
               {ofertaViva ? (
                 <>
-                  <b>{eur(SESION.precioOferta)}</b> en vez de {eur(SESION.precio)}, las {SESION.plazasOferta} primeras
+                  {eur(SESION.precioOferta)}
+                  <span className="casa-precio-antes">{eur(SESION.precio)}</span>
                 </>
               ) : (
-                <b>{eur(SESION.precio)}</b>
+                eur(SESION.precio)
               )}
             </p>
-          </Aparece>
-          {ofertaViva && (
-            <Aparece retraso={3}>
-              <p className="cierre-uno-p">
-                Es el precio de aniversario, que cae en día 14. Son {SESION.plazasOferta} plazas, una por cada año de
-                consulta, y se acaba cuando se llenen.
-              </p>
-            </Aparece>
-          )}
-          <Aparece retraso={4}>
-            {/* Enlace al correo y no botón de chat: el chat se ha borrado
-                de toda la web, y éste era de los que lo abrían. */}
-            <a href={`mailto:${CONTACTO.email}?subject=Reservar%20mi%20consulta`} className="portada-cta" data-mag data-cur-label="Escribir">
-              <span>Reservar mi consulta</span>
-              <i aria-hidden>→</i>
-            </a>
-          </Aparece>
-          <Aparece retraso={5}>
-            <p className="cierre-uno-puertas">
-              <Link href="/kabala" data-mag>
-                Y la consulta de Kábala, ¿qué es? →
-              </Link>
+            <p className="casa-precio-que">
+              Una sesión online, con tu carta preparada de antes.
+              {ofertaViva
+                ? ` Es el precio de aniversario, que cae en día 14: son ${SESION.plazasOferta} plazas, una por cada año de consulta, y se acaba cuando se llenen.`
+                : ''}
             </p>
-          </Aparece>
-        </div>
-      </div>
-
-      {/* ── PIE ──────────────────────────────────────────────── */}
-      <div className="arena" style={{ background: 'var(--bg)', borderTop: '1px solid var(--linea)', padding: 'clamp(44px,6vw,72px) clamp(16px,4vw,56px) 30px' }}>
-        {/* Lo último de la página también se mueve. El recorrido se recorta
-            por lo que queda de scroll, así que llega puesto del todo aunque no
-            haya más página por debajo para terminar de subirlo. */}
-        <Aparece style={{ maxWidth: 'var(--ancho)', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 28, alignItems: 'center', justifyContent: 'space-between' }}>
-          <Marca tam={68} apilado />
-          <Link href="/" data-mag style={{ fontSize: 'var(--t-cuerpo)', color: 'var(--tx-2)' }}>
-            ← Volver al inicio
-          </Link>
-        </Aparece>
-      </div>
+            {/* Enlace al correo y no botón de chat: el chat se borró de toda
+                la web, y éste era de los que lo abrían. */}
+            <a
+              className="casa-precio-boton casa-brillo"
+              href={`mailto:${CONTACTO.email}?subject=Reservar%20mi%20consulta%20de%20numerolog%C3%ADa`}
+            >
+              Reservar mi consulta
+            </a>
+            <p className="casa-precio-letra">
+              Se reserva por correo y te contesto yo. Si prefieres preguntar
+              antes, escríbeme y ya está.
+            </p>
+          </div>
+        </Banda>
+      </main>
 
       <Pie />
-      <Susurros />
     </div>
   );
 }

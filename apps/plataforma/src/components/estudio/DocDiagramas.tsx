@@ -66,7 +66,7 @@ export function DocArbol({ r, T, idioma = "es" }: { r: Resultado; T: CopiaEstudi
             <div style={css("font-family:var(--f-cifra),serif;font-size:19px;line-height:1.25;color:#2B1119;")}>
               {d.c.arcano} · {d.c.carta?.nombre || ""}
             </div>
-            <div style={css("font-family:var(--f-lectura),serif;font-style:italic;font-size:16px;color:#6B6478;")}>{d.c.carta?.lema || ""}</div>
+            <div style={css("font-family:var(--f-lectura),serif;font-style:normal;font-size:16px;color:#6B6478;")}>{d.c.carta?.lema || ""}</div>
           </div>
         ))}
       </div>

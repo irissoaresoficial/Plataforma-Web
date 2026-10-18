@@ -332,7 +332,7 @@ export default function GestionScreen() {
 
                 <div style={css("display:flex;gap:6px;flex-wrap:wrap;flex:1 1 140px;")}>
                   {mios.length === 0 ? (
-                    <span style={css(NOTA + "font-style:italic;")}>sin acceso a nada</span>
+                    <span style={css(NOTA + "font-style:normal;")}>sin acceso a nada</span>
                   ) : (
                     mios.map((r) => (
                       <span

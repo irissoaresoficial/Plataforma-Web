@@ -36,7 +36,7 @@ sola tipografía en toda la página web y la plataforma, pero hazlo bien». Y
 antes, dos veces: «la tipografía es minimalista, Apple style modern light».
 
 Es lo que hace Apple y es lo que pedía: una familia, y el contraste se saca de
-los pesos, los tamaños y la cursiva — no de meter una segunda letra.
+los pesos, los tamaños y el espacio — no de meter una segunda letra.
 
 | Para qué | Familia | Variable |
 |---|---|---|
@@ -52,9 +52,22 @@ Fraunces **ya no se descarga en la web**: desde que `--serif` apunta a la sans
 no la usa ni una regla, así que pedírsela a `next/font` era traerse una familia
 variable entera en cada visita para no pintar con ella ni una letra.
 
-Y la cursiva de los titulares no se pierde: Instrument Sans tiene itálica, así
-que «siempre lo mismo» o «que no elegiste» siguen en cursiva — en la misma
-letra, que es justo de lo que se trataba.
+### Cursiva: ninguna, en ningún sitio
+
+Gerson, el 18 de octubre: **«no quiero tipografía cursiva en NADA»**. Y es una
+regla, no una preferencia de ese día: no hay un solo `font-style: italic` en
+todo el repositorio, y las dos hojas de estilo lo apagan de raíz —`em`, `i`,
+`cite`, `dfn`, `var` y `address` salen rectos— para que no vuelva a entrar uno
+por descuido.
+
+Lo que hacía la cursiva lo hace ahora **el salto de línea**. «Por qué se
+repite / siempre lo mismo» se lee igual de partida en dos, y además se lee así
+en un móvil, donde una palabra inclinada en un titular grande sólo pierde
+legibilidad.
+
+Los `<em>` que quedan en el marcado **no se borran**: para un buscador y para
+un lector de pantalla siguen siendo énfasis, que es para lo que existe la
+etiqueta. Lo único que cambia es que ya no se dibujan torcidos.
 
 En CSS se usan **siempre** `var(--serif)` y `var(--sans)` en la web, y
 `var(--font-display)` y `var(--font-ui)` en la plataforma. Nunca el nombre de

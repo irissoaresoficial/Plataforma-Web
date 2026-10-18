@@ -111,7 +111,7 @@ export default function Taller() {
               Aquí NO va el modo de palabra a palabra aunque sea el titular:
               lleva un salto de línea y una cursiva dentro, o sea que el hijo no
               es un texto suelto y no hay nada que partir en palabras. Partirlo
-              a la fuerza costaría el `<em>`, que es lo que hace el remate de la
+              a la fuerza costaría el remate de la
               frase. */}
           <Aparece as="h1" retraso={2} className="tal-titular">
             Cambias de trabajo, cambias de pareja,

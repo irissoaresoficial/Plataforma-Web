@@ -15,10 +15,11 @@
  * LO QUE SE HA CAMBIADO DE LA PLANTILLA, Y POR QUÉ:
  *
  *   · LAS LETRAS. La plantilla pedía Inter y una Instrument Serif en cursiva.
- *     Aquí no entran: MARCA.md §1 dice «ni una tercera tipografía, ninguna», y
- *     ya pasó una vez —el 16 de octubre— que metí una familia de fuera y hubo
- *     que deshacerlo. La palabra en cursiva del titular va en Fraunces itálica,
- *     que es NUESTRA letra de titular y hace exactamente el mismo efecto.
+ *     No entra ninguna de las dos, y la cursiva tampoco: MARCA.md §1 dice «ni
+ *     una tercera tipografía, ninguna», y Gerson, el 18 de octubre, «no quiero
+ *     tipografía cursiva en NADA». Los titulares van en la letra de la casa,
+ *     de un solo peso y sin inclinar: el ritmo lo da el salto de línea, que es
+ *     un recurso tipográfico igual de bueno y no un adorno.
  *
  *   · LOS COLORES. La plantilla traía seis hexadecimales a mano (#F6E4CF,
  *     #321C04, #FFF9F2...). MARCA.md §3: un color se usa por su token. Resulta
@@ -34,6 +35,25 @@
  *     globals.css —`--radio-suave` y `--radio-medio`— y sólo los usa `.casa`.
  *     El resto de la web no se entera.
  */
+
+/* --------------------------------------------------------- CERO CURSIVA */
+/* Gerson, el 18 de octubre: «no quiero tipografía cursiva en NADA».
+   Esta regla es la que lo garantiza, y va aquí arriba a propósito: apaga la
+   cursiva en toda la casa de una vez, incluida la que traen de serie `em`,
+   `i`, `cite` o `address`, en vez de depender de que nadie se deje una
+   suelta en mil setecientas líneas. Si mañana alguien escribe un `<em>`
+   dentro de un titular, no sale torcido.
+   Y los `<em>` que quedan en el marcado siguen valiendo: para un lector de
+   pantalla y para un buscador son énfasis igual, sólo que ya no se dibujan
+   inclinados. */
+.casa em,
+.casa i,
+.casa cite,
+.casa dfn,
+.casa var,
+.casa address {
+  font-style: normal;
+}
 
 /* --------------------------------------------------------------- la barra */
 /* OJO CON EL `transform` DE ESTA CAJA. Aquí había un `translateX(-50%)` para
@@ -319,11 +339,6 @@
   color: var(--papel);
   text-wrap: balance;
 }
-/* La palabra en cursiva. Fraunces itálica, que es la nuestra. `em` lleva
-   cursiva de serie, así que no hace falta pedirla otra vez. */
-.casa-h1 em {
-  font-style: italic;
-}
 
 .casa-portada-p {
   margin: 0;
@@ -571,11 +586,16 @@
 /* El fondo va `fixed` en el escritorio para que las fichas pasen por delante de
    una foto quieta. En el móvil NO: iOS con `background-attachment: fixed` pinta
    la imagen a tamaño de documento y se ve un trozo gigante y borroso. */
+/* La foto la elige cada página con `--casa-claves-fondo`, puesta en el estilo
+   del `<section>`. Era fija aquí dentro, y cuando el bloque pasó a usarse
+   también en numerología y en kábala no había forma de cambiarla sin escribir
+   una regla por página. El valor de detrás de la coma es el de la portada, así
+   que quien no pase nada sigue viendo la cuenta escrita a mano. */
 .casa-claves-fondo {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: url('/images/la-cuenta.jpg') center / cover no-repeat;
+  background: var(--casa-claves-fondo, url('/images/la-cuenta.jpg')) center / cover no-repeat;
 }
 .casa-claves-velo {
   position: absolute;
@@ -710,23 +730,36 @@
     align-items: flex-start;
     gap: 8px;
   }
+  /* LA PASTILLA VA MÁS OSCURA DESDE QUE EL FONDO ES UN PARÁMETRO.
+     Estaba al 42 % y daba 6,3:1 sobre la foto de la portada. En cuanto kábala
+     pasó a traer la suya —las manos dibujando el árbol con tiza, que es más
+     clara— la misma pastilla se quedó en 4,44:1: por debajo de la norma, y
+     por cuatro centésimas, que es como se cuela siempre.
+     Subida al 58 % el botón se oscurece él solo y deja de depender de lo
+     clara que sea la foto que ponga cada página. Medido en las dos. */
   .casa-indice-b {
     border: 0;
     padding: 10px 18px;
     border-radius: var(--radio-pildora);
-    background: rgba(23, 18, 14, 0.42);
+    background: rgba(23, 18, 14, 0.58);
     font-family: var(--sans);
     font-size: var(--t-nota);
     font-weight: 500;
-    /* 0.56 y no 0.45. Un botón apagado del índice sigue siendo un botón: se
-       lee y se pulsa, así que le toca el 4,5:1 de texto pequeño. Con 0.45 se
-       quedaba en 4,46 — a cuatro centésimas, pero por debajo. */
-    color: rgba(255, 255, 255, 0.56);
+    /* 0.74, Y SE HA SUBIDO DOS VECES POR LA MISMA RAZÓN. Un botón apagado del
+       índice sigue siendo un botón: se lee y se pulsa, así que le toca el
+       4,5:1 de texto pequeño. Con 0.45 daba 4,46 y con 0.56 daba 4,44 sobre
+       la foto de kábala — las dos veces por debajo, y las dos por unas
+       centésimas, que es exactamente como se cuela esto.
+       Y oscurecer la pastilla NO arregla esto, aunque lo parezca: el texto es
+       blanco con alfa, así que se mezcla con la propia pastilla y al
+       oscurecerla se oscurece también él. Lo que sube el contraste es subir
+       el alfa del texto. Medido en las tres páginas. */
+    color: rgba(255, 255, 255, 0.74);
     cursor: pointer;
     transition: color 0.3s ease, background 0.3s ease;
   }
   .casa-indice-on {
-    background: rgba(23, 18, 14, 0.6);
+    background: rgba(23, 18, 14, 0.72);
     color: var(--papel);
   }
   .casa-claves-pide {
@@ -1095,9 +1128,6 @@ html[data-portada='si'] #chat-launcher {
   letter-spacing: -0.025em;
   color: var(--papel);
 }
-.casa-cinta-h em {
-  font-style: italic;
-}
 .casa-cinta-p {
   margin: 0 0 clamp(14px, 2vw, 26px);
   max-width: 54ch;
@@ -1154,6 +1184,25 @@ html[data-portada='si'] #chat-launcher {
   display: flex;
   flex-direction: column;
   gap: clamp(28px, 4vw, 44px);
+}
+/* EN PANTALLAS BAJAS, LA ENTRADA SE APRETA.
+   Esta página tiene un trabajo y es que se pulse el botón de apuntarse, así
+   que ese botón tiene que caer DENTRO de la primera pantalla. En un portátil
+   de 900 px de alto se quedaba veintisiete píxeles por debajo del borde: lo
+   bastante para que no exista hasta que alguien decida bajar, y en tráfico
+   frío de campaña mucha gente no baja.
+   Se recorta por arriba —el aire sobre el rótulo— y por el hueco entre el
+   titular y la fila del vídeo. En una pantalla alta no cambia nada: la regla
+   sólo entra por debajo de 940 px de alto, y sólo en escritorio, porque en el
+   móvil el formulario va debajo del vídeo de todas formas. */
+@media (min-width: 960px) and (max-height: 940px) {
+  .casa-mc-alto {
+    padding-top: clamp(86px, 11vh, 110px);
+    padding-bottom: clamp(40px, 5vw, 64px);
+  }
+  .casa-mc-dentro {
+    gap: clamp(20px, 2.4vw, 28px);
+  }
 }
 /* El vídeo y el formulario, uno al lado del otro y los dos arriba: el vídeo
    convence y el formulario recoge, sin que haya que bajar para apuntarse.
@@ -1221,9 +1270,6 @@ html[data-portada='si'] #chat-launcher {
   letter-spacing: -0.03em;
   color: var(--papel);
 }
-.casa-mc-h1 em {
-  font-style: italic;
-}
 .casa-mc-p {
   margin: 0;
   max-width: 54ch;
@@ -1246,11 +1292,16 @@ html[data-portada='si'] #chat-launcher {
     max-width: none;
   }
 }
+/* EL AIRE DE ESTA CAJA SE MIDE EN REGISTROS, no en gusto. Es la única pieza
+   de la web que decide si una campaña de Meta trae datos o no, y el botón de
+   enviar tiene que caer dentro de la primera pantalla de un portátil normal.
+   Cada dos píxeles de hueco de más son catorce píxeles de botón más abajo —hay
+   siete huecos— y a partir de cierto punto eso es gente que no lo ve. */
 .casa-registro {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: clamp(22px, 3vw, 32px);
+  gap: 12px;
+  padding: clamp(20px, 2.4vw, 28px);
   border-radius: var(--radio-suave);
   background: var(--papel);
   box-shadow: 0 24px 60px rgba(23, 18, 14, 0.4);
@@ -1281,7 +1332,6 @@ html[data-portada='si'] #chat-launcher {
   color: var(--tinta);
 }
 .casa-campo em {
-  font-style: normal;
   font-weight: var(--peso-texto);
   color: #6b6564;
 }
@@ -1375,6 +1425,56 @@ html[data-portada='si'] #chat-launcher {
   background: var(--vino);
   color: var(--papel);
   font-size: 20px;
+}
+
+/* EL BOTÓN DEL GRUPO DE WHATSAPP.
+   Va en granate y no en el verde de WhatsApp, y es a propósito: MARCA.md §3
+   dice que un color se usa por su token, y un verde de fuera metido en una
+   caja crema y granate se lee como un anuncio pegado encima de la página. La
+   palabra «WhatsApp» ya dice adónde lleva; el color dice de quién es la
+   página. Y de paso es el mismo botón que el de enviar, así que quien acaba
+   de pulsar uno reconoce el siguiente. */
+.casa-registro-grupo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 13px 22px 13px 13px;
+  border-radius: var(--radio-pildora);
+  background: var(--vino);
+  /* Y NO `--papel` a secas: este botón es un enlace, y `.casa-registro-hecho a`
+     pinta los enlaces de granate. Sin esto, granate sobre granate. */
+  color: var(--papel);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+.casa-registro-hecho a.casa-registro-grupo {
+  color: var(--papel);
+}
+.casa-registro-grupo-disco {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: var(--radio-pildora);
+  background: rgba(255, 249, 242, 0.16);
+}
+
+/* La letra pequeña de la pantalla de gracias: la que dice qué pasa en el
+   grupo y a quién escribir si no llega el correo. Menor que el párrafo de
+   arriba, pero #5d5756 sobre el papel da 6,1:1 — pequeña no es lo mismo que
+   ilegible, y esto es justo lo que hay que poder leer. */
+/* Va con las dos clases encadenadas y no con `!important`: `.casa-registro-hecho p`
+   pesa más que una clase sola (lleva clase + etiqueta), así que sin esto el
+   párrafo de arriba ganaba. Dos clases le pasan por delante limpiamente. */
+.casa-registro-hecho .casa-registro-letra {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #5d5756;
 }
 
 /* ------------------------------------------------------- para quién es */
@@ -1537,9 +1637,6 @@ html[data-portada='si'] #chat-launcher {
   line-height: 1.12;
   letter-spacing: -0.025em;
 }
-.casa-pronto-h em {
-  font-style: italic;
-}
 .casa-pronto-p {
   margin: 0;
   max-width: 56ch;
@@ -1574,9 +1671,27 @@ html[data-portada='si'] #chat-launcher {
   color: var(--tinta);
   padding: clamp(64px, 9vw, 128px) var(--hueco);
 }
+/* DOS COLUMNAS: lo que se cuenta a la izquierda, la estantería a la derecha.
+   Antes era una sola columna con el texto encima y la fila de fichas debajo, y
+   funcionaba sólo mientras hubiera cuatro cursos que la llenaran. Con uno
+   —que es lo que hay— quedaba un cuadrado pequeño y media franja de arena
+   vacía al lado. Repartido en dos, la franja está llena con un curso y con
+   ocho, y es además el mismo reparto que el bloque de Iris de la portada. */
 .casa-disco-dentro {
   max-width: var(--ancho);
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(32px, 5vw, 56px);
+  align-items: start;
+}
+@media (min-width: 860px) {
+  .casa-disco-dentro {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    gap: clamp(40px, 5vw, 80px);
+  }
+}
+.casa-disco-texto {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1600,12 +1715,9 @@ html[data-portada='si'] #chat-launcher {
   line-height: 1.12;
   letter-spacing: -0.025em;
 }
-.casa-disco-h em {
-  font-style: italic;
-}
 .casa-disco-p {
-  margin: 0 0 clamp(22px, 3vw, 38px);
-  max-width: 54ch;
+  margin: 0;
+  max-width: 48ch;
   font-family: var(--sans);
   font-size: var(--t-cuerpo);
   line-height: 1.65;
@@ -1622,13 +1734,32 @@ html[data-portada='si'] #chat-launcher {
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* `auto-fit` y no un número de columnas fijo: la estantería se ajusta sola
+     al número de cursos que haya ese día. El `min(100%, 220px)` es lo que
+     impide que en un móvil estrecho la ficha pida más ancho del que hay y
+     saque barra horizontal. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: clamp(14px, 2vw, 26px);
   perspective: 1200px;
 }
-@media (min-width: 760px) {
-  .casa-disco-rejilla {
-    grid-template-columns: repeat(4, 1fr);
+/* CON UN SOLO CURSO, la ficha no se estira a toda la columna: un cuadrado de
+   medio metro con un cartel dentro no es un cartel, es un cartelón. Se queda
+   del tamaño de un disco. En cuanto haya dos, esta regla deja de aplicar ella
+   sola.
+   Apilada —en el móvil— va centrada, que es lo único que cabe. */
+.casa-disco-rejilla:has(li:only-child) {
+  max-width: 380px;
+  margin-inline: auto;
+}
+@media (min-width: 860px) {
+  /* Y EN ESCRITORIO SE PEGA AL BORDE DERECHO, no al centro de su mitad.
+     Centrada quedaba a cien píxeles del margen de la página: ni alineada con
+     el borde ni con nada, que es como se ve un descuadre aunque esté hecho a
+     propósito. Pegada a la derecha, su canto cae en la misma línea que el
+     borde de la entrada de arriba y que el «© 2026» del pie — tres cosas en
+     la misma vertical, que es lo que hace que una página se vea cuadrada. */
+  .casa-disco-rejilla:has(li:only-child) {
+    margin-inline: auto 0;
   }
 }
 .casa-disco-rejilla li {
@@ -1686,15 +1817,6 @@ a.casa-disco-ficha:hover .casa-disco-cara {
 a.casa-disco-ficha:hover .casa-disco-brillo {
   transform: translateX(100%);
 }
-.casa-disco-cara-vacia {
-  background: rgba(34, 29, 31, 0.08);
-  border: 1px dashed rgba(34, 29, 31, 0.22);
-  box-shadow: none;
-}
-.casa-disco-cara-vacia .casa-sello {
-  opacity: 0.35;
-}
-
 .casa-disco-pie {
   display: flex;
   flex-direction: column;
@@ -1712,14 +1834,9 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
      que no puede quedarse en un gris de adorno. */
   color: #5d5756;
 }
-.casa-disco-hueco .casa-disco-pie strong,
-.casa-disco-hueco .casa-disco-pie small {
-  color: #6b6564;
-}
-
 .casa-disco-nota {
-  margin: clamp(22px, 3vw, 38px) 0 0;
-  max-width: 56ch;
+  margin: 0;
+  max-width: 48ch;
   font-family: var(--sans);
   font-size: var(--t-nota);
   line-height: 1.6;
@@ -1739,4 +1856,231 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
   a.casa-disco-ficha:hover .casa-disco-cara {
     transform: none;
   }
+}
+
+/* ----------------------------------------------------- la franja de dos */
+/* La tercera forma de la casa, después de la entrada a pantalla completa y del
+   bloque crema: lo que se cuenta a la izquierda, lo que lo demuestra a la
+   derecha. Es el mismo reparto que la estantería de cursos y que el bloque de
+   Iris, suelto para que lo usen numerología y kábala.
+
+   EL COLOR NO SE PINTA AQUÍ. La franja lleva encima una de las tres clases de
+   tono de globals.css —`claro`, `arena` o `vino`— y son ellas las que cambian
+   los tokens. Por eso todo lo de dentro va en `var(--tx)`, `var(--tx-2)` y
+   `var(--acento)` y no en colores escritos: la misma franja sirve sobre papel
+   y sobre granate, y lo que se le meta dentro se entera solo. */
+.casa-banda {
+  padding: clamp(64px, 9vw, 128px) var(--hueco);
+}
+.casa-banda-dentro {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(30px, 5vw, 52px);
+  align-items: start;
+}
+@media (min-width: 860px) {
+  .casa-banda-dentro {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    gap: clamp(40px, 5vw, 80px);
+  }
+  /* Apilada: el texto arriba y la pieza a todo lo ancho. Es para lo que no
+     cabe en media franja —la calculadora, que ya es de dos columnas por
+     dentro, y el árbol de la vida—. */
+  .casa-banda-apilada .casa-banda-dentro {
+    grid-template-columns: 1fr;
+  }
+}
+.casa-banda-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.casa-banda-rotulo {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  /* `--acento` y no `--oro`: sobre claro toca el dorado de tinta y sobre
+     granate el de luz, y el token ya sabe cuál. El dorado de adorno no llega
+     al 4,5:1 sobre claro (MARCA.md §3) y es la trampa que se pisa sola. */
+  color: var(--acento);
+}
+.casa-banda-h {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  font-weight: var(--peso-fino);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--tx);
+  text-wrap: balance;
+}
+.casa-banda-p {
+  max-width: 48ch;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: var(--tx-2);
+}
+.casa-banda-p p {
+  margin: 0 0 14px;
+}
+.casa-banda-p p:last-child {
+  margin-bottom: 0;
+}
+.casa-banda-nota {
+  margin: 0;
+  max-width: 48ch;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  color: var(--tx-3);
+}
+.casa-banda-lado {
+  min-width: 0;
+}
+
+/* La lista de la derecha: tres o cuatro cosas cortas con su título. Lleva un
+   filete a la izquierda en vez de un punto o un número, porque no es una
+   enumeración ordenada —ninguna va antes que otra— y un filete las agrupa sin
+   decir que hay un primero. */
+.casa-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.4vw, 28px);
+}
+.casa-lista li {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: clamp(16px, 2vw, 22px);
+  border-left: 2px solid var(--linea-2);
+}
+.casa-lista h3 {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.casa-lista p {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  color: var(--tx-2);
+}
+
+/* LA FICHA DEL PRECIO. Es la misma caja de papel que el formulario de la
+   masterclass —mismo radio, misma sombra, mismo botón granate—, y eso no es
+   repetirse: es que quien ya ha visto una sabe que ahí se decide algo. */
+.casa-precio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: var(--radio-suave);
+  background: var(--papel);
+  color: var(--tinta);
+  box-shadow: 0 24px 60px rgba(23, 18, 14, 0.16);
+}
+.casa-precio-cifra {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: var(--serif);
+  font-size: clamp(34px, 4vw, 48px);
+  font-weight: var(--peso-fino);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--tinta);
+}
+/* El precio de antes, cuando hay oferta. Tachado y en pequeño: es un dato de
+   referencia, no una cifra que haya que leer dos veces. */
+.casa-precio-antes {
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-texto);
+  text-decoration: line-through;
+  color: #6b6564;
+}
+.casa-precio-que {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  /* #55504f sobre el papel da 7,4:1. Es lo que dice qué se compra. */
+  color: #55504f;
+}
+.casa-precio-boton {
+  margin-top: 4px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: var(--radio-medio);
+  background: var(--vino);
+  color: var(--papel);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.casa-precio-letra {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.55;
+  color: #5d5756;
+}
+
+/* --------------------------------------------- la cuenta, hecha delante */
+/* La calculadora y el árbol son piezas que ya existían y traen su propio
+   vestido (`.tn` y `.arbol`, en globals.css). Aquí sólo se les da el sitio:
+   una franja apilada, el titular de la casa arriba y la pieza debajo a todo lo
+   ancho. No se les toca por dentro — funcionan, están medidas, y lo que
+   sobraba era la página vieja que había alrededor. */
+.casa-pieza {
+  width: 100%;
+  margin-top: clamp(26px, 3.5vw, 44px);
+}
+/* Cuando la pieza es lo único que hay en su columna no va separada de nada:
+   el aire ya lo pone el relleno de la propia franja. */
+.casa-pieza-primera {
+  margin-top: 0;
+}
+/* EL ÁRBOL, A SU TAMAÑO. El dibujo está hecho sobre un lienzo de 400×660, o
+   sea bastante más alto que ancho: estirado al ancho de la franja medía casi
+   dos mil píxeles de alto y había que bajar tres pantallas para verlo entero.
+   A 400 sale exactamente como se dibujó. */
+.casa-pieza-arbol {
+  max-width: 400px;
+}
+/* LA CALCULADORA, DENTRO DE UNA FRANJA DE LA CASA.
+   `tn-banda` es su vestido sobre fondo oscuro: las casillas excavadas, el
+   dorado de los rótulos, el botón invertido. Todo eso se queda, que está
+   medido. Lo que hay que quitarle son las tres cosas que tenía por ser una
+   banda ella misma, y que ahora pone la franja:
+     · el relleno lateral, o la calculadora se metería hasta noventa píxeles
+       hacia dentro respecto al titular que tiene encima — y alinear es
+       justamente lo que más ha costado en esta web;
+     · el fondo, que lo pinta la franja;
+     · y el `overflow: hidden`, que le cortaría por los lados las sombras del
+       relieve a las casillas de los extremos.
+   Dos clases pesan más que una, así que esto gana también dentro de la media
+   query de `tn-banda`, sin un solo `!important`. */
+.casa-pieza.tn-banda {
+  padding-left: 0;
+  padding-right: 0;
+  background: transparent;
+  overflow: visible;
 }

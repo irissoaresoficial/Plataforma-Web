@@ -75,7 +75,7 @@ export default function Masterclass() {
             <h1 className="casa-mc-h1">
               Hay una forma de amar
               <br />
-              <em>que no elegiste</em>
+              que no elegiste
             </h1>
             <p className="casa-mc-p">
               Desórdenes Amorosos. Lo que se repite en tu forma de querer no

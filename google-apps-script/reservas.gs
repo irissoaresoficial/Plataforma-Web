@@ -136,6 +136,27 @@ var CONFIG = {
    */
   PAGO_URL: '',
 
+  /*
+   * EL GRUPO DE WHATSAPP DE LA MASTERCLASS.
+   *
+   * Gerson, el 18 de octubre: «debe de llegar un correo de registro de gracias
+   * y el link de WhatsApp».
+   *
+   * Aquí va el enlace de invitación, el que empieza por
+   * https://chat.whatsapp.com/ y se saca en WhatsApp con:
+   *   el grupo -> el nombre del grupo arriba -> Invitar con enlace -> Copiar.
+   *
+   * MIENTRAS ESTE VACIO, el correo de confirmacion sale igual pero sin hablar
+   * del grupo. Es lo mismo que hace PAGO_URL aqui arriba y por el mismo
+   * motivo: prometer un enlace que no llega es peor que no prometer nada.
+   *
+   * OJO, SON DOS SITIOS. Este enlace tambien hay que pegarlo en la web, en
+   * apps/web/content/site.ts, dentro de CONTACTO, en el campo `grupo`: ese es
+   * el boton verde de la pantalla de gracias y este es el del correo. Si solo
+   * se pega en uno, la mitad de la gente no recibe el enlace.
+   */
+  GRUPO_WHATSAPP: '',
+
   // Huecos que se ofrecen cada día laborable, en hora española.
   HOURS: ['10:00', '12:30', '16:00', '18:30'],
 
@@ -651,7 +672,14 @@ function escapaSalvoSaltos(t) {
  * secuencia de cinco días y lo primero que recibe es su resultado; a ése no hay
  * que darle la bienvenida dos veces. Quien reserva su precio en la membresía
  * necesita que le confirmen exactamente qué ha reservado y cuándo va a saber
- * algo. Y quien se apunta a un curso, en qué fecha es.
+ * algo. Y quien se apunta a un curso o a la masterclass necesita dos cosas: que
+ * le confirmen que está dentro, y el enlace del grupo de WhatsApp.
+ *
+ * EL GRUPO ES LO QUE SOSTIENE AL REGISTRO HASTA EL DÍA DE LA CLASE. Entre que
+ * alguien deja su correo en un anuncio y el día en que hay clase pasan semanas;
+ * sin nada en medio, la mitad no se acuerda ni de haberse apuntado. En el grupo
+ * ve que hay más gente en lo mismo y se entera de la fecha el día que se pone.
+ * Por eso el botón del grupo es lo único que se le pide hacer en ese correo.
  *
  * Son tres situaciones distintas y mandar el mismo «gracias por suscribirte» a
  * las tres es la manera más rápida de que esto parezca un boletín automático en
@@ -670,10 +698,21 @@ function acuseDeRecibo(lead) {
         '<p>Te escribo yo cuando abra, con tu precio guardado. No tienes que hacer nada más.</p>'
     },
     curso: {
-      asunto: 'Apuntada al curso',
+      asunto: 'Gracias — ya tienes tu plaza',
       cuerpo:
         '<p>Hola {nombre},</p>' +
-        '<p>Te tengo apuntada. Antes del curso te escribo con la hora, el sitio y lo que tienes que llevar.</p>' +
+        '<p>Gracias por apuntarte. <b>Ya tienes tu plaza guardada</b>, y es gratis: no hay nada que pagar.</p>' +
+        // El bloque del grupo sale solo si hay enlace. Sin enlace no se nombra
+        // el grupo en ninguna parte: ver GRUPO_WHATSAPP, arriba del todo.
+        (CONFIG.GRUPO_WHATSAPP
+          ? '<p>Lo siguiente es entrar al grupo de WhatsApp de la masterclass. ' +
+            'Ahí aviso de la fecha, mando el enlace el día de la clase y contesto dudas antes. ' +
+            'Si no entras, la fecha te llega igual por correo — pero en el grupo te enteras antes.</p>' +
+            '<p><a href="' + CONFIG.GRUPO_WHATSAPP + '" ' +
+            'style="display:inline-block;background:#451a25;color:#ffffff;text-decoration:none;' +
+            'padding:13px 24px;border-radius:999px;font-weight:600">Entrar al grupo de WhatsApp</a></p>' +
+            '<p style="font-size:13px;color:#6b6b72">Puedes salirte del grupo cuando quieras.</p>'
+          : '<p>Te escribo yo en cuanto haya fecha, con el enlace para entrar. No tienes que hacer nada más.</p>') +
         '<p>Si te surge cualquier duda, contesta a este correo: lo leo yo.</p>'
     }
   };

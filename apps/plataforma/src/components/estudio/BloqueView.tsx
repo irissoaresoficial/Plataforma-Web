@@ -45,7 +45,7 @@ export default function BloqueView({
         <p
           {...editable}
           onBlur={onBlur(b.editId)}
-          style={css("font-family:var(--f-lectura),serif;font-style:italic;font-size:var(--t-title);line-height:1.5;color:#5E5670;margin:0;text-wrap:pretty;")}
+          style={css("font-family:var(--f-lectura),serif;font-style:normal;font-size:var(--t-title);line-height:1.5;color:#5E5670;margin:0;text-wrap:pretty;")}
         >
           {txt(b.editId, b.textoDef)}
         </p>
@@ -132,7 +132,7 @@ export default function BloqueView({
         <p
           data-nocorte=""
           style={css(
-            "font-family:var(--f-lectura),serif;font-style:italic;font-size:var(--t-title);line-height:1.5;color:#6B6478;text-align:center;border-top:1px solid rgba(201,168,76,.3);border-bottom:1px solid rgba(201,168,76,.3);padding:16px 30px;margin:0;"
+            "font-family:var(--f-lectura),serif;font-style:normal;font-size:var(--t-title);line-height:1.5;color:#6B6478;text-align:center;border-top:1px solid rgba(201,168,76,.3);border-bottom:1px solid rgba(201,168,76,.3);padding:16px 30px;margin:0;"
           )}
         >
           {b.texto}

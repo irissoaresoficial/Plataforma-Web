@@ -65,12 +65,15 @@ export default function Portada() {
         </header>
 
         <div className="casa-portada-dentro">
+          {/* DOS LÍNEAS Y NI UNA CURSIVA. La plantilla ponía la segunda
+              línea inclinada y así estaba; Gerson: «no quiero tipografía
+              cursiva en NADA». El titular se parte igual, y el corte hace el
+              trabajo que hacía la cursiva: «por qué se repite» / «siempre lo
+              mismo» se leen como dos golpes y no como una frase larga. */}
           <h1 className="casa-h1">
             Por qué se repite
             <br />
-            {/* La palabra en cursiva de la plantilla, puesta en Fraunces
-                itálica, que es nuestra letra de titular. Ver casa.css. */}
-            <em>siempre lo mismo</em>
+            siempre lo mismo
           </h1>
 
           {/* Esta frase hace dos cosas y las dos a propósito: nombra el

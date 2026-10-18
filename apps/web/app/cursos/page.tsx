@@ -48,7 +48,7 @@ export default function Cursos() {
           <>
             Talleres en directo,
             <br />
-            <em>con tu caso delante</em>
+            con tu caso delante
           </>
         }
         texto="Se trabaja con tu fecha y con tu nombre, en vivo. Queda grabado, así que si un día no puedes, no lo pierdes."

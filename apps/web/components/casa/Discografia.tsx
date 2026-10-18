@@ -5,28 +5,34 @@
  * ============================================================================
  *
  * Gerson: «ahí van a ir bloques cuadraditos así en figuras de 3D o algo así,
- * donde están diferentes cursos como una especie de discografía; tiene que ir
- * ahí como "selecciona tu curso" o "busca el curso que más te llame la
- * atención"».
+ * donde están diferentes cursos como una especie de discografía».
  *
- * O sea: una estantería de discos. Cuadrados, uno al lado del otro, y cada
- * uno con su portada. Es la forma correcta para esto porque es la que ya sabe
- * leer todo el mundo —Spotify, Netflix, una estantería de vinilos— y porque
- * invita a lo que él pidió: a elegir, no a leer una lista.
+ * O sea: una estantería de discos. Es la forma correcta para esto porque es la
+ * que ya sabe leer todo el mundo —Spotify, Netflix, una estantería de vinilos—
+ * y porque invita a lo que él pidió: a elegir, no a leer una lista.
  *
- * EL 3D, Y POR QUÉ ES SUTIL.
- * Cada ficha se levanta y gira un poco al pasar por encima, con perspectiva
- * de verdad (`perspective` + `rotateX/rotateY`), y el brillo del canto se
- * mueve con ella. No gira cuarenta y cinco grados: ocho. Un cartel que se
- * tuerce mucho deja de leerse como un cartel y pasa a leerse como un truco, y
- * aquí lo que tiene que destacar es el curso, no el efecto.
+ * SE HAN IDO LOS HUECOS, Y ÉSTE ES EL MOTIVO.
+ * Aquí había tres fichas vacías con el canto de rayas y la palabra
+ * «Próximamente» debajo, para que la fila de cuatro no se viera coja. Gerson,
+ * el 18 de octubre: «elimina esos espacios, que solo se vea uno de momento».
  *
- * LO QUE NO SE INVENTA (MARCA.md §7).
- * Hoy hay UN curso de verdad. Los huecos que lo acompañan NO llevan nombres
- * inventados ni fechas verosímiles: son huecos, se ven como huecos y lo dicen.
- * Una estantería con tres discos falsos para que no se vea vacía es
- * exactamente lo que no se hace. Cuando Iris suba el segundo, aparece solo:
- * esto lee de `CURSOS`.
+ * Tenía razón, y no es cuestión de gusto. Tres huecos al lado de un curso de
+ * verdad dicen en voz alta que aquí casi no hay nada — justo lo contrario de
+ * lo que tiene que decir la página que vende los talleres. Un disco solo en
+ * una estantería es un disco; un disco con tres fundas vacías al lado es una
+ * tienda que está cerrando.
+ *
+ * ENTONCES, ¿QUÉ LLENA LA FRANJA?
+ * El texto. La sección pasa a dos columnas —lo que se cuenta a la izquierda,
+ * la estantería a la derecha—, que es el mismo reparto que usa el bloque de
+ * Iris en la portada. Con un curso, la franja está llena igual y la ficha se
+ * queda del tamaño de un cartel, centrada en su mitad, en vez de estirarse
+ * media pantalla. Con cuatro, la rejilla crece sola y no hay que tocar nada.
+ *
+ * Y EL TEXTO SE AJUSTA SOLO AL NÚMERO DE CURSOS. «Busca el curso que más te
+ * llame» con un solo curso delante es una frase que se ríe de quien la lee.
+ * Mientras haya uno, dice que hay uno; en cuanto Iris suba el segundo, vuelve
+ * a invitar a elegir. Lo decide `CURSOS.length`, no una mano.
  */
 
 import Image from 'next/image';
@@ -34,11 +40,6 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { CURSOS, falta } from '@/content/site';
 import Sello from './Sello';
-
-/* Cuántos huecos se dibujan detrás de los cursos reales. Cuatro en total es
-   una fila completa en escritorio: con un curso quedan tres huecos, con tres
-   queda uno, y a partir de cuatro no queda ninguno y la rejilla crece sola. */
-const FILA = 4;
 
 export default function Discografia() {
   const zona = useRef<HTMLElement>(null);
@@ -64,21 +65,39 @@ export default function Discografia() {
     return () => ojo.disconnect();
   }, []);
 
-  const huecos = Math.max(0, FILA - CURSOS.length);
+  const uno = CURSOS.length === 1;
 
   return (
     <section className="casa-disco" id="catalogo" ref={zona} aria-labelledby="disco-h">
       <div className="casa-disco-dentro">
-        <span className="casa-disco-rotulo">La estantería</span>
-        <h2 className="casa-disco-h" id="disco-h">
-          Busca el curso
-          <br />
-          <em>que más te llame</em>
-        </h2>
-        <p className="casa-disco-p">
-          Cada uno mira una cosa distinta de lo mismo. Empieza por el que te
-          reconozcas al leer el nombre.
-        </p>
+        <div className="casa-disco-texto">
+          <span className="casa-disco-rotulo">La estantería</span>
+          <h2 className="casa-disco-h" id="disco-h">
+            {uno ? (
+              <>
+                Ahora mismo
+                <br />
+                hay uno abierto
+              </>
+            ) : (
+              <>
+                Busca el curso
+                <br />
+                que más te llame
+              </>
+            )}
+          </h2>
+          <p className="casa-disco-p">
+            {uno
+              ? 'Se abren de uno en uno y se trabajan en directo, con los casos de quien está dentro. Éste es el que está en pie hoy, y se entra por la masterclass, que es gratis.'
+              : 'Cada uno mira una cosa distinta de lo mismo. Empieza por el que te reconozcas al leer el nombre.'}
+          </p>
+          <p className="casa-disco-nota">
+            Los siguientes van saliendo poco a poco. Si te apuntas a la
+            masterclass, te aviso de los que vengan sin que tengas que estar
+            mirando.
+          </p>
+        </div>
 
         <ul className={`casa-disco-rejilla${dentro ? ' casa-disco-dentro-ok' : ''}`}>
           {CURSOS.map((c, i) => (
@@ -97,7 +116,7 @@ export default function Discografia() {
                       alt=""
                       width={1920}
                       height={1080}
-                      sizes="(max-width: 760px) 50vw, 280px"
+                      sizes="(max-width: 860px) 90vw, 380px"
                     />
                   ) : (
                     <Sello tam={38} claro />
@@ -111,35 +130,7 @@ export default function Discografia() {
               </Link>
             </li>
           ))}
-
-          {/* LOS HUECOS. No son cursos: son sitios vacíos, y lo dicen.
-              `aria-hidden` porque para quien navega a oídas un hueco no es
-              información — la frase de debajo ya cuenta que vienen más. */}
-          {Array.from({ length: huecos }).map((_, i) => (
-            <li
-              key={`hueco-${i}`}
-              className="casa-disco-hueco"
-              style={{ transitionDelay: `${(CURSOS.length + i) * 90}ms` }}
-              aria-hidden="true"
-            >
-              <span className="casa-disco-ficha">
-                <span className="casa-disco-cara casa-disco-cara-vacia">
-                  <Sello tam={38} claro />
-                </span>
-                <span className="casa-disco-pie">
-                  <strong>Próximamente</strong>
-                  <small>Va saliendo</small>
-                </span>
-              </span>
-            </li>
-          ))}
         </ul>
-
-        <p className="casa-disco-nota">
-          Los siguientes van saliendo poco a poco. Si te apuntas a la
-          masterclass, te aviso de los que vengan sin que tengas que estar
-          mirando.
-        </p>
       </div>
     </section>
   );

@@ -134,7 +134,7 @@ export default function HojaClienteEmpresa({ re, marca, idioma = "es" }: { re: R
 
       <div style={css("margin-top:auto;padding-top:11px;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:baseline;gap:10px;")}>
         <span style={css("font-size:9.5px;color:#8A8296;")}>{marca}</span>
-        <span style={css("margin-left:auto;font-size:9.5px;color:#8A8296;font-style:italic;")}>{T.empPieLema}</span>
+        <span style={css("margin-left:auto;font-size:9.5px;color:#8A8296;font-style:normal;")}>{T.empPieLema}</span>
       </div>
     </section>
   );

@@ -258,7 +258,7 @@ export default function PerfilScreen() {
           <div style={css(NOTA + "overflow-wrap:anywhere;margin-top:3px;")}>{email}</div>
           <div style={css("display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;")}>
             {roles.length === 0 ? (
-              <span style={css(NOTA + "font-style:italic;")}>sin acceso todavía</span>
+              <span style={css(NOTA + "font-style:normal;")}>sin acceso todavía</span>
             ) : (
               roles.map((r) => (
                 <span

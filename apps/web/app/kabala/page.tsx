@@ -1,95 +1,102 @@
-'use client';
-
-import Link from 'next/link';
-import { useRef } from 'react';
-import Cursor from '@/components/Cursor';
-import Cortina from '@/components/Cortina';
-import CampoNumeros from '@/components/CampoNumeros';
-/* `Reveal` era un fundido de duración fija que se disparaba al asomar el
-   bloque; `Aparece` ata el movimiento a la rueda. Está explicado entero en
-   components/Aparece.tsx — aquí sólo se usa. */
-import Aparece from '@/components/Aparece';
-import Foto from '@/components/Foto';
-import useSiteScroll from '@/components/useSiteScroll';
-import Entrada from '@/components/casa/Entrada';
-import Pie from '@/components/casa/Pie';
-import '@/components/casa/casa.css';
-import Marca from '@/components/Marca';
-import Susurros from '@/components/Susurros';
-import ArbolVida from '@/components/ArbolVida';
-import { useLang } from '@/lib/i18n';
-import { CONTACTO, KABALA, eur } from '@/content/site';
-
-/*
+/**
  * ============================================================================
  * QUÉ ES LA KÁBALA — LA PÁGINA
  * ============================================================================
  *
- * Esto era un bloque de la portada, y ocupaba pantalla y media explicando el
- * producto de 333 € a alguien que todavía no había decidido si compra el de
- * 111 €. Información correcta en el momento equivocado — que es literalmente de
- * lo que se quejaba Gerson: «hay tantos servicios que la gente se pierde».
+ * REHECHA ENTERA DE LA ENTRADA PARA ABAJO, igual que numerología y por lo
+ * mismo. Gerson, el 18 de octubre: «esos espacios de numerología y kábala
+ * deben quitarse, erradícalo; debes de poner, insisto, el mismo diseño que
+ * tenemos en la home adaptado a la comunicación del apartado».
  *
- * Aquí tiene todo el sitio que necesita, y quien llega es quien ha querido
- * llegar: viene del bloque de las consultas o del pie, o sea que ya sabe que
- * existe una consulta de Kábala y quiere saber qué es antes de pagarla.
+ * LO QUE HABÍA. Un bloque granate con un campo de números animado de fondo, un
+ * titular que se escribía letra a letra, el árbol a la izquierda y cuatro
+ * fichas a su derecha, un bloque blanco con el precio en una línea, y DOS pies
+ * —uno propio y el de la casa— uno detrás del otro. Cuatro maquetas distintas
+ * y ninguna la de la portada.
  *
- * Se mudó ENTERO, sin recortar: el mismo titular, el mismo árbol dibujado, las
- * mismas cuatro piezas y el mismo botón. Lo único que cambia es que ahora hay
- * sitio para decir lo que faltaba y era importante: que son TRES sesiones.
+ * LO QUE HAY AHORA, en el orden de la portada:
+ *
+ *   1. LA ENTRADA ....... el árbol dibujándose a pantalla completa.
+ *   2. EL CREMA ......... qué quiere decir «kábala», que es lo primero que
+ *                         hay que quitar de en medio.
+ *   3. EL ÁRBOL ......... la franja granate, con el dibujo entero debajo del
+ *                         titular y a todo lo ancho.
+ *   4. LAS FICHAS ....... las cuatro piezas —10, 22, 3 y el Tikun— pasando
+ *                         por la derecha con la columna quieta al lado.
+ *   5. EL PRECIO ........ la franja de arena con la ficha de papel: tres
+ *                         sesiones, lo que cuesta y por qué son tres.
+ *   6. EL PIE ........... uno solo, el de toda la web.
+ *
+ * SON LOS MISMOS COMPONENTES DE LA PORTADA, no una copia de su aspecto. Lo que
+ * se arregle en el bloque crema o en las fichas se arregla aquí también.
+ *
+ * LO QUE SE HA QUEDADO: el árbol dibujándose. El pie de este bloque promete
+ * que en consulta esto no se explica, SE DIBUJA DELANTE DE TI — y el dibujo es
+ * lo único de la página que cumple esa frase en vez de contarla.
+ *
+ * El título y la ficha de datos estructurados están en `layout.tsx`.
  */
+
+import ArbolVida from '@/components/ArbolVida';
+import Cursor from '@/components/Cursor';
+import Banda from '@/components/casa/Banda';
+import Claves, { type FichaClave } from '@/components/casa/Claves';
+import Entrada from '@/components/casa/Entrada';
+import Pie from '@/components/casa/Pie';
+import Sobre from '@/components/casa/Sobre';
+import '@/components/casa/casa.css';
+import { CONTACTO, KABALA, eur } from '@/content/site';
 
 /*
- * LOS RÓTULOS PEQUEÑOS YA NO SE PINTAN.
- *
- * Eran las líneas en versalitas espaciadas encima de cada bloque —«NUMEROLOGÍA
- * TRANSGENERACIONAL · ONLINE DESDE 2010», «LA CONSULTA», «QUÉ ES LA KÁBALA»— y
- * Gerson las ha quitado de toda la web.
- *
- * Tenía razón, y el motivo es de diseño y no de gusto: un rótulo así no informa
- * de nada que el titular de debajo no diga ya, y en cambio pone una línea de
- * ruido tipográfico delante de cada bloque. Ocho veces en una página, eso deja
- * de ser un recurso y pasa a ser un tic — y es de las cosas que hacen que una
- * web se lea antigua.
- *
- * El componente se queda vacío en vez de borrar sus ocho llamadas: así ninguna
- * rejilla se queda con un hueco donde había un hijo, y el día que se quiera
- * recuperar alguno se descomenta aquí.
+ * LAS CUATRO PIEZAS. `corto` es el botón del índice de la izquierda, así que
+ * es el número: «10», «22», «3», «Tikun». Leído de arriba abajo mientras se
+ * baja, el índice ya cuenta la estructura entera.
  */
-function Rotulo(_p: { children: React.ReactNode; claro?: boolean; className?: string }) {
-  return null;
-}
-
-/* ENLACE Y NO BOTÓN, desde que el chat ya no está.
-   Estos tres botones abrían el chat, que era la única forma de reservar en
-   toda la web. Gerson: «eso de que el chat está, erradícalo, borra ya ese
-   chat». Así que ahora llevan al correo de Iris, que es el camino que
-   funciona hoy — y un `mailto` es un enlace, no un botón. */
-function PillCTA({ a, variant, label }: { a: string; variant: 'gold' | 'cream'; label: string }) {
-  return (
-    <a href={a} data-mag className={`pill pill-${variant}`}>
-      <span>{label}</span>
-      <span className="pill-arrow">→</span>
-    </a>
-  );
-}
-
-const PAD = 'clamp(76px,10vw,150px) var(--hueco)';
+const PIEZAS: FichaClave[] = [
+  {
+    id: 'arbol',
+    corto: '10',
+    titulo: 'Las diez paradas',
+    texto:
+      'Diez sitios por los que pasa todo lo que te ocurre, desde que se te ocurre algo hasta que lo haces. Es el plano de la casa: cuando algo se te atasca siempre, se atasca en uno de los diez.',
+    /* NINGUNA DE LAS CUATRO LLEVA IMAGEN, y aquí es donde más se nota por qué.
+       Esta ficha pedía una foto del árbol, y llegó a tenerla: la misma de la
+       puerta de kábala de la portada. Pero el árbol ya sale dos veces en esta
+       pantalla —dibujándose en la franja de arriba y en la foto de fondo de
+       estas mismas fichas—, así que la tercera no añadía nada: era el mismo
+       dibujo pegado encima del mismo dibujo. */
+  },
+  {
+    id: 'senderos',
+    corto: '22',
+    titulo: 'Los veintidós caminos',
+    texto:
+      'Lo que une esas diez paradas. En tu carta se encienden los que te tocan a ti, y cada uno cuenta algo tuyo: por dónde te mueves con soltura y por dónde das siempre el mismo rodeo.',
+  },
+  {
+    id: 'tres',
+    corto: '3',
+    titulo: 'Tus tres caminos',
+    texto:
+      'De dónde vienes, qué has venido a cambiar y hacia dónde vas. Salen de tu fecha, y son los tres que se leen en la consulta.',
+  },
+  {
+    id: 'tikun',
+    corto: 'Tikun',
+    titulo: 'Reparar',
+    texto:
+      'Es la palabra que sostiene todo esto. Lo que te llega de tu familia no hay que aguantarlo: se repara, y se le devuelve a quien era. Eso es lo que se trabaja, y es la diferencia entre entender algo y soltarlo.',
+  },
+];
 
 export default function Kabala() {
-  useSiteScroll();
-  const { t } = useLang();
   const escribir = `mailto:${CONTACTO.email}?subject=Consulta%20de%20K%C3%A1bala`;
 
   return (
-    <div className="pagina-oscura" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
+    <div id="app" className="claro casa" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor />
-      <Cortina />
-      <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      {/* LA MISMA ENTRADA QUE LA PORTADA, con lo de aquí. El contenido de la
-          página no se toca —es bueno y está medido—: lo que cambia es la
-          ropa, que era la vieja. El vídeo de fondo es el árbol dibujándose,
-          que es literalmente de lo que habla la página. */}
+
+      {/* ── 1. LA ENTRADA ──────────────────────────────────── */}
       <Entrada
         video={['arbol-scroll.mp4', 'arbol-scroll.webm']}
         cartel="/images/arbol-scroll-cartel.jpg"
@@ -97,175 +104,125 @@ export default function Kabala() {
           <>
             Un mapa de ti
             <br />
-            <em>de tres mil años</em>
+            de tres mil años
           </>
         }
         texto="Diez puntos y veintidós caminos. La Kábala coloca en ese árbol lo que la numerología saca de tu fecha."
         nota="No hace falta saber nada antes de empezar."
         notaCorta="Sin saber nada antes."
-        cta={{ a: '/cursos', texto: 'Ver los talleres' }}
+        cta={{ a: '#arbol', texto: 'Ver el árbol' }}
       />
 
-      <div className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(104px,13vh,168px) clamp(16px,4vw,56px) clamp(60px,8vw,110px)', overflow: 'hidden' }}>
-        <CampoNumeros intensidad={1.5} densidad={150_000} />
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: 'var(--ancho)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(26px,3vw,44px)' }}>
-          <Aparece>
-            <Rotulo claro>Qué es la Kábala</Rotulo>
-          </Aparece>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(20px,3vw,48px)', alignItems: 'end' }}>
-            {/* El titular de entrada, palabra a palabra. Es el primero de la
-                página y el único que se lee entero antes de decidir seguir
-                bajando: que se escriba al ritmo al que se baja es exactamente
-                lo que hace que se lea en vez de saltárselo. */}
-            {/* ESTE TITULAR ERA UN `<div>` CON PINTA DE TITULAR, o sea que
-                la página servía CERO encabezados: para un buscador y para un
-                lector de pantalla eso no es el título de nada, es texto
-                grande. Era la única de las nueve páginas así.
-                Ahora es un `h2` y no un `h1` porque el `h1` lo pone la
-                entrada de arriba: uno por página y ni uno más. */}
-            <Aparece as="h2" modo="letras" className="titular-seccion" style={{ maxWidth: '16ch' }}>
-              Un mapa de ti que tiene tres mil años.
-            </Aparece>
-            <Aparece retraso={1}>
-              <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)', maxWidth: '44ch' }}>
-                «Kábala» quiere decir <i>recibir</i>. No es una religión y no hay que creer en nada: es una forma de ver
-                cómo eres por dentro, y por dónde te entra y te sale la vida.
+      <main>
+        {/* ── 2. LA AFIRMACIÓN ─────────────────────────────── */}
+        <Sobre
+          id="esto"
+          entrada="«Kábala» quiere decir recibir. No es una religión y no hay nada que creer: es un plano de cómo funcionas por dentro."
+          texto="Por dónde te entra la vida, dónde se te queda atascada y por dónde sale. Son diez sitios y veintidós caminos entre ellos, y llevan tres mil años dibujados igual. Lo que cambia de una persona a otra es cuáles se encienden — y eso sale de tu nombre y de tu fecha."
+          botones={[
+            { a: '#consulta', texto: 'Ver la consulta', icono: 'abajo' },
+            { a: '/cursos', texto: 'Ver los talleres', icono: 'mas' },
+          ]}
+        />
+
+        {/* ── 3. EL ÁRBOL, DIBUJÁNDOSE ─────────────────────
+            A la derecha y no a todo lo ancho: el dibujo está hecho sobre un
+            lienzo de 400×660, o sea más alto que ancho, y estirado a los 1180
+            de la franja medía dos metros de alto y se salía de la pantalla
+            por abajo. En su columna sale a su tamaño, con el texto que lo
+            explica al lado — que es además donde estaba antes y funcionaba.
+            Se tiende solo cuando entra en pantalla, una sola vez, y respeta
+            la quietud si el sistema la pide: está explicado entero en
+            components/ArbolVida.tsx. */}
+        <Banda
+          id="arbol"
+          tono="vino"
+          rotulo="El Árbol de la Vida"
+          titulo="Diez puntos, veintidós caminos"
+          texto={
+            <p>
+              Esto es lo que se dibuja en la consulta, con tu nombre y tu fecha
+              puestos encima. Míralo tenderse: primero los caminos y después
+              las paradas, de arriba abajo, que es el recorrido de una idea
+              hasta que se convierte en algo que haces.
+            </p>
+          }
+          nota="Pasa el dedo o el ratón por cualquiera de los diez y abajo pone cómo se llama."
+        >
+          <div className="casa-pieza casa-pieza-primera casa-pieza-arbol">
+            <ArbolVida />
+          </div>
+        </Banda>
+
+        {/* ── 4. LAS CUATRO PIEZAS ─────────────────────────
+            EL FONDO QUIETO ES LA FOTO DEL TRABAJO, no un adorno, y es el mismo
+            criterio que en la portada y en numerología: allí es la cuenta
+            escrita a mano sobre la madera, aquí son las manos de Iris
+            dibujando el árbol con tiza. Antes era el árbol de luz de la puerta
+            de kábala, que es un dibujo — o sea el mismo dibujo que ya se tiende
+            en la franja de arriba, puesto otra vez de fondo.
+            Una foto de alguien haciéndolo demuestra algo que un dibujo repetido
+            no demuestra. */}
+        <Claves
+          id="piezas"
+          titulo={
+            <>
+              No es un símbolo.
+              <br />
+              Es un plano que se lee.
+            </>
+          }
+          fichas={PIEZAS}
+          pide={{
+            texto: 'Lo que se enciende en tu árbol sale de tu nombre y de tu fecha. En los talleres se aprende a leerlo.',
+            boton: { a: '/cursos', texto: 'Ver los talleres' },
+          }}
+          fondo="/images/arbol-pizarra.jpg"
+        />
+
+        {/* ── 5. LA CONSULTA: SON TRES ─────────────────────
+            Lo que Iris pidió que se dijera, y lo que explica que esto cueste
+            el triple que la otra consulta. Va después del árbol y no antes:
+            primero se entiende qué es, y entonces el precio tiene con qué
+            compararse. */}
+        <Banda
+          id="consulta"
+          tono="arena"
+          rotulo="La consulta de Kábala"
+          titulo="No es una sesión. Son tres."
+          texto={
+            <>
+              <p>
+                Un mapa así no se lee de una sentada. Se dibuja con tu nombre y
+                tu fecha, se recorre entero y se trabaja por partes: de dónde
+                vienes, qué cargas que no elegiste y qué se puede soltar.
               </p>
-            </Aparece>
+              <p>
+                Sales con él en la mano. No con apuntes de algo que te
+                contaron.
+              </p>
+            </>
+          }
+          nota="Y si lo que quieres es entender primero de dónde sale la cuenta, empieza por numerología: está en el menú de arriba."
+        >
+          <div className="casa-precio">
+            <p className="casa-precio-cifra">{eur(KABALA.precio)}</p>
+            <p className="casa-precio-que">
+              Las tres sesiones, online, con tu árbol preparado antes de la
+              primera.
+            </p>
+            <a className="casa-precio-boton casa-brillo" href={escribir}>
+              Reservar la consulta de Kábala
+            </a>
+            <p className="casa-precio-letra">
+              Se reserva por correo y te contesto yo. Si prefieres preguntar
+              antes, escríbeme y ya está.
+            </p>
           </div>
-
-          {/* EL ÁRBOL, AL LADO DE LO QUE LO EXPLICA.
-              Las cuatro piezas decían «diez estaciones» y «veintidós senderos»
-              sin enseñar ninguna, y el pie de este mismo bloque promete que
-              esto se dibuja delante de ti. Ahora se dibuja: el árbol entra a la
-              izquierda y las cuatro piezas se recolocan a su derecha, así que
-              se lee «10 · El Árbol de la Vida» con el árbol justo al lado. En
-              móvil se apilan y el árbol va primero.
-
-              Y EL PIE SE HA METIDO AQUÍ DENTRO, en la columna de la derecha.
-              Estaba debajo, cruzando el bloque entero, y dejaba doscientos
-              píxeles de granate vacío al lado del árbol. Aquí abajo cierra la
-              columna, la iguala de alto con el dibujo y —lo que importa— pone
-              el botón de reservar justo después de lo que lo explica, en vez
-              de a una pantalla de distancia. */}
-          <div className="kab-cuerpo">
-            {/* El árbol se acerca en vez de subir. Es un dibujo y no un
-                párrafo: acercándose se lee como que se enfoca, y subiendo se
-                leería como una fila más de la lista de al lado. */}
-            <Aparece modo="escala">
-              <ArbolVida />
-            </Aparece>
-
-            <div className="kab-columna">
-            <div className="kab-rejilla">
-            {[
-              {
-                n: '10',
-                t: 'El Árbol de la Vida',
-                p: 'Diez paradas por las que pasa todo lo que te ocurre: desde que se te ocurre algo hasta que lo haces. Es el plano de la casa.',
-              },
-              {
-                n: '22',
-                t: 'Los senderos',
-                p: 'Los caminos que unen esas diez paradas. En tu carta se encienden los que te tocan a ti, y cada uno cuenta algo tuyo.',
-              },
-              {
-                n: '3',
-                t: 'Tus tres caminos',
-                p: 'De dónde vienes, qué has venido a cambiar y hacia dónde vas. Salen de tu fecha, y son los que se leen en la consulta.',
-              },
-              {
-                n: 'תיקון',
-                t: 'El Tikun',
-                p: 'La palabra que sostiene todo esto: reparar. Lo que te llega de tu familia no hay que aguantarlo — se repara y se le devuelve a quien era.',
-              },
-            ].map((k, i) => (
-              /* Las cuatro fichas entran en cascada, un escalón cada una: la
-                 rejilla se lee como una lista que se va escribiendo y no como
-                 cuatro cajas que aparecen de golpe. */
-              <Aparece key={k.t} retraso={i} className="kab-ficha">
-                <span className="kab-num">{k.n}</span>
-                <h3 className="kab-tit">{k.t}</h3>
-                <p className="kab-txt">{k.p}</p>
-              </Aparece>
-            ))}
-            </div>
-
-            <Aparece retraso={2}>
-              <div className="kab-pie">
-                <p>
-                  En consulta esto no se explica: se dibuja delante de ti con tu nombre y tu fecha, y sales con el mapa
-                  en la mano.
-                </p>
-                <PillCTA
-                  a={escribir}
-                  variant="gold"
-                  label={`Reservar la consulta de Kábala · ${eur(KABALA.precio)}`}
-                />
-              </div>
-            </Aparece>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* LAS TRES SESIONES. Es lo que Iris pidió que se dijera y lo que explica
-          que esto cueste el triple que la otra consulta. Va después del árbol y
-          antes del pie: primero se entiende qué es, y entonces el precio tiene
-          con qué compararse. */}
-      <div className="claro" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: PAD }}>
-        <div style={{ maxWidth: 'var(--ancho)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,3vw,40px)' }}>
-          <Aparece><Rotulo>La consulta de Kábala</Rotulo></Aparece>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 'clamp(22px,3vw,52px)', alignItems: 'start' }}>
-            <Aparece modo="letras" className="titular-seccion" style={{ maxWidth: '15ch' }}>
-              No es una sesión. Son tres.
-            </Aparece>
-            {/* La columna del precio se abrió en tres piezas con su escalón
-                cada una. Antes las tres entraban juntas dentro de un solo
-                envoltorio, y el número —que es lo que hay que mirar— llegaba a
-                la vez que el párrafo que lo justifica. Escalonado, se lee en el
-                orden en el que hay que leerlo: primero el motivo, después la
-                cifra con el botón, y al final la letra del pie. */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(16px,2vw,24px)', maxWidth: '46ch' }}>
-              <Aparece retraso={1}>
-                <p style={{ margin: 0, fontSize: 'var(--t-entrada)', lineHeight: 1.6, color: 'var(--tx-2)' }}>
-                  Un mapa así no se lee de una sentada. Se dibuja con tu nombre y tu fecha, se recorre entero, y sales
-                  con él en la mano — no con apuntes de algo que te contaron.
-                </p>
-              </Aparece>
-              <Aparece retraso={2} style={{ display: 'flex', alignItems: 'center', gap: 'clamp(14px,2vw,22px)', flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(30px,3.4vw,42px)', fontWeight: 'var(--peso-fino)', lineHeight: 1, letterSpacing: '-.02em' }}>
-                  {eur(KABALA.precio)}
-                </span>
-                <PillCTA a={escribir} variant="cream" label="Reservar la consulta de Kábala" />
-              </Aparece>
-              <Aparece retraso={3}>
-                <p style={{ margin: 0, fontSize: 'var(--t-mini)', color: 'var(--tx-3)' }}>
-                  Las tres sesiones, online. Se reserva hablando, en un minuto.
-                </p>
-              </Aparece>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(40px,6vw,70px) clamp(16px,4vw,56px)' }}>
-        {/* El pie también entra. Es lo último de la página, o sea el caso que
-            rompe este patrón en media internet: nunca llega a subir del todo
-            porque ya no se puede bajar más. El componente lo tiene resuelto
-            recortando el recorrido por lo que queda de página. */}
-        <Aparece className="com-pie" style={{ maxWidth: 'var(--ancho)', margin: '0 auto' }}>
-          <Link href="/" aria-label="Ir al inicio"><Marca tam={30} claro /></Link>
-          <span>
-            <Link href="/">Inicio</Link>
-            <Link href="/legal">Aviso legal</Link>
-            <Link href="/privacidad">Tus datos</Link>
-          </span>
-        </Aparece>
-      </div>
+        </Banda>
+      </main>
 
       <Pie />
-      <Susurros />
     </div>
   );
 }
