@@ -9,7 +9,7 @@ import CampoNumeros from '@/components/CampoNumeros';
    la rueda. Explicado en components/Aparece.tsx. */
 import Aparece from '@/components/Aparece';
 import useSiteScroll from '@/components/useSiteScroll';
-import Barra from '@/components/casa/Barra';
+import Entrada from '@/components/casa/Entrada';
 import Pie from '@/components/casa/Pie';
 import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
@@ -194,12 +194,31 @@ export default function Cursos() {
       <Cursor hitSelector="[data-mag],a,input,label,[data-card]" />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      {/* La barra nueva, la misma que la portada: pastilla con el sello que se
-          abre a toda la pantalla. Va `fija` porque esta página no tiene
-          portada a pantalla completa a la que pegarse.
-          El menú de la barra ya lleva las cinco puertas de la casa, así que
-          aquí no hace falta repetirlas. */}
-      <Barra fija />
+      {/* LA MISMA ENTRADA QUE LA PORTADA, categorizada a lo de aquí.
+          Gerson: «la página de talleres tiene que ir con base a lo que ya has
+          hecho, prácticamente duplica el home, pero categorizado a donde va a
+          ir directamente».
+          EL FONDO NO ES EL CARTEL DEL VÍDEO, aunque lo parezca lo suyo: ese
+          fotograma lleva rotulados encima el titular del curso, el logo y la
+          barra de progreso, así que salían dos titulares pisándose. Va la
+          imagen del escritorio de noche: limpia, oscura, y habla de lo mismo
+          —aquí se estudia—.
+          La barra va dentro de la entrada, como en la portada. */}
+      <Entrada
+        foto="/images/camino-escuela.jpg"
+        alt="Un escritorio de noche bajo una lámpara de latón, con cuadernos abiertos y libros antiguos."
+        titulo={
+          <>
+            Talleres en directo,
+            <br />
+            <em>con tu caso delante</em>
+          </>
+        }
+        texto="Se trabaja con tu fecha y con tu nombre, en vivo. Queda grabado, así que si un día no puedes, no lo pierdes."
+        nota="El que está abierto ahora mismo: Desórdenes Amorosos."
+        notaCorta="Abierto: Desórdenes Amorosos."
+        cta={{ a: '#desordenes-amorosos', texto: 'Ver el curso' }}
+      />
 
       {/* ── EL CATÁLOGO, LO PRIMERO ──────────────────────────
           Esta página se llamaba «cursos» y era la landing de UNO. El titular
@@ -212,7 +231,45 @@ export default function Cursos() {
           —que aparecen solos a partir de tres cursos—, y la ficha larga del
           curso destacado se queda debajo, en su ancla de siempre. Nada de lo
           que había se ha perdido: ha dejado de ser la portada de la página. */}
-      <div style={{ paddingTop: 'clamp(84px,13vh,140px)' }}>
+      {/* ── EL VÍDEO DEL CURSO ───────────────────────────────
+          Lo mandó Gerson el 18 de octubre: dos minutos de la escuela
+          contando de qué va Desórdenes Amorosos, con voz.
+          NO se reproduce solo, y es a propósito: lleva voz, dura dos minutos
+          y nadie quiere que una página le empiece a hablar sin pedirlo. Va
+          con `preload="none"` y su cartel, así que hasta que no se pulsa no
+          se descarga ni un byte de los seis megas. */}
+      <section className="casa-cinta" id="desordenes-amorosos" aria-labelledby="da-h">
+        <div className="casa-cinta-dentro">
+          <span className="casa-cinta-rotulo">El curso que está abierto</span>
+          {/* El titular NO repite la frase del vídeo. Decía «Hay una forma
+              de amar que no elegiste», que es exactamente lo que está
+              rotulado dentro del propio vídeo justo debajo: la misma frase
+              dos veces, una encima de la otra. Aquí va el nombre del curso y
+              el vídeo se queda con su frase, que así llega nueva. */}
+          <h2 className="casa-cinta-h" id="da-h">
+            Desórdenes
+            <br />
+            <em>Amorosos</em>
+          </h2>
+          <p className="casa-cinta-p">
+            Lo que se repite en tu forma de querer no empezó contigo: estaba en
+            casa antes de que llegaras. Dos minutos para ver de qué va.
+          </p>
+          <div className="casa-cinta-video">
+            <video
+              controls
+              playsInline
+              preload="none"
+              poster="/images/desordenes-aterrizaje-cartel.jpg"
+            >
+              <source src="/video/desordenes-aterrizaje.mp4" type="video/mp4" />
+              Tu navegador no puede reproducir este vídeo.
+            </video>
+          </div>
+        </div>
+      </section>
+
+      <div style={{ paddingTop: 'clamp(64px,8vh,110px)' }}>
         <Catalogo rotulo="Escuela de Sabiduría 33" titulo="Cursos y talleres" />
       </div>
 
@@ -260,7 +317,11 @@ export default function Cursos() {
               </Aparece>
             )}
 
-            <Aparece as="h1" modo="letras" className="cur-h1" retraso={1}>
+            {/* `h2` y no `h1`: desde que la página tiene su entrada arriba,
+                el `h1` es el de ahí. Dos `h1` en una página es como poner dos
+                títulos a un libro — ni el buscador ni un lector de pantalla
+                saben entonces de qué va la página. */}
+            <Aparece as="h2" modo="letras" className="cur-h1" retraso={1}>
               Dos días que cambian la conversación en tu casa.
             </Aparece>
             <Aparece retraso={2}>

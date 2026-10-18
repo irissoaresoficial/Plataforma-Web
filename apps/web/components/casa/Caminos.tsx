@@ -48,11 +48,16 @@ const CAMINOS = [
     alt: 'Diez puntos de luz dorada unidos por hilos finos, dibujando el árbol de la vida sobre un fondo negro.',
   },
   {
-    id: 'escuela',
-    nombre: 'la escuela',
+    /* VA A LOS TALLERES, no a la membresía. Lo pidió Gerson así: «en el
+       apartado de la escuela tiene que ir a donde están los talleres,
+       directamente ahí». Y con el destino cambia el nombre: una puerta que
+       dice «la escuela» y abre el catálogo de cursos miente en la etiqueta.
+       La escuela sigue teniendo su sitio en el menú de la barra. */
+    id: 'talleres',
+    nombre: 'los talleres',
     img: '/images/camino-escuela.jpg',
-    a: '/membresia',
-    boton: 'ver la escuela',
+    a: '/cursos',
+    boton: 'ver los talleres',
     alt: 'Un escritorio de noche bajo una lámpara de latón, con cuadernos abiertos y libros antiguos.',
   },
 ];
@@ -86,11 +91,19 @@ export default function Caminos() {
 
   return (
     <section className="casa-caminos" id="caminos" ref={zona} aria-labelledby="caminos-h">
-      {/* El titular de la sección existe para los buscadores y para quien
-          navega con lector de pantalla: sin él, esto son tres palabras
-          giradas y ningún encabezado. Se ve, porque esconder texto que sólo
-          leen las máquinas es de lo que penaliza Google. */}
-      <h2 className="casa-caminos-h" id="caminos-h">
+      {/* ESTE TITULAR YA NO SE VE, y es lo que pidió Gerson. Ponía «Por dónde
+          se entra» en una franja entre las fichas y las tarjetas, y esa franja
+          no era más que una banda vacía con una frase en medio: las tres
+          tarjetas ya dicen por dónde se entra, con su nombre y su botón.
+
+          Pero NO se borra: sigue en el marcado, escondido a la vista y
+          perfectamente legible para un buscador y para un lector de pantalla.
+          Sin él, esta sección son tres palabras giradas y ningún encabezado —
+          y una sección sin encabezado no existe para quien navega a oídas.
+          `.casa-oculto` es la forma correcta de esconderlo: no es
+          `display:none` ni `visibility:hidden`, que lo borrarían también para
+          ellos. */}
+      <h2 className="casa-oculto" id="caminos-h">
         Por dónde se entra
       </h2>
 

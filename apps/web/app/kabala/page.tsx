@@ -11,7 +11,9 @@ import CampoNumeros from '@/components/CampoNumeros';
 import Aparece from '@/components/Aparece';
 import Foto from '@/components/Foto';
 import useSiteScroll from '@/components/useSiteScroll';
-import Nav from '@/components/Nav';
+import Entrada from '@/components/casa/Entrada';
+import Pie from '@/components/casa/Pie';
+import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
@@ -81,7 +83,25 @@ export default function Kabala() {
       <Cursor />
       <Cortina />
       <div id="bar" style={{ position: 'fixed', top: 0, left: 0, height: 2, width: '0%', background: 'var(--acento)', zIndex: 130 }} />
-      <Nav cta={t.book} onCta={abrirKabala} />
+      {/* LA MISMA ENTRADA QUE LA PORTADA, con lo de aquí. El contenido de la
+          página no se toca —es bueno y está medido—: lo que cambia es la
+          ropa, que era la vieja. El vídeo de fondo es el árbol dibujándose,
+          que es literalmente de lo que habla la página. */}
+      <Entrada
+        video={['arbol-scroll.mp4', 'arbol-scroll.webm']}
+        cartel="/images/arbol-scroll-cartel.jpg"
+        titulo={
+          <>
+            Un mapa de ti
+            <br />
+            <em>de tres mil años</em>
+          </>
+        }
+        texto="Diez puntos y veintidós caminos. La Kábala coloca en ese árbol lo que la numerología saca de tu fecha."
+        nota="No hace falta saber nada antes de empezar."
+        notaCorta="Sin saber nada antes."
+        cta={{ a: '/cursos', texto: 'Ver los talleres' }}
+      />
 
       <div className="vino" style={{ position: 'relative', zIndex: 3, background: 'var(--bg)', color: 'var(--tx)', padding: 'clamp(104px,13vh,168px) clamp(16px,4vw,56px) clamp(60px,8vw,110px)', overflow: 'hidden' }}>
         <CampoNumeros intensidad={1.5} densidad={150_000} />
@@ -94,13 +114,13 @@ export default function Kabala() {
                 página y el único que se lee entero antes de decidir seguir
                 bajando: que se escriba al ritmo al que se baja es exactamente
                 lo que hace que se lea en vez de saltárselo. */}
-            {/* `as="h1"`, QUE FALTABA, Y NO ES UN DETALLE DE MAQUETA.
-                Esta página servía CERO `<h1>`: el titular de entrada salía en
-                un `<div>` con pinta de titular. Para un buscador —y para un
-                lector de pantalla— eso no es el título de la página, es texto
-                grande. Era la única de las nueve páginas sin `h1`. Lo demás no
-                cambia: `Aparece` acepta la etiqueta y pinta igual. */}
-            <Aparece as="h1" modo="letras" className="titular-seccion" style={{ maxWidth: '16ch' }}>
+            {/* ESTE TITULAR ERA UN `<div>` CON PINTA DE TITULAR, o sea que
+                la página servía CERO encabezados: para un buscador y para un
+                lector de pantalla eso no es el título de nada, es texto
+                grande. Era la única de las nueve páginas así.
+                Ahora es un `h2` y no un `h1` porque el `h1` lo pone la
+                entrada de arriba: uno por página y ni uno más. */}
+            <Aparece as="h2" modo="letras" className="titular-seccion" style={{ maxWidth: '16ch' }}>
               Un mapa de ti que tiene tres mil años.
             </Aparece>
             <Aparece retraso={1}>
@@ -241,6 +261,7 @@ export default function Kabala() {
         </Aparece>
       </div>
 
+      <Pie />
       <ChatWidget ref={chatRef} />
       <Susurros />
     </div>

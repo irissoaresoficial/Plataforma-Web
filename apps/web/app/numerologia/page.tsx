@@ -11,7 +11,9 @@ import Foto from '@/components/Foto';
 import Cinta from '@/components/Cinta';
 import TuNumero from '@/components/TuNumero';
 import useSiteScroll from '@/components/useSiteScroll';
-import Nav from '@/components/Nav';
+import Entrada from '@/components/casa/Entrada';
+import Pie from '@/components/casa/Pie';
+import '@/components/casa/casa.css';
 import Marca from '@/components/Marca';
 import ChatWidget, { type ChatWidgetHandle } from '@/components/ChatWidget';
 import Susurros from '@/components/Susurros';
@@ -78,10 +80,31 @@ export default function Numerologia() {
   const ofertaViva = SESION.precioOferta != null && SESION.plazasOferta != null;
 
   return (
-    <div id="app" className="claro" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
+    <div id="app" className="claro casa" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <Cursor />
       <Cortina />
-      <Nav cta="Reservar" onCta={abrirConsulta} />
+      {/* LA MISMA ENTRADA QUE LA PORTADA, con lo de aquí.
+          Gerson, el 18 de octubre: «arregla los apartados de numerología, de
+          kábala». Lo que fallaba no era el contenido —que es bueno y se
+          queda entero— sino que llevaban la ropa vieja: la barra de antes, un
+          titular suelto sobre papel blanco y ningún pie.
+          El vídeo de fondo es el del recorrido: números de tinta que se
+          vuelven hilos de oro. Dice de qué va la página sin una palabra. */}
+      <Entrada
+        video={['recorrido.webm', 'recorrido.mp4']}
+        cartel="/images/arbol-scroll-cartel.jpg"
+        titulo={
+          <>
+            Tu fecha y tu nombre
+            <br />
+            <em>ya lo dicen</em>
+          </>
+        }
+        texto="Puestos en números, se ve qué se repite, en qué generación empezó y por dónde te llegó a ti."
+        nota="Se calcula delante de ti, con tus datos. La cuenta se ve entera."
+        notaCorta="Se calcula con tus datos."
+        cta={{ a: '#prueba', texto: 'Hacer la cuenta' }}
+      />
 
       {/* ── QUÉ ES ───────────────────────────────────────────── */}
       <div className="claro bloque-limpio" style={{ paddingTop: 'clamp(128px,15vw,200px)' }}>
@@ -90,7 +113,7 @@ export default function Numerologia() {
             {/* El titular de la página, escrito palabra a palabra según se
                 baja. Es lo primero que se lee y es largo: entero de golpe se
                 salta, escribiéndose se lee. */}
-            <Aparece as="h1" modo="letras" className="titular-seccion limpio-h">
+            <Aparece as="h2" modo="letras" className="titular-seccion limpio-h">
               Numerología transgeneracional: qué es y para qué sirve.
             </Aparece>
             <Aparece retraso={1}>
@@ -252,6 +275,7 @@ export default function Numerologia() {
         </Aparece>
       </div>
 
+      <Pie />
       <ChatWidget ref={chatRef} />
       <Susurros />
     </div>

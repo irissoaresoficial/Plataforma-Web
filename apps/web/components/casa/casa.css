@@ -338,16 +338,31 @@
   color: rgba(255, 255, 255, 0.92);
 }
 
-/* La barra de llamada: una frase y un botón dentro de la misma cápsula. */
+/* EL BANNER DE LLAMADA.
+   Era una cápsula translúcida —negro al 34 % con desenfoque— y sobre un vídeo
+   claro se quedaba en un gris pardo que no era ni fondo ni figura. Gerson:
+   «debe generar más contraste, y debe ser como un banner para CTA».
+   Ahora es granate macizo, el color de la casa: no depende de lo que haya
+   detrás, se lee igual sobre un vídeo claro que sobre uno oscuro, y en una
+   pantalla donde todo lo demás es foto y letra blanca es lo único con color
+   plano. Eso es lo que lo convierte en un banner y no en una franja.
+   El punto dorado de delante es el que dice «esto se pulsa». */
 .casa-llamada {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 5px 5px 5px 22px;
+  gap: 14px;
+  padding: 6px 6px 6px 20px;
   border-radius: var(--radio-medio);
-  background: rgba(34, 29, 31, 0.34);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--vino);
+  box-shadow: 0 14px 34px rgba(34, 29, 31, 0.34);
+}
+.casa-llamada::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radio-pildora);
+  background: var(--oro-luz);
+  flex-shrink: 0;
 }
 .casa-llamada p {
   margin: 0;
@@ -361,10 +376,13 @@
 }
 .casa-llamada-boton {
   flex-shrink: 0;
-  padding: 11px 20px;
+  padding: 12px 22px;
   border-radius: var(--radio-medio);
   background: var(--papel);
-  color: var(--tinta);
+  /* En granate, y no en tinta: el botón es el trozo del banner que se pulsa,
+     y llevando el color de la casa se lee como parte de la misma pieza. */
+  color: var(--vino);
+  font-weight: 600;
   font-family: var(--sans);
   font-size: var(--t-nota);
   font-weight: 500;
@@ -379,9 +397,13 @@
   .casa-llamada {
     flex-direction: column;
     gap: 10px;
-    padding: 14px;
+    padding: 16px;
     width: 100%;
     max-width: 420px;
+  }
+  /* En columna, el punto se pondría encima del texto como una viuda. */
+  .casa-llamada::before {
+    display: none;
   }
   .casa-llamada .casa-larga {
     display: none;
@@ -750,20 +772,20 @@
 /* La plantilla era un «Categories» de tienda. Aquí son las tres puertas de la
    casa, y el sitio es éste: cuando alguien ya ha entendido el patrón, de dónde
    viene y quién es Iris, lo único que queda es «¿y por dónde entro?». */
+/* EL FONDO ERA BLANCO Y ESTABA MAL. Entre el bloque oscuro de las fichas y
+   las tres tarjetas, que son casi negras, quedaba una franja blanca con un
+   titular en tinta: un corte en seco, sin relación con lo de arriba ni con lo
+   de abajo. Gerson: «no se ve profesional, no tiene contraste, no tiene
+   sentido». Tenía razón.
+   En tinta, la sección enlaza por arriba con las fichas y por abajo con las
+   tarjetas, y el titular pasa a leerse en blanco: la página entera baja en
+   oscuro desde las fichas hasta el pie, sin un salto. */
+/* Sin aire por arriba: el titular ya no se ve, así que lo que había era una
+   banda de tinta vacía. Las tarjetas arrancan pegadas a las fichas y la
+   página baja en oscuro de un tirón. */
 .casa-caminos {
-  background: var(--papel);
-  padding: clamp(64px, 8vw, 110px) 0 0;
-}
-.casa-caminos-h {
-  margin: 0 auto clamp(40px, 5vw, 64px);
-  max-width: var(--ancho);
-  padding: 0 var(--hueco);
-  font-family: var(--serif);
-  font-size: var(--t-h2);
-  font-weight: var(--peso-fino);
-  letter-spacing: -0.02em;
-  color: var(--tinta);
-  text-align: center;
+  background: var(--tinta);
+  padding: 0;
 }
 
 .casa-caminos-rejilla {
@@ -1049,9 +1071,72 @@
    trato que le daba el portal anterior.
    `!important` porque la pastilla lleva su posición y su opacidad en un
    `style=` del propio elemento, y un atributo gana siempre a una hoja. */
+html[data-portada='si'] .susurro,
 html[data-portada='si'] #chat-launcher {
   opacity: 0 !important;
   pointer-events: none !important;
   transform: translateY(14px) !important;
   transition: opacity 0.45s ease, transform 0.45s ease !important;
+}
+
+/* ------------------------------------------------ el vídeo de un curso */
+/* La cinta donde vive el vídeo largo de un curso. Va en tinta y a sangre
+   porque es la pieza que más pesa de su página: si se pone sobre papel, con
+   su marco y su aire, se lee como una ilustración más. En oscuro y de borde a
+   borde se lee como lo que es — algo que se mira. */
+.casa-cinta {
+  background: var(--tinta);
+  color: var(--papel);
+  padding: clamp(56px, 8vw, 110px) var(--hueco);
+}
+.casa-cinta-dentro {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+.casa-cinta-rotulo {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--oro-luz);
+}
+.casa-cinta-h {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(30px, 4.6vw, 58px);
+  font-weight: var(--peso-fino);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--papel);
+}
+.casa-cinta-h em {
+  font-style: italic;
+}
+.casa-cinta-p {
+  margin: 0 0 clamp(14px, 2vw, 26px);
+  max-width: 54ch;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+}
+.casa-cinta-video {
+  width: 100%;
+  max-width: 980px;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radio-suave);
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+.casa-cinta-video video {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
