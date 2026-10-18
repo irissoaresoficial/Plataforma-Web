@@ -64,6 +64,16 @@
   --radio: 4px;
   --radio-chico: 3px;
   --radio-pildora: 100px;
+  /* DOS RADIOS MÁS, Y SÓLO PARA LA PORTADA NUEVA.
+     La portada que encargó Gerson el 18 de octubre es de canto blando:
+     la sección crema monta sobre el vídeo con la esquina redondeada y
+     las fichas van en bloques mullidos. Con 4 px no es esa portada.
+     Van aquí y no escritos a mano en la hoja de la portada porque la
+     regla madre de MARCA.md dice que un valor que no está se añade
+     primero al sistema y se usa después. El resto de la web sigue
+     recta: estos dos sólo los usa `.casa`. */
+  --radio-suave: 25px;   /* el canto de la sección y de las fichas */
+  --radio-medio: 12px;   /* la barra de llamada y su botón */
 
   /* Granate y dorado, apagados: el brillo se cambia por sobriedad. El fondo
      es blanco de verdad, no crema, y el segundo tono apenas se separa de él. */

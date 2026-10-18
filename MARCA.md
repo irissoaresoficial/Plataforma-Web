@@ -124,6 +124,17 @@ degradado, el token no sabe lo que hay debajo.
 | Radio normal | `--radio` 4 px | `--r` 15 px |
 | Radio chico | `--radio-chico` 3 px | `--r-sm` 11 px |
 | Pastilla | `--radio-pildora` 100 px | `--r-pill` 100 px |
+| Blando | `--radio-suave` 25 px | — |
+| Medio | `--radio-medio` 12 px | — |
+
+Los dos últimos entraron el 18 de octubre de 2026 con la portada nueva, que es
+de canto blando: la sección crema monta sobre el vídeo con la esquina
+redondeada y las fichas van en bloques mullidos. Con 4 px no es esa portada.
+
+**Sólo los usa `.casa`**, o sea la portada. El resto de la web sigue recta. Si
+alguna vez se usan fuera de ahí, o esto deja de ser cierto o hay que decidir de
+una vez si la web entera pasa a canto blando — que es justo la decisión que
+sigue abierta aquí abajo.
 
 > **Esto no cuadra y está pendiente de que lo decidas.** La web es casi
 > cuadrada (4 px) y la plataforma redondeada (15 px). Son dos lenguajes. Hay

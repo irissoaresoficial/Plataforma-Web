@@ -1,0 +1,669 @@
+/* ============================================================================
+ * LA PORTADA NUEVA
+ * ============================================================================
+ *
+ * Encargo de Gerson del 18 de octubre de 2026: borrar la portada entera —barra
+ * y pie incluidos— y rehacerla sobre la plantilla que pasó. Aquí está, con la
+ * comunicación pasada a lo nuestro.
+ *
+ * TODO VA PREFIJADO CON `.casa`, SIN UNA SOLA EXCEPCIÓN.
+ * `globals.css` tiene más de siete mil líneas y nombres tan corrientes como
+ * `.marca`, `.menu` o `.ficha`. Una regla suelta aquí llamada `.ficha` le
+ * cambiaría el aspecto a media web sin que nadie entienda por qué. Si lees una
+ * regla sin `.casa` delante, es un error.
+ *
+ * LO QUE SE HA CAMBIADO DE LA PLANTILLA, Y POR QUÉ:
+ *
+ *   · LAS LETRAS. La plantilla pedía Inter y una Instrument Serif en cursiva.
+ *     Aquí no entran: MARCA.md §1 dice «ni una tercera tipografía, ninguna», y
+ *     ya pasó una vez —el 16 de octubre— que metí una familia de fuera y hubo
+ *     que deshacerlo. La palabra en cursiva del titular va en Fraunces itálica,
+ *     que es NUESTRA letra de titular y hace exactamente el mismo efecto.
+ *
+ *   · LOS COLORES. La plantilla traía seis hexadecimales a mano (#F6E4CF,
+ *     #321C04, #FFF9F2...). MARCA.md §3: un color se usa por su token. Resulta
+ *     que la paleta de la plantilla es casi la nuestra —crema, marrón muy
+ *     oscuro, un tostado de adorno—, así que la traducción es directa:
+ *       #F6E4CF  ->  var(--arena)      el crema de la sección
+ *       #321C04  ->  var(--tinta)      el texto oscuro
+ *       #FFF9F2  ->  var(--papel)      el disco blanco de los botones
+ *       #D9C4AA  ->  var(--oro)        el filete y el botón que habla bajo
+ *
+ *   · LOS RADIOS. La plantilla es de canto blando y la web es recta (4 px).
+ *     Los dos valores que hacían falta están puestos como token en
+ *     globals.css —`--radio-suave` y `--radio-medio`— y sólo los usa `.casa`.
+ *     El resto de la web no se entera.
+ */
+
+/* --------------------------------------------------------------- la barra */
+.casa-barra {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.casa-pastilla {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 12px 10px 22px;
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  box-shadow: 0 10px 28px rgba(34, 29, 31, 0.16);
+}
+
+.casa-marca {
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--tinta);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Las dos rayas. Cada una gira sobre su propio centro, así que para que se
+   crucen en el mismo punto hay que juntarlas primero —de ahí el translateY— y
+   girarlas después. Si se gira sin juntar, sale un aspa descentrada. */
+.casa-rayas {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--arena);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 0;
+}
+.casa-rayas span {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--tinta);
+  transition: transform 0.3s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.casa-rayas-abierta span:first-child {
+  transform: translateY(3.75px) rotate(45deg);
+}
+.casa-rayas-abierta span:last-child {
+  transform: translateY(-3.75px) rotate(-45deg);
+}
+
+.casa-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 210px;
+  padding: 8px;
+  border-radius: var(--radio-suave);
+  background: var(--papel);
+  box-shadow: 0 16px 40px rgba(34, 29, 31, 0.2);
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.casa-menu-abierto {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.casa-menu a {
+  padding: 11px 14px;
+  border-radius: var(--radio-medio);
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: 500;
+  color: var(--tinta);
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+.casa-menu a:hover {
+  background: var(--arena);
+}
+
+/* -------------------------------------------------------------- la portada */
+/* `100svh` y no `100vh`: en el móvil la barra del navegador se encoge al bajar,
+   y con `vh` la portada mide siempre la pantalla SIN encoger — o sea, asoma por
+   debajo y el titular queda cortado. `svh` es la pantalla pequeña, la de verdad. */
+.casa-portada {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  margin-bottom: -25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.casa-portada-video,
+.casa-portada-velo {
+  position: absolute;
+  inset: 0;
+}
+.casa-portada-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* El velo. La plantilla pedía negro al 20 %; aquí va algo más porque nuestro
+   vídeo es claro —crema y dorado— y con 20 % el titular blanco no llegaba al
+   4,5:1 que pide la norma. Medido sobre el píxel pintado, no sobre el token. */
+.casa-portada-velo {
+  background: linear-gradient(
+    to bottom,
+    rgba(34, 29, 31, 0.26) 0%,
+    rgba(34, 29, 31, 0.34) 45%,
+    rgba(34, 29, 31, 0.58) 100%
+  );
+}
+
+.casa-portada-dentro {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+  padding: 0 var(--hueco) clamp(48px, 7vh, 64px);
+  text-align: center;
+}
+
+.casa-h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(44px, 8.4vw, 96px);
+  font-weight: var(--peso-fino);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--papel);
+  text-wrap: balance;
+}
+/* La palabra en cursiva. Fraunces itálica, que es la nuestra. `em` lleva
+   cursiva de serie, así que no hace falta pedirla otra vez. */
+.casa-h1 em {
+  font-style: italic;
+}
+
+.casa-portada-p {
+  margin: 0;
+  max-width: 440px;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  font-weight: var(--peso-texto);
+  line-height: 1.55;
+  /* 0.92 y no 0.84. Con 0.84 esta frase se quedaba en 4,24:1 sobre el vídeo y
+     la norma pide 4,5:1 para texto de este tamaño. Medido sobre el píxel
+     pintado escondiendo el texto y fotografiando lo que hay debajo. */
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* La barra de llamada: una frase y un botón dentro de la misma cápsula. */
+.casa-llamada {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 5px 5px 5px 22px;
+  border-radius: var(--radio-medio);
+  background: rgba(34, 29, 31, 0.34);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.casa-llamada p {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: 500;
+  color: var(--papel);
+}
+.casa-llamada .casa-corta {
+  display: none;
+}
+.casa-llamada-boton {
+  flex-shrink: 0;
+  padding: 11px 20px;
+  border-radius: var(--radio-medio);
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.25s ease;
+}
+.casa-llamada-boton:hover {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+@media (max-width: 760px) {
+  .casa-llamada {
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    width: 100%;
+    max-width: 420px;
+  }
+  .casa-llamada .casa-larga {
+    display: none;
+  }
+  .casa-llamada .casa-corta {
+    display: block;
+  }
+  .casa-llamada-boton {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ------------------------------------------------------------- el crema */
+/* Monta 25 px sobre el vídeo y lleva la esquina redondeada: el corte entre la
+   portada y esto es una curva, no una línea, y el ojo lo lee como una sola
+   pieza que se desliza. */
+.casa-sobre {
+  position: relative;
+  z-index: 10;
+  border-radius: var(--radio-suave) var(--radio-suave) 0 0;
+  background: var(--arena);
+  color: var(--tinta);
+  padding: clamp(72px, 10vw, 128px) var(--hueco);
+}
+
+.casa-sobre-alto {
+  max-width: var(--ancho-lectura);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  text-align: center;
+}
+.casa-sobre-entrada {
+  margin: 0;
+  max-width: 34ch;
+  font-family: var(--sans);
+  font-size: var(--t-lead);
+  font-weight: var(--peso-texto);
+  line-height: 1.5;
+  /* Se repartían las líneas y la última se quedaba con un «tú.» suelto. Con
+     `balance` el navegador iguala los renglones y la huérfana desaparece. */
+  text-wrap: balance;
+}
+
+.casa-sobre-botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+.casa-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 24px 8px 8px;
+  border-radius: var(--radio-pildora);
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: background 0.25s ease;
+}
+.casa-boton-disco {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  color: var(--tinta);
+  flex-shrink: 0;
+}
+.casa-boton-oscuro {
+  background: var(--tinta);
+  color: var(--papel);
+}
+.casa-boton-oscuro:hover {
+  background: #120f10;
+}
+.casa-boton-claro {
+  background: var(--oro);
+  color: var(--tinta);
+}
+.casa-boton-claro:hover {
+  background: #9b7b45;
+}
+
+.casa-filete {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: clamp(64px, 9vw, 112px) 0;
+}
+.casa-filete span {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radio-pildora);
+  background: var(--oro);
+  flex-shrink: 0;
+}
+.casa-filete i {
+  flex: 1;
+  height: 2px;
+  background: var(--oro);
+}
+
+.casa-sobre-bajo {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.casa-sobre-firma {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.casa-sobre-rotulo {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  line-height: 1.5;
+}
+.casa-sobre-texto {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(23px, 3.1vw, 42px);
+  font-weight: var(--peso-texto);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 900px) {
+  .casa-sobre-bajo {
+    flex-direction: row;
+    gap: 64px;
+  }
+  .casa-sobre-firma {
+    align-items: flex-start;
+    padding-top: 10px;
+  }
+}
+
+/* ------------------------------------------------------------ las claves */
+/* OJO CON EL `overflow`. Aquí había un `overflow: hidden` para encerrar el
+   fondo, y se cargaba la columna de la izquierda: un ancestro con overflow
+   distinto de `visible` anula el `position: sticky` de todo lo que lleva
+   dentro, sin avisar y sin error. La columna se iba con el scroll en vez de
+   quedarse quieta. No hace falta: el fondo es `absolute; inset: 0` y ya lo
+   encierra el `position: relative`. */
+.casa-claves {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(72px, 10vw, 180px) var(--hueco);
+}
+/* El fondo va `fixed` en el escritorio para que las fichas pasen por delante de
+   una foto quieta. En el móvil NO: iOS con `background-attachment: fixed` pinta
+   la imagen a tamaño de documento y se ve un trozo gigante y borroso. */
+.casa-claves-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: url('/images/la-cuenta.jpg') center / cover no-repeat;
+}
+.casa-claves-velo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(23, 18, 14, 0.74);
+}
+@media (min-width: 1024px) {
+  .casa-claves-fondo {
+    background-attachment: fixed;
+  }
+}
+
+.casa-claves-rejilla {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.casa-claves-h {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(28px, 4.2vw, 46px);
+  font-weight: var(--peso-fino);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--papel);
+}
+
+/* El índice y el botón de abajo son de escritorio: en el móvil las fichas se
+   leen una detrás de otra y un índice de tres sitios a los que ya vas llegando
+   es ruido. */
+.casa-indice,
+.casa-claves-pide {
+  display: none;
+}
+
+.casa-claves-der {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3vw, 40px);
+}
+
+.casa-ficha {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: clamp(22px, 3vw, 40px);
+  border-radius: var(--radio-suave);
+  background: rgba(23, 18, 14, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateX(64px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.casa-ficha-dentro {
+  opacity: 1;
+  transform: none;
+}
+.casa-ficha-h {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-h3);
+  font-weight: var(--peso-medio);
+  letter-spacing: -0.02em;
+  color: var(--papel);
+}
+.casa-ficha-video {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radio-suave);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+}
+.casa-ficha-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.casa-ficha-p {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  font-weight: var(--peso-texto);
+  line-height: 1.6;
+  /* 0.72 y no 0.6: sobre el velo que hay detrás, el 60 % se quedaba en 3,9:1 y
+     la norma pide 4,5:1 para texto pequeño. */
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (min-width: 1024px) {
+  .casa-claves-rejilla {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 96px;
+    align-items: start;
+  }
+  .casa-claves-izq {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(80px, 12vh, 128px) 0;
+  }
+  .casa-indice {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .casa-indice-b {
+    border: 0;
+    padding: 10px 18px;
+    border-radius: var(--radio-pildora);
+    background: rgba(23, 18, 14, 0.42);
+    font-family: var(--sans);
+    font-size: var(--t-nota);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    transition: color 0.3s ease, background 0.3s ease;
+  }
+  .casa-indice-on {
+    background: rgba(23, 18, 14, 0.6);
+    color: var(--papel);
+  }
+  .casa-claves-pide {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    max-width: 330px;
+  }
+  .casa-claves-pide p {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: var(--t-nota);
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .casa-pide-boton {
+    padding: 11px 22px;
+    border-radius: var(--radio-medio);
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--sans);
+    font-size: var(--t-nota);
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.25s ease;
+  }
+  .casa-pide-boton:hover {
+    background: rgba(255, 255, 255, 0.88);
+  }
+  .casa-claves-der {
+    padding: clamp(80px, 12vh, 128px) 0;
+  }
+}
+@media (min-width: 1280px) {
+  .casa-claves-rejilla {
+    grid-template-columns: 460px 1fr;
+    gap: 140px;
+  }
+}
+
+/* ------------------------------------------------------------------ el pie */
+/* Gerson pidió quitar el pie, y el pie de siete columnas se ha ido entero. Esta
+   línea no es aquel pie: es el mínimo que la ley obliga a tener a la vista.
+   La LSSI-CE (art. 10) pide que quien vende diga quién es y cómo se le escribe,
+   y el RGPD que la política de privacidad se alcance desde cualquier página.
+   Sin esto la web queda fuera de norma, así que se queda —callada y en una
+   línea. */
+.casa-pie {
+  background: var(--tinta);
+  color: rgba(255, 255, 255, 0.55);
+  /* 96 px por abajo, y no 26: la pastilla del chat mide 59 px y flota a 24 px
+     del borde, así que tapaba los tres enlaces —«Aviso legal», «Privacidad» y
+     el correo— justo cuando se llega al final, que es donde se les busca.
+     Tapar el aviso legal no es un roce de maqueta: son los enlaces que la ley
+     obliga a tener alcanzables. Medido con la caja de los dos elementos, no a
+     ojo. */
+  padding: 26px var(--hueco) 96px;
+  font-family: var(--sans);
+  font-size: 14px;
+}
+.casa-pie-dentro {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+.casa-pie a {
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.casa-pie a:hover {
+  color: var(--papel);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.casa-pie-hueco {
+  flex: 1;
+}
+
+/* ------------------------------------------------ cuando se pide quietud */
+/* No es un extra: quien lo activa suele hacerlo porque el movimiento le marea
+   o le dispara algo. Se apagan las entradas, las transiciones y el fondo fijo;
+   el contenido se queda donde tiene que estar y se lee igual. */
+@media (prefers-reduced-motion: reduce) {
+  .casa-ficha {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .casa-menu,
+  .casa-rayas span {
+    transition: none;
+  }
+  .casa-claves-fondo {
+    background-attachment: scroll;
+  }
+}
+
+/* ------------------------------------------- la pastilla del chat, callada */
+/* El lanzador del chat es una pastilla ancha que se planta abajo a la derecha,
+   y sobre la portada caía justo encima de la barra de llamada: dos peticiones
+   pisándose, que además es lo que MARCA.md §5 prohíbe —una sola por pantalla.
+   Mientras se ve la portada se esconde; en cuanto se pasa, vuelve. Es el mismo
+   trato que le daba el portal anterior.
+   `!important` porque la pastilla lleva su posición y su opacidad en un
+   `style=` del propio elemento, y un atributo gana siempre a una hoja. */
+html[data-portada='si'] #chat-launcher {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(14px) !important;
+  transition: opacity 0.45s ease, transform 0.45s ease !important;
+}
