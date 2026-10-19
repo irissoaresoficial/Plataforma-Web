@@ -1402,79 +1402,173 @@ html[data-portada='si'] #chat-launcher {
   cursor: default;
 }
 
-.casa-registro-hecho {
-  align-items: flex-start;
-  text-align: left;
+/* ------------------------------------------------- el pase de la plaza */
+/* LA PANTALLA DE GRACIAS. Gerson, el 19 de octubre: «hay que mejorar este
+   mensaje, que sea más bonito y más contraste».
+   Era la misma caja blanca del formulario con un tic y tres párrafos grises
+   del mismo tamaño. Ahora está montada como un PASE: cabecera granate,
+   troquelado y cuerpo. Es el único sitio de la web con esta forma, y a
+   propósito: aparece una sola vez, justo cuando alguien acaba de conseguir
+   algo, y tiene que notarse que ha pasado.
+   El relleno se lo quita a la caja de fuera porque aquí lo pone cada franja:
+   la cabecera va a sangre y el troquelado tiene que cruzarla de lado a lado. */
+.casa-gracias {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
 }
-.casa-registro-hecho p {
+
+/* La cabecera. Granate con blanco encima, que es lo más separado que hay en
+   toda la paleta: 13:1 largos. De aquí sale el salto de contraste que pedía. */
+.casa-gracias-alto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: clamp(18px, 2.4vw, 24px) clamp(20px, 2.4vw, 28px);
+  background: var(--vino);
+}
+.casa-gracias-tic {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+  color: var(--vino);
+}
+.casa-gracias-rotulo {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  /* El dorado de luz, que es el que vale sobre granate (MARCA.md §3). */
+  color: var(--oro-luz);
+}
+
+/* EL TROQUELADO: dos muescas y una línea de puntos, como el corte por donde
+   se parte una entrada. Las muescas son dos medios círculos del color de la
+   página, no del papel de la caja — por eso se leen como agujeros y no como
+   dos bolitas pegadas. */
+.casa-gracias-corte {
+  display: flex;
+  align-items: center;
+  background: var(--vino);
+}
+.casa-gracias-corte i {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--papel);
+}
+.casa-gracias-corte i:first-child {
+  margin-left: -9px;
+}
+.casa-gracias-corte i:last-child {
+  margin-right: -9px;
+}
+.casa-gracias-corte span {
+  flex: 1;
+  height: 2px;
+  margin: 0 8px;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(255, 249, 242, 0.5) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.casa-gracias-bajo {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: clamp(22px, 2.6vw, 30px) clamp(20px, 2.4vw, 28px) clamp(20px, 2.4vw, 26px);
+}
+.casa-gracias-h {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-h3);
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.02em;
+  color: var(--tinta);
+}
+/* LA TINTA DE LA CASA Y NO UN GRIS. Esta línea confirma a qué correo se ha
+   escrito, que es el dato por el que se vuelve a esta pantalla; en gris claro
+   daba 7,4:1 —norma cumplida— y aun así se leía como letra pequeña. En tinta
+   da más de 15:1 y, sobre todo, se ve que es lo importante. */
+.casa-gracias-p {
   margin: 0;
   font-family: var(--sans);
   font-size: var(--t-nota);
   line-height: 1.6;
-  color: #55504f;
+  color: var(--tinta);
 }
-.casa-registro-hecho a {
-  color: var(--vino);
+.casa-gracias-p strong {
+  font-weight: var(--peso-medio);
 }
-.casa-registro-tic {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radio-pildora);
-  background: var(--vino);
-  color: var(--papel);
-  font-size: 20px;
+.casa-gracias-paso {
+  margin: 4px 0 0;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  line-height: 1.6;
+  /* #4a4443 sobre el papel da 9,4:1. Es la instrucción, así que va por debajo
+     del titular pero muy por encima de la letra pequeña. */
+  color: #4a4443;
 }
 
-/* EL BOTÓN DEL GRUPO DE WHATSAPP.
-   Va en granate y no en el verde de WhatsApp, y es a propósito: MARCA.md §3
-   dice que un color se usa por su token, y un verde de fuera metido en una
-   caja crema y granate se lee como un anuncio pegado encima de la página. La
-   palabra «WhatsApp» ya dice adónde lleva; el color dice de quién es la
-   página. Y de paso es el mismo botón que el de enviar, así que quien acaba
-   de pulsar uno reconoce el siguiente. */
-.casa-registro-grupo {
-  display: inline-flex;
+/* EL BOTÓN DEL GRUPO.
+   A TODO EL ANCHO y en granate, no en el verde de WhatsApp: MARCA.md §3 dice
+   que un color se usa por su token, y un verde de fuera metido en una caja
+   crema y granate se lee como un anuncio pegado encima de la página. La
+   palabra «WhatsApp» ya dice adónde lleva; el color dice de quién es esto.
+   Y es el único botón de la caja: lo que se pide aquí es una cosa sola. */
+.casa-gracias-boton {
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  margin-top: 4px;
-  padding: 13px 22px 13px 13px;
-  border-radius: var(--radio-pildora);
+  padding: 14px 20px;
+  border-radius: var(--radio-medio);
   background: var(--vino);
-  /* Y NO `--papel` a secas: este botón es un enlace, y `.casa-registro-hecho a`
-     pinta los enlaces de granate. Sin esto, granate sobre granate. */
-  color: var(--papel);
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.01em;
+  text-align: center;
   text-decoration: none;
 }
-.casa-registro-hecho a.casa-registro-grupo {
+/* Con las dos clases encadenadas: `.casa-gracias-letra a` y los enlaces de la
+   caja van en granate, y sin esto el botón saldría granate sobre granate. */
+.casa-gracias .casa-gracias-boton {
   color: var(--papel);
 }
-.casa-registro-grupo-disco {
+.casa-gracias-disco {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
   border-radius: var(--radio-pildora);
   background: rgba(255, 249, 242, 0.16);
 }
 
-/* La letra pequeña de la pantalla de gracias: la que dice qué pasa en el
-   grupo y a quién escribir si no llega el correo. Menor que el párrafo de
-   arriba, pero #5d5756 sobre el papel da 6,1:1 — pequeña no es lo mismo que
-   ilegible, y esto es justo lo que hay que poder leer. */
-/* Va con las dos clases encadenadas y no con `!important`: `.casa-registro-hecho p`
-   pesa más que una clase sola (lleva clase + etiqueta), así que sin esto el
-   párrafo de arriba ganaba. Dos clases le pasan por delante limpiamente. */
-.casa-registro-hecho .casa-registro-letra {
+/* La letra pequeña: la baja, la de salirse del grupo y a quién escribir si no
+   llega el correo. Pequeña es su sitio —lo que no podía era medir lo mismo que
+   lo importante, que es lo que pasaba antes—, pero #55504f sobre el papel da
+   7,4:1: pequeña no quiere decir ilegible. */
+.casa-gracias-letra {
+  margin: 0;
+  font-family: var(--sans);
   font-size: 13px;
   line-height: 1.55;
-  color: #5d5756;
+  color: #55504f;
+}
+.casa-gracias-letra a {
+  color: var(--vino);
+  text-decoration: underline;
 }
 
 /* ------------------------------------------------------- para quién es */

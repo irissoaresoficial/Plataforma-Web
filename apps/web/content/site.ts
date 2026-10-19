@@ -135,19 +135,23 @@ export const CONTACTO = {
    * https://chat.whatsapp.com/ y sale en WhatsApp con:
    *   el grupo → el nombre del grupo arriba → Invitar con enlace → Copiar.
    *
-   * MIENTRAS ESTÉ VACÍO NO SE INVENTA NINGUNO, y la web no finge que existe:
-   * la pantalla de gracias dice que el enlace va por correo, y el correo no
-   * habla del grupo. Es la misma regla del enlace de pago de la consulta
-   * (`PAGO_URL` en el script de Google) y está en MARCA.md §7: un enlace
-   * prometido que no llega es peor que no prometer nada, porque quien lo lea
-   * se pondrá a buscar un correo que no existe.
+   * SI SE QUEDA VACÍO NO SE INVENTA NINGUNO, y la web no finge que existe: la
+   * pantalla de gracias dice entonces que el enlace va por correo, y el correo
+   * no habla del grupo. Es la misma regla del enlace de pago de la consulta
+   * (`PAGO_URL` en el script de Google) y está en MARCA.md §7.
    *
-   * EN CUANTO SE PEGUE AQUÍ, sale solo: el botón verde de la pantalla de
-   * gracias y el párrafo del correo aparecen sin tocar nada más. OJO: hay que
-   * pegarlo en DOS sitios, porque el correo lo manda Google y no esta web —
-   * el otro es `GRUPO_WHATSAPP` en google-apps-script/reservas.gs.
+   * VA LIMPIO, SIN LA COLA DE LA URL. Gerson lo pasó copiado desde la app, y
+   * WhatsApp le engancha al copiar un rabo de parámetros con el sitio desde el
+   * que se compartió: `?s=cl&p=i&mlu=4&ilr=4&iam=0`. No sirven para nada aquí
+   * —el enlace funciona igual sin ellos— y lo que hacen es publicar a la vista
+   * de todos un dato de su teléfono. El código del grupo es lo único que
+   * importa y es lo único que se guarda.
+   *
+   * OJO: ESTE ENLACE VA EN DOS SITIOS, porque el correo lo manda Google y no
+   * esta web. El otro es `GRUPO_WHATSAPP` en google-apps-script/reservas.gs.
+   * Si se cambia aquí y allí no, la mitad de la gente se queda sin él.
    */
-  grupo: '',
+  grupo: 'https://chat.whatsapp.com/D4TuFMeoJemGODdCzJyYkd',
 };
 
 /* ------------------------------------------------------------------ */

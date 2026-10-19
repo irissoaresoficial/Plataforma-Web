@@ -109,81 +109,115 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
 
   if (hecho) {
     /*
-     * LA PANTALLA DE GRACIAS, QUE NO ES UN «LISTO» Y YA.
+     * LA PANTALLA DE GRACIAS: UN PASE, NO UN AVISO.
      *
-     * Gerson: «si yo dejo los datos, eso tiene que hacer un gracias y debe
-     * haber un link de un grupo de WhatsApp para que entren».
+     * Gerson pidió primero que existiera —«si yo dejo los datos, eso tiene que
+     * hacer un gracias y debe haber un link de un grupo de WhatsApp»— y
+     * después, el 19 de octubre, que estuviera mejor: «hay que mejorar este
+     * mensaje, que sea más bonito y más contraste».
      *
-     * Y es el momento más valioso de toda la web: la persona acaba de decir
-     * que sí y está mirando la pantalla. Si aquí sólo pone «apuntado», se va y
-     * la siguiente vez que sepa de nosotros será un correo dentro de dos
-     * semanas que ya no recuerda haber pedido. Un grupo al que entra AHORA la
-     * mantiene dentro hasta el día de la clase, y de paso le enseña que hay
-     * más gente en lo mismo, que es lo que más sostiene a quien duda.
+     * Era una caja blanca con un tic, un titular y tres párrafos grises del
+     * mismo tamaño. Cumplía la norma de contraste por los pelos y no se le
+     * notaba por ninguna parte que acababa de pasar algo bueno.
      *
-     * El orden es el que tiene que ser: primero que ha entrado (que es lo que
-     * venía a saber), después el paso siguiente —el grupo, en el botón— y por
-     * último el correo al que escribir si algo falla.
+     * Ahora está montada como lo que es: EL PASE DE UNA PLAZA. Cabecera
+     * granate con el sello y «PLAZA CONFIRMADA» en dorado, un troquelado
+     * —punteado y dos muescas, como el corte de una entrada— y debajo lo que
+     * hay que hacer. No es un adorno porque cambia lo que se entiende: una
+     * caja blanca es un mensaje del sistema; un pase es algo que tienes.
+     *
+     * Y EL CONTRASTE SUBE DE VERDAD, no de palabra:
+     *   · la cabecera es granate con blanco encima, que es lo más separado que
+     *     hay en toda la paleta;
+     *   · el párrafo que importa pasa del gris a la tinta de la casa;
+     *   · el botón del grupo ocupa el ancho entero y es el único de la caja,
+     *     así que no compite con nada (MARCA.md §5);
+     *   · y la letra pequeña se queda pequeña, que es su sitio — lo que no
+     *     puede es ser del mismo tamaño que lo importante, que era el fallo.
      *
      * `role="status"` para que quien no ve la pantalla se entere de que ha
      * entrado: si no, el formulario simplemente desaparece sin más.
      */
+    const nombrePila = nombre.trim().split(/\s+/)[0];
+
     return (
-      <div className="casa-registro casa-registro-hecho" role="status">
-        <span className="casa-registro-tic" aria-hidden="true">
-          ✓
-        </span>
-        <h2 className="casa-registro-h">
-          Gracias{nombre.trim() ? `, ${nombre.trim().split(/\s+/)[0]}` : ''}.
-        </h2>
-        <p>
-          Ya tienes tu plaza. Te he mandado un correo a{' '}
-          <strong>{email.trim()}</strong> con la confirmación.
-        </p>
+      <div className="casa-registro casa-gracias" role="status">
+        <div className="casa-gracias-alto">
+          <span className="casa-gracias-tic" aria-hidden="true">
+            {/* Un visto dibujado, no el carácter «✓»: el carácter cambia de
+                forma según la letra que tenga el sistema y en algunas sale
+                como una cruz fina. Dos trazos son dos trazos en todas. */}
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m4 12.5 5.5 5.5L20 6.5" />
+            </svg>
+          </span>
+          <span className="casa-gracias-rotulo">Plaza confirmada</span>
+        </div>
 
-        {CONTACTO.grupo ? (
-          <>
-            {/* EL GRUPO. Es lo único que se le pide hacer ahora, así que va
-                solo y con el peso del botón principal: dos acciones aquí
-                serían dos dudas (MARCA.md §5).
-                `rel="noreferrer"` además de `noopener` porque esto sale de la
-                web hacia fuera. */}
-            <a
-              className="casa-registro-grupo casa-brillo"
-              href={CONTACTO.grupo}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="casa-registro-grupo-disco" aria-hidden="true">
-                {/* Un bocadillo de conversación. Dos trazos, como los demás
-                    iconos de la casa: la marca de WhatsApp es suya y no se
-                    dibuja aquí a ojo. La palabra ya dice de qué grupo es. */}
-                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-3.9-.9L3 21l2-4.1A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5Z" />
-                </svg>
-              </span>
-              Entrar al grupo de WhatsApp
-            </a>
-            <p className="casa-registro-letra">
-              Ahí aviso de la fecha y contesto dudas antes de la clase. Puedes
-              salirte cuando quieras.
-            </p>
-          </>
-        ) : (
-          /* Sin enlace de grupo no se inventa uno ni se promete un botón que
-             no está: se dice lo que sí va a pasar. En cuanto Gerson pegue la
-             invitación en `CONTACTO.grupo`, el botón de arriba sale solo y
-             esta frase desaparece. */
-          <p className="casa-registro-letra">
-            En ese correo va también el enlace del grupo de WhatsApp de la
-            masterclass, que es donde aviso de la fecha y contesto dudas.
+        {/* EL TROQUELADO. Dos muescas y una línea de puntos: es el corte por
+            donde se parte una entrada, y es lo que hace que la caja se lea
+            como un pase y no como un cuadro blanco. Decorativo, así que no lo
+            anuncia un lector de pantalla. */}
+        <div className="casa-gracias-corte" aria-hidden="true">
+          <i />
+          <span />
+          <i />
+        </div>
+
+        <div className="casa-gracias-bajo">
+          <h2 className="casa-gracias-h">
+            Gracias{nombrePila ? `, ${nombrePila}` : ''}.
+          </h2>
+          <p className="casa-gracias-p">
+            Ya tienes tu plaza. Te he mandado la confirmación a{' '}
+            <strong>{email.trim()}</strong>.
           </p>
-        )}
 
-        <p className="casa-registro-letra">
-          Si no te llega nada, mira en «correo no deseado» y escríbeme a{' '}
-          <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
-        </p>
+          {CONTACTO.grupo ? (
+            <>
+              {/* EL GRUPO. Es lo único que se le pide hacer ahora, así que va
+                  solo, a todo el ancho y con el peso del botón principal: dos
+                  acciones aquí serían dos dudas (MARCA.md §5).
+                  `rel="noreferrer"` además de `noopener` porque esto sale de
+                  la web hacia fuera. */}
+              <p className="casa-gracias-paso">
+                Ahora entra al grupo. Ahí aviso de la fecha, mando el enlace el
+                día de la clase y contesto dudas.
+              </p>
+              <a
+                className="casa-gracias-boton casa-brillo"
+                href={CONTACTO.grupo}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="casa-gracias-disco" aria-hidden="true">
+                  {/* Un bocadillo de conversación. Dos trazos, como los demás
+                      iconos de la casa: la marca de WhatsApp es suya y no se
+                      dibuja aquí a ojo. La palabra ya dice de qué grupo es. */}
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-3.9-.9L3 21l2-4.1A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5Z" />
+                  </svg>
+                </span>
+                Entrar al grupo de WhatsApp
+              </a>
+              <p className="casa-gracias-letra">
+                Puedes salirte cuando quieras. Si no te llega el correo, mira en
+                «correo no deseado» y escríbeme a{' '}
+                <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
+              </p>
+            </>
+          ) : (
+            /* Sin enlace de grupo no se inventa uno ni se promete un botón que
+               no está: se dice lo que sí va a pasar. En cuanto haya invitación
+               en `CONTACTO.grupo`, el botón de arriba sale solo. */
+            <p className="casa-gracias-letra">
+              En ese correo va también el enlace del grupo de WhatsApp de la
+              masterclass, que es donde aviso de la fecha y contesto dudas. Si
+              no te llega, mira en «correo no deseado» y escríbeme a{' '}
+              <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
+            </p>
+          )}
+        </div>
       </div>
     );
   }
