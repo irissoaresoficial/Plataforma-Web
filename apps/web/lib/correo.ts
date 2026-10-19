@@ -209,11 +209,10 @@ function pasos(lista: { que: string; detalle: string }[]): string {
  * algo?». Un correo que sólo dice «recibido» deja esas tres preguntas abiertas
  * y por eso no sostiene a nadie tres semanas.
  *
- * Así que: el titular confirma, el primer párrafo quita la ansiedad de la
- * fecha —queda grabada, el día no es una excusa—, los dos pasos numerados
- * dicen qué pasa ahora y quién lo hace, y el botón es lo único que se le pide.
- * Y se dice que no hace falta saber nada, que es la objeción de quien llega de
- * un anuncio sin conocer esto de nada.
+ * Así que: el titular confirma, el primer párrafo dice lo único que de verdad
+ * no se sabe —que es gratuita, que es en directo y que la fecha todavía no
+ * existe—, los dos pasos numerados dicen qué pasa ahora y quién lo hace, y el
+ * botón es lo único que se le pide.
  */
 function correoDeCurso(lead: Lead): { asunto: string; html: string } {
   const conGrupo = Boolean(GRUPO);

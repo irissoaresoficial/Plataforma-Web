@@ -212,13 +212,10 @@ export default function Masterclass() {
              * «puedo borrarme cuando quiera» ya está dentro de la casilla de
              * consentimiento del formulario, que es donde la ley la pide.
              *
-             * Lo que hay ahora dice las tres cosas que mueven a alguien que
-             * acaba de leer «esto es para ti si…» y está decidiendo:
-             *   · que es gratuita,
-             *   · que es en directo,
-             *   · y que queda grabada, o sea que el día no es una excusa.
-             * Y quita la última objeción de quien llega de un anuncio sin
-             * saber qué es esto: que hay que saber algo de antes.
+             * Lo que hay ahora dice las dos cosas que mueven a alguien que
+             * acaba de leer «esto es para ti si…» y está decidiendo: que es
+             * gratuita y que es en directo. Ni una más —ver el comentario de
+             * abajo, que es el que manda.
              *
              * El botón dice lo mismo que el del formulario —«Quiero mi
              * plaza»— a propósito: es la misma acción, así que son las mismas
