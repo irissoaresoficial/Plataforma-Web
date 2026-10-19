@@ -197,7 +197,7 @@ function doPost(e) {
     var body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     if (!checkSecret(body.secret)) return json({ ok: false, reason: 'secret' });
 
-    if (body.action === 'lead') return guardarLead(body.lead || {});
+    if (body.action === 'lead') return guardarLead(body.lead || {}, body.sinCorreo === true);
     if (body.action !== 'book') return json({ ok: false, reason: 'accion_desconocida' });
 
     var b = body.booking || {};
@@ -490,8 +490,29 @@ var SECUENCIA = [
 // Lo que no salga hoy sale mañana, sin perderse.
 var MAX_POR_TANDA = 80;
 
-/** Guarda el correo que llega de la web y arranca lo que toque según el origen. */
-function guardarLead(lead) {
+/**
+ * Guarda el correo que llega de la web y arranca lo que toque segun el origen.
+ *
+ * `sinCorreo` LO MANDA LA WEB CUANDO YA HA MANDADO ELLA LOS CORREOS.
+ *
+ * Desde el 19 de octubre las confirmaciones de quien se apunta salen por
+ * Resend, desde el propio dominio y con SPF y DKIM firmados. Pero este script
+ * sigue haciendo falta para una cosa que Resend no hace: APUNTAR LA FILA EN LA
+ * HOJA, que es donde Iris mira sus apuntados.
+ *
+ * O sea que los dos sistemas tocan el mismo lead, y sin una bandera la persona
+ * recibiria la misma confirmacion dos veces, una por cada camino. Con ella:
+ *
+ *   sinCorreo = true   -> Resend ya mando. Aqui solo se apunta la fila.
+ *   sinCorreo = false  -> Resend no pudo (o no esta configurado todavia).
+ *                         Este script manda los correos como siempre.
+ *
+ * Por eso no hay un momento de riesgo en el cambio: mientras no haya clave de
+ * Resend en Vercel llega siempre `false` y todo sale por aqui, igual que
+ * antes. Y la secuencia de cinco dias de la sinergia NO se toca: esa sigue
+ * entera en este script, bandera o no.
+ */
+function guardarLead(lead, sinCorreo) {
   if (!lead.email) return json({ ok: false, reason: 'faltan_datos' });
 
   var yaEstaba = saveLeadRow(lead);
@@ -499,7 +520,7 @@ function guardarLead(lead) {
   if (lead.origen === 'sinergia') {
     // Su acuse de recibo ES el resultado, y detrás va la secuencia de 5 días.
     if (!yaEstaba) correoResultado(lead);
-  } else {
+  } else if (!sinCorreo) {
     // A la persona, su confirmación — sólo la primera vez, para que apuntarse
     // dos veces por si acaso no le llene la bandeja.
     if (!yaEstaba) acuseDeRecibo(lead);

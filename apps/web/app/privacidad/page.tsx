@@ -112,7 +112,20 @@ export default function Privacidad() {
       <ul>
         <li>
           <strong>Google</strong> (Calendar, Hojas de cálculo y Gmail): guarda las reservas, crea el
-          evento y envía los correos.
+          evento y envía los correos de la prueba de sinergia.
+        </li>
+        {/* RESEND ENTRA AQUÍ EL MISMO DÍA QUE EMPIEZA A MANDAR, no después.
+            Es un encargado del tratamiento nuevo y guarda los datos en Estados
+            Unidos: nombrarlo, decir qué hace y decir dónde está es obligación
+            del artículo 13 del RGPD, y de las que se comprueban mirando esta
+            página. La base legal de la transferencia es la que tiene firmada
+            Resend —cláusulas contractuales tipo de la UE y el marco de
+            privacidad UE-EE. UU.—, y por eso se dice en voz alta en vez de
+            dejarlo en «proveedores de correo». */}
+        <li>
+          <strong>Resend</strong>: envía los correos de confirmación de quien se apunta por la web.
+          Guarda el correo electrónico y el registro del envío en Estados Unidos, amparado en las
+          cláusulas contractuales tipo de la Unión Europea y en el marco de privacidad UE-EE. UU.
         </li>
         <li>
           <strong>Vercel</strong>: aloja esta web.

@@ -69,6 +69,46 @@ horas que tiene libres.
 > Cada vez que cambies el código del script hay que volver a **Implementar → Gestionar
 > implementaciones → editar → Nueva versión**, o la URL seguirá sirviendo lo anterior.
 
+## Los correos: Resend
+
+Desde el 19 de octubre, las confirmaciones de quien se apunta por la web salen
+por **Resend**, desde `escueladesabiduria33.com` y con SPF y DKIM firmados —que
+es lo que hace que no caigan en «correo no deseado»—. Antes salían del Gmail de
+Iris a través del Apps Script: tope de cien al día, remite de @gmail.com y
+ninguna forma de saber si llegaron.
+
+Tres variables en Vercel (*Production, Preview y Development* en las tres):
+
+| Variable | Qué es |
+|---|---|
+| `RESEND_API_KEY` | La clave, con permiso **Sending access** |
+| `RESEND_FROM` | `Iris Soares <hola@escueladesabiduria33.com>` |
+| `RESEND_REPLY_TO` | El Gmail donde Iris lee, para que las respuestas lleguen |
+
+**Sin `RESEND_API_KEY` no se rompe nada**: los correos siguen saliendo por el
+Apps Script exactamente como antes. Es lo que permite desplegar el código antes
+de tener la clave puesta.
+
+### Cómo se evita el correo por duplicado
+
+Los dos sistemas tocan el mismo lead, así que la web le dice al Apps Script lo
+que ha conseguido hacer: si Resend mandó, le pasa `sinCorreo: true` y el script
+sólo apunta la fila en la hoja de Iris. Si Resend falló, no le pasa nada y el
+script manda los correos como siempre. Ver `guardarLead()` en
+`google-apps-script/reservas.gs`.
+
+### Lo que sigue saliendo de Google
+
+Las reservas de consulta y la secuencia de cinco días de la sinergia. Eso pide
+además un reloj (Vercel Cron) y es la fase dos. La hoja de cálculo se queda en
+cualquier caso: es donde Iris mira sus apuntados.
+
+### Ver un correo antes de mandarlo
+
+`lib/correo.ts` exporta `vistaPreviaDeLead` y `vistaPreviaDeAviso`, que
+devuelven el HTML sin enviar nada. Un correo roto no se arregla después de
+mandarlo: es la única pieza de esta web que no se puede volver a desplegar.
+
 ## Correos captados y secuencia de venta
 
 Los cuatro formularios de la web mandan el correo al mismo Apps Script, que lo guarda
