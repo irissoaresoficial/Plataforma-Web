@@ -12,7 +12,8 @@
     "build": "npm run build -w web && npm run build -w plataforma",
     "build:web": "npm run build -w web",
     "build:plataforma": "npm run build -w plataforma",
-    "tipos": "npm run tipos -w web && npm run tipos -w plataforma"
+    "tipos": "npm run tipos -w web && npm run tipos -w plataforma",
+    "mapa": "codebase-memory-mcp cli index_repository --repo-path \"$PWD\" --mode full"
   },
   "engines": {
     "node": ">=20"

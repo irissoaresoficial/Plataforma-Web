@@ -151,8 +151,40 @@ codebase-memory-mcp daemon start
 codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --mode full
 ```
 
-Hay que **volver a indexar después de cambios grandes**. El índice se queda
-fresco solo mientras el proyecto está abierto en una sesión del agente.
+### Mantenerlo al día — LO IMPORTANTE
+
+El índice **no se actualiza solo en todos los casos**, y conviene saber
+exactamente cuándo sí y cuándo no, porque un mapa viejo contesta cosas que ya
+no son verdad:
+
+| Cómo se indexó | ¿Se actualiza solo? |
+|---|---|
+| Desde una sesión del agente abierta **en esta carpeta** | Sí: el vigilante mira los cambios de git |
+| Desde la terminal (`cli index_repository`) | **No.** Se queda como estaba |
+| Desde una sesión abierta en **otra** carpeta | **No** |
+
+Por eso en este repositorio hay un atajo:
+
+```bash
+npm run mapa
+```
+
+Tarda siete segundos y deja el mapa igual que el código. **Después de bajar
+cambios (`git pull`) o de una tanda de trabajo, se pasa.**
+
+Y para que las sesiones nuevas se indexen y se vigilen solas, una vez por
+ordenador:
+
+```bash
+codebase-memory-mcp config set auto_index true
+```
+
+### Dos mapas distintos, que no se hablan
+
+El índice vive en el ordenador que lo hizo, no en el repositorio. El que tiene
+Gerson en su Mac y el que uso yo en el servidor son **dos copias
+independientes**: actualizar una no toca la otra. De ahí que `npm run mapa` haya
+que pasarlo en cada sitio.
 
 ### La interfaz
 
