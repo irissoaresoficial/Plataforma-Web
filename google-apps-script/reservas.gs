@@ -211,8 +211,15 @@ function doPost(e) {
 
     saveRow(b, start);
     var event = createEvent(b, start, end);
-    notifyClient(b, start);
-    notifyIris(b, start);
+    // Aqui salian dos correos: la confirmacion a la persona y el aviso a Iris.
+    // Desde el 19 de octubre el correo es cosa de Resend (apps/web/lib/correo.ts).
+    // La invitacion del evento la sigue mandando Google Calendar al crear la
+    // cita, que no es un correo de este script sino del propio calendario.
+    //
+    // OJO: hoy esto no lo dispara nadie. `/api/booking` solo lo llamaba el chat
+    // de la web, y el chat se borro entero. Si vuelven las reservas hay que
+    // escribir sus dos correos en `lib/correo.ts` ANTES de volver a encender el
+    // boton, o se reservara sin que nadie reciba nada.
 
     return json({ ok: true, eventId: event ? event.getId() : null });
   } catch (err) {
@@ -365,72 +372,7 @@ function diaLargo(start) {
   return dias[start.getDay()] + ' ' + start.getDate() + ' de ' + meses[start.getMonth()];
 }
 
-function notifyClient(b, start) {
-  var nombre = (b.nombre || '').split(' ')[0];
-  var cuando = diaLargo(start) + ' a las ' + fmt(start, 'HH:mm');
-  var html =
-    '<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#0a0a0c;line-height:1.6">' +
-    '<p style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8f6b18;margin:0 0 6px">Sesión reservada</p>' +
-    '<h1 style="font-size:24px;margin:0 0 16px">Nos vemos el ' + cuando + '.</h1>' +
-    '<p>Hola ' + nombre + ', soy Iris. Ya tengo tu día apuntado y voy a preparar tu historia familiar antes de que nos veamos, así que llegaré con el trabajo hecho.</p>' +
-    '<p><b>Cuándo:</b> ' + cuando + ' (hora española)<br><b>Duración:</b> hora y media, por videollamada' +
-    (CONFIG.MEETING_URL ? '<br><b>Enlace:</b> <a href="' + CONFIG.MEETING_URL + '">' + CONFIG.MEETING_URL + '</a>' : '') +
-    '</p>' +
-    '<p>Te ha llegado también la invitación del calendario: acéptala y la cita se te guarda sola.</p>' +
-    /*
-     * EL PAGO, EN UN RECUADRO Y CON SU BOTÓN.
-     *
-     * En medio de un párrafo se pasa por alto. Y si no hay enlace todavía, no
-     * se dice nada de pagar: ver «PAGO_URL» arriba.
-     */
-    (CONFIG.PAGO_URL
-      ? '<div style="border:1px solid #e6e0d6;border-radius:14px;padding:18px 20px;margin:22px 0">' +
-        '<p style="margin:0 0 10px"><b>Falta un paso: el pago de la sesión.</b> Tu hora queda cerrada en cuanto lo hagas; hasta entonces sigue disponible para otra persona.</p>' +
-        '<p style="margin:0"><a href="' + CONFIG.PAGO_URL + '" style="display:inline-block;background:#6b1f2e;color:#fff;text-decoration:none;border-radius:999px;padding:11px 24px;font-weight:600">Pagar mi sesión</a></p>' +
-        '</div>'
-      : '') +
-    /*
-     * LA REGLA DE LAS 24 HORAS, DICHA AQUÍ Y NO SÓLO EN EL AVISO LEGAL.
-     *
-     * Es de Iris, con estas palabras: «si no hacemos unas condiciones de
-     * cancelación, se la pasan por el forro». Este correo es lo que la persona
-     * tiene guardado el día que le surge algo, así que es donde tiene que
-     * estar escrito. Se dice ofreciendo el cambio primero y la condición
-     * después: es la misma información y no suena a amenaza.
-     */
-    '<p><b>¿Te surge algo?</b> Puedes cambiar el día respondiendo a este correo, siempre que me avises con <b>24 horas de antelación</b>. Con menos de 24 horas ya no puedo darle esa hora a nadie, así que se da por dada.</p>' +
-    '<p style="font-size:12px;color:#8a8a92;margin-top:24px">Las sesiones no son un tratamiento médico ni psicológico y no sustituyen a ninguno.</p>' +
-    '</div>';
 
-  MailApp.sendEmail({
-    to: b.email,
-    name: 'Iris Soares',
-    replyTo: CONFIG.IRIS_EMAIL,
-    subject: 'Tu sesión con Iris — ' + cuando,
-    htmlBody: html
-  });
-}
-
-function notifyIris(b, start) {
-  var html =
-    '<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#0a0a0c;line-height:1.6">' +
-    '<h2 style="margin:0 0 12px">Nueva reserva: ' + (b.nombre || '') + '</h2>' +
-    '<p><b>Cuándo:</b> ' + diaLargo(start) + ' a las ' + fmt(start, 'HH:mm') + '<br>' +
-    '<b>Correo:</b> ' + (b.email || '') + '<br>' +
-    '<b>Fecha de nacimiento:</b> ' + (b.fecha || '—') + '<br>' +
-    '<b>Idioma de la web:</b> ' + ((b.lang || 'es').toUpperCase()) + '</p>' +
-    '<p><b>Lo que se le repite:</b><br>' + (b.motivo || '—') + '</p>' +
-    '<p style="color:#6b6b72">Ya está en tu calendario y la persona tiene su invitación. La fila también se ha guardado en la hoja de reservas.</p>' +
-    '</div>';
-
-  MailApp.sendEmail({
-    to: CONFIG.IRIS_EMAIL,
-    name: 'Reservas web',
-    replyTo: b.email,
-    subject: 'Reserva: ' + (b.nombre || '') + ' — ' + fmt(start, 'dd/MM') + ' ' + fmt(start, 'HH:mm'),
-    htmlBody: html
-  });
-}
 
 /* ==================================================================
  *  CORREOS CAPTADOS Y SECUENCIA DE VENTA
@@ -442,91 +384,36 @@ function notifyIris(b, start) {
  * Cambia los textos a tu gusto: {nombre} se sustituye solo.
  * El orden está pensado para explicar primero y ofrecer al final.
  */
-var SECUENCIA = [
-  {
-    dia: 1,
-    asunto: 'Por qué se te repite',
-    cuerpo:
-      '<p>Hola {nombre},</p>' +
-      '<p>Ayer viste dos números y lo que se activa entre esa persona y tú. Hoy te cuento de dónde sale eso.</p>' +
-      '<p>En todas las familias hay algo que no se habló: una deuda, alguien que se fue, una muerte temprana, un negocio que se hundió. Nadie lo cuenta, pero se hereda igual. Y no se hereda en forma de historia, sino de conducta: prisa por irte, miedo a pedir, dificultad para quedarte donde estás bien.</p>' +
-      '<p>Por eso cambias de trabajo, de ciudad o de pareja y a los seis meses estás en el mismo punto. No es tu carácter. Es una historia que sigue abierta y que se resuelve sola en cada generación hasta que alguien la mira.</p>' +
-      '<p>Mañana te cuento qué pasa cuando alguien la mira.</p>'
-  },
-  {
-    dia: 2,
-    asunto: 'El mismo mes malo, tres generaciones seguidas',
-    cuerpo:
-      '<p>Hola {nombre},</p>' +
-      '<p>Una mujer vino porque cada octubre se le hundía el negocio. Lo había probado todo: cambiar de proveedor, de local, de precios. Cada octubre, lo mismo.</p>' +
-      '<p>Levantamos su línea familiar. Su padre perdió la empresa un octubre. Su abuelo perdió la casa otro octubre. Nadie se lo había contado nunca con esas palabras: en su casa eso era "la mala racha de otoño".</p>' +
-      '<p>No hizo falta nada mágico. Lo vio, entendió qué parte era suya y qué parte no, y ese año hizo algo distinto en octubre a propósito. Ya van dos octubres seguidos sin caída.</p>' +
-      '<p>Lo que cambia no es la fecha. Es que dejas de repetir a ciegas.</p>'
-  },
-  {
-    dia: 3,
-    asunto: 'Entenderlo no es cambiarlo',
-    cuerpo:
-      '<p>Hola {nombre},</p>' +
-      '<p>Te voy a decir algo que va contra mi propio interés: entender de dónde viene lo tuyo, por sí solo, no te cambia la vida.</p>' +
-      '<p>Lo he visto muchas veces. La persona sale de la sesión con todo clarísimo, y a los tres meses está otra vez en lo mismo. Porque un patrón que lleva tres generaciones funcionando no se desmonta en una tarde. Se desmonta a base de mirarlo por partes, una cada vez, durante meses.</p>' +
-      '<p>Por eso estoy abriendo un grupo pequeño: cada mes miramos una parte de tu historia familiar y sueltas algo concreto. Un paso al mes, no un curso de seis meses que se acaba.</p>' +
-      '<p><a href="{comunidad}">Aquí puedes ver de qué va</a>. Si no es tu momento, no pasa nada: los correos de estos días son tuyos igualmente.</p>'
-  },
-  {
-    dia: 5,
-    asunto: 'Las diez primeras',
-    cuerpo:
-      '<p>Hola {nombre},</p>' +
-      '<p>Te escribo por última vez sobre esto.</p>' +
-      '<p>El grupo abre con diez personas y las diez primeras se quedan con el precio de lanzamiento mientras sigan dentro. No es una prisa inventada: es un grupo pequeño porque cada mes se revisa un caso en voz alta, y con cuarenta personas eso no se puede hacer.</p>' +
-      '<p><b>Para quién no es:</b> si lo que buscas es que te digan qué va a pasar, esto no es para ti. Aquí se trabaja con lo que ya está pasando.</p>' +
-      '<p><b>Para quién sí:</b> si llevas años viendo el mismo final y ya te has cansado de explicártelo con la fuerza de voluntad.</p>' +
-      '<p><a href="{comunidad}">Guardar mi sitio</a></p>'
-  }
-];
+/* El texto de los cinco correos vive ahora en secuencia-5-dias.md. */
 
-// Tope por tanda: Gmail gratuito permite unos 100 correos al día.
-// Lo que no salga hoy sale mañana, sin perderse.
-var MAX_POR_TANDA = 80;
 
 /**
- * Guarda el correo que llega de la web y arranca lo que toque segun el origen.
+ * APUNTA EN LA HOJA EL CORREO QUE LLEGA DE LA WEB. Y NADA MAS.
  *
- * `sinCorreo` LO MANDA LA WEB CUANDO YA HA MANDADO ELLA LOS CORREOS.
+ * ESTA FUNCION YA NO MANDA NINGUN CORREO, y es el cambio del 19 de octubre.
+ * Gerson: «lo de Google (correos) borralo todo, a partir de este momento en
+ * cuestion de correos sera con Resend».
  *
- * Desde el 19 de octubre las confirmaciones de quien se apunta salen por
- * Resend, desde el propio dominio y con SPF y DKIM firmados. Pero este script
- * sigue haciendo falta para una cosa que Resend no hace: APUNTAR LA FILA EN LA
- * HOJA, que es donde Iris mira sus apuntados.
+ * De aqui salian tres: la confirmacion de quien se apunta, el aviso a Iris y
+ * el resultado de la sinergia. Los tres los manda ahora la web por Resend,
+ * desde escueladesabiduria33.com y con SPF y DKIM firmados — que es lo que
+ * decide si un correo entra en la bandeja o en «no deseado». El Gmail de Iris
+ * no podia hacer ninguna de las dos cosas, y ademas tiene tope de unos cien
+ * envios al dia: con una campana de Meta detras, eso se alcanza en una tarde.
  *
- * O sea que los dos sistemas tocan el mismo lead, y sin una bandera la persona
- * recibiria la misma confirmacion dos veces, una por cada camino. Con ella:
+ * ENTONCES, ¿PARA QUE SIGUE EXISTIENDO ESTO?
+ * Para la hoja de calculo. Es donde Iris mira sus apuntados, y Resend no
+ * guarda listas: manda correos. Asi que la web hace dos llamadas por cada
+ * persona —Resend para el correo, este script para la fila— y cada uno hace
+ * lo que sabe hacer.
  *
- *   sinCorreo = true   -> Resend ya mando. Aqui solo se apunta la fila.
- *   sinCorreo = false  -> Resend no pudo (o no esta configurado todavia).
- *                         Este script manda los correos como siempre.
- *
- * Por eso no hay un momento de riesgo en el cambio: mientras no haya clave de
- * Resend en Vercel llega siempre `false` y todo sale por aqui, igual que
- * antes. Y la secuencia de cinco dias de la sinergia NO se toca: esa sigue
- * entera en este script, bandera o no.
+ * El parametro `sinCorreo` que llegaba de la web ya no hace falta: existia
+ * para que este script se callara cuando Resend habia mandado, y ahora se
+ * calla siempre. La web puede seguir mandandolo; aqui se ignora.
  */
-function guardarLead(lead, sinCorreo) {
+function guardarLead(lead) {
   if (!lead.email) return json({ ok: false, reason: 'faltan_datos' });
-
-  var yaEstaba = saveLeadRow(lead);
-
-  if (lead.origen === 'sinergia') {
-    // Su acuse de recibo ES el resultado, y detrás va la secuencia de 5 días.
-    if (!yaEstaba) correoResultado(lead);
-  } else if (!sinCorreo) {
-    // A la persona, su confirmación — sólo la primera vez, para que apuntarse
-    // dos veces por si acaso no le llene la bandeja.
-    if (!yaEstaba) acuseDeRecibo(lead);
-    // Y a Iris, siempre: que alguien insista es en sí una señal.
-    notificarIrisLead(lead);
-  }
+  saveLeadRow(lead);
   return json({ ok: true });
 }
 
@@ -564,244 +451,42 @@ function saveLeadRow(lead) {
 }
 
 /**
- * Manda a cada lead el correo de la secuencia que le toque hoy.
- * Se ejecuta sola una vez al día con el activador (paso 8 de la instalación).
+ * LA SECUENCIA DE CINCO DIAS: APAGADA, NO BORRADA.
+ *
+ * Gerson, el 19 de octubre: «lo de Google (correos) borralo todo». Esta
+ * funcion es la unica que no se ha quitado del archivo, y hay un motivo
+ * practico: en la cuenta de Iris hay un ACTIVADOR DIARIO que la llama. Si se
+ * borra, ese activador falla cada manana y Google empieza a mandar correos de
+ * error a Iris — o sea, borrar el envio de correos acabaria generando correos.
+ *
+ * Asi que se queda, y no hace nada. El orden correcto para cerrarlo del todo
+ * es: primero esto (ya hecho), despues borrar el activador a mano desde el
+ * editor de Apps Script (el icono del reloj -> los tres puntos -> Eliminar), y
+ * entonces si se puede quitar esta funcion.
+ *
+ * EL TEXTO DE LOS CINCO CORREOS NO SE HA PERDIDO: esta entero en
+ * `google-apps-script/secuencia-5-dias.md`, listo para volver a montarlo sobre
+ * Resend. Eso pide dos cosas que hoy no existen —un reloj en Vercel y guardar
+ * en Firestore por que paso va cada persona— y se hara cuando la comunidad
+ * abra de verdad.
  */
 function enviarSecuencia() {
-  if (!CONFIG.SECUENCIA_ACTIVA) return;
-
-  var sheet = libro().getSheetByName(CONFIG.LEADS_SHEET_NAME);
-  if (!sheet) return;
-
-  var datos = sheet.getDataRange().getValues();
-  var hoy = new Date();
-  var enviados = 0;
-
-  for (var i = 1; i < datos.length && enviados < MAX_POR_TANDA; i++) {
-    var fila = datos[i];
-    var alta = fila[COL.ALTA], email = fila[COL.EMAIL], nombre = fila[COL.NOMBRE], origen = fila[COL.ORIGEN];
-    var ultimo = Number(fila[COL.ULTIMO]) || 0, baja = fila[COL.BAJA];
-
-    if (origen !== 'sinergia' || baja || !email || !(alta instanceof Date)) continue;
-
-    var dias = Math.floor((hoy - alta) / 86400000);
-
-    // Solo el siguiente paso pendiente: un correo por persona y día como mucho.
-    for (var p = 0; p < SECUENCIA.length; p++) {
-      var paso = SECUENCIA[p];
-      if (paso.dia <= dias && paso.dia > ultimo) {
-        try {
-          enviarPaso(email, nombre, paso);
-          sheet.getRange(i + 1, COL.ULTIMO + 1).setValue(paso.dia);
-          enviados++;
-        } catch (err) {
-          Logger.log('No se pudo enviar a ' + email + ': ' + err);
-        }
-        break;
-      }
-    }
-  }
-  Logger.log('Secuencia: ' + enviados + ' correos enviados.');
+  Logger.log('La secuencia ya no sale de aqui: el correo es cosa de Resend desde el 19 de octubre. Puedes borrar este activador.');
 }
 
-function enviarPaso(email, nombre, paso) {
-  var cuerpo = paso.cuerpo
-    .replace(/{nombre}/g, primerNombre(nombre))
-    .replace(/{comunidad}/g, CONFIG.COMUNIDAD_URL);
-  MailApp.sendEmail({
-    to: email,
-    name: 'Iris Soares',
-    replyTo: CONFIG.IRIS_EMAIL,
-    subject: paso.asunto,
-    htmlBody: plantilla(cuerpo, email)
-  });
-}
 
-/** Día 0: el resultado de la calculadora, nada más dejar el correo. */
-function correoResultado(lead) {
-  /*
-   * EL TEXTO VIENE ESCRITO DE LA WEB. AQUÍ SÓLO SE ENVUELVE.
-   *
-   * Antes este correo pegaba `lead.detalle` tal cual dentro de una caja gris:
-   *
-   *     «Mi madre: Iris 3 · Iris 3 · juntos 6 (Espejo) · 5 repeticiones»
-   *
-   * Eso está bien escrito para Iris —es su ficha de un vistazo antes de una
-   * llamada— y no dice absolutamente nada a quien acaba de dejar su correo por
-   * primera vez: no sabe qué es un 3, ni un 6, ni un Espejo. Y es el momento
-   * más caro de todo el embudo: esa persona ha escrito el nombre de su madre en
-   * una web y ha esperado un correo. Está abierta. Lo que recibía era una línea
-   * de base de datos.
-   *
-   * Ahora la web manda los párrafos ya escritos, con cada número explicado (ver
-   * `lib/correo-sinergia.ts`). Van como texto y no como HTML a propósito: así
-   * este archivo no puede romperse por lo que llegue de fuera, y el envoltorio
-   * —tipografía, ancho, el pie con la baja— lo sigue poniendo la plantilla de
-   * aquí.
-   *
-   * Si por lo que sea no llegan párrafos —una versión vieja de la web— se cae al
-   * texto de antes en vez de mandar un correo vacío.
-   */
-  var cuerpo;
-  var asunto;
 
-  if (lead.parrafos && lead.parrafos.length) {
-    cuerpo = '';
-    for (var i = 0; i < lead.parrafos.length; i++) {
-      cuerpo += '<p style="font-size:16px;line-height:1.6;margin:0 0 16px">' + escapaSalvoSaltos(lead.parrafos[i]) + '</p>';
-    }
-    asunto = lead.asunto || 'Lo que se repite';
-  } else {
-    cuerpo =
-      '<p>Hola ' + primerNombre(lead.nombre) + ',</p>' +
-      '<p>Aquí tienes lo que ha salido:</p>' +
-      '<p style="background:#f5f4f0;border-radius:12px;padding:16px;font-size:16px">' + (lead.detalle || '') + '</p>' +
-      '<p>Esto es una foto de lo que se activa entre vosotros dos. Explica el roce, pero no de dónde viene: eso está en tu línea familiar, y hace falta mirarla entera.</p>';
-    asunto = 'Tu resultado';
-  }
 
-  MailApp.sendEmail({
-    to: lead.email,
-    name: 'Iris Soares',
-    replyTo: CONFIG.IRIS_EMAIL,
-    subject: asunto,
-    htmlBody: plantilla(cuerpo, lead.email)
-  });
-}
 
-/**
- * Deja el texto a salvo de convertirse en etiquetas, pero conserva el único
- * trozo de HTML que sí lleva —el salto de línea de la firma—. Escapar del todo
- * dejaría un «<br>» escrito a la vista al final del correo; no escapar nada
- * dejaría que un nombre con un signo raro rompiera el mensaje entero.
- */
-function escapaSalvoSaltos(t) {
-  return String(t || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/&lt;br&gt;/g, '<br>');
-}
 
-/**
- * ACUSE DE RECIBO, DISTINTO SEGÚN DE DÓNDE VENGA.
- *
- * El que se apunta a la lista de espera o a un curso no recibía NADA. Se avisaba
- * a Iris y a la persona se le dejaba en silencio, mirando un formulario que le
- * había dicho «listo» y ya. En un lanzamiento eso es lo peor que puede pasar:
- * la persona no tiene ni una prueba de que se apuntó, así que a los tres días
- * no se acuerda, y si le llega el correo de apertura le suena a publicidad de
- * alguien a quien no le dio permiso.
- *
- * Y NO es el mismo correo para los dos. Quien pide la sinergia entra en la
- * secuencia de cinco días y lo primero que recibe es su resultado; a ése no hay
- * que darle la bienvenida dos veces. Quien reserva su precio en la membresía
- * necesita que le confirmen exactamente qué ha reservado y cuándo va a saber
- * algo. Y quien se apunta a un curso o a la masterclass necesita dos cosas: que
- * le confirmen que está dentro, y el enlace del grupo de WhatsApp.
- *
- * EL GRUPO ES LO QUE SOSTIENE AL REGISTRO HASTA EL DÍA DE LA CLASE. Entre que
- * alguien deja su correo en un anuncio y el día en que hay clase pasan semanas;
- * sin nada en medio, la mitad no se acuerda ni de haberse apuntado. En el grupo
- * ve que hay más gente en lo mismo y se entera de la fecha el día que se pone.
- * Por eso el botón del grupo es lo único que se le pide hacer en ese correo.
- *
- * Son tres situaciones distintas y mandar el mismo «gracias por suscribirte» a
- * las tres es la manera más rápida de que esto parezca un boletín automático en
- * vez de la consulta de una persona.
- */
-function acuseDeRecibo(lead) {
-  var textos = {
-    membresia: {
-      asunto: 'Tu sitio está guardado',
-      cuerpo:
-        '<p>Hola {nombre},</p>' +
-        '<p>Ya tienes tu sitio en la lista. <b>Hoy no se te cobra nada.</b></p>' +
-        '<p>La comunidad abre el <b>7 de noviembre</b> y entra con diez personas. ' +
-        'Las diez primeras se quedan con el precio de lanzamiento mientras sigan dentro, ' +
-        'y tú estás en esa lista.</p>' +
-        '<p>Te escribo yo cuando abra, con tu precio guardado. No tienes que hacer nada más.</p>'
-    },
-    curso: {
-      asunto: 'Gracias — ya tienes tu plaza',
-      cuerpo:
-        '<p>Hola {nombre},</p>' +
-        '<p>Gracias por apuntarte. <b>Ya tienes tu plaza guardada</b>, y es gratis: no hay nada que pagar.</p>' +
-        // El bloque del grupo sale solo si hay enlace. Sin enlace no se nombra
-        // el grupo en ninguna parte: ver GRUPO_WHATSAPP, arriba del todo.
-        (CONFIG.GRUPO_WHATSAPP
-          ? '<p>Lo siguiente es entrar al grupo de WhatsApp de la masterclass. ' +
-            'Ahí aviso de la fecha, mando el enlace el día de la clase y contesto dudas antes. ' +
-            'Si no entras, la fecha te llega igual por correo — pero en el grupo te enteras antes.</p>' +
-            '<p><a href="' + CONFIG.GRUPO_WHATSAPP + '" ' +
-            'style="display:inline-block;background:#451a25;color:#ffffff;text-decoration:none;' +
-            'padding:13px 24px;border-radius:999px;font-weight:600">Entrar al grupo de WhatsApp</a></p>' +
-            '<p style="font-size:13px;color:#6b6b72">Puedes salirte del grupo cuando quieras.</p>'
-          : '<p>Te escribo yo en cuanto haya fecha, con el enlace para entrar. No tienes que hacer nada más.</p>') +
-        '<p>Si te surge cualquier duda, contesta a este correo: lo leo yo.</p>'
-    }
-  };
-  var t = textos[lead.origen];
-  if (!t) return; // Un origen nuevo no manda nada hasta que se le escriba su texto.
 
-  MailApp.sendEmail({
-    to: lead.email,
-    name: 'Iris Soares',
-    replyTo: CONFIG.IRIS_EMAIL,
-    subject: t.asunto,
-    htmlBody: plantilla(t.cuerpo.replace(/{nombre}/g, primerNombre(lead.nombre)), lead.email)
-  });
-}
 
-/** Los leads que no son de la prueba gratis los tiene que atender Iris a mano. */
-function notificarIrisLead(lead) {
-  var nombres = {
-    'membresia': 'lista de espera de la membresía',
-    'curso': 'un curso'
-  };
-  var que = nombres[lead.origen] || lead.origen;
-  MailApp.sendEmail({
-    to: CONFIG.IRIS_EMAIL,
-    name: 'Web de Iris',
-    replyTo: lead.email,
-    subject: 'Nuevo apuntado: ' + que,
-    htmlBody:
-      '<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.6">' +
-      '<p><b>' + (lead.nombre || 'Sin nombre') + '</b> se ha apuntado a: ' + que + '</p>' +
-      '<p>Correo: <a href="mailto:' + lead.email + '">' + lead.email + '</a>' +
-      (lead.whatsapp ? '<br>WhatsApp: ' + lead.whatsapp : '') +
-      (lead.detalle ? '<br>Detalle: ' + lead.detalle : '') + '</p>' +
-      '<p style="color:#6b6b72">Está guardado en la pestaña Leads.</p></div>'
-  });
-}
-
-function primerNombre(nombre) {
-  return String(nombre || '').trim().split(/\s+/)[0] || 'hola';
-}
-
-/** Marco común de los correos, con el pie y el enlace de baja obligatorio. */
-function plantilla(cuerpoHtml, email) {
-  return (
-    '<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#0a0a0c;line-height:1.65;font-size:16px;max-width:520px">' +
-    cuerpoHtml +
-    '<p style="margin-top:28px">Iris</p>' +
-    '<hr style="border:none;border-top:1px solid #e3e2dd;margin:24px 0">' +
-    '<p style="font-size:12px;color:#8a8a92;line-height:1.6">' +
-    'Recibes esto porque dejaste tu correo en ' + CONFIG.WEB_URL + '. ' +
-    '<a href="' + urlBaja(email) + '" style="color:#8a8a92">Darme de baja</a>.<br>' +
-    'Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.' +
-    '</p></div>'
-  );
-}
 
 function tokenBaja(email) {
   var firma = Utilities.computeHmacSha256Signature(String(email).toLowerCase(), CONFIG.SECRET);
   return Utilities.base64EncodeWebSafe(firma).substring(0, 16);
 }
 
-function urlBaja(email) {
-  return ScriptApp.getService().getUrl() + '?action=baja&e=' + encodeURIComponent(email) + '&t=' + encodeURIComponent(tokenBaja(email));
-}
 
 /** Marca la baja en la hoja. El token evita que nadie dé de baja a otro. */
 function darDeBaja(email, token) {

@@ -224,13 +224,22 @@ export default function Masterclass() {
              * plaza»— a propósito: es la misma acción, así que son las mismas
              * palabras.
              */}
+            {/* FUERA «QUEDA GRABADA» Y «NO HACE FALTA SABER NADA».
+                Gerson las tumbó las dos el 19 de octubre. Y es mejor cierre
+                sin ellas: una prometía algo del producto que no está decidido
+                —y una promesa que luego no se cumple cuesta más que el
+                registro que gana—, y la otra contestaba una objeción en el
+                sitio donde ya no toca contestar objeciones, sino recoger.
+                Lo que hay ahora apunta a lo único que importa a esa altura:
+                que quien ha leído los tres cartelitos de arriba se haya
+                reconocido en alguno. */}
             <span className="casa-mc-rotulo">La masterclass</span>
             <h2 className="casa-mc-cierre-h" id="cierre-h">
-              Gratuita, en directo, y te queda grabada
+              Si te has reconocido en algo de esto
             </h2>
             <p className="casa-mc-cierre-p">
-              Déjame tu nombre y tu correo y te aviso en cuanto haya fecha. No
-              hace falta que sepas nada de numerología para seguirla.
+              Déjame tu nombre y tu correo y te aviso en cuanto haya fecha. Es
+              gratuita y se da en directo.
             </p>
             <a href="#apuntarse" className="casa-mc-da-boton casa-brillo">
               Quiero mi plaza

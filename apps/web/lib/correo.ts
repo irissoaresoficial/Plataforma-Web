@@ -103,33 +103,61 @@ function primerNombre(nombre: string): string {
 }
 
 /**
+ * EL SOBRE: LA LÍNEA QUE SE LEE ANTES DE ABRIR.
+ *
+ * En la bandeja de entrada, debajo del asunto, el cliente de correo enseña un
+ * trozo del principio del mensaje. Si no se le da nada, saca «Hola Gerson,» o
+ * peor, un cacho de código. Es la segunda cosa que decide si alguien abre, y
+ * casi nadie la escribe.
+ *
+ * Se mete en un párrafo escondido: invisible al abrir, visible en la lista.
+ * Los caracteres invisibles del final son para que el cliente no rellene el
+ * hueco con lo siguiente que encuentre.
+ */
+function sobre(texto: string): string {
+  return `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;height:0;width:0">${texto}${'&#847;&zwnj;&nbsp;'.repeat(60)}</div>`;
+}
+
+/**
  * EL MARCO DE TODOS LOS CORREOS QUE VAN A UNA PERSONA.
  *
- * Una cabecera granate con el nombre de la escuela, el cuerpo sobre blanco, y
- * el pie con el motivo por el que se recibe el correo, la baja y el descargo
- * legal. Esos tres de abajo no son adorno: el motivo y la baja los pide el
- * artículo 21 del RGPD y el descargo lo pide la ley de publicidad sanitaria.
+ * Una cabecera granate con el nombre de la escuela en dorado, un filete fino,
+ * el cuerpo sobre blanco, la firma, y el pie con el motivo por el que se
+ * recibe el correo, la baja y el descargo legal. Esos tres de abajo no son
+ * adorno: el motivo y la baja los pide el artículo 21 del RGPD y el descargo
+ * lo pide la ley de publicidad sanitaria.
  *
- * Todo con estilos escritos en cada etiqueta. Gmail borra las hojas de estilo.
+ * TODO CON ESTILOS ESCRITOS EN CADA ETIQUETA, y sin una sola imagen. Gmail
+ * borra las hojas de estilo, y la mitad de los clientes no bajan las imágenes
+ * hasta que se les pide: un correo que necesita una foto para verse bien es un
+ * correo que la mitad de la gente ve roto. Aquí el aspecto lo hace la
+ * tipografía y el color, que llegan siempre.
  */
-function marco(cuerpo: string, email: string): string {
-  return `<div style="margin:0;padding:24px 12px;background:#f1ede4">
-  <div style="max-width:560px;margin:0 auto;background:${PAPEL};border-radius:14px;overflow:hidden;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">
-    <div style="background:${VINO};padding:18px 26px">
-      <span style="font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:${ORO}">Escuela de Sabiduría 33</span>
+function marco(opciones: { previo: string; titular: string; cuerpo: string; email: string }): string {
+  return `${sobre(opciones.previo)}<div style="margin:0;padding:28px 12px;background:#f1ede4">
+  <div style="max-width:560px;margin:0 auto;background:${PAPEL};border-radius:16px;overflow:hidden;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">
+
+    <div style="background:${VINO};padding:20px 30px">
+      <span style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:${ORO}">Escuela de Sabiduría 33</span>
     </div>
-    <div style="padding:26px;color:${TINTA};font-size:16px;line-height:1.65">
-      ${cuerpo}
-      <p style="margin:28px 0 0">Iris</p>
+
+    <div style="padding:34px 30px 30px;color:${TINTA}">
+      <h1 style="margin:0 0 20px;font-size:27px;line-height:1.2;font-weight:600;letter-spacing:-.02em;color:${TINTA}">${opciones.titular}</h1>
+      <div style="font-size:16px;line-height:1.65;color:${TINTA}">${opciones.cuerpo}</div>
+      <div style="margin:30px 0 0;padding-top:20px;border-top:1px solid #ece8e0">
+        <p style="margin:0;font-size:16px;line-height:1.6;color:${TINTA}">Iris</p>
+        <p style="margin:2px 0 0;font-size:13px;color:#6b6564">Escuela de Sabiduría 33</p>
+      </div>
     </div>
-    <div style="padding:0 26px 24px">
-      <hr style="border:none;border-top:1px solid #e3e2dd;margin:0 0 16px">
-      <p style="margin:0;font-size:12px;line-height:1.6;color:#6b6564">
+
+    <div style="padding:0 30px 26px">
+      <p style="margin:0;font-size:12px;line-height:1.65;color:#6b6564">
         Recibes esto porque dejaste tu correo en <a href="${WEB}" style="color:#6b6564">${WEB.replace(/^https?:\/\//, '')}</a>.
-        <a href="${enlaceDeBaja(email)}" style="color:#6b6564">Darme de baja</a>.<br>
+        <a href="${enlaceDeBaja(opciones.email)}" style="color:#6b6564">Darme de baja</a>.<br>
         Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
       </p>
     </div>
+
   </div>
 </div>`;
 }
@@ -137,35 +165,96 @@ function marco(cuerpo: string, email: string): string {
 /** Un botón. Se dibuja con un `<a>` y relleno, no con un `<button>`: los
  *  botones de verdad no se pintan en la mitad de los clientes de correo. */
 function boton(href: string, texto: string): string {
-  return `<p style="margin:22px 0 10px">
-    <a href="${href}" style="display:inline-block;background:${VINO};color:${PAPEL};text-decoration:none;padding:14px 26px;border-radius:999px;font-weight:600;font-size:16px">${texto}</a>
-  </p>`;
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 8px"><tr><td style="background:${VINO};border-radius:999px">
+    <a href="${href}" style="display:inline-block;padding:15px 30px;color:${PAPEL};text-decoration:none;font-weight:600;font-size:16px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">${texto}</a>
+  </td></tr></table>`;
+}
+
+/**
+ * LOS PASOS NUMERADOS.
+ *
+ * Es el bloque que más cambia el correo, y no por bonito: quien acaba de dejar
+ * su correo tiene UNA duda —«¿y ahora qué?»— y un párrafo no la contesta tan
+ * rápido como dos líneas numeradas. Saber que son dos pasos y que el segundo
+ * lo hacemos nosotros es lo que quita la sensación de haberse apuntado a algo
+ * que no se sabe en qué consiste.
+ *
+ * El número va en una celda aparte y no como lista `<ol>`: Outlook le pone a
+ * las listas unos márgenes propios que no hay forma de quitar.
+ */
+function pasos(lista: { que: string; detalle: string }[]): string {
+  const filas = lista
+    .map(
+      (p, i) => `<tr>
+      <td style="width:30px;vertical-align:top;padding:0 12px 16px 0">
+        <span style="display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:999px;background:#f1ede4;color:${VINO};font-size:13px;font-weight:700">${i + 1}</span>
+      </td>
+      <td style="vertical-align:top;padding:0 0 16px">
+        <div style="font-size:16px;font-weight:600;color:${TINTA};line-height:1.4">${p.que}</div>
+        <div style="font-size:15px;line-height:1.55;color:#55504f;margin-top:3px">${p.detalle}</div>
+      </td>
+    </tr>`,
+    )
+    .join('');
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 4px;width:100%">${filas}</table>`;
 }
 
 /**
  * LA CONFIRMACIÓN DE QUIEN SE APUNTA A LA MASTERCLASS.
  *
- * Dice lo mismo que la pantalla de gracias y en el mismo orden, y eso es a
- * propósito: quien acaba de verla reconoce el correo en un segundo en vez de
- * tener que leerlo entero para saber qué es.
+ * LO QUE TIENE QUE HACER ESTE CORREO, y no es «confirmar»:
+ * quien lo abre acaba de dejar sus datos a alguien que no conoce, por un
+ * anuncio, para una clase que todavía no tiene fecha. Lo que siente no es duda
+ * sobre si llegó el formulario — es «¿y ahora qué?, ¿cuándo?, ¿tengo que hacer
+ * algo?». Un correo que sólo dice «recibido» deja esas tres preguntas abiertas
+ * y por eso no sostiene a nadie tres semanas.
+ *
+ * Así que: el titular confirma, el primer párrafo quita la ansiedad de la
+ * fecha —queda grabada, el día no es una excusa—, los dos pasos numerados
+ * dicen qué pasa ahora y quién lo hace, y el botón es lo único que se le pide.
+ * Y se dice que no hace falta saber nada, que es la objeción de quien llega de
+ * un anuncio sin conocer esto de nada.
  */
 function correoDeCurso(lead: Lead): { asunto: string; html: string } {
-  const grupo = GRUPO
-    ? `<p style="margin:0 0 4px">Lo siguiente es entrar al grupo de WhatsApp de la masterclass.
-         Ahí aviso de la fecha, mando el enlace el día de la clase y contesto dudas antes.</p>
-       ${boton(GRUPO, 'Entrar al grupo de WhatsApp')}
-       <p style="margin:0;font-size:13px;color:#6b6564">Puedes salirte del grupo cuando quieras.</p>`
-    : `<p style="margin:0">Te escribo yo en cuanto haya fecha, con el enlace para entrar. No tienes que hacer nada más.</p>`;
+  const conGrupo = Boolean(GRUPO);
+
+  const lospasos = conGrupo
+    ? pasos([
+        {
+          que: 'Entra al grupo de WhatsApp',
+          detalle: 'Ahí aviso de la fecha en cuanto esté y contesto dudas antes de la clase. Puedes salirte cuando quieras.',
+        },
+        {
+          que: 'El día de la clase te mando el enlace',
+          detalle: 'Por el grupo y por correo. Tú no tienes que hacer nada más.',
+        },
+      ])
+    : pasos([
+        { que: 'Te escribo en cuanto haya fecha', detalle: 'A este mismo correo, con el enlace para entrar.' },
+        { que: 'Tú no tienes que hacer nada más', detalle: 'Guarda este correo y ya está.' },
+      ]);
 
   return {
-    asunto: 'Gracias — ya tienes tu plaza',
-    html: marco(
-      `<p style="margin:0 0 14px">Hola ${primerNombre(lead.nombre)},</p>
-       <p style="margin:0 0 14px">Gracias por apuntarte. <b>Ya tienes tu plaza guardada</b>, y es totalmente gratuita.</p>
-       ${grupo}
-       <p style="margin:18px 0 0">Si te surge cualquier duda, contesta a este correo: lo leo yo.</p>`,
-      lead.email,
-    ),
+    asunto: 'Ya tienes tu plaza · Desórdenes Amorosos',
+    html: marco({
+      previo: conGrupo
+        ? 'Tu plaza está guardada. El siguiente paso es entrar al grupo de WhatsApp.'
+        : 'Tu plaza está guardada. Te escribo en cuanto haya fecha.',
+      titular: 'Ya tienes tu plaza',
+      email: lead.email,
+      cuerpo:
+        /* NI «QUEDA GRABADA» NI «NO HACE FALTA SABER NADA». Las dos se han
+           caído el 19 de octubre, y conviene saber por qué no vuelven: una
+           prometía algo del producto que no está decidido, y la otra contesta
+           una objeción que esta persona ya no tiene —acaba de apuntarse—. Lo
+           que sí necesita saber es lo único que de verdad no sabe: que la
+           fecha todavía no existe y que se la vamos a mandar nosotros. */
+        `<p style="margin:0 0 14px">Hola ${primerNombre(lead.nombre)}, gracias por apuntarte a <b>Desórdenes Amorosos</b>.</p>
+         <p style="margin:0">Es <b>gratuita</b> y se da <b>en directo</b>. Todavía no hay día fijado: en cuanto lo haya, te lo mando.</p>
+         ${lospasos}
+         ${conGrupo ? boton(GRUPO, 'Entrar al grupo de WhatsApp') : ''}
+         <p style="margin:18px 0 0">Si te surge cualquier duda, contesta a este correo: lo leo yo.</p>`,
+    }),
   };
 }
 
@@ -173,12 +262,47 @@ function correoDeCurso(lead: Lead): { asunto: string; html: string } {
 function correoDeMembresia(lead: Lead): { asunto: string; html: string } {
   return {
     asunto: 'Tu sitio está guardado',
-    html: marco(
-      `<p style="margin:0 0 14px">Hola ${primerNombre(lead.nombre)},</p>
-       <p style="margin:0 0 14px">Ya tienes tu sitio en la lista. <b>Hoy no se te cobra nada.</b></p>
-       <p style="margin:0">Te escribo yo cuando abra, con tu precio guardado. No tienes que hacer nada más.</p>`,
-      lead.email,
-    ),
+    html: marco({
+      previo: 'Tu sitio en la lista está guardado. Hoy no se te cobra nada.',
+      titular: 'Tu sitio está guardado',
+      email: lead.email,
+      cuerpo:
+        `<p style="margin:0 0 14px">Hola ${primerNombre(lead.nombre)}, ya estás en la lista.</p>
+         <p style="margin:0"><b>Hoy no se te cobra nada.</b> Reservar el sitio no es pagar: es que el día que abra tengas el precio de lanzamiento guardado.</p>
+         ${pasos([
+           { que: 'Te aviso yo cuando abra', detalle: 'A este correo, con tu precio guardado.' },
+           { que: 'Tú no tienes que hacer nada', detalle: 'Ni apuntarte otra vez ni estar pendiente.' },
+         ])}
+         <p style="margin:14px 0 0">Si te surge cualquier duda, contesta a este correo: lo leo yo.</p>`,
+    }),
+  };
+}
+
+/**
+ * EL RESULTADO DE LA SINERGIA.
+ *
+ * El texto NO se escribe aquí: llega ya compuesto desde la web, en
+ * `lead.parrafos`, que es donde vive la numerología (`lib/correo-sinergia.ts`).
+ * Este archivo sólo le pone el sobre. Es la misma separación que tenía el
+ * script de Google y es la correcta: la plantilla no tiene que saber qué es un
+ * número de camino de vida, y la numerología no tiene que saber de HTML.
+ *
+ * Sin párrafos no se manda nada. Un correo de resultado vacío es peor que
+ * ninguno: la persona lo abre esperando SU resultado y encuentra un saludo.
+ */
+function correoDeSinergia(lead: Lead): { asunto: string; html: string } | null {
+  if (!lead.parrafos?.length) return null;
+  const cuerpo = lead.parrafos
+    .map((x) => `<p style="margin:0 0 15px">${limpio(x).replace(/\n/g, '<br>')}</p>`)
+    .join('');
+  return {
+    asunto: lead.asunto || 'Lo que se repite entre vosotros',
+    html: marco({
+      previo: 'Aquí tienes lo que sale de vuestras dos fechas.',
+      titular: 'Lo que ha salido',
+      email: lead.email,
+      cuerpo: `${cuerpo}<p style="margin:18px 0 0">Si quieres mirarlo entero —de dónde viene y a quién pertenece—, contesta a este correo y te cuento cómo se hace.</p>`,
+    }),
   };
 }
 
@@ -207,6 +331,15 @@ function avisoParaIris(lead: Lead): { asunto: string; html: string } {
   };
 }
 
+/** Qué plantilla le toca a cada origen. Un origen sin plantilla no manda nada
+ *  en vez de mandar algo genérico: ver `LEAD_SOURCES` en lib/booking.ts. */
+function plantillaDe(lead: Lead): { asunto: string; html: string } | null {
+  if (lead.origen === 'curso') return correoDeCurso(lead);
+  if (lead.origen === 'membresia') return correoDeMembresia(lead);
+  if (lead.origen === 'sinergia') return correoDeSinergia(lead);
+  return null;
+}
+
 /**
  * EL CORREO, SIN MANDARLO.
  *
@@ -219,9 +352,7 @@ function avisoParaIris(lead: Lead): { asunto: string; html: string } {
  * pieza de esta web que no se puede volver a desplegar.
  */
 export function vistaPreviaDeLead(lead: Lead): { asunto: string; html: string } | null {
-  if (lead.origen === 'curso') return correoDeCurso(lead);
-  if (lead.origen === 'membresia') return correoDeMembresia(lead);
-  return null;
+  return plantillaDe(lead);
 }
 
 /** El aviso de Iris, también sin mandarlo. */
@@ -246,12 +377,7 @@ export function vistaPreviaDeAviso(lead: Lead): { asunto: string; html: string }
 export async function enviaCorreosDeLead(lead: Lead): Promise<{ enviado: boolean; motivo?: string }> {
   if (!resend) return { enviado: false, motivo: 'sin_clave' };
 
-  const paraLaPersona =
-    lead.origen === 'curso' ? correoDeCurso(lead)
-    : lead.origen === 'membresia' ? correoDeMembresia(lead)
-    /* La sinergia manda su propio correo con el resultado desde el Apps
-       Script, que es quien sabe componerlo. Aquí no se toca. */
-    : null;
+  const paraLaPersona = plantillaDe(lead);
 
   if (!paraLaPersona) return { enviado: false, motivo: 'origen_sin_plantilla' };
 

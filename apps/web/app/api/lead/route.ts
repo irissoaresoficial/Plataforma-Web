@@ -13,7 +13,7 @@
  *
  *   1. Se guarda en Firestore. Esto es lo que no se puede perder.
  *   2. Se mandan los correos por Resend.
- *   3. Se avisa al Apps Script, que apunta el lead en la hoja de Iris.
+ *   3. Se avisa al Apps Script, que apunta la fila en la hoja de Iris.
  *
  * Si falla el aviso pero el dato está guardado, la persona ve que se ha
  * apuntado —porque se ha apuntado— y Iris la tiene en su lista aunque el correo
@@ -21,23 +21,25 @@
  * se devuelve error, porque entonces sí se ha perdido.
  *
  * ---------------------------------------------------------------------------
- * LOS CORREOS SALEN POR RESEND, Y GOOGLE SE CALLA. O AL REVÉS.
+ * EL CORREO ES COSA DE RESEND. GOOGLE SÓLO APUNTA LA FILA.
  * ---------------------------------------------------------------------------
- * Gerson, el 19 de octubre: «a partir de este momento todo será por Resend».
+ * Gerson, el 19 de octubre: «lo de Google (correos) bórralo todo, a partir de
+ * este momento en cuestión de correos será con Resend».
  *
- * El peligro evidente de tener dos sistemas de correo apuntando al mismo lead
- * es que la persona reciba la confirmación DOS VECES, una por cada camino. Por
- * eso el paso 2 le dice al paso 3 lo que ha conseguido hacer:
+ * Así que del Apps Script se ha quitado hasta el último `MailApp.sendEmail`.
+ * Lo que sigue haciendo —y por lo que se le sigue llamando— es apuntar la
+ * persona en la hoja de cálculo, que es donde Iris mira sus apuntados y que
+ * Resend no hace: Resend manda correos, no guarda listas.
  *
- *   · Resend mandó  -> al Apps Script se le pasa `sinCorreo: true`, y él sólo
- *                      apunta la fila en la hoja. Ni acuse ni aviso a Iris.
- *   · Resend falló   -> no se le pasa nada, y el Apps Script manda los correos
- *                      como lleva haciendo desde el principio.
+ * LO QUE ESTO SIGNIFICA, Y HAY QUE SABERLO: ya no hay plan B. Antes, si
+ * Resend fallaba, el correo salía igual por Gmail. Ahora, si Resend falla, no
+ * sale. El lead NO se pierde —está en Firestore y en la hoja— pero esa
+ * persona se queda sin su confirmación hasta que alguien le escriba.
  *
- * O sea que el cambio de sistema no tiene momento de riesgo: mientras no haya
- * `RESEND_API_KEY` en Vercel, todo sigue saliendo por Google exactamente igual
- * que antes, y el día que se pegue la clave empieza a salir por Resend sin
- * tocar una línea más.
+ * Por eso un fallo aquí se registra con `[lead] CORREO NO ENVIADO`, en
+ * mayúsculas y con el correo delante: es lo que hay que poder buscar en los
+ * registros de Vercel el día que alguien diga que no le llegó nada. Y en el
+ * panel de Resend, en «Emails», está cada envío con su estado.
  */
 import { NextResponse } from 'next/server';
 import { parseLead } from '@/lib/booking';
@@ -135,20 +137,18 @@ export async function POST(request: Request) {
   /* LOS CORREOS. No lanza nunca: si Resend no está configurado o falla,
      devuelve `enviado: false` y el Apps Script se encarga más abajo. */
   const correo = await enviaCorreosDeLead(lead);
-  if (!correo.enviado && correo.motivo !== 'sin_clave' && correo.motivo !== 'origen_sin_plantilla') {
-    console.error('[lead] Resend no pudo mandar:', correo.motivo, lead.email, lead.origen);
+  if (!correo.enviado) {
+    console.error('[lead] CORREO NO ENVIADO', lead.email, lead.origen, '·', correo.motivo);
   }
 
   /* ---------------------------------------------------------------- 3 */
   if (!url) {
-    /* Sin Apps Script no se apunta en la hoja de cálculo. El correo puede
-       haber salido igualmente por Resend, así que el aviso que se devuelve
-       dice lo que de verdad ha pasado y no «sin_correo» a ciegas. */
+    /* Sin Apps Script no se apunta en la hoja de cálculo, pero el correo ya
+       habrá salido por Resend, que es lo que ve la persona. El lead está en
+       Firestore, así que no se pierde: lo que falta es la fila de Iris. */
     if (enBase.guardado) {
-      if (!correo.enviado) {
-        console.warn('[lead] Guardado en Firebase, pero ni Resend ni Apps Script: no sale correo.', lead.email, lead.origen);
-      }
-      return NextResponse.json({ ok: true, aviso: correo.enviado ? 'sin_hoja' : 'sin_correo' });
+      console.warn('[lead] Guardado en Firebase, pero sin APPS_SCRIPT_URL: no entra en la hoja.', lead.email, lead.origen);
+      return NextResponse.json({ ok: true, aviso: correo.enviado ? 'sin_hoja' : 'sin_hoja_ni_correo' });
     }
     console.error('[lead] LEAD PERDIDO: ni Firebase ni Apps Script configurados.', lead.email, lead.origen);
     return NextResponse.json({ ok: false, reason: 'not_configured' }, { status: 503 });
@@ -158,10 +158,7 @@ export async function POST(request: Request) {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      /* `sinCorreo` es la bandera que evita el correo por duplicado: con ella
-         el Apps Script apunta la fila y no manda nada. Ver guardarLead() en
-         google-apps-script/reservas.gs. */
-      body: JSON.stringify({ action: 'lead', secret, lead, sinCorreo: correo.enviado }),
+      body: JSON.stringify({ action: 'lead', secret, lead }),
       redirect: 'follow',
       signal: AbortSignal.timeout(45_000),
     });

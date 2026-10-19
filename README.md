@@ -85,23 +85,38 @@ Tres variables en Vercel (*Production, Preview y Development* en las tres):
 | `RESEND_FROM` | `Iris Soares <hola@escueladesabiduria33.com>` |
 | `RESEND_REPLY_TO` | El Gmail donde Iris lee, para que las respuestas lleguen |
 
-**Sin `RESEND_API_KEY` no se rompe nada**: los correos siguen saliendo por el
-Apps Script exactamente como antes. Es lo que permite desplegar el código antes
-de tener la clave puesta.
+**Las tres van en el proyecto de Vercel que despliega `apps/web`** —el que
+tiene `apps/web` en Settings → General → Root Directory—, no en el de la
+plataforma. `/api/lead` vive en la web; la plataforma no manda ningún correo.
 
-### Cómo se evita el correo por duplicado
+### De Google ya no sale NINGÚN correo
 
-Los dos sistemas tocan el mismo lead, así que la web le dice al Apps Script lo
-que ha conseguido hacer: si Resend mandó, le pasa `sinCorreo: true` y el script
-sólo apunta la fila en la hoja de Iris. Si Resend falló, no le pasa nada y el
-script manda los correos como siempre. Ver `guardarLead()` en
-`google-apps-script/reservas.gs`.
+No queda un solo `MailApp.sendEmail` en `reservas.gs`. Lo que sigue haciendo
+—y por lo que se le sigue llamando— es **apuntar la fila en la hoja**, crear el
+evento en el calendario y servir la página de baja. Resend manda correos;
+no guarda listas.
 
-### Lo que sigue saliendo de Google
+Dos cosas que conviene saber:
 
-Las reservas de consulta y la secuencia de cinco días de la sinergia. Eso pide
-además un reloj (Vercel Cron) y es la fase dos. La hoja de cálculo se queda en
-cualquier caso: es donde Iris mira sus apuntados.
+- **La secuencia de cinco días está apagada, no borrada.** `enviarSecuencia()`
+  sigue existiendo y no hace nada, porque en la cuenta de Iris hay un activador
+  diario que la llama: si se borrase la función, ese activador fallaría cada
+  mañana y Google mandaría correos de error. El orden para cerrarlo es: esto
+  (hecho) → borrar el activador a mano en el editor de Apps Script → entonces
+  sí, quitar la función. **El texto de los cinco correos está entero en
+  `google-apps-script/secuencia-5-dias.md`**, listo para rehacerlo sobre Resend
+  cuando la comunidad abra.
+- **Las reservas no las dispara nadie hoy.** `/api/booking` sólo lo llamaba el
+  chat de la web, y el chat se borró entero. Si vuelven, hay que escribir sus
+  dos correos en `lib/correo.ts` ANTES de encender el botón.
+
+### Ya no hay plan B, y es a propósito
+
+Antes, si Resend fallaba, el correo salía por Gmail. Ahora no sale. El lead NO
+se pierde —está en Firestore y en la hoja— pero esa persona se queda sin su
+confirmación. Por eso un fallo se registra como `[lead] CORREO NO ENVIADO` en
+los registros de Vercel, y en el panel de Resend, en «Emails», está cada envío
+con su estado.
 
 ### Ver un correo antes de mandarlo
 
