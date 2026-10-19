@@ -106,6 +106,37 @@ export type Lead = {
   alta: Date | null;
   visto: Date | null;
   nota?: string;
+
+  /**
+   * DE QUÉ ANUNCIO VINO. Lo escribe el servidor de la web, no Iris.
+   *
+   * Ojo a la diferencia con `canal`, que está justo arriba y se parece: `canal`
+   * lo marca Iris a mano después de hablar con la persona («me dijo que me vio
+   * en Instagram»), y es una opinión. Esto lo pone la máquina leyendo la cola
+   * de la dirección por la que entró, y es un hecho.
+   *
+   * Los dos valen y por eso están los dos. El de Iris llega donde no llega la
+   * máquina —quien ve el anuncio hoy y entra a buscarla mañana por su nombre—,
+   * y la máquina llega donde no llega Iris: distinguir CUÁL de los cinco
+   * anuncios lo trajo, que es la pregunta de la que depende dónde va el dinero
+   * de mañana.
+   *
+   * Falta en todo lead que no venga de una campaña, que son la mayoría.
+   */
+  campana?: {
+    source: string;
+    medium: string;
+    campaign: string;
+    /** El anuncio concreto. Es el campo que decide qué pieza se repite. */
+    content: string;
+    term: string;
+    landing: string;
+  };
+
+  /** Dónde estaba cuando se apuntó. País en dos letras («ES») y ciudad.
+   *  NUNCA la dirección de internet: eso es dato personal y no se guarda. */
+  pais?: string;
+  ciudad?: string;
 };
 
 /** Firestore devuelve sus propias fechas; el resto de la plataforma usa `Date`. */
@@ -143,6 +174,24 @@ export async function ultimosLeads(tope = 200): Promise<Lead[]> {
       alta: fecha(x.alta),
       visto: fecha(x.visto),
       nota: x.nota ?? "",
+      /* Los leads de antes de octubre no tienen nada de esto, y los orgánicos
+         tampoco lo tendrán nunca. Se deja sin poner en vez de rellenar con
+         cadenas vacías: así la pantalla puede distinguir «no vino de ninguna
+         campaña» de «vino de una campaña sin etiquetar». */
+      ...(x.campana && typeof x.campana === "object"
+        ? {
+            campana: {
+              source: String(x.campana.source ?? ""),
+              medium: String(x.campana.medium ?? ""),
+              campaign: String(x.campana.campaign ?? ""),
+              content: String(x.campana.content ?? ""),
+              term: String(x.campana.term ?? ""),
+              landing: String(x.campana.landing ?? ""),
+            },
+          }
+        : {}),
+      ...(x.pais ? { pais: String(x.pais) } : {}),
+      ...(x.ciudad ? { ciudad: String(x.ciudad) } : {}),
     };
   });
 }

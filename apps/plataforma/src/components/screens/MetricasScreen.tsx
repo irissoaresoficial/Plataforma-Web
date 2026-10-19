@@ -53,6 +53,8 @@ import { listaUsuarios } from "@/lib/despacho/usuarios";
 import { rolesDe } from "@/lib/roles";
 import { cursos as repoCursos, todosLosAvances, totalLecciones, type Avance, type Curso } from "@/lib/escuela";
 import { porDia, todasLasVisitas } from "@/lib/escuela/trofeos";
+import { ultimosLeads, type Lead } from "@/lib/despacho/leads";
+import Embudo from "../metricas/Embudo";
 
 type Datos = {
   dias: Punto[];
@@ -63,6 +65,10 @@ type Datos = {
   acaban: number;
   /** Por dónde se cae la gente, lección a lección. */
   caida: Array<{ etiqueta: string; valor: number }>;
+  /** Los apuntados de la web, crudos. La cuenta de la campaña se hace en
+   *  `Embudo`, que es quien los pinta: así los dos viven juntos y no hay que
+   *  mirar dos archivos para entender un número. */
+  leads: Lead[];
 };
 
 export default function MetricasScreen() {
@@ -74,13 +80,17 @@ export default function MetricasScreen() {
   const carga = useCallback(async () => {
     setRoto(false);
     try {
-      const [gente, cursos, avances, visitas] = await Promise.all([
+      /* Los leads van en el mismo `Promise.all` y no en una llamada aparte:
+         son cinco lecturas que no dependen unas de otras, y encadenarlas
+         multiplicaría por cinco lo que tarda en abrirse la pantalla. */
+      const [gente, cursos, avances, visitas, leads] = await Promise.all([
         listaUsuarios(),
         repoCursos.listar(),
         todosLosAvances(),
         todasLasVisitas(),
+        ultimosLeads(500),
       ]);
-      setD(calcula(gente, cursos, avances, visitas));
+      setD(calcula(gente, cursos, avances, visitas, leads));
     } catch {
       setRoto(true);
     }
@@ -132,7 +142,10 @@ export default function MetricasScreen() {
     </section>
   );
 
-  const vacio = d && d.dias.every((x) => x.valor === 0) && d.lecciones === 0;
+  /* Una escuela sin alumnos pero con leads entrando NO está vacía: es
+     exactamente el momento de la campaña, y es cuando más falta hace mirar
+     esta pantalla. Antes se tapaba entera con el cartel de «nada que medir». */
+  const vacio = d && d.dias.every((x) => x.valor === 0) && d.lecciones === 0 && d.leads.length === 0;
 
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
@@ -168,6 +181,16 @@ export default function MetricasScreen() {
 
       {d && !vacio && !tabla && (
         <>
+          {/* LA CAMPAÑA PRIMERO, Y LA ESCUELA DESPUÉS.
+              No es un orden estético: es el orden en que pasan las cosas.
+              Primero entra alguien por un anuncio, después se hace alumno. Si
+              las cifras de la escuela fueran arriba, lo primero que se vería
+              cada mañana sería el resultado y no la causa — y la causa es lo
+              único sobre lo que se puede actuar hoy. */}
+          <h2 style={css(CABECERA + "margin:var(--s2) 0 0;font-size:var(--t-head);opacity:.7;")}>La campaña</h2>
+          <Embudo leads={d.leads} tarjeta={tarjeta} />
+
+          <h2 style={css(CABECERA + "margin:var(--s5) 0 0;font-size:var(--t-head);opacity:.7;")}>La escuela</h2>
           <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(190px,1fr));")}>
             {cifra("Alumnos", `${d.alumnos}`, 0, "melocoton")}
             {cifra("Miembros", `${d.miembros}`, 1, "rosa")}
@@ -189,25 +212,23 @@ export default function MetricasScreen() {
             )}
 
           {/*
-            EL HUECO HONRADO.
+            AQUÍ ESTABA EL HUECO HONRADO, y conviene saber por qué ya no está.
 
-            Gerson pidió por su nombre saber de dónde entra la gente. No se
-            puede con lo que hay guardado: el país lo sabe el servidor en el
-            momento de la visita, y nadie lo está apuntando. Decirlo cuesta
-            menos que inventarlo y vale infinitamente más.
+            Decía: «esto todavía no se mide; para saber el país y la ciudad hay
+            que apuntarlo en el momento de la visita, y ahora mismo no lo
+            guarda nadie». Era verdad y por eso estaba escrito en vez de
+            rellenado con números de ejemplo.
+
+            El 19 de octubre se montó: `/api/lead` lee el país y la ciudad de
+            la cabecera que pone Vercel, y `sendLead` pega la etiqueta del
+            anuncio por el que entró cada persona. Así que el hueco se cierra
+            con datos de verdad —no con los de ejemplo que había antes de
+            todo esto— y lo que va aquí es el embudo entero.
+
+            Sigue sin guardarse la dirección de internet de nadie: país y
+            ciudad, como estaba prometido.
           */}
-          <section style={css(tarjeta)}>
-            <h2 style={css(CABECERA + "margin:0;font-size:var(--t-head);")}>De dónde entran</h2>
-            <p style={css(LECTURA + "margin:var(--s3) 0 0;max-width:66ch;")}>
-              Esto todavía no se mide. Para saber el país y la ciudad hay que apuntarlo en el momento en que alguien
-              entra —el servidor lo sabe, pero ahora mismo no lo guarda nadie—. Es un trabajo de medio día.
-            </p>
-            <p style={css(NOTA + "margin:var(--s3) 0 0;max-width:66ch;line-height:1.55;")}>
-              Cuando se monte, se guardará <strong>sólo el país y la ciudad</strong>, nunca la dirección de internet
-              entera: en Europa eso es un dato personal y hay que escribirlo en la política de privacidad antes de
-              encender nada.
-            </p>
-          </section>
+
         </>
       )}
 
@@ -260,7 +281,8 @@ function calcula(
   gente: Array<{ roles?: string[] }>,
   cursos: Curso[],
   avances: Avance[],
-  visitas: Array<{ uid: string; dias: string[] }>
+  visitas: Array<{ uid: string; dias: string[] }>,
+  leads: Lead[]
 ): Datos {
   const rol = (r: string) => gente.filter((p) => rolesDe(p as never).includes(r as never)).length;
 
@@ -319,5 +341,6 @@ function calcula(
     lecciones,
     acaban: empezados === 0 ? 0 : Math.round((acabados / empezados) * 100),
     caida,
+    leads,
   };
 }

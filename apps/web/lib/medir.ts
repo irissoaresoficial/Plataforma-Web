@@ -52,7 +52,31 @@ export type Evento =
   /** Alguien ha dejado su correo — aviso de la comunidad, prueba gratis. */
   | 'lead'
   /** Alguien ha calculado su número gratis. Es el gancho, no la venta. */
-  | 'numero';
+  | 'numero'
+  /**
+   * HA DADO AL PLAY. Y los cuatro de abajo, cuánto ha aguantado.
+   *
+   * Gerson pidió esto por su nombre: «quiero ver qué me hacen las personas, si
+   * me ven el vídeo completo, si no me ven el vídeo completo».
+   *
+   * Sirve para dos cosas distintas y las dos valen dinero:
+   *
+   *   1. PARA DECIDIR. Si mucha gente da al play y casi nadie pasa del 25%, el
+   *      problema no es el anuncio: es el primer medio minuto del vídeo. Y al
+   *      revés: si quien llega al final tampoco se apunta, el vídeo está bien
+   *      y lo que falla es el formulario. Sin estos cuatro números no se puede
+   *      distinguir una cosa de la otra, y se acaba cambiando la que estaba
+   *      bien.
+   *   2. PARA QUE META APRENDA. Con `video75` se puede montar un público de
+   *      gente que casi se lo ve entero y pedirle a Meta «búscame más gente
+   *      así». Ese es el público objetivo que se construye solo, con datos de
+   *      verdad, y no existe hasta que esto lleve unos días contando.
+   */
+  | 'video'
+  | 'video25'
+  | 'video50'
+  | 'video75'
+  | 'video100';
 
 /**
  * Cómo se llama cada uno en cada plataforma.
@@ -62,11 +86,24 @@ export type Evento =
  * lanzar una campaña rompe la campaña: la plataforma deja de recibir el evento
  * por el que está pujando y no avisa.
  */
-const NOMBRES: Record<Evento, { meta: string; google: string }> = {
+const NOMBRES: Record<Evento, { meta: string; google: string; propio?: true }> = {
   chat: { meta: 'Contact', google: 'contacto_iniciado' },
   reserva: { meta: 'Schedule', google: 'reserva_hecha' },
   lead: { meta: 'Lead', google: 'generate_lead' },
   numero: { meta: 'ViewContent', google: 'numero_calculado' },
+
+  /* LOS DEL VÍDEO VAN MARCADOS COMO PROPIOS, y no es un capricho.
+     Meta tiene una lista cerrada de eventos estándar —Lead, Contact, Schedule,
+     ViewContent— y «se vio el 75% de un vídeo» no está en ella. Mandar un
+     nombre inventado por la puerta de los estándar no da error: lo acepta y lo
+     tira, y uno se queda esperando unos números que no van a llegar nunca.
+     Por la puerta de los propios (`trackCustom`) sí llegan, y desde ahí se
+     puede montar un público o una conversión personalizada. */
+  video: { meta: 'VideoPlay', google: 'video_inicio', propio: true },
+  video25: { meta: 'Video25', google: 'video_25', propio: true },
+  video50: { meta: 'Video50', google: 'video_50', propio: true },
+  video75: { meta: 'Video75', google: 'video_75', propio: true },
+  video100: { meta: 'VideoCompleto', google: 'video_100', propio: true },
 };
 
 type Ventana = Window & {
@@ -89,7 +126,7 @@ export function medir(evento: Evento, datos?: Record<string, string | number>) {
   const w = window as Ventana;
   const n = NOMBRES[evento];
   try {
-    w.fbq?.('track', n.meta, datos);
+    w.fbq?.(n.propio ? 'trackCustom' : 'track', n.meta, datos);
     w.gtag?.('event', n.google, datos);
   } catch {
     /* Que una plataforma de anuncios se caiga no puede romper una reserva.

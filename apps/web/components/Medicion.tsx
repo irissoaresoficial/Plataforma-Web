@@ -3,6 +3,7 @@
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { recuerdaCampana } from '@/lib/campana';
 
 /**
  * ============================================================================
@@ -63,6 +64,22 @@ export default function Medicion() {
   const [leido, setLeido] = useState(false);
 
   useEffect(() => {
+    /* DE QUÉ ANUNCIO VIENE, Y ESTO VA ANTES DE TODO LO DEMÁS.
+       Se apunta la cola de la dirección (`utm_source`, `utm_campaign`…) en
+       cuanto carga la página, porque si la persona navega a otra sección esa
+       cola desaparece y ya no hay forma de saber por dónde entró.
+
+       NO DEPENDE DEL CARTEL, y eso es correcto: no deja cookie, no guarda nada
+       en el navegador y no identifica a nadie — sólo se queda en memoria para
+       pegarle la etiqueta al lead que esa persona entregue voluntariamente.
+       Por eso va aquí arriba, antes de mirar qué contestó al cartel, y por eso
+       funciona también para quien dijo «no, gracias» al píxel. El porqué
+       entero está en `lib/campana.ts`.
+
+       Va en este componente por una razón práctica: es el único que está
+       montado en todas las páginas desde el primer momento. */
+    recuerdaCampana();
+
     /* En una ventana privada o con las cookies bloqueadas, leer esto lanza. Y
        una web que revienta por no poder leer una preferencia de adorno es una
        web rota, así que se da por no contestado y ya está. */

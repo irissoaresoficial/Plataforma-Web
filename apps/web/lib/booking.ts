@@ -89,6 +89,36 @@ export type Lead = {
    */
   asunto?: string;
   parrafos?: string[];
+
+  /*
+   * DE QUÉ ANUNCIO VINO. Opcional porque la mayoría de la gente no viene de
+   * ninguno: quien entra por Instagram, por un enlace que le pasaron o
+   * escribiendo la dirección llega sin etiquetas y se guarda sin este bloque.
+   *
+   * Lo escribe `sendLead` solo, leyendo la cola de la dirección. Qué significa
+   * cada campo y por qué no vive en una cookie está en `campana.ts`.
+   */
+  campana?: {
+    source: string;
+    medium: string;
+    campaign: string;
+    content: string;
+    term: string;
+    landing: string;
+  };
+
+  /*
+   * PAÍS Y CIUDAD. Esto NO lo manda el navegador: lo pone el servidor en
+   * `/api/lead` leyendo lo que Vercel escribe en la cabecera de la petición.
+   *
+   * Y va por país y ciudad A PROPÓSITO, nunca la dirección de internet entera:
+   * en Europa una IP completa es un dato personal y guardarla sin necesidad es
+   * justo lo que la Agencia de Protección de Datos considera excesivo. «España
+   * · Valencia» contesta la pregunta de Gerson —dónde anunciar, a qué hora
+   * publicar— sin señalar a nadie.
+   */
+  pais?: string;
+  ciudad?: string;
 };
 
 /**
@@ -164,6 +194,27 @@ export function parseLead(input: unknown): { lead: Lead | null; error: string } 
       lead.parrafos = limpios;
       lead.asunto = str('asunto', 140);
     }
+  }
+
+  /* LA CAMPAÑA SE LIMPIA IGUAL QUE TODO LO DEMÁS. Llega del navegador, o sea
+     de cualquiera que sepa escribir una petición, así que no se cree nada: se
+     cogen las seis claves que conocemos, cortadas, y se tira el resto. Si no
+     queda ninguna con contenido, el lead se guarda sin bloque de campaña. */
+  const c = (input as Record<string, unknown>).campana;
+  if (c && typeof c === 'object') {
+    const g = (k: string) => {
+      const v = (c as Record<string, unknown>)[k];
+      return typeof v === 'string' ? v.trim().slice(0, 100) : '';
+    };
+    const campana = {
+      source: g('source'),
+      medium: g('medium'),
+      campaign: g('campaign'),
+      content: g('content'),
+      term: g('term'),
+      landing: g('landing'),
+    };
+    if (Object.values(campana).some(Boolean)) lead.campana = campana;
   }
 
   if (!EMAIL_RE.test(lead.email)) return { lead: null, error: 'email' };

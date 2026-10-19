@@ -186,10 +186,35 @@ export default function Privacidad() {
         vuelve a preguntarte.
       </p>
       <p>
-        Lo que se envía es que alguien ha abierto el chat, ha reservado, ha dejado su correo o ha
-        calculado su número. <strong>Nunca se envía quién eres:</strong> ni tu nombre, ni tu correo,
-        ni tu teléfono, ni tu fecha de nacimiento. Y si no hay ninguna campaña en marcha, no verás el
-        cartel porque no hay nada que cargar.
+        Lo que se envía es que alguien ha abierto el chat, ha reservado, ha dejado su correo, ha
+        calculado su número o hasta dónde ha visto un vídeo. <strong>Nunca se envía quién eres:</strong>{' '}
+        ni tu nombre, ni tu correo, ni tu teléfono, ni tu fecha de nacimiento. Y si no hay ninguna
+        campaña en marcha, no verás el cartel porque no hay nada que cargar.
+      </p>
+
+      </Aparece>
+
+      <Aparece>
+        <h2>Si llegas desde un anuncio</h2>
+      </Aparece>
+      <Aparece retraso={1}>
+      <p>
+        Cuando un anuncio te trae hasta aquí, la dirección lleva una etiqueta al final que dice de
+        qué anuncio vienes — no quién eres. Si después nos dejas tu correo, esa etiqueta se guarda
+        junto a él para que sepamos qué anuncio funciona y cuál no, y podamos dejar de pagar por los
+        que no. <strong>Esa etiqueta no se guarda en tu navegador:</strong> vive sólo mientras tienes
+        la pestaña abierta, así que no deja ninguna cookie y no hace falta que aceptes nada.
+      </p>
+      <p>
+        <strong>El país y la ciudad.</strong> Al dejar tu correo guardamos también desde qué país y
+        qué ciudad lo hiciste, para saber dónde anunciarnos y a qué hora. Lo calcula nuestro
+        servidor, no se lo preguntamos a nadie y no se comparte con nadie.
+      </p>
+      <p>
+        <strong>Tu dirección de internet (IP) no se guarda entera, nunca.</strong> Se recorta antes
+        de guardarla —se borra el último trozo— porque completa identificaría a una persona y para
+        esto no hace falta. Sólo sirve para evitar que alguien envíe el formulario cien veces
+        seguidas.
       </p>
       </Aparece>
     </PaginaTexto>

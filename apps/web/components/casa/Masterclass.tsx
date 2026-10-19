@@ -46,6 +46,7 @@ import Registro from './Registro';
 import Sello from './Sello';
 import { PRESENTAN } from '@/content/site';
 import './casa.css';
+import VideoMedido from './VideoMedido';
 
 /*
  * LAS TRES FRASES, CORREGIDAS POR IRIS (nota de voz del 19 de octubre).
@@ -147,11 +148,17 @@ export default function Masterclass() {
                 ))}
               </div>
 
+              {/* MIDE HASTA DÓNDE LLEGA LA GENTE. Por fuera es el mismo vídeo
+                  de antes; por dentro avisa al play, al 25, al 50, al 75 y al
+                  final. Es lo que contesta «¿se lo ven entero?» — y lo que
+                  permite montar en Meta un público de quien casi lo acaba.
+                  Ver `VideoMedido.tsx`. */}
               <div className="casa-mc-video">
-                <video controls playsInline preload="none" poster="/images/desordenes-aterrizaje-cartel.jpg">
-                  <source src="/video/desordenes-aterrizaje.mp4" type="video/mp4" />
-                  Tu navegador no puede reproducir este vídeo.
-                </video>
+                <VideoMedido
+                  src="/video/desordenes-aterrizaje.mp4"
+                  poster="/images/desordenes-aterrizaje-cartel.jpg"
+                  nombre="masterclass-desordenes"
+                />
               </div>
             </div>
 
