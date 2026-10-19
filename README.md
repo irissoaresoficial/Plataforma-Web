@@ -116,6 +116,61 @@ Todo está en el bloque `CONFIG` de `reservas.gs`:
 - `CALENDAR_ID`: `'primary'` usa el calendario principal; también acepta el ID de un
   calendario aparte si Iris prefiere separar las sesiones.
 
+## El mapa del código (codebase-memory)
+
+Este repositorio ya es grande: dos aplicaciones, 274 archivos indexados y una
+hoja de estilos de más de siete mil líneas. Leerlo archivo por archivo cada vez
+que hay que tocar algo cuesta una barbaridad de tokens y es lento.
+
+`codebase-memory-mcp` lo arregla: indexa el proyecto entero en un grafo —qué
+función llama a cuál, qué archivo importa qué, dónde están las rutas— y
+responde preguntas de estructura en milisegundos sin abrir los archivos. En
+este repositorio tarda **7 segundos** en indexar y saca **3.102 nodos y 9.186
+relaciones**.
+
+Es local: no sube el código a ningún sitio y no necesita ninguna clave.
+
+### Instalarlo (una vez por ordenador)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash
+```
+
+Deja el binario en `~/.local/bin`, lo añade al PATH y configura solo los
+agentes que encuentre instalados. Después hay que **reiniciar el agente**.
+
+En Windows es `install.ps1`; está en el README del proyecto:
+https://github.com/DeusData/codebase-memory-mcp
+
+### Indexar este proyecto
+
+Con el agente ya reiniciado basta con pedirle «indexa este proyecto». A mano:
+
+```bash
+codebase-memory-mcp daemon start
+codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --mode full
+```
+
+Hay que **volver a indexar después de cambios grandes**. El índice se queda
+fresco solo mientras el proyecto está abierto en una sesión del agente.
+
+### La interfaz
+
+```bash
+codebase-memory-mcp config set ui_enabled true
+```
+
+Y se abre `http://localhost:9749`. Tiene el mapa de carpetas en 3D
+(«Architecture»), el grafo entero («Galaxy»), un lector de código con sus
+dependencias al lado («Explore») y qué quedó sin indexar («Coverage»).
+
+### Qué hay en el repositorio
+
+`.mcp.json`, en la raíz. Es lo único que se versiona: dice que este proyecto
+usa el servidor y lo llama por su nombre, no por una ruta absoluta —así vale
+igual en un Mac que en Linux—. El binario y la configuración del agente son de
+cada ordenador y no entran aquí.
+
 ## Contenido pendiente
 
 Todo lo que falta por rellenar sale **marcado en rojo en la propia web**, para verlo de

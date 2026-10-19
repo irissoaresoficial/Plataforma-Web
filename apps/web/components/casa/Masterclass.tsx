@@ -202,20 +202,38 @@ export default function Masterclass() {
             puesto. Un solo sitio donde se dejan los datos. */}
         <section className="casa-mc-cierre" aria-labelledby="cierre-h">
           <div className="casa-mc-cierre-dentro">
-            <span className="casa-mc-rotulo">Apuntarse</span>
+            {/*
+             * ESTE CIERRE SE HA REESCRITO ENTERO. Gerson, el 19 de octubre:
+             * «no me gusta este CTA, eso de que puedes borrarte NO».
+             *
+             * Y el problema de fondo era ése: la última frase antes del botón
+             * explicaba CÓMO IRSE. Es lo que pasa cuando se mete la letra
+             * pequeña del RGPD en el sitio del argumento — y encima sobra, que
+             * «puedo borrarme cuando quiera» ya está dentro de la casilla de
+             * consentimiento del formulario, que es donde la ley la pide.
+             *
+             * Lo que hay ahora dice las tres cosas que mueven a alguien que
+             * acaba de leer «esto es para ti si…» y está decidiendo:
+             *   · que es gratuita,
+             *   · que es en directo,
+             *   · y que queda grabada, o sea que el día no es una excusa.
+             * Y quita la última objeción de quien llega de un anuncio sin
+             * saber qué es esto: que hay que saber algo de antes.
+             *
+             * El botón dice lo mismo que el del formulario —«Quiero mi
+             * plaza»— a propósito: es la misma acción, así que son las mismas
+             * palabras.
+             */}
+            <span className="casa-mc-rotulo">La masterclass</span>
             <h2 className="casa-mc-cierre-h" id="cierre-h">
-              Es gratis, y si no puedes ese día la tienes grabada
+              Gratuita, en directo, y te queda grabada
             </h2>
-            {/* «Es totalmente gratuito» y no «no hay nada que pagar»: lo
-                cambió Iris, y tiene razón de sobra. Una frase que empieza por
-                «no hay nada que pagar» mete la palabra «pagar» justo encima
-                del botón; «totalmente gratuito» dice lo mismo sin nombrarla. */}
             <p className="casa-mc-cierre-p">
-              Déjame tu nombre y tu correo y te aviso en cuanto haya fecha. Es
-              totalmente gratuito y puedes borrarte cuando quieras.
+              Déjame tu nombre y tu correo y te aviso en cuanto haya fecha. No
+              hace falta que sepas nada de numerología para seguirla.
             </p>
             <a href="#apuntarse" className="casa-mc-da-boton casa-brillo">
-              Apuntarme a la masterclass
+              Quiero mi plaza
             </a>
           </div>
         </section>

@@ -15,3 +15,9 @@ next-env.d.ts
 *serviceaccount*.json
 *adminsdk*.json
 sa.json
+
+# El índice del mapa del código. Se regenera en siete segundos con
+# `codebase-memory-mcp cli index_repository`, así que no se versiona: sería
+# un binario grande cambiando en cada commit. Lo que sí se versiona es
+# `.mcp.json`, que es sólo la línea que dice que este proyecto lo usa.
+.codebase-memory/

@@ -138,12 +138,20 @@ export type Presenta = {
 
 export const PRESENTAN: Presenta[] = [
   {
-    /* PENDIENTE: el apellido de Marco y su foto. Iris dijo sólo «Marco» en la
-       nota de voz, y una foto suya no hay ninguna en el repositorio. */
-    nombre: 'Marco',
+    nombre: 'Marco Célio Sousa',
+    /* EL TÍTULO ES EL QUE PIDIÓ IRIS, no el de su perfil de Instagram.
+       Allí pone «Psicoterapia Somática», y ella avisó justo de eso: «a Marco,
+       si lo pones como psicoterapeuta, pueden pensar que no es psicólogo;
+       quiero que quede claro que Marco es psicólogo». Por eso «Psicólogo» va
+       delante y a secas. */
     titulo: 'Psicólogo y terapeuta psicosomático clínico',
-    foto: '',
-    alt: '',
+    /* OJO CON LA CALIDAD DE ESTE ARCHIVO. Sale recortado de una captura de
+       su perfil, que es lo que había: son 206 px de origen. Da de sobra para
+       el círculo de 54 px de la fila y no da para nada más grande. El día que
+       haya una foto suya de verdad, se recorta en cuadrado igual que ésta y
+       se cambia la ruta aquí. */
+    foto: '/images/marco-retrato.jpg',
+    alt: 'Marco Célio Sousa, de camisa blanca, en la playa al atardecer.',
   },
   {
     nombre: 'Iris Soares',
