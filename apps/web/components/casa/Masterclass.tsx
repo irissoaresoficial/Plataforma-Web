@@ -21,10 +21,13 @@
  *   3. El cierre: que es gratis, y un botón que sube al formulario de arriba.
  *   4. El pie, mínimo.
  *
- * LO QUE ESTA PÁGINA NO DICE ES QUIÉN LA DA, y es a propósito desde el 19 de
- * octubre: la da Marco, no Iris, así que el bloque que la firmaba con la foto
- * de ella se ha quitado en vez de corregirse a medias. Cuando haya una foto y
- * dos líneas suyas, vuelve.
+ * QUIÉN LA DA SE DICE ARRIBA, NO ABAJO. Primero fue un bloque al final con la
+ * foto de Iris, y se quitó el 19 de octubre porque la clase la da Marco y
+ * aquello la firmaba con la persona equivocada. Ese mismo día Iris pidió lo
+ * correcto: los DOS, con foto y con su título, y antes del vídeo. Así que no
+ * ha vuelto el bloque de abajo — lo que hay es una fila de presentación
+ * encima del vídeo, que es donde sirve: quién da la clase es la mitad de la
+ * confianza en una landing fría y se decide antes de darle al play.
  *
  * QUE SEA GRATIS SE DICE, Y SE DICE PRONTO. Es el dato que más sube el
  * registro en una landing fría, y Gerson lo ha confirmado. Va en el rótulo,
@@ -40,20 +43,42 @@ import Image from 'next/image';
 import Barra from './Barra';
 import Pie from './Pie';
 import Registro from './Registro';
+import Sello from './Sello';
+import { PRESENTAN } from '@/content/site';
 import './casa.css';
 
+/*
+ * LAS TRES FRASES, CORREGIDAS POR IRIS (nota de voz del 19 de octubre).
+ * Las tres correcciones van en la misma dirección y conviene verlo junto,
+ * porque es la lección: yo escribía para que sonara bien y ella escribe para
+ * que se entienda a la primera.
+ *
+ *   · «la misma conversación a los seis meses» → «…con diferentes
+ *     personajes». Sin eso, «otra persona» y «la misma conversación» se
+ *     contradicen a ojos de quien lee: ella lo dijo tal cual, «ahí no se va a
+ *     entender».
+ *
+ *   · «Lo que no se cerró sigue bajando» → «se sigue repitiendo en las
+ *     siguientes generaciones». «Bajar» es jerga de la casa: dentro se
+ *     entiende y fuera no. Y es la frase que sostiene la página entera.
+ *
+ *   · «Se hace una cuenta» → «Analizamos tu fecha y tu nombre», y se añade
+ *     «a quién pertenece». Dos cambios en una línea: la cuenta la hace
+ *     alguien —se dice quién— y lo que se repite no sólo viene de algún
+ *     sitio, es DE alguien. Eso último es el centro del método.
+ */
 const PARA_QUIEN = [
   {
     t: 'Si siempre acabas igual',
-    d: 'Otra persona, otra ciudad, otro trabajo — y la misma conversación a los seis meses.',
+    d: 'Otra persona, otra ciudad, otro trabajo — y la misma conversación a los seis meses, con diferentes personajes.',
   },
   {
     t: 'Si en tu casa pasó algo de lo que no se habla',
-    d: 'Una separación, una ausencia, alguien que se fue. Lo que no se cerró sigue bajando.',
+    d: 'Una separación, una ausencia, alguien que se fue. Lo que no se cerró se sigue repitiendo en las siguientes generaciones.',
   },
   {
     t: 'Si quieres entenderlo, no que te lo adivinen',
-    d: 'Se hace una cuenta con tu fecha y tu nombre, y se ve de dónde viene lo que repites.',
+    d: 'Analizamos tu fecha y tu nombre, y se ve de dónde viene y a quién pertenece lo que repites.',
   },
 ];
 
@@ -91,11 +116,43 @@ export default function Masterclass() {
                 Con `preload="none"` no se descarga ni un byte hasta que se
                 pulsa, que en una landing de campaña es abrir en un segundo en
                 vez de en seis. */}
-            <div className="casa-mc-video">
-              <video controls playsInline preload="none" poster="/images/desordenes-aterrizaje-cartel.jpg">
-                <source src="/video/desordenes-aterrizaje.mp4" type="video/mp4" />
-                Tu navegador no puede reproducir este vídeo.
-              </video>
+            <div className="casa-mc-izq">
+              {/* QUIÉN LA DA, ENCIMA DEL VÍDEO.
+                  Iris: «sería bueno que le pusiéramos una foto de ambos antes
+                  de ver el vídeo». Y va aquí, en la columna del vídeo, y no
+                  cruzando la página por arriba: la columna del vídeo mide
+                  menos que el formulario, así que lo que se le añada cabe en
+                  el hueco que ya sobraba y NO empuja el botón de apuntarse
+                  fuera de la primera pantalla. Medido antes de ponerlo.
+                  Quién da la clase es la mitad de la confianza en una landing
+                  fría, así que tiene que leerse antes que el vídeo, no al
+                  final de la página. */}
+              <div className="casa-mc-presentan">
+                {PRESENTAN.map((q) => (
+                  <div className="casa-mc-presenta" key={q.nombre}>
+                    <span className="casa-mc-presenta-foto">
+                      {q.foto ? (
+                        <Image src={q.foto} alt={q.alt} width={300} height={300} sizes="56px" />
+                      ) : (
+                        /* Sin foto sale el sello, y se ve que falta una foto
+                           en vez de una cara que no es (MARCA.md §7). */
+                        <Sello tam={26} claro />
+                      )}
+                    </span>
+                    <span className="casa-mc-presenta-datos">
+                      <strong>{q.nombre}</strong>
+                      <small>{q.titulo}</small>
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="casa-mc-video">
+                <video controls playsInline preload="none" poster="/images/desordenes-aterrizaje-cartel.jpg">
+                  <source src="/video/desordenes-aterrizaje.mp4" type="video/mp4" />
+                  Tu navegador no puede reproducir este vídeo.
+                </video>
+              </div>
             </div>
 
             <div className="casa-mc-caja" id="apuntarse">
@@ -149,9 +206,13 @@ export default function Masterclass() {
             <h2 className="casa-mc-cierre-h" id="cierre-h">
               Es gratis, y si no puedes ese día la tienes grabada
             </h2>
+            {/* «Es totalmente gratuito» y no «no hay nada que pagar»: lo
+                cambió Iris, y tiene razón de sobra. Una frase que empieza por
+                «no hay nada que pagar» mete la palabra «pagar» justo encima
+                del botón; «totalmente gratuito» dice lo mismo sin nombrarla. */}
             <p className="casa-mc-cierre-p">
-              Déjame tu nombre y tu correo y te aviso en cuanto haya fecha. No
-              hay nada que pagar y puedes borrarte cuando quieras.
+              Déjame tu nombre y tu correo y te aviso en cuanto haya fecha. Es
+              totalmente gratuito y puedes borrarte cuando quieras.
             </p>
             <a href="#apuntarse" className="casa-mc-da-boton casa-brillo">
               Apuntarme a la masterclass

@@ -107,6 +107,60 @@ export const FOTOS = {
 };
 
 /**
+ * QUIÉN DA LA MASTERCLASS.
+ * ============================================================================
+ *
+ * Iris, en una nota de voz del 19 de octubre: «sería bueno que le pusiéramos
+ * una foto de ambos antes de ver el vídeo, donde aparezca Marco —psicólogo y
+ * terapeuta psicosomático clínico— y mi nombre, Iris Soares, también con la
+ * foto».
+ *
+ * EL ORDEN DE LOS TÍTULOS NO ES CASUAL, y lo explicó ella misma: «a Marco, si
+ * lo pones como psicoterapeuta, pueden pensar que no es psicólogo; quiero que
+ * quede claro que Marco es psicólogo». Por eso «Psicólogo» va primero y a
+ * secas. En una landing que recoge datos de gente que no conoce a nadie, el
+ * título profesional es la mitad de la confianza — y el que se lee es el
+ * primero.
+ *
+ * LA FOTO QUE FALTE NO ROMPE NADA: sale el sello de la escuela en su sitio, y
+ * se ve que es un hueco y no una cara inventada (MARCA.md §7). En cuanto haya
+ * archivo, se guarda en `public/images/` y se pone aquí la ruta.
+ */
+export type Presenta = {
+  nombre: string;
+  /** El título profesional, tal y como quiere que se lea. */
+  titulo: string;
+  /** Ruta dentro de `public/`. Vacío = sale el sello en vez de la cara. */
+  foto: string;
+  /** Qué se oye si no se ve la foto. Vacío mientras no haya foto. */
+  alt: string;
+};
+
+export const PRESENTAN: Presenta[] = [
+  {
+    /* PENDIENTE: el apellido de Marco y su foto. Iris dijo sólo «Marco» en la
+       nota de voz, y una foto suya no hay ninguna en el repositorio. */
+    nombre: 'Marco',
+    titulo: 'Psicólogo y terapeuta psicosomático clínico',
+    foto: '',
+    alt: '',
+  },
+  {
+    nombre: 'Iris Soares',
+    titulo: 'Terapeuta psicosomática clínica y numeróloga transgeneracional',
+    /* RECORTE CUADRADO Y A PROPÓSITO, no la foto entera.
+       Gerson: «la foto de Iris, que se vea bien su rostro». La original es de
+       900×1599 —vertical de móvil— y metida en un círculo de 54 px se queda
+       en una tira de cara: el recorte se come las mejillas y deja medio
+       hombro. `iris-retrato.jpg` es esa misma foto recortada en cuadrado
+       alrededor de la cara, así que en el círculo entra entera y sin trucos
+       de encuadre en el CSS. */
+    foto: '/images/iris-retrato.jpg',
+    alt: 'Iris Soares, sonriendo, en su consulta.',
+  },
+];
+
+/**
  * Datos fiscales del aviso legal y de la política de datos. Son obligatorios
  * por ley: mientras estén en PENDIENTE, la web los enseña marcados.
  */

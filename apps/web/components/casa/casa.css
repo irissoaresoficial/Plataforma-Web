@@ -1228,6 +1228,82 @@ html[data-portada='si'] #chat-launcher {
     gap: clamp(36px, 4vw, 56px);
   }
 }
+/* --------------------------------------------- quién da la masterclass */
+/* Iris, el 19 de octubre: «sería bueno que le pusiéramos una foto de ambos
+   antes de ver el vídeo». Es una fila de dos: cara redonda, nombre y título.
+
+   VA DENTRO DE LA COLUMNA DEL VÍDEO, y es lo que hace que no cueste nada.
+   El vídeo mide 364 px de alto y el formulario de al lado 538, así que esa
+   columna tenía 174 px de aire de sobra; la fila ocupa unos 70 y sigue
+   cabiendo. Puesta cruzando la página por arriba habría empujado el botón de
+   apuntarse fuera de la primera pantalla, que es lo único que esta página no
+   se puede permitir. */
+.casa-mc-izq {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vw, 20px);
+  min-width: 0;
+}
+.casa-mc-presentan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 2vw, 26px);
+}
+.casa-mc-presenta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* `1 1 200px`: los dos reparten el ancho a partes iguales mientras quepan
+     uno al lado del otro, y se apilan solos cuando no. */
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.casa-mc-presenta-foto {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: var(--radio-pildora);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+}
+/* SIN `object-position`, Y ES LO CORRECTO. Aquí hubo un `center 18%` para
+   subir el encuadre, porque la foto de origen era vertical de móvil y en un
+   círculo pequeño salía una tira de cara. Corregir el encuadre con CSS es
+   apañar en la web un problema que está en el archivo: cada foto nueva pide
+   su porcentaje y nadie se acuerda de medirlo.
+   Las fotos de esta fila van YA recortadas en cuadrado alrededor de la cara,
+   así que `cover` no tiene nada que recortar y entran centradas solas. */
+.casa-mc-presenta-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.casa-mc-presenta-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.casa-mc-presenta-datos strong {
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  letter-spacing: -0.01em;
+  color: var(--papel);
+}
+.casa-mc-presenta-datos small {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  line-height: 1.35;
+  /* 0.82 y no 0.6: es el título profesional, o sea la mitad de la confianza
+     de esta página. Texto pequeño pide 4,5:1 y aquí se pasa de largo. */
+  color: rgba(255, 255, 255, 0.82);
+  text-wrap: pretty;
+}
+
 .casa-mc-video {
   width: 100%;
   aspect-ratio: 16 / 9;
