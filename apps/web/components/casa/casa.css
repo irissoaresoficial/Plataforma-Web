@@ -1532,7 +1532,54 @@ html[data-portada='si'] #chat-launcher {
   color: #4a4443;
 }
 
-/* ------------------------------------------------------ quién la da */
+/* --------------------------------------------------------- el cierre */
+/* Aquí vivía el bloque de «quién la da», con la foto de Iris a la izquierda y
+   su firma a la derecha. Se fue el 19 de octubre, y no por cómo se veía:
+   Gerson avisó de que esa masterclass la da Marco, no ella, así que el bloque
+   estaba firmando con la persona equivocada. Un dato falso no se recoloca, se
+   quita (MARCA.md §7).
+   Lo que queda es el cierre: una columna, centrada, con lo único que hace
+   falta a esta altura —que es gratis y que queda grabada— y un botón que sube
+   al formulario de arriba. Sin foto y sin nombre. El día que haya un retrato y
+   dos líneas de quien la dé de verdad, vuelve el bloque de dos columnas: sus
+   reglas siguen aquí abajo, en `.casa-mc-da-*`, sin borrar. */
+.casa-mc-cierre {
+  background: var(--tinta);
+  color: var(--papel);
+  padding: clamp(56px, 8vw, 104px) var(--hueco);
+}
+.casa-mc-cierre-dentro {
+  max-width: 44ch;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+.casa-mc-cierre-h {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  font-weight: var(--peso-fino);
+  line-height: 1.14;
+  letter-spacing: -0.025em;
+  color: var(--papel);
+  text-wrap: balance;
+}
+.casa-mc-cierre-p {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* ------------------------------------------- quién la da (aparcado) */
+/* No se pinta hoy: ninguna página usa estas clases menos `.casa-mc-da-boton`,
+   que es el botón del cierre de arriba. Se quedan enteras porque el bloque
+   vuelve en cuanto haya foto y dos líneas de quien dé la clase, y entonces es
+   cambiar el marcado y ya está. */
 .casa-mc-quien-da {
   background: var(--tinta);
   color: var(--papel);
@@ -1562,8 +1609,6 @@ html[data-portada='si'] #chat-launcher {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Su cara va del píxel 300 al 950 de 1599: al 8 % queda a la altura
-     correcta, ni descabezada ni hundida. Medido, no a ojo. */
   object-position: center 8%;
   display: block;
 }
@@ -2064,23 +2109,4 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
    A 400 sale exactamente como se dibujó. */
 .casa-pieza-arbol {
   max-width: 400px;
-}
-/* LA CALCULADORA, DENTRO DE UNA FRANJA DE LA CASA.
-   `tn-banda` es su vestido sobre fondo oscuro: las casillas excavadas, el
-   dorado de los rótulos, el botón invertido. Todo eso se queda, que está
-   medido. Lo que hay que quitarle son las tres cosas que tenía por ser una
-   banda ella misma, y que ahora pone la franja:
-     · el relleno lateral, o la calculadora se metería hasta noventa píxeles
-       hacia dentro respecto al titular que tiene encima — y alinear es
-       justamente lo que más ha costado en esta web;
-     · el fondo, que lo pinta la franja;
-     · y el `overflow: hidden`, que le cortaría por los lados las sombras del
-       relieve a las casillas de los extremos.
-   Dos clases pesan más que una, así que esto gana también dentro de la media
-   query de `tn-banda`, sin un solo `!important`. */
-.casa-pieza.tn-banda {
-  padding-left: 0;
-  padding-right: 0;
-  background: transparent;
-  overflow: visible;
 }

@@ -26,13 +26,19 @@
  * El texto. La sección pasa a dos columnas —lo que se cuenta a la izquierda,
  * la estantería a la derecha—, que es el mismo reparto que usa el bloque de
  * Iris en la portada. Con un curso, la franja está llena igual y la ficha se
- * queda del tamaño de un cartel, centrada en su mitad, en vez de estirarse
- * media pantalla. Con cuatro, la rejilla crece sola y no hay que tocar nada.
+ * queda del tamaño de un cartel. Con cuatro, la rejilla crece sola.
  *
- * Y EL TEXTO SE AJUSTA SOLO AL NÚMERO DE CURSOS. «Busca el curso que más te
- * llame» con un solo curso delante es una frase que se ríe de quien la lee.
- * Mientras haya uno, dice que hay uno; en cuanto Iris suba el segundo, vuelve
- * a invitar a elegir. Lo decide `CURSOS.length`, no una mano.
+ * AQUÍ NO SE CUENTAN LOS CURSOS QUE HAY. Y esto es una corrección: llegué a
+ * poner «ahora mismo hay uno abierto», que se ajustaba solo al número de
+ * cursos. Gerson, el 19 de octubre: «si tú buscaras un curso para
+ * inscribirte y dice eso, ¿lo harías?».
+ *
+ * No. Decir en voz alta cuántos hay es hablar del catálogo, y a quien llega
+ * el catálogo le da igual: viene a ver si ESTE taller es para él. Una tienda
+ * no recibe con «hoy tenemos un modelo»; enseña el modelo. Así que el texto
+ * habla de cómo son los talleres —en directo, con tu caso, grabados— y la
+ * ficha habla del que hay. Si mañana hay seis, esto vale igual sin tocar una
+ * coma.
  */
 
 import Image from 'next/image';
@@ -65,37 +71,25 @@ export default function Discografia() {
     return () => ojo.disconnect();
   }, []);
 
-  const uno = CURSOS.length === 1;
-
   return (
     <section className="casa-disco" id="catalogo" ref={zona} aria-labelledby="disco-h">
       <div className="casa-disco-dentro">
         <div className="casa-disco-texto">
           <span className="casa-disco-rotulo">La estantería</span>
           <h2 className="casa-disco-h" id="disco-h">
-            {uno ? (
-              <>
-                Ahora mismo
-                <br />
-                hay uno abierto
-              </>
-            ) : (
-              <>
-                Busca el curso
-                <br />
-                que más te llame
-              </>
-            )}
+            Elige por dónde
+            <br />
+            quieres empezar
           </h2>
           <p className="casa-disco-p">
-            {uno
-              ? 'Se abren de uno en uno y se trabajan en directo, con los casos de quien está dentro. Éste es el que está en pie hoy, y se entra por la masterclass, que es gratis.'
-              : 'Cada uno mira una cosa distinta de lo mismo. Empieza por el que te reconozcas al leer el nombre.'}
+            Talleres en directo, con tu caso encima de la mesa: se trabaja con
+            tu fecha y con tu nombre, en vivo y con las preguntas de quien está
+            dentro. Y quedan grabados, así que si un día no puedes, no lo
+            pierdes.
           </p>
           <p className="casa-disco-nota">
-            Los siguientes van saliendo poco a poco. Si te apuntas a la
-            masterclass, te aviso de los que vengan sin que tengas que estar
-            mirando.
+            Se entra por la masterclass, que es gratuita. Quien se apunta se
+            entera de los siguientes sin tener que estar mirando.
           </p>
         </div>
 

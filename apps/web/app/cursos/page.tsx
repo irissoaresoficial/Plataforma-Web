@@ -11,8 +11,13 @@
  *
  * Y tiene sentido más allá del gusto: HOY HAY UN CURSO. Un catálogo con
  * buscador, filtros y la cuenta «1 curso» es una estantería vacía con un
- * cartel de estantería. Lo honesto con un solo taller abierto es decir que
- * hay uno, mandar a apuntarse y avisar de que vienen más.
+ * cartel de estantería.
+ *
+ * Pero cuidado con pasarse de honesto: la página tampoco dice cuántos hay.
+ * Gerson, el 19 de octubre, sobre un titular que anunciaba que había uno:
+ * «si tú buscaras un curso para inscribirte y dice eso, ¿lo harías?». No.
+ * Quien llega no viene a auditar el catálogo, viene a ver si ESTE taller es
+ * para él. Así que se enseña el taller y se calla la cuenta.
  *
  * NO SE HA BORRADO NADA. `Catalogo`, `CursoDetalle`, `CartelCurso`,
  * `CuentaAtras` y `MarcaCurso` siguen enteros en el repositorio y vuelven el
@@ -36,6 +41,11 @@ export default function Cursos() {
       <Cursor />
 
       {/* LA MISMA ENTRADA QUE LA PORTADA, categorizada a lo de aquí.
+          LA BARRA DE LLAMADA NO CUENTA CUÁNTOS TALLERES HAY. Decía «el que
+          está abierto ahora mismo», que es la misma frase que Gerson tumbó en
+          la estantería el 19 de octubre y por el mismo motivo: suena a tienda
+          con un modelo. Ahora nombra el taller y dice lo que cuesta entrar,
+          que es lo que mueve a alguien a pulsar.
           El fondo NO es el cartel del vídeo, aunque lo pareciera lo suyo: ese
           fotograma lleva rotulados encima el titular del curso, el logo y la
           barra de progreso, así que salían dos titulares pisándose. Va la
@@ -52,8 +62,8 @@ export default function Cursos() {
           </>
         }
         texto="Se trabaja con tu fecha y con tu nombre, en vivo. Queda grabado, así que si un día no puedes, no lo pierdes."
-        nota="El que está abierto ahora mismo: Desórdenes Amorosos."
-        notaCorta="Abierto: Desórdenes Amorosos."
+        nota="Empieza por Desórdenes Amorosos: la masterclass es gratuita."
+        notaCorta="Desórdenes Amorosos, gratis."
         cta={{ a: '/masterclass', texto: 'Apuntarme gratis' }}
       />
 

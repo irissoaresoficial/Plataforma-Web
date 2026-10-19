@@ -25,17 +25,22 @@
  *                         monta sobre el vídeo.
  *   3. LAS FICHAS ....... la columna quieta a la izquierda y las cinco cosas
  *                         que salen de la cuenta pasando por la derecha.
- *   4. LAS FRANJAS ...... la cuenta hecha delante, qué no es y el precio.
+ *   4. LAS FRANJAS ...... qué no es, y la consulta con su precio.
  *   5. EL PIE ........... el mismo de toda la web.
  *
  * Y NO ES UNA IMITACIÓN: son los MISMOS componentes de la portada, con otro
  * contenido. `Sobre` y `Claves` llevan parámetros desde hoy justo para esto.
  * Si mañana se arregla el bloque crema, se arregla aquí también.
  *
- * LO QUE SE HA QUEDADO, Y POR QUÉ. La calculadora. Es la única pieza de toda
- * la web que hace delante de quien mira exactamente lo que la página promete,
- * sin pedir nada a cambio — y después de haber leído qué sale de la cuenta, es
- * una prueba. Lo que sobraba era la página vieja de alrededor, no ella.
+ * LA CALCULADORA YA NO ESTÁ. Gerson, el 19 de octubre: «quita esa mierda de
+ * la calculadora también».
+ *
+ * `components/TuNumero.tsx` NO se ha borrado: sigue entero en el repositorio,
+ * con su cuenta, su vídeo y sus estilos, y vuelve el día que se quiera
+ * cambiando una línea (MARCA.md §8.4). Lo que se ha ido es la decisión de
+ * pintarla hoy. Y la página no se queda coja: lo que la calculadora enseñaba
+ * —de dónde sale el número— lo cuentan las cinco fichas de arriba, que es
+ * donde esa explicación tiene su sitio.
  *
  * ESTA PÁGINA YA NO LLEVA 'use client'. Todo lo que necesita manos vive en sus
  * propios componentes, así que la página en sí es de servidor. El título y la
@@ -44,7 +49,6 @@
  */
 
 import Cursor from '@/components/Cursor';
-import TuNumero from '@/components/TuNumero';
 import Banda from '@/components/casa/Banda';
 import Claves, { type FichaClave } from '@/components/casa/Claves';
 import Entrada from '@/components/casa/Entrada';
@@ -144,9 +148,9 @@ export default function Numerologia() {
           </>
         }
         texto="Puestos en números, se ve qué se repite, en qué generación empezó y por dónde te llegó a ti."
-        nota="Se calcula delante de ti, con tus datos. La cuenta se ve entera."
-        notaCorta="Se calcula con tus datos."
-        cta={{ a: '#prueba', texto: 'Hacer la cuenta' }}
+        nota="Se trabaja con tu fecha y con tu nombre, caso por caso."
+        notaCorta="Con tu fecha y con tu nombre."
+        cta={{ a: '/cursos', texto: 'Ver los talleres' }}
       />
 
       <main>
@@ -156,17 +160,17 @@ export default function Numerologia() {
           entrada="Tu fecha de nacimiento no es un número de la suerte. Es el resumen de lo que ya estaba pasando en tu familia el día que llegaste."
           texto="Un hijo que no se reconoció. Alguien que estuvo preso. Una muerte de la que no se volvió a hablar. Cosas que pasaron de verdad y que nadie cerró. Nadie tuvo la culpa, pero una historia que no se cierra sigue bajando: se convierte en una manera de hacer las cosas que en tu casa parecía lo normal, y que tú repites sin haberla elegido nunca."
           botones={[
-            { a: '#prueba', texto: 'Hacer la cuenta', icono: 'abajo' },
+            { a: '#consulta', texto: 'Ver la consulta', icono: 'abajo' },
             { a: '/cursos', texto: 'Ver los talleres', icono: 'mas' },
           ]}
         />
 
         {/* ── 3. QUÉ SALE DE LA CUENTA ─────────────────────
-            El orden importa y es el arreglo de fondo de esta página: antes
-            venía primero la calculadora y después qué sale. O sea, se le
-            ponía una máquina de calcular delante a alguien que todavía no
-            sabía qué se calcula ni para qué. Una calculadora sin contexto es
-            un juguete; la misma después de leer esto es una prueba.
+            Éste es el bloque que sostiene la página: cinco piezas que dicen
+            qué sale del nombre y de la fecha, y de dónde sale cada una. No
+            es relleno — es lo que convierte «numerología» en algo con partes
+            que se pueden nombrar, y lo que hace que el precio de abajo se lea
+            contra algo concreto.
             El fondo quieto es la cuenta escrita a mano sobre la madera — el
             de la portada, que aquí además es literalmente el tema. */}
         <Claves
@@ -180,32 +184,12 @@ export default function Numerologia() {
           }
           fichas={QUE_SALE}
           pide={{
-            texto: 'La cuenta es aritmética y se hace delante de ti. En los talleres se aprende a hacerla sin que nadie esté delante.',
+            texto: 'La cuenta es aritmética: no hay que creer en nada para seguirla. En los talleres se aprende a hacerla.',
             boton: { a: '/cursos', texto: 'Ver los talleres' },
           }}
         />
 
-        {/* ── 4. LA CUENTA, HECHA DELANTE ──────────────────
-            LA FRANJA VA SIN TITULAR, Y ES A PROPÓSITO. La calculadora trae el
-            suyo —«Antes de cambiar nada, hay que saber qué traes»— y su
-            párrafo. Puesto otro encima salían dos titulares pisándose y dos
-            párrafos diciendo lo mismo, que es el fallo que más veces ha habido
-            que arreglar en esta web. Cuando la pieza ya habla, la franja se
-            queda en lo que es: el granate, los márgenes y el sitio.
-
-            `tn-banda` es el vestido de la calculadora sobre fondo oscuro —las
-            casillas excavadas, el dorado de los rótulos—: eso se queda, que
-            está medido. Lo que se le quita es su relleno lateral, porque
-            ahora quien pone los márgenes es la franja, y si lo pusieran los
-            dos la calculadora se metería noventa píxeles hacia dentro
-            respecto a todo lo demás de la página. */}
-        <Banda id="prueba" tono="vino" apilado>
-          <div className="casa-pieza casa-pieza-primera tn-banda">
-            <TuNumero />
-          </div>
-        </Banda>
-
-        {/* ── 5. Y QUÉ NO ES ───────────────────────────────── */}
+        {/* ── 4. Y QUÉ NO ES ───────────────────────────────── */}
         <Banda
           id="no-es"
           tono="claro"
@@ -229,7 +213,7 @@ export default function Numerologia() {
           </ul>
         </Banda>
 
-        {/* ── 6. LA CONSULTA Y SU PRECIO ───────────────────
+        {/* ── 5. LA CONSULTA Y SU PRECIO ───────────────────
             El precio vive aquí y no en la portada: allí lo que se decide es
             si esto interesa, no cuánto cuesta. */}
         <Banda

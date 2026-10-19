@@ -21,15 +21,19 @@ export const metadata: Metadata = {
   title: 'Masterclass Desórdenes Amorosos · Iris Soares',
   description:
     /* «Gratuita» sí, confirmado por Gerson. La fecha NO: sigue sin decidir
-       y citar a alguien un día que nadie ha fijado es otra cosa. */
-    'Lo que se repite en tu forma de querer no empezó contigo. Masterclass gratuita de numerología transgeneracional con Iris Soares. Déjame tu correo y te aviso de la fecha.',
+       y citar a alguien un día que nadie ha fijado es otra cosa.
+       Y QUIÉN LA DA, TAMPOCO. Ponía «con Iris Soares» y la da Marco (Gerson,
+       19 de octubre). Lo que firma es la escuela, que sí es verdad: esto se
+       ve al compartir el enlace por WhatsApp, o sea donde más se nota una
+       promesa que no cuadra. */
+    'Lo que se repite en tu forma de querer no empezó contigo. Masterclass gratuita de numerología transgeneracional de la Escuela de Sabiduría 33. Déjame tu correo y te aviso de la fecha.',
   alternates: { canonical: '/masterclass' },
   openGraph: {
     type: 'website',
     url: `${CASA}/masterclass`,
     title: 'Hay una forma de amar que no elegiste',
     description:
-      'Masterclass gratuita de Desórdenes Amorosos, con Iris Soares. Déjame tu correo y te aviso en cuanto haya fecha.',
+      'Masterclass gratuita de Desórdenes Amorosos, en la Escuela de Sabiduría 33. Déjame tu correo y te aviso en cuanto haya fecha.',
     siteName: 'Escuela de Sabiduría 33',
     locale: 'es_ES',
     images: [`${CASA}/images/desordenes-aterrizaje-cartel.jpg`],

@@ -46,7 +46,7 @@ import { LOGO_COLOR } from '@/content/site';
 const PUERTAS = [
   { href: '/numerologia', texto: 'Numerología', nota: 'Qué es y para qué sirve' },
   { href: '/kabala', texto: 'Kábala', nota: 'El árbol y sus diez puntos' },
-  { href: '/cursos', texto: 'Talleres y cursos', nota: 'Lo que hay abierto ahora' },
+  { href: '/cursos', texto: 'Talleres y cursos', nota: 'En directo, con tu caso' },
   { href: '/membresia', texto: 'La escuela', nota: 'Dentro de Sabiduría 33' },
 ];
 

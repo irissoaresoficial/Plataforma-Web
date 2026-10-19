@@ -18,8 +18,13 @@
  *      para apuntarse, y quien ya venía convencido del anuncio tampoco tiene
  *      que ver el vídeo. En el móvil se apilan: titular, vídeo, formulario.
  *   2. Para quién es. Tres frases, y las tres verdad.
- *   3. El formulario otra vez, para quien se ha convencido abajo.
+ *   3. El cierre: que es gratis, y un botón que sube al formulario de arriba.
  *   4. El pie, mínimo.
+ *
+ * LO QUE ESTA PÁGINA NO DICE ES QUIÉN LA DA, y es a propósito desde el 19 de
+ * octubre: la da Marco, no Iris, así que el bloque que la firmaba con la foto
+ * de ella se ha quitado en vez de corregirse a medias. Cuando haya una foto y
+ * dos líneas suyas, vuelve.
  *
  * QUE SEA GRATIS SE DICE, Y SE DICE PRONTO. Es el dato que más sube el
  * registro en una landing fría, y Gerson lo ha confirmado. Va en el rótulo,
@@ -35,12 +40,7 @@ import Image from 'next/image';
 import Barra from './Barra';
 import Pie from './Pie';
 import Registro from './Registro';
-import { SESION } from '@/content/site';
 import './casa.css';
-
-/* Los años salen de la fecha y no escritos a mano: una frase de autoridad
-   que se queda vieja deja de sostener nada. */
-const ANOS = new Date().getFullYear() - SESION.desde;
 
 const PARA_QUIEN = [
   {
@@ -98,7 +98,7 @@ export default function Masterclass() {
               </video>
             </div>
 
-            <div className="casa-mc-caja">
+            <div className="casa-mc-caja" id="apuntarse">
               <Registro />
             </div>
           </div>
@@ -121,47 +121,41 @@ export default function Masterclass() {
           </ul>
         </section>
 
-        {/* ── 3. QUIÉN DA LA MASTERCLASS ───────────────────
-            AQUÍ HABÍA EL FORMULARIO OTRA VEZ. Gerson: «cuando hay otra vez
-            el formulario, sí que es cierto que ya no tiene relevancia; tienes
-            que colocar otro tipo de información».
-            Y es verdad: el de arriba está a la vista desde el primer segundo,
-            al lado del vídeo. Repetirlo aquí no convence a nadie que no
-            estuviera convencido ya — sólo ocupa una pantalla entera diciendo
-            lo mismo. Lo que falta a esta altura no es otro formulario: es
-            saber quién va a dar la clase.
-            Así que va ella, con su foto y los años, y un botón que sube al
-            formulario de arriba en vez de un formulario nuevo. */}
-        <section className="casa-mc-quien-da" aria-labelledby="iris-h">
-          <div className="casa-mc-da-dentro">
-            <div className="casa-mc-da-foto">
-              <Image
-                src="/images/iris-consulta.jpg"
-                alt="Iris Soares, sonriendo, en su consulta."
-                width={900}
-                height={1599}
-                sizes="(max-width: 860px) 100vw, 380px"
-              />
-            </div>
-            <div className="casa-mc-da-texto">
-              <span className="casa-mc-rotulo">Quién la da</span>
-              <h2 className="casa-mc-da-h" id="iris-h">
-                Iris Soares
-              </h2>
-              <p>
-                Creadora de la Escuela de Sabiduría 33. Numerología
-                transgeneracional y Kábala desde {SESION.desde}: {ANOS} años
-                mirando la misma cuenta en gente que no se parece en nada.
-              </p>
-              <p>
-                No te entrega un informe y adiós. Te enseña a hacer la cuenta
-                —tu fecha, tu nombre— para que la repitas tú el día que te
-                haga falta.
-              </p>
-              <a href="#top" className="casa-mc-da-boton casa-brillo">
-                Apuntarme a la masterclass
-              </a>
-            </div>
+        {/* ── 3. EL CIERRE ─────────────────────────────────
+            AQUÍ HAN ESTADO DOS COSAS QUE NO ERAN, Y LAS DOS SE FUERON POR UN
+            MOTIVO DISTINTO.
+
+            Primero, el formulario otra vez. Gerson: «cuando hay otra vez el
+            formulario, ya no tiene relevancia; tienes que colocar otro tipo
+            de información». Y es verdad: el de arriba está a la vista desde
+            el primer segundo, al lado del vídeo.
+
+            Después, un bloque de «Quién la da» con la foto de Iris y sus
+            años. Gerson, el 19 de octubre: «esto también lo da Marco, ese
+            curso; creo que mejor quita Quién lo da». O sea que no era un
+            problema de diseño: es que decía algo que no es verdad, y eso no
+            se arregla moviéndolo de sitio. Se quita.
+
+            Lo que queda es lo único que esta página necesita a esta altura:
+            recordar que es gratis y devolver al formulario de arriba. Sin
+            foto, sin firma y sin nombrar a nadie — el día que haya una foto
+            y dos líneas de quien la dé de verdad, el bloque vuelve con ellas.
+
+            Y NO es un formulario nuevo: es un botón que sube al que ya está
+            puesto. Un solo sitio donde se dejan los datos. */}
+        <section className="casa-mc-cierre" aria-labelledby="cierre-h">
+          <div className="casa-mc-cierre-dentro">
+            <span className="casa-mc-rotulo">Apuntarse</span>
+            <h2 className="casa-mc-cierre-h" id="cierre-h">
+              Es gratis, y si no puedes ese día la tienes grabada
+            </h2>
+            <p className="casa-mc-cierre-p">
+              Déjame tu nombre y tu correo y te aviso en cuanto haya fecha. No
+              hay nada que pagar y puedes borrarte cuando quieras.
+            </p>
+            <a href="#apuntarse" className="casa-mc-da-boton casa-brillo">
+              Apuntarme a la masterclass
+            </a>
           </div>
         </section>
       </main>
