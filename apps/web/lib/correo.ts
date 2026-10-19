@@ -30,7 +30,7 @@
 
 import { createHmac } from 'node:crypto';
 import { Resend } from 'resend';
-import { CONTACTO } from '@/content/site';
+import { CONTACTO, MASTERCLASS } from '@/content/site';
 import type { Lead } from './booking';
 
 /* El cliente se crea una vez. Sin clave es `null`, y todo lo de abajo lo mira
@@ -221,7 +221,7 @@ function correoDeCurso(lead: Lead): { asunto: string; html: string } {
     ? pasos([
         {
           que: 'Entra al grupo de WhatsApp',
-          detalle: 'Ahí aviso de la fecha en cuanto esté y contesto dudas antes de la clase. Puedes salirte cuando quieras.',
+          detalle: 'Ahí contesto dudas antes de la clase y aviso si algo cambia. Puedes salirte cuando quieras.',
         },
         {
           que: 'El día de la clase te mando el enlace',
@@ -229,16 +229,19 @@ function correoDeCurso(lead: Lead): { asunto: string; html: string } {
         },
       ])
     : pasos([
-        { que: 'Te escribo en cuanto haya fecha', detalle: 'A este mismo correo, con el enlace para entrar.' },
+        { que: 'Te mando el enlace el día de la clase', detalle: 'A este mismo correo, un rato antes de empezar.' },
         { que: 'Tú no tienes que hacer nada más', detalle: 'Guarda este correo y ya está.' },
       ]);
 
   return {
-    asunto: 'Ya tienes tu plaza · Desórdenes Amorosos',
+    /* EL ASUNTO LLEVA LA FECHA. Quien se apunta hoy abre este correo dentro de
+       cinco semanas buscando a qué hora era: que la fecha esté en el asunto le
+       ahorra abrirlo, y de paso el correo se encuentra buscando «noviembre». */
+    asunto: `Tu plaza para el ${MASTERCLASS.corto} · ${MASTERCLASS.titulo}`,
     html: marco({
       previo: conGrupo
-        ? 'Tu plaza está guardada. El siguiente paso es entrar al grupo de WhatsApp.'
-        : 'Tu plaza está guardada. Te escribo en cuanto haya fecha.',
+        ? `Es ${MASTERCLASS.cuando}. El siguiente paso es entrar al grupo de WhatsApp.`
+        : `Es ${MASTERCLASS.cuando}. Te mando el enlace ese mismo día.`,
       titular: 'Ya tienes tu plaza',
       email: lead.email,
       cuerpo:
@@ -248,8 +251,9 @@ function correoDeCurso(lead: Lead): { asunto: string; html: string } {
            una objeción que esta persona ya no tiene —acaba de apuntarse—. Lo
            que sí necesita saber es lo único que de verdad no sabe: que la
            fecha todavía no existe y que se la vamos a mandar nosotros. */
-        `<p style="margin:0 0 14px">Hola ${primerNombre(lead.nombre)}, gracias por apuntarte a <b>Desórdenes Amorosos</b>.</p>
-         <p style="margin:0">Es <b>gratuita</b> y se da <b>en directo</b>. Todavía no hay día fijado: en cuanto lo haya, te lo mando.</p>
+        `<p style="margin:0 0 14px">Hola ${primerNombre(lead.nombre)}, gracias por apuntarte a <b>${MASTERCLASS.titulo}</b>.</p>
+         <p style="margin:0 0 14px">Es <b>${MASTERCLASS.cuando}</b> (${MASTERCLASS.zona}). Es <b>gratuita</b> y se da <b>en directo</b>.</p>
+         <p style="margin:0;font-size:15px;color:#55504f">Apúntatelo ahora en el calendario: es lo único que de verdad evita que se te pase.</p>
          ${lospasos}
          ${conGrupo ? boton(GRUPO, 'Entrar al grupo de WhatsApp') : ''}
          <p style="margin:18px 0 0">Si te surge cualquier duda, contesta a este correo: lo leo yo.</p>`,

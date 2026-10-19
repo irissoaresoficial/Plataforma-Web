@@ -13,27 +13,29 @@
 import type { Metadata } from 'next';
 import Ficha from '@/components/Ficha';
 import Masterclass from '@/components/casa/Masterclass';
-import { CONTACTO, LOGO_COLOR } from '@/content/site';
+import { CONTACTO, LOGO_COLOR, MASTERCLASS } from '@/content/site';
 
 const CASA = process.env.NEXT_PUBLIC_SITE_URL || 'https://escueladesabiduria33.com';
 
 export const metadata: Metadata = {
   title: 'Masterclass Desórdenes Amorosos · Iris Soares',
   description:
-    /* «Gratuita» sí, confirmado por Gerson. La fecha NO: sigue sin decidir
-       y citar a alguien un día que nadie ha fijado es otra cosa.
-       Y QUIÉN LA DA, TAMPOCO. Ponía «con Iris Soares» y la da Marco (Gerson,
-       19 de octubre). Lo que firma es la escuela, que sí es verdad: esto se
-       ve al compartir el enlace por WhatsApp, o sea donde más se nota una
-       promesa que no cuadra. */
-    'Lo que se repite en tu forma de querer no empezó contigo. Masterclass gratuita de numerología transgeneracional de la Escuela de Sabiduría 33. Déjame tu correo y te aviso de la fecha.',
+    /* YA LLEVA FECHA. Hasta hoy decía «te aviso de la fecha» porque no había
+       ninguna, y citar a alguien un día que nadie ha fijado es otra cosa.
+       Gerson la cerró el 19 de octubre, así que aquí va — y tiene que ser la
+       misma que dice la página, porque Meta compara el anuncio con su destino
+       y una fecha que no cuadra es motivo de rechazo.
+       QUIÉN LA DA sigue sin ir aquí: lo que firma es la escuela. Esto se ve al
+       compartir el enlace por WhatsApp, donde más se nota una promesa floja.
+       La fecha se escribe sola desde `content/site.ts`: un solo sitio. */
+    `Masterclass gratuita de numerología transgeneracional, ${MASTERCLASS.cuando}, en directo. Lo que se repite en tu forma de querer no empezó contigo. Escuela de Sabiduría 33.`,
   alternates: { canonical: '/masterclass' },
   openGraph: {
     type: 'website',
     url: `${CASA}/masterclass`,
     title: 'Hay una forma de amar que no elegiste',
     description:
-      'Masterclass gratuita de Desórdenes Amorosos, en la Escuela de Sabiduría 33. Déjame tu correo y te aviso en cuanto haya fecha.',
+      `${MASTERCLASS.titulo}: masterclass gratuita y en directo, ${MASTERCLASS.cuando}. Escuela de Sabiduría 33.`,
     siteName: 'Escuela de Sabiduría 33',
     locale: 'es_ES',
     images: [`${CASA}/images/desordenes-aterrizaje-cartel.jpg`],

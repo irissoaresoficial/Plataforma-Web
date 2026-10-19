@@ -40,7 +40,7 @@ import Link from 'next/link';
 import { useId, useState } from 'react';
 import { sendLead } from '@/lib/sendLead';
 import { medir } from '@/lib/medir';
-import { CONTACTO } from '@/content/site';
+import { CONTACTO, MASTERCLASS } from '@/content/site';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -181,8 +181,8 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
                   `rel="noreferrer"` además de `noopener` porque esto sale de
                   la web hacia fuera. */}
               <p className="casa-gracias-paso">
-                Ahora entra al grupo. Ahí aviso de la fecha, mando el enlace el
-                día de la clase y contesto dudas.
+                Es {MASTERCLASS.cuando} ({MASTERCLASS.zona}). Ahora entra al
+                grupo: ahí mando el enlace el día de la clase y contesto dudas.
               </p>
               <a
                 className="casa-gracias-boton casa-brillo"
@@ -211,9 +211,10 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
                no está: se dice lo que sí va a pasar. En cuanto haya invitación
                en `CONTACTO.grupo`, el botón de arriba sale solo. */
             <p className="casa-gracias-letra">
-              En ese correo va también el enlace del grupo de WhatsApp de la
-              masterclass, que es donde aviso de la fecha y contesto dudas. Si
-              no te llega, mira en «correo no deseado» y escríbeme a{' '}
+              Es {MASTERCLASS.cuando} ({MASTERCLASS.zona}). En ese correo va
+              también el enlace del grupo de WhatsApp de la masterclass, que es
+              donde mando el enlace el día de la clase y contesto dudas. Si no
+              te llega, mira en «correo no deseado» y escríbeme a{' '}
               <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
             </p>
           )}
@@ -231,7 +232,12 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
           gratuita» lo dicen el rótulo de arriba y el botón. Eran cincuenta
           píxeles repitiendo lo que ya está a la vista, y en esta caja cada
           píxel que sobra empuja el botón de enviar fuera de la pantalla. */}
-      <p className="casa-registro-p">Te escribo en cuanto haya fecha.</p>
+      {/* YA HAY FECHA, así que aquí va la fecha. Esta línea decía «te escribo
+          en cuanto haya fecha», que era verdad mientras no la hubiera y era lo
+          único honrado que se podía decir. Ahora lo honrado y lo que más
+          convierte coinciden: una fecha concreta quita la duda de «¿y esto
+          cuándo es?», que es la que frena a mitad del formulario. */}
+      <p className="casa-registro-p">{MASTERCLASS.cuando}.</p>
 
       <label className="casa-campo" htmlFor={`${id}-n`}>
         <span>Tu nombre</span>

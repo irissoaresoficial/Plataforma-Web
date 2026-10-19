@@ -181,6 +181,42 @@ export const TITULAR = {
   direccion: PENDIENTE,
 };
 
+/**
+ * ============================================================================
+ * LA MASTERCLASS: CUÁNDO ES, EN UN SOLO SITIO
+ * ============================================================================
+ *
+ * Gerson, el 19 de octubre: «lo de la masterclass está para el 26 de noviembre
+ * de 15 a 16 horas».
+ *
+ * Hasta hoy la fecha no existía, y por eso la web decía «te aviso en cuanto
+ * haya fecha» en cuatro sitios distintos. Ahora existe, y se escribe UNA VEZ.
+ *
+ * POR QUÉ AQUÍ Y NO EN CADA PANTALLA. La fecha aparece en la página, en la
+ * pantalla de gracias, en el correo de confirmación y en los anuncios. Escrita
+ * cuatro veces, el día que se mueva —y las fechas se mueven— alguna se queda
+ * atrás, y una web que anuncia dos días distintos para la misma clase es peor
+ * que una que no anuncia ninguno. Aquí se cambia en un sitio y cambia en todos.
+ *
+ * Y LOS ANUNCIOS TIENEN QUE DECIR LO MISMO. Meta compara el anuncio con la
+ * página a la que lleva: si el anuncio dice una fecha y la página dice otra,
+ * eso es motivo de rechazo además de ser una mentira.
+ *
+ * `cuando` es para leer, `iso` es para las máquinas —el recordatorio del
+ * calendario, el dato estructurado de Google— y `horaFin` cierra la hora.
+ */
+export const MASTERCLASS = {
+  titulo: 'Desórdenes Amorosos',
+  /** Como se lee en una frase: «el jueves 26 de noviembre, de 15:00 a 16:00». */
+  cuando: 'el jueves 26 de noviembre, de 15:00 a 16:00',
+  /** Más corto, para un botón o un titular de anuncio. */
+  corto: '26 de noviembre · 15:00',
+  /** Hora de España peninsular. Va escrito porque hay gente apuntada fuera. */
+  zona: 'hora de España (Madrid)',
+  iso: '2026-11-26T15:00:00+01:00',
+  isoFin: '2026-11-26T16:00:00+01:00',
+};
+
 export const CONTACTO = {
   /** Correo al que se escribe la gente si algo falla. */
   email: 'irissoaresoficial@gmail.com',

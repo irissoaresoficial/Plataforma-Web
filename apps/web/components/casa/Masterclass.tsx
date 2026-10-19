@@ -44,7 +44,7 @@ import Barra from './Barra';
 import Pie from './Pie';
 import Registro from './Registro';
 import Sello from './Sello';
-import { PRESENTAN } from '@/content/site';
+import { PRESENTAN, MASTERCLASS } from '@/content/site';
 import './casa.css';
 import VideoMedido from './VideoMedido';
 
@@ -242,8 +242,8 @@ export default function Masterclass() {
               Si te has reconocido en algo de esto
             </h2>
             <p className="casa-mc-cierre-p">
-              Déjame tu nombre y tu correo y te aviso en cuanto haya fecha. Es
-              gratuita y se da en directo.
+              Es {MASTERCLASS.cuando}, en directo y gratuita. Déjame tu nombre y
+              tu correo y te mando el enlace.
             </p>
             <a href="#apuntarse" className="casa-mc-da-boton casa-brillo">
               Quiero mi plaza
