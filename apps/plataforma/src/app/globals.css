@@ -1994,6 +1994,7 @@ button:not(:disabled):active {
   display: grid;
   grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   gap: var(--gap);
+  align-items: start;
 }
 @media (max-width: 1000px) {
   [data-metricas-rejilla] {
@@ -2034,6 +2035,24 @@ button:not(:disabled):active {
 }
 @media (max-width: 1000px) {
   [data-comunidad] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Las cuatro preguntas del negocio, en fila; dos y dos en tableta; una en
+   el móvil. */
+[data-kpis] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap);
+}
+@media (max-width: 1100px) {
+  [data-kpis] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  [data-kpis] {
     grid-template-columns: minmax(0, 1fr);
   }
 }
