@@ -40,6 +40,8 @@ export type View =
   | "comunidad"
   | "perfil"
   /* ---- SÓLO IRIS: el estudio de Kábala y el despacho ---- */
+  /** El tablero: lo primero que ve Iris al entrar. Cómo va el día. */
+  | "tablero"
   | "inicio"
   | "panel"
   | "estudio"
@@ -67,7 +69,16 @@ const RUTA: Record<View, string> = {
   perfil: "/perfil",
   metricas: "/metricas",
   gestion: "/gestion",
-  inicio: "/",
+  /*
+   * LA RAÍZ ES EL TABLERO DESDE EL 20 DE OCTUBRE DE 2026.
+   *
+   * Era la consulta, y al abrir por la mañana lo primero que salía era un
+   * formulario en blanco: la pregunta «¿a quién estudiamos?» antes de saber si
+   * hoy hay sesiones, quién ha escrito o qué factura cuelga. Ahora se entra al
+   * día y desde ahí se va a la consulta, que se ha mudado a /consulta.
+   */
+  tablero: "/",
+  inicio: "/consulta",
   panel: "/panel",
   estudio: "/estudio",
   pareja: "/pareja",
@@ -82,7 +93,8 @@ const VISTA: Record<string, View> = {
   "/perfil": "perfil",
   "/metricas": "metricas",
   "/gestion": "gestion",
-  "/": "inicio",
+  "/": "tablero",
+  "/consulta": "inicio",
   "/panel": "panel",
   "/estudio": "estudio",
   "/pareja": "pareja",
@@ -107,6 +119,8 @@ const LLAVE: Record<View, Capacidad> = {
   cursos: "cursos",
   comunidad: "comunidad",
   perfil: "escuela", // el perfil es de cada uno: lo abre cualquiera que haya entrado
+  /* El tablero lee las citas, las fichas y las facturas: es del despacho. */
+  tablero: "despacho",
   /* El estudio de Kábala, que es sólo de Iris */
   inicio: "estudio",
   panel: "estudio",
@@ -134,6 +148,7 @@ export function llaveDe(v: View): Capacidad {
  * allí que no hay nada suyo todavía.
  */
 export function dondeEmpieza(puedeHacer: (c: Capacidad) => boolean): View {
+  if (puedeHacer("despacho")) return "tablero";
   if (puedeHacer("estudio")) return "inicio";
   return "escuela";
 }
@@ -147,6 +162,7 @@ export function dondeEmpieza(puedeHacer: (c: Capacidad) => boolean): View {
  */
 export type Pestana = { k: View; label: string; grupo: "estudio" | "despacho" };
 export const PESTANAS: Pestana[] = [
+  { k: "tablero", label: "Inicio", grupo: "despacho" },
   { k: "inicio", label: "Consulta", grupo: "estudio" },
   { k: "panel", label: "Panel", grupo: "estudio" },
   { k: "estudio", label: "Estudio", grupo: "estudio" },
@@ -358,7 +374,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // navegando, para que la flecha de atrás del navegador funcione sola.
   const router = useRouter();
   const ruta = usePathname();
-  const view: View = VISTA[ruta] ?? "inicio";
+  const view: View = VISTA[ruta] ?? "tablero";
   const setView = useCallback((v: View) => router.push(RUTA[v]), [router]);
   const [seccion, setSeccion] = useState<Seccion>("resumen");
   const [disciplina, setDisciplina] = useState<Disciplina>("kabala");

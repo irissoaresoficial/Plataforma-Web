@@ -129,6 +129,16 @@ tipografías».
 | `--arena` | `#f1ede4` | El fondo crema |
 | `--linea` | `#e9e5df` | Las rayas finas |
 
+En la plataforma, además:
+
+| Token | Valor | Qué es |
+|---|---|---|
+| `--bg` | `#ece6da` | El fondo. Bajado el 20 de octubre de 2026: con `#f7f4ef` la tarjeta blanca quedaba a 1,10:1 y no se veía. Ahora 1,24:1, y `--text-4` sigue en 4,56:1 encima |
+| `--border` | `#e4ded2` | El borde de tarjeta, subido con el fondo |
+| `--bloque` | `var(--vino)` | La pieza oscura que ancla una pantalla clara. **Una por pantalla.** En oscuro, `#3a1a22` |
+| `--sobre-bloque` | `#fbf6ee` | La tinta sobre el bloque (13,7:1) |
+| `--accion` | `#451a25` | El vino exacto de la web. Antes era `#4a1a26`, casi igual, que es peor que distinto |
+
 Y los que cambian según el bloque (`.claro`, `.arena`, `.vino`):
 `--bg`, `--tx`, `--tx-2`, `--tx-3`, `--acento`, `--superficie`.
 

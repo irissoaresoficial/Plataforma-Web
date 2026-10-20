@@ -20,7 +20,6 @@ import {
   IcoGestion,
   IcoMetricas,
   IcoCuentas,
-  IcoDespacho,
   IcoDocumento,
   IcoEstructura,
   IcoFacturas,
@@ -29,6 +28,7 @@ import {
   IcoPareja,
   IcoPlegar,
   IcoResumen,
+  IcoTablero,
 } from "./Iconos";
 
 type Ico = (p: { size?: number }) => React.JSX.Element;
@@ -184,25 +184,6 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
    */
   const [tocadas, setTocadas] = useState<Partial<Record<Disciplina, boolean>>>({});
   const estaAbierta = (d: Disciplina) => tocadas[d] ?? (enElPanel && disciplina === d);
-  /*
-   * EL PLEGADO DEL DESPACHO. Exactamente la misma regla que las disciplinas,
-   * y escrita de la misma forma a propósito: cerrado, abierto cuando se está
-   * dentro de una de sus pantallas, y lo que Iris pliegue a mano se respeta.
-   *
-   * A /facturas se llega también desde un aviso de la campana, sin tocar el
-   * menú, y ver el grupo cerrado sería no saber dónde estás. Por eso no se
-   * guarda si está abierto —eso se deduce— sino sólo si ella lo tocó.
-   *
-   * Aquí había un efecto que hacía lo mismo. Funcionaba, pero es la forma que
-   * React desaconseja y que la comprobación del proyecto marca en rojo: lo que
-   * se puede deducir no se guarda.
-   */
-  const dentroDespacho = DESPACHO.some((d) => d.k === view);
-  const [despachoTocado, setDespachoTocado] = useState<boolean | null>(null);
-  const despachoAbierto = despachoTocado ?? dentroDespacho;
-  const alternaDespacho = () => setDespachoTocado(!despachoAbierto);
-  /* Plegada a iconos no hay flecha ni sitio para una: el grupo va abierto. */
-  const verDespachoAbierto = compacta || despachoAbierto;
 
   const hayEstudio = Boolean(r || re);
   // El estudio de empresa cabe entero en una pantalla: no hay siete partes
@@ -325,6 +306,25 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
     />
   );
 
+  /*
+   * EL NOMBRE DE CADA GRUPO, ESCRITO.
+   *
+   * La columna eran cinco montones separados por una raya y sin nombre. Para
+   * saber que «Agenda» era del despacho y «Cursos» de la escuela había que
+   * acordarse; Gerson lo dijo mirándola: «arreglar el orden». Un rótulo corto
+   * encima de cada montón lo contesta sin pensar.
+   *
+   * Plegada a iconos no cabe: ahí vuelve la raya, que es lo que había.
+   */
+  const grupo = (texto: string) =>
+    compacta ? (
+      raya()
+    ) : (
+      <div style={css("padding:0 12px 6px;font-size:var(--t-mini);font-weight:500;color:var(--text-4);letter-spacing:.01em;")}>
+        {texto}
+      </div>
+    );
+
   const ir = (v: View) => () => {
     setView(v);
     alCambiar?.();
@@ -345,27 +345,39 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
   const verEstudio = puede("estudio");
   const verDespacho = puede("despacho");
 
+  /*
+   * EL ORDEN, DESDE EL 20 DE OCTUBRE DE 2026: EL DÍA, EL OFICIO, LA ESCUELA.
+   *
+   * Arriba iba la escuela, con el argumento de que es lo que ve todo el mundo.
+   * Para un alumno sigue siendo lo único que hay, así que para él no cambia
+   * nada. Para Iris el orden era el de la herramienta y no el de su mañana:
+   * abría y lo primero eran los cursos, después el estudio, y el despacho
+   * escondido en un pliegue.
+   *
+   * Ahora va en el orden en que se trabaja. Primero el tablero —cómo va el
+   * día—, después el estudio y el despacho, que es su oficio, y debajo la
+   * escuela y la dirección, que se miran pero no se trabajan a diario.
+   *
+   * EL DESPACHO YA NO SE PLIEGA. Se plegaba para adelgazar la columna, y con
+   * los grupos rotulados cabe entera en 900 px de alto. Tres renglones a la
+   * vista valen más que un pliegue que hay que abrir para encontrar la agenda.
+   */
   return (
-    <nav style={css("display:flex;flex-direction:column;gap:var(--s6);")}>
-      {/* ---------------------------------------------------- LA ESCUELA */}
-      {/* Va primero porque es lo que ve TODO EL MUNDO, y el orden de un menú
-          dice de quién es la herramienta. Para Iris queda arriba lo de sus
-          alumnos y debajo lo suyo, que es el orden en que piensa quien lleva
-          una escuela: primero cómo va la clase, después el papeleo. */}
-      {escuela.length > 0 && (
+    <nav style={css("display:flex;flex-direction:column;gap:var(--s4);")}>
+      {/* ------------------------------------------------------- EL TABLERO */}
+      {verDespacho && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-          {escuela.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
+          {fila(view === "tablero", IcoTablero, "Inicio", ir("tablero"))}
         </div>
       )}
 
       {/* ------------------------------------------------------- EL ESTUDIO */}
-      {verEstudio && escuela.length > 0 && raya()}
       {verEstudio && (
-      <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-
-        {/* La consulta es donde se empieza y donde se cambia de persona, así
-            que no se bloquea nunca: es la salida de todas las demás. */}
-        {fila(view === "inicio", IcoConsulta, "Consulta", ir("inicio"))}
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {grupo("Estudio")}
+          {/* La consulta es donde se empieza y donde se cambia de persona, así
+              que no se bloquea nunca: es la salida de todas las demás. */}
+          {fila(view === "inicio", IcoConsulta, "Consulta", ir("inicio"))}
 
         {DISCIPLINAS.map((d) => {
           const dentro = view === "panel" && disciplina === d.k;
@@ -485,67 +497,34 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
         <div style={css("height:var(--s3);")} aria-hidden />
         {fila(view === "estudio", IcoDocumento, "El documento", ir("estudio"), { apagado: !hayEstudio })}
         {fila(view === "pareja", IcoPareja, "Comparar pareja", ir("pareja"), { apagado: !hayEstudio })}
-      </div>
+        </div>
       )}
 
       {/* ------------------------------------------------------ EL DESPACHO */}
-      {/*
-        EL DESPACHO SE PLIEGA, Y ES LA MITAD DEL ADELGAZAMIENTO.
-        
-        Cuatro renglones —Leads, Agenda, Clientes, Facturas— pasan a ser uno
-        mientras no se abre. Se pliega éste y no el estudio porque no son lo
-        mismo: el estudio es a lo que Iris entra a trabajar, y el despacho es
-        donde va cuando le hace falta algo concreto. Lo que se usa a diario se
-        deja a la vista; lo que se visita, se guarda.
-        
-        Se abre solo cuando se está dentro de una de las cuatro, para que nunca
-        pase lo de estar en Facturas y no ver dónde estás. Y plegada a iconos la
-        columna, se abre siempre: ahí no hay sitio para una flecha.
-      */}
       {verDespacho && (
-        <>
-          {raya()}
-          <div style={css("display:flex;flex-direction:column;gap:2px;")}>
-            {fila(
-              false,
-              IcoDespacho,
-              "Despacho",
-              () => alternaDespacho(),
-              { abierta: compacta ? undefined : despachoAbierto }
-            )}
-            <AnimatePresence initial={false}>
-              {verDespachoAbierto && (
-                <motion.div
-                  key="despacho"
-                  initial={quieto ? false : { height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={quieto ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                  transition={{ height: { duration: 0.32, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.2 } }}
-                  style={css("overflow:hidden;display:flex;flex-direction:column;gap:2px;")}
-                >
-                  {DESPACHO.map(({ k, label, Ico }, i) => (
-                    <motion.div
-                      key={k}
-                      initial={quieto ? false : { opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.04 + i * 0.03, duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      {fila(view === k, Ico, label, ir(k))}
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </>
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {grupo("Despacho")}
+          {DESPACHO.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
+        </div>
       )}
 
-      {/* ------------------------------------------------------- LA DIRECCIÓN */}
-      {/* Dos entradas sueltas: plegarlas no ahorraría nada —serían dos
-          renglones convertidos en uno más la flecha— y escondería justo lo que
-          Iris va a querer mirar cada mañana cuando la escuela esté llena. */}
+      {/* ------------------------------------------------------- LA ESCUELA */}
+      {/* Para Iris el recibidor se llama así: «Inicio» ya es su tablero, y dos
+          «Inicio» en la misma columna son una adivinanza. Para un alumno sigue
+          siendo su inicio, porque es el único que tiene. */}
+      {escuela.length > 0 && (
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {verDespacho && grupo("Escuela")}
+          {escuela.map(({ k, label, Ico }) =>
+            fila(view === k, Ico, k === "escuela" && verDespacho ? "Recibidor" : label, ir(k))
+          )}
+        </div>
+      )}
+
+      {/* ------------------------------------------------------ LA DIRECCIÓN */}
       {direccion.length > 0 && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {grupo("Dirección")}
           {direccion.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
         </div>
       )}
@@ -553,14 +532,6 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
   );
 }
 
-/**
- * La columna de la izquierda en pantalla ancha. Por debajo de 980 px
- * desaparece y manda el menú del botón de la cabecera.
- *
- * Se pliega a una tira de iconos para leer el estudio a todo lo ancho — que en
- * las secciones de dos columnas se nota — y al pasar el ratón por encima
- * enseña el nombre de lo que hay debajo de cada icono.
- */
 export default function Sidebar() {
   const { lateral, setLateral } = useApp();
 
