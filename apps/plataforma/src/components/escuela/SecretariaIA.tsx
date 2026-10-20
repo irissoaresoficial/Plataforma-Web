@@ -31,6 +31,13 @@
  * la derecha (en el móvil, arriba), fundida con el granate; el diagrama se
  * queda en la compacta, que es la que sale al pie de cada apartado.
  *
+ * CUARTA, el mismo día, y con razón: «eso debe estar en todos». La foto iba
+ * sólo en el inicio y al pie de los demás apartados seguía el diagrama. Ahora
+ * es una sola pieza en todos los sitios —la compacta es la misma, más baja—,
+ * con un degradado que se mueve muy despacio detrás y partículas doradas que
+ * suben. Las dos cosas van a muy poca opacidad: tienen que notarse sin
+ * mirarlas. Con movimiento reducido, quietas.
+ *
  * SÓLO PARA CREADORES. Con `compacta` sale en la parte de abajo de cada una de
  * sus pantallas; entera, en su inicio.
  */
@@ -63,7 +70,8 @@ const HARA: Array<[string, string]> = [
   ["Lleva los cobros", "Envía el pago con la cita y te dice cuándo ha entrado."],
 ];
 
-function Diagrama({ medida, tope, solo = false }: { medida: keyof typeof MEDIDAS; tope: number; solo?: boolean }) {
+/** Ya no se pinta (ver CUARTA, arriba); se queda por si vuelve. */
+export function Diagrama({ medida, tope, solo = false }: { medida: keyof typeof MEDIDAS; tope: number; solo?: boolean }) {
   const quieto = useReducedMotion();
   const { ancho: ANCHO, alto: ALTO, chip: CHIP, r: R, margen, aura, anillo, paso } = MEDIDAS[medida];
   const CX = ANCHO / 2;
@@ -142,59 +150,94 @@ function Diagrama({ medida, tope, solo = false }: { medida: keyof typeof MEDIDAS
   );
 }
 
+/** Las partículas: posiciones y tiempos fijos (no `Math.random`, que daría
+ *  una cosa en el servidor y otra en el navegador). */
+const PARTICULAS = Array.from({ length: 34 }, (_, i) => ({
+  x: (i * 37 + 11) % 100,
+  y: (i * 53 + 7) % 100,
+  t: 2 + ((i * 7) % 3) * 0.6,
+  dur: 7 + ((i * 5) % 8),
+  ret: -((i * 1.7) % 9),
+  luz: 0.3 + ((i * 3) % 5) * 0.13,
+}));
+
 export default function SecretariaIA({ compacta = false }: { compacta?: boolean }) {
+  const pad = compacta ? "var(--pad-card-sm)" : "var(--pad-card)";
   return (
     <section
-      data-ia={compacta ? "" : "foto"}
+      data-ia="foto"
+      data-ia-compacta={compacta ? "" : undefined}
       style={css(
-        "position:relative;overflow:hidden;border-radius:var(--r-tarjeta);display:grid;align-items:center;" +
-          (compacta ? "gap:var(--gap);padding:var(--pad-card-sm);" : "gap:var(--gap-lg);padding:var(--pad-card);") +
+        `--ia-pad:${pad};position:relative;isolation:isolate;overflow:hidden;border-radius:var(--r-tarjeta);display:grid;align-items:center;` +
+          `gap:var(--gap-lg);padding:${pad};` +
           "background:var(--bloque);color:var(--sobre-bloque);border:1px solid var(--bloque-borde);box-shadow:var(--shadow-lg);"
       )}
     >
-      <div style={css("min-width:0;display:flex;flex-direction:column;gap:" + (compacta ? "12px" : "18px") + ";")}>
+      <div data-ia-aurora="" aria-hidden />
+      <div data-ia-particulas="" aria-hidden>
+        {PARTICULAS.map((p, i) => (
+          <span
+            key={i}
+            style={css(
+              `left:${p.x}%;top:${p.y}%;width:${p.t}px;height:${p.t}px;--ia-luz:${p.luz};animation-duration:${p.dur}s;animation-delay:${p.ret}s;`
+            )}
+          />
+        ))}
+      </div>
+
+      <div style={css("position:relative;z-index:3;min-width:0;display:flex;flex-direction:column;gap:" + (compacta ? "14px" : "18px") + ";")}>
         <span
           style={css(
             "align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-size:var(--t-mini);font-weight:500;letter-spacing:.02em;" +
-              "padding:5px 12px;border-radius:var(--r-pill);color:var(--oro-luz);border:1px solid var(--bloque-borde);"
+              "padding:5px 12px;border-radius:var(--r-pill);color:var(--oro-luz);border:1px solid var(--bloque-borde);" +
+              "background:color-mix(in srgb, var(--bloque) 60%, transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);"
           )}
         >
           <span data-ia-pronto="" style={css("width:6px;height:6px;border-radius:50%;background:var(--oro-luz);")} />
           Próximamente
         </span>
-        <h2 style={css("margin:0;font-weight:300;letter-spacing:-.025em;line-height:1.1;" + (compacta ? "font-size:clamp(23px,2.3vw,30px);" : "font-size:clamp(28px,3.1vw,42px);"))}>
+        <h2 style={css("margin:0;font-weight:300;letter-spacing:-.025em;line-height:1.1;" + (compacta ? "font-size:clamp(25px,2.5vw,34px);" : "font-size:clamp(28px,3.1vw,42px);"))}>
           Una secretaria
           <br />
-          que ya conoce tu consulta.
+          <span data-ia-degradado="">que ya conoce tu consulta.</span>
         </h2>
         <p style={css("margin:0;font-size:var(--t-body);line-height:1.65;color:var(--sobre-bloque-2);max-width:46ch;")}>
-          {compacta
-            ? "Un asistente que trabaja con tu agenda, tus cursos y tus números para que tú sólo atiendas."
-            : "Un asistente que trabaja con lo que ya tienes aquí —tu agenda, tus cursos, tu comunidad y tus números— para que tú sólo atiendas."}
+          Un asistente que trabaja con lo que ya tienes aquí —tu agenda, tus cursos, tu comunidad y tus números— para que tú sólo atiendas.
         </p>
-        {!compacta && (
-          <dl style={css("margin:6px 0 0;display:grid;border-top:1px solid var(--bloque-borde);max-width:52ch;")}>
-            {HARA.map(([que, como]) => (
-              <div key={que} data-ia-fila="" style={css("display:grid;gap:4px 20px;padding:13px 0;border-bottom:1px solid var(--bloque-borde);")}>
-                <dt style={css("font-size:var(--t-body);font-weight:500;color:var(--sobre-bloque);")}>{que}</dt>
-                <dd style={css("margin:0;font-size:var(--t-body);line-height:1.5;color:var(--sobre-bloque-2);")}>{como}</dd>
-              </div>
+        {compacta ? (
+          <ul style={css("margin:2px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px;")}>
+            {HARA.map(([que]) => (
+              <li
+                key={que}
+                style={css(
+                  "display:inline-flex;align-items:center;gap:8px;font-size:var(--t-mini);padding:7px 13px;border-radius:var(--r-pill);" +
+                    "color:var(--sobre-bloque);background:var(--bloque-2);border:1px solid var(--bloque-borde);"
+                )}
+              >
+                <span style={css("width:5px;height:5px;border-radius:50%;background:var(--oro-luz);")} />
+                {que}
+              </li>
             ))}
-          </dl>
-        )}
-        {!compacta && (
-          <p style={css("margin:0;font-size:var(--t-mini);color:var(--sobre-bloque-2);")}>Cuando esté listo, lo activarás desde aquí. No tienes que preparar nada.</p>
+          </ul>
+        ) : (
+          <>
+            <dl style={css("margin:6px 0 0;display:grid;border-top:1px solid var(--bloque-borde);max-width:52ch;")}>
+              {HARA.map(([que, como]) => (
+                <div key={que} data-ia-fila="" style={css("display:grid;gap:4px 20px;padding:13px 0;border-bottom:1px solid var(--bloque-borde);")}>
+                  <dt style={css("font-size:var(--t-body);font-weight:500;color:var(--sobre-bloque);")}>{que}</dt>
+                  <dd style={css("margin:0;font-size:var(--t-body);line-height:1.5;color:var(--sobre-bloque-2);")}>{como}</dd>
+                </div>
+              ))}
+            </dl>
+            <p style={css("margin:0;font-size:var(--t-mini);color:var(--sobre-bloque-2);")}>Cuando esté listo, lo activarás desde aquí. No tienes que preparar nada.</p>
+          </>
         )}
       </div>
-      {compacta ? (
-        /* Siempre el lienzo estrecho: a 190 px de alto, el ancho dejaba la letra en 8. */
-        <Diagrama medida="estrecho" tope={230} solo />
-      ) : (
-        <div data-ia-foto="" aria-hidden>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/escuela/secretaria.webp" alt="" width={896} height={1120} loading="lazy" />
-        </div>
-      )}
+
+      <div data-ia-foto="" aria-hidden>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/escuela/secretaria.webp" alt="" width={896} height={1120} loading="lazy" />
+      </div>
     </section>
   );
 }
