@@ -523,6 +523,17 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
         </div>
       )}
 
+      {/* ------------------------------------------------------ TU ESPACIO */}
+      {/* El del creador de cursos: su agenda y sus números. Iris no lo ve
+          aquí porque tiene los suyos, más completos, en Despacho y Dirección. */}
+      {puede("crear") && !verDespacho && (
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {grupo("Tu espacio")}
+          {fila(view === "miagenda", IcoAgenda, "Mi agenda", ir("miagenda"))}
+          {fila(view === "mismetricas", IcoMetricas, "Mis métricas", ir("mismetricas"))}
+        </div>
+      )}
+
       {/* ------------------------------------------------------ LA DIRECCIÓN */}
       {direccion.length > 0 && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>

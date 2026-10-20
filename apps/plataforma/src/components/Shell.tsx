@@ -17,6 +17,8 @@ import ComunidadScreen from "./screens/ComunidadScreen";
 import PerfilScreen from "./screens/PerfilScreen";
 import GestionScreen from "./screens/GestionScreen";
 import TableroScreen from "./screens/TableroScreen";
+import MiAgendaScreen from "./screens/MiAgendaScreen";
+import MisMetricasScreen from "./screens/MisMetricasScreen";
 import DetalleModal from "./DetalleModal";
 import Sidebar from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
@@ -271,6 +273,8 @@ export default function Shell() {
             El porqué de que haya animación está en globals.css. */}
         <div key={vista} data-vista="" style={css("flex:1;min-width:0;")}>
           {vista === "tablero" && <TableroScreen />}
+          {vista === "miagenda" && <MiAgendaScreen />}
+          {vista === "mismetricas" && <MisMetricasScreen />}
           {vista === "inicio" && <ConsultaScreen />}
           {faltaEstudio && <SinEstudio vista={vista} />}
           {vista === "panel" && !faltaEstudio && <PanelScreen />}

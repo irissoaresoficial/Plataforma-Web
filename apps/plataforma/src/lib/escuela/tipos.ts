@@ -194,6 +194,9 @@ export type Inscripcion = {
   desde: string;
   /** Cómo entró: a mano por Iris, o pagando. Para las cuentas de después. */
   via: "mano" | "pago";
+  /** El creador del curso, copiado al dar el acceso: es lo que le deja ver
+   *  quién tiene su curso sin ver lo de nadie más. Vacío en cursos de Iris. */
+  autor?: string;
 };
 
 /** Por dónde va una persona en un curso. */
@@ -205,6 +208,9 @@ export type Avance = {
   /** Las lecciones terminadas, por su id. */
   hechas: string[];
   tocado: string;
+  /** El creador del curso, por lo mismo que en la inscripción: así puede ver
+   *  cómo avanza su gente. */
+  autor?: string;
 };
 
 /* ------------------------------------------------------------------ cuentas */

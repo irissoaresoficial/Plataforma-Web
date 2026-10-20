@@ -44,8 +44,9 @@ import { css } from "@/lib/css";
 import { useApp, type View } from "@/lib/app-context";
 import { useSesion } from "@/lib/sesion";
 import { CABECERA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
-import { IcoComunidad, IcoCursos, IcoTrofeos } from "../Iconos";
+import { IcoAgenda, IcoComunidad, IcoCursos, IcoMetricas, IcoTrofeos } from "../Iconos";
 import PanelInicio from "../escuela/PanelInicio";
+import PrimerosPasos from "../escuela/PrimerosPasos";
 import {
   avance as repoAvance,
   cursos as repoCursos,
@@ -96,6 +97,23 @@ const PUERTAS: Array<{ k: View; llave: Capacidad; titulo: string; que: string; I
     que: "Lo que llevas hecho, tus medallas y tus datos.",
     Ico: IcoTrofeos,
     tono: "lavanda",
+  },
+  /* Las dos del creador de cursos. Las ve quien tiene la llave de crear. */
+  {
+    k: "miagenda",
+    llave: "crear",
+    titulo: "Mi agenda",
+    que: "Tus directos, tus sesiones y tus entregas, por días.",
+    Ico: IcoAgenda,
+    tono: "cielo",
+  },
+  {
+    k: "mismetricas",
+    llave: "crear",
+    titulo: "Mis métricas",
+    que: "Cuánta gente entra a tus cursos y hasta dónde llega.",
+    Ico: IcoMetricas,
+    tono: "lima",
   },
 ];
 
@@ -242,6 +260,9 @@ export default function EscuelaScreen() {
         )}
         </div>
       </header>
+
+      {/* Los trofeos de empezar: foto, comunidad, el primer curso. */}
+      <PrimerosPasos />
 
       {/* --------------------------------------------- Sigue donde lo dejaste */}
       {/* Lo primero de verdad, antes que los atajos: la pregunta que trae a

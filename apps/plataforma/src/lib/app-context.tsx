@@ -39,6 +39,9 @@ export type View =
   | "cursos"
   | "comunidad"
   | "perfil"
+  /* ---- EL CREADOR DE CURSOS: su agenda y sus números ---- */
+  | "miagenda"
+  | "mismetricas"
   /* ---- SÓLO IRIS: el estudio de Kábala y el despacho ---- */
   /** El tablero: lo primero que ve Iris al entrar. Cómo va el día. */
   | "tablero"
@@ -67,6 +70,8 @@ const RUTA: Record<View, string> = {
   cursos: "/cursos",
   comunidad: "/comunidad",
   perfil: "/perfil",
+  miagenda: "/mi-agenda",
+  mismetricas: "/mis-metricas",
   metricas: "/metricas",
   gestion: "/gestion",
   /*
@@ -91,6 +96,8 @@ const VISTA: Record<string, View> = {
   "/cursos": "cursos",
   "/comunidad": "comunidad",
   "/perfil": "perfil",
+  "/mi-agenda": "miagenda",
+  "/mis-metricas": "mismetricas",
   "/metricas": "metricas",
   "/gestion": "gestion",
   "/": "tablero",
@@ -119,6 +126,9 @@ const LLAVE: Record<View, Capacidad> = {
   cursos: "cursos",
   comunidad: "comunidad",
   perfil: "escuela", // el perfil es de cada uno: lo abre cualquiera que haya entrado
+  /* Del creador: su agenda y las métricas de sus cursos */
+  miagenda: "crear",
+  mismetricas: "crear",
   /* El tablero lee las citas, las fichas y las facturas: es del despacho. */
   tablero: "despacho",
   /* El estudio de Kábala, que es sólo de Iris */

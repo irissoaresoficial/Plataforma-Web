@@ -109,18 +109,30 @@ export const inscripcionesNube: RepoInscripciones = {
     return r.docs.map((d) => conId<Inscripcion>(d.id, d.data()));
   },
   async dar(uid, cursoId, via = "mano") {
+    /* El autor del curso va copiado en la inscripción: las reglas no dejan
+       al creador preguntar «las de mi curso» mirando otro documento, pero sí
+       mirando un campo del propio. */
+    const curso = await getDoc(doc(base(), "cursos", cursoId));
+    const autor = curso.exists() ? (curso.data().autor as string | undefined) : undefined;
     const nueva: Inscripcion = {
       id: `${uid}__${cursoId}`,
       uid,
       cursoId,
       desde: new Date().toISOString(),
       via,
+      ...(autor ? { autor } : {}),
     };
     await setDoc(doc(base(), "inscripciones", nueva.id), nueva);
     return nueva;
   },
   async quitar(uid, cursoId) {
     await deleteDoc(doc(base(), "inscripciones", `${uid}__${cursoId}`));
+  },
+  async deAutor(uid) {
+    const b = baseOpcional();
+    if (!b) return [];
+    const r = await getDocs(query(collection(b, "inscripciones"), where("autor", "==", uid)));
+    return r.docs.map((d) => conId<Inscripcion>(d.id, d.data()));
   },
 };
 
@@ -160,7 +172,13 @@ export const avanceNube: RepoAvance = {
    * barra de progreso con lo que de verdad hay guardado, no con lo que supone.
    * Ahí el documento ya existe, así que esa lectura no tropieza con nada.
    */
-  async marcar(uid, cursoId, leccionId, hecha) {
+  async deAutor(uid) {
+    const b = baseOpcional();
+    if (!b) return [];
+    const r = await getDocs(query(collection(b, "avance"), where("autor", "==", uid)));
+    return r.docs.map((d) => conId<Avance>(d.id, d.data()));
+  },
+  async marcar(uid, cursoId, leccionId, hecha, autor) {
     const b = base();
     const id = `${uid}__${cursoId}`;
     const referencia = doc(b, "avance", id);
@@ -172,6 +190,7 @@ export const avanceNube: RepoAvance = {
         cursoId,
         hechas: hecha ? arrayUnion(leccionId) : arrayRemove(leccionId),
         tocado: new Date().toISOString(),
+        ...(autor ? { autor } : {}),
       },
       { merge: true }
     );
