@@ -55,16 +55,19 @@ import {
   type Factura,
   type Relacion,
 } from "@/lib/despacho";
-import { ultimosLeads, type Lead } from "@/lib/despacho/leads";
+import { borraLead, ultimosLeads, type Lead } from "@/lib/despacho/leads";
+import { fuenteDe } from "@/lib/despacho/fuentes";
+import Banda from "../Banda";
+import Confirmar from "../Confirmar";
 import { FORMULARIOS, juntaPersonas, puntoDe, NOMBRE_PUNTO, TONO_PUNTO, type Persona, type Punto } from "@/lib/despacho/personas";
-import { AvisoNavegador, Avatar, Cabecera, Vacio, useEstrecho } from "../despacho/Piezas";
+import { AvisoNavegador, Avatar, Vacio, useEstrecho } from "../despacho/Piezas";
 import HojaLateral from "../despacho/HojaLateral";
 import FichaCliente from "../despacho/FichaCliente";
 import FichaLead from "../despacho/FichaLead";
 
 /** Cómo se llama en pantalla de dónde salió cada persona. */
 const ORIGENES: Record<string, string> = {
-  "web-sinergia": "Llegó por la prueba gratis",
+  "web-sinergia": "Llegó por el estudio Sinergia",
   "web-membresia": "Llegó por la lista de espera",
   "web-curso": "Llegó por un curso",
   "web-cita": "Pidió cita por la web",
@@ -198,13 +201,24 @@ export default function PersonasScreen() {
 
   const abierta = useMemo(() => gente.find((g) => g.p.llave === clienteAbierto) ?? null, [gente, clienteAbierto]);
 
-  /* Por qué formulario entró cada una, de más a menos. Quien no trae ningún
-     lead se apuntó a mano: también cuenta, y se dice. */
+  /** Borra a una persona entera: su ficha, si la tiene, y lo que dejó en la web. */
+  const borraPersona = async (p: Persona) => {
+    try {
+      await Promise.all(p.leads.map((l) => borraLead(l.id)));
+      if (p.cliente) await repoClientes.borrar(p.cliente.id);
+    } finally {
+      if (clienteAbierto === p.llave) setClienteAbierto(null);
+      recargar();
+    }
+  };
+
+  /* Qué la llevó a la web —un anuncio, Instagram, Google—, de más a menos.
+     Quien no trae ningún lead la apuntó Iris a mano: también cuenta. */
   const llegadas = useMemo(() => {
     const m = new Map<string, number>();
     for (const g of todas) {
       const l = g.p.leads[0];
-      const que = l ? (FORMULARIOS[l.origen] ?? "Dejó su correo") : "Apuntada a mano";
+      const que = l ? fuenteDe(l) : "Apuntada a mano";
       m.set(que, (m.get(que) ?? 0) + 1);
     }
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
@@ -358,9 +372,19 @@ export default function PersonasScreen() {
 
   return (
     <main style={css("max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);min-width:0;")}>
-      <Cabecera
+      <Banda
+        foto="/escuela/banda-personas.jpg"
         titulo="Personas"
-        pie={cargando ? "" : todas.length === 1 ? "1 persona" : `${todas.length} personas`}
+        sub="Quién te ha escrito, con quién has hablado y quién ya es clienta."
+        cifras={
+          cargando
+            ? []
+            : [
+                { n: todas.length, que: "Personas" },
+                { n: cuenta.nueva, que: "Sin contestar" },
+                { n: cuenta.clienta, que: "Clientas" },
+              ]
+        }
       />
 
       {/* ================================================== buscar y las caras */}
@@ -379,24 +403,6 @@ export default function PersonasScreen() {
             Añadir una persona
           </button>
         </div>
-
-        {/* La forma del embudo en un renglón: es lo que decían las cuatro
-            columnas del tablero de leads, y cabe aquí. */}
-        {!cargando && todas.length > 0 && (
-          <div style={css(NOTA + "margin-top:var(--s3);display:flex;gap:var(--s3);flex-wrap:wrap;")}>
-            <span>{cuenta.nueva} sin contestar</span>
-            <span>·</span>
-            <span>{cuenta.escrita} habladas</span>
-            <span>·</span>
-            <span>{cuenta.clienta} clientas</span>
-            {cuenta.fuera > 0 && (
-              <>
-                <span>·</span>
-                <span>{cuenta.fuera} descartadas</span>
-              </>
-            )}
-          </div>
-        )}
 
         <div style={css(RAYA + "margin-top:var(--s4);padding-top:var(--s4);")}>
           <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s3);")}>A quién ves esta semana</div>
@@ -496,15 +502,18 @@ export default function PersonasScreen() {
                         ? `${FORMULARIOS[l.origen] ?? "Dejó su correo"}${l.visto ? ` · ${diaMinimo(l.visto)}` : ""}`
                         : g.p.email;
                     return (
-                      <motion.button
+                      <motion.div
                         key={g.p.llave}
                         initial={quieto ? false : { opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.26, delay: Math.min(i, 7) * 0.03, ease: [0.16, 1, 0.3, 1] }}
+                        style={css("position:relative;")}
+                      >
+                      <button
                         onClick={() => setClienteAbierto(g.p.llave)}
                         style={css(
                           "display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;font:inherit;" +
-                            "padding:10px 12px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);" +
+                            "padding:10px 40px 10px 12px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);" +
                             (g.p.llave === clienteAbierto ? "outline:2px solid var(--accion-borde);" : "")
                         )}
                       >
@@ -516,7 +525,26 @@ export default function PersonasScreen() {
                           <span style={css("display:block;font-size:var(--t-mini);color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{debajo}</span>
                           {cuelga && <span style={css("display:block;font-size:var(--t-micro);font-weight:500;color:var(--red);margin-top:2px;")}>{cuelga}</span>}
                         </span>
-                      </motion.button>
+                      </button>
+                      {/* BORRAR DESDE LA TARJETA. Gerson: «esos datos quiero la
+                          opción de borrarlos». Con pregunta antes, porque no
+                          tiene vuelta atrás. */}
+                      <span style={css("position:absolute;top:8px;right:8px;")}>
+                        <Confirmar
+                          estilo={"width:26px;height:26px;border-radius:50%;border:none;background:transparent;color:var(--text-4);cursor:pointer;font-size:14px;line-height:1;"}
+                          titulo={`Borrar a ${enTitulo(g.p.nombre)}`}
+                          pregunta={
+                            g.p.cliente
+                              ? "Se borra su ficha, con sus notas, y lo que dejó en la web. Sus facturas se quedan: una factura emitida no se borra nunca."
+                              : "Se borra lo que dejó en la web. No tiene vuelta atrás."
+                          }
+                          confirmar="Borrar"
+                          alConfirmar={() => void borraPersona(g.p)}
+                        >
+                          ✕
+                        </Confirmar>
+                      </span>
+                      </motion.div>
                     );
                   })}
                   {aqui.length > POR_COLUMNA && (

@@ -53,7 +53,7 @@ export type Novedad = {
  *  una: la colección de Firestore sigue siendo `leads`, que es de dónde sale
  *  el aviso, pero a dónde lleva ya es otra.) */
 const ORIGENES: Record<string, string> = {
-  sinergia: "ha hecho la prueba gratis",
+  sinergia: "ha pedido el estudio Sinergia",
   membresia: "se ha apuntado a la lista de espera",
   curso: "pregunta por un curso",
   reserva: "ha pedido una sesión",
