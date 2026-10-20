@@ -2000,3 +2000,26 @@ button:not(:disabled):active {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* La biblioteca del alumno: lo suyo a la izquierda y lo que lleva a la
+   derecha, como la referencia. En un móvil, una columna. */
+[data-biblioteca] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--gap);
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  [data-biblioteca] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  [data-fila-curso] {
+    grid-template-columns: 96px minmax(0, 1fr) !important;
+    row-gap: 6px !important;
+  }
+  [data-fila-barra] {
+    grid-column: 2;
+  }
+}

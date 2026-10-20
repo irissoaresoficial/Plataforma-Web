@@ -32,6 +32,7 @@ import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
 import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
 import EditorCurso, { cursoNuevo } from "../escuela/EditorCurso";
+import Biblioteca from "../escuela/Biblioteca";
 import Reproductor from "../escuela/Reproductor";
 import {
   avance as repoAvance,
@@ -243,8 +244,20 @@ export default function CursosScreen() {
       )}
 
       {/* ------------------------------------------------------ las fichas */}
+      {/* Quien estudia ve su biblioteca; las fichas de abajo son para quien
+          monta cursos: Iris todos, un creador los suyos. */}
+      {!esAdmin && (
+        <Biblioteca
+          cursos={(lista ?? []).filter((c) => !esMio(c))}
+          avances={avances}
+          abrir={(c) => setDonde({ que: "ve", curso: c })}
+        />
+      )}
+      {creador && (lista ?? []).some(esMio) && (lista ?? []).some((c) => !esMio(c)) && (
+        <h2 style={css("margin:var(--s4) 0 0;font-size:var(--t-head);font-weight:500;letter-spacing:-.02em;")}>Los que montas</h2>
+      )}
       <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(270px,1fr));")}>
-        {(lista ?? []).map((c, i) => {
+        {(lista ?? []).filter((c) => esAdmin || esMio(c)).map((c, i) => {
           const total = totalLecciones(c);
           const parte = progreso(c, avances[c.id] ?? null);
           return (
