@@ -30,8 +30,11 @@ import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
-import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
+import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, botonPrincipal , PANTALLA} from "@/lib/ui";
 import EditorCurso, { cursoNuevo } from "../escuela/EditorCurso";
+import Biblioteca from "../escuela/Biblioteca";
+import Banda from "../Banda";
+import { portadaDe } from "@/lib/escuela/portadas";
 import Reproductor from "../escuela/Reproductor";
 import {
   avance as repoAvance,
@@ -44,8 +47,6 @@ import {
   type Curso,
 } from "@/lib/escuela";
 
-/** Las fotos de la casa para los cursos que todavía no tienen portada. */
-const FOTOS = ["/escuela/basico.jpg", "/escuela/temario.jpg", "/escuela/material.jpg"];
 
 type Donde =
   | { que: "lista" }
@@ -163,24 +164,53 @@ export default function CursosScreen() {
   }
 
   if (donde.que === "ve") {
-    return <Reproductor curso={donde.curso} uid={uid} alSalir={() => setDonde({ que: "lista" })} />;
+    const c = donde.curso;
+    return (
+      <Reproductor
+        curso={c}
+        uid={uid}
+        alSalir={() => setDonde({ que: "lista" })}
+        alEditar={esMio(c) ? () => setDonde({ que: "edita", curso: c }) : undefined}
+      />
+    );
   }
 
   /* ------------------------------------------------------------- la lista */
 
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
-      <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
-        <h1 style={css(TITULO + "margin:0;")}>{esAdmin ? "Cursos" : "Mis cursos"}</h1>
-        {(esAdmin || creador) && (
-          <button
-            onClick={() => void nuevo()}
-            style={css(botonPrincipal() + "margin-left:auto;")}
-          >
-            + Nuevo curso
-          </button>
-        )}
-      </div>
+      <Banda
+        foto="/escuela/banda-cursos.jpg"
+        encuadre="50% 30%"
+        titulo={esAdmin ? "Cursos" : "Mis cursos"}
+        sub={
+          esAdmin
+            ? "Lo que montas, lo que está publicado y lo que te piden publicar."
+            : creador
+              ? "Los cursos que montas y los que estás haciendo."
+              : "Las clases que tienes, y por dónde vas en cada una."
+        }
+        cifras={
+          lista === null
+            ? []
+            : esAdmin || creador
+              ? [
+                  { n: lista.filter((c) => esMio(c)).length, que: "Cursos" },
+                  { n: lista.filter((c) => esMio(c) && c.publicado).length, que: "Publicados" },
+                ]
+              : [{ n: lista.length, que: lista.length === 1 ? "Curso" : "Cursos" }]
+        }
+        accion={
+          (esAdmin || creador) && (
+            <button
+              onClick={() => void nuevo()}
+              style={css(botonPrincipal() + "background:var(--sobre-bloque);color:var(--vino);border-color:var(--sobre-bloque);")}
+            >
+              + Nuevo curso
+            </button>
+          )
+        }
+      />
 
       {/* El aviso de que esto no se está guardando en ningún sitio serio. Es
           verdad sin claves de Firebase y mentira con ellas, y un aviso que
@@ -243,8 +273,20 @@ export default function CursosScreen() {
       )}
 
       {/* ------------------------------------------------------ las fichas */}
+      {/* Quien estudia ve su biblioteca; las fichas de abajo son para quien
+          monta cursos: Iris todos, un creador los suyos. */}
+      {!esAdmin && (
+        <Biblioteca
+          cursos={(lista ?? []).filter((c) => !esMio(c))}
+          avances={avances}
+          abrir={(c) => setDonde({ que: "ve", curso: c })}
+        />
+      )}
+      {creador && (lista ?? []).some(esMio) && (lista ?? []).some((c) => !esMio(c)) && (
+        <h2 style={css("margin:var(--s4) 0 0;font-size:var(--t-head);font-weight:500;letter-spacing:-.02em;")}>Los que montas</h2>
+      )}
       <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(270px,1fr));")}>
-        {(lista ?? []).map((c, i) => {
+        {(lista ?? []).filter((c) => esAdmin || esMio(c)).map((c, i) => {
           const total = totalLecciones(c);
           const parte = progreso(c, avances[c.id] ?? null);
           return (
@@ -281,7 +323,7 @@ export default function CursosScreen() {
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={FOTOS[i % FOTOS.length]}
+                      src={portadaDe(c, i)}
                       alt=""
                       style={css("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")}
                     />

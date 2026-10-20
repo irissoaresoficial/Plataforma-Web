@@ -57,6 +57,9 @@ export type Tema = {
   /** Si lo escribió Iris. Se guarda en el tema para no tener que mirar su
    *  ficha cada vez que se pinta la lista. */
   esIris: boolean;
+  /** La foto de quien escribe, copiada al escribir. Opcional: los temas de
+   *  antes de que hubiera fotos no la traen y salen con la inicial. */
+  foto?: string;
   titulo: string;
   texto: string;
   /** Fijado arriba. Sólo Iris. */
@@ -73,6 +76,7 @@ export type Respuesta = {
   uid: string;
   autor: string;
   esIris: boolean;
+  foto?: string;
   texto: string;
   creado: string;
 };
@@ -107,7 +111,7 @@ export async function listaTemas(): Promise<Tema[]> {
 }
 
 export async function creaTema(
-  autor: { uid: string; nombre: string; esIris: boolean },
+  autor: { uid: string; nombre: string; esIris: boolean; foto?: string },
   titulo: string,
   texto: string
 ): Promise<Tema> {
@@ -117,6 +121,8 @@ export async function creaTema(
     uid: autor.uid,
     autor: autor.nombre,
     esIris: autor.esIris,
+    /* Firestore no acepta `undefined`: sin foto, el campo no se escribe. */
+    ...(autor.foto ? { foto: autor.foto } : {}),
     titulo: titulo.trim(),
     texto: texto.trim(),
     fijado: false,
@@ -139,7 +145,7 @@ export async function respuestasDe(temaId: string): Promise<Respuesta[]> {
 
 export async function responde(
   temaId: string,
-  autor: { uid: string; nombre: string; esIris: boolean },
+  autor: { uid: string; nombre: string; esIris: boolean; foto?: string },
   texto: string
 ): Promise<Respuesta> {
   const b = base();
@@ -150,6 +156,8 @@ export async function responde(
     uid: autor.uid,
     autor: autor.nombre,
     esIris: autor.esIris,
+    /* Firestore no acepta `undefined`: sin foto, el campo no se escribe. */
+    ...(autor.foto ? { foto: autor.foto } : {}),
     texto: texto.trim(),
     creado: ahora,
   };
@@ -187,4 +195,72 @@ export async function fija(temaId: string, fijado: boolean): Promise<void> {
  */
 export async function borraTema(temaId: string): Promise<void> {
   await deleteDoc(doc(base(), "temas", temaId));
+}
+
+/** Todas las respuestas, para contar los puntos. Vacío si no hay nube. */
+export async function todasLasRespuestas(): Promise<Respuesta[]> {
+  const b = nube();
+  if (!b) return [];
+  const r = await getDocs(collection(b, "respuestas"));
+  return r.docs.map((d) => ({ ...(d.data() as Omit<Respuesta, "id">), id: d.id }));
+}
+
+/* ------------------------------------------------------------------ puntos */
+
+/**
+ * LOS PUNTOS DE LA COMUNIDAD.
+ *
+ * Gerson, el 20 de octubre de 2026: «quiero reglas y trofeos o puntos,
+ * dopamina: que las personas, entre más interactúen, se puntúen arriba».
+ *
+ * SE CUENTAN, NO SE GUARDAN. Salen de lo que ya está escrito: cada tema abre
+ * conversación y vale más; cada respuesta, menos. Guardarlos aparte sería
+ * tener dos veces el mismo dato y, el día que no cuadraran, no saber cuál
+ * creer. Y así nadie puede subirse los puntos a mano: tendría que escribir.
+ *
+ * Iris no entra en la clasificación: es la anfitriona, y una tabla que gana
+ * siempre la dueña de la casa no anima a nadie.
+ */
+export const PUNTOS_TEMA = 10;
+export const PUNTOS_RESPUESTA = 3;
+
+export const NIVELES = [
+  { desde: 0, nombre: "Semilla" },
+  { desde: 20, nombre: "Raíz" },
+  { desde: 60, nombre: "Rama" },
+  { desde: 150, nombre: "Árbol" },
+] as const;
+
+export type Puesto = { uid: string; nombre: string; foto?: string; puntos: number; temas: number; respuestas: number };
+
+export function nivelDe(puntos: number) {
+  let i = 0;
+  NIVELES.forEach((n, j) => {
+    if (puntos >= n.desde) i = j;
+  });
+  const sig = NIVELES[i + 1];
+  return { nombre: NIVELES[i].nombre, siguiente: sig ? sig.nombre : null, faltan: sig ? sig.desde - puntos : 0, desde: NIVELES[i].desde, hasta: sig ? sig.desde : null };
+}
+
+export function clasificacion(temas: Tema[], respuestas: Respuesta[]): Puesto[] {
+  const m = new Map<string, Puesto>();
+  const de = (uid: string, nombre: string, foto?: string) => {
+    const p = m.get(uid) ?? { uid, nombre, foto, puntos: 0, temas: 0, respuestas: 0 };
+    if (foto) p.foto = foto;
+    m.set(uid, p);
+    return p;
+  };
+  for (const t of temas) {
+    if (t.esIris) continue;
+    const p = de(t.uid, t.autor, t.foto);
+    p.temas += 1;
+    p.puntos += PUNTOS_TEMA;
+  }
+  for (const r of respuestas) {
+    if (r.esIris) continue;
+    const p = de(r.uid, r.autor, r.foto);
+    p.respuestas += 1;
+    p.puntos += PUNTOS_RESPUESTA;
+  }
+  return [...m.values()].sort((a, b) => b.puntos - a.puntos || a.nombre.localeCompare(b.nombre));
 }

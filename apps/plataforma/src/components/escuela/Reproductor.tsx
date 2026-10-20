@@ -29,7 +29,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL, BOTON_PLANO, CABECERA, LECTURA, NOTA, botonPrincipal } from "@/lib/ui";
+import { BOTON_NORMAL, BOTON_PLANO, CABECERA, LECTURA, NOTA, PANTALLA, botonPrincipal } from "@/lib/ui";
+import { logoDe, portadaDe } from "@/lib/escuela/portadas";
 import { leeVideo } from "@/lib/escuela/video";
 import Recursos from "./Recursos";
 import { avance as repoAvance, porDondeIba, progreso, totalLecciones, type Avance, type Curso, type Leccion } from "@/lib/escuela";
@@ -38,10 +39,13 @@ export default function Reproductor({
   curso,
   uid,
   alSalir,
+  alEditar,
 }: {
   curso: Curso;
   uid: string;
   alSalir: () => void;
+  /** Sólo para quien lo monta: el atajo para ir a subir lo que falte. */
+  alEditar?: () => void;
 }) {
   const [av, setAv] = useState<Avance | null>(null);
   const [abierta, setAbierta] = useState<string | null>(null);
@@ -110,14 +114,44 @@ export default function Reproductor({
   const video = leeVideo(leccion?.video ?? "");
 
   return (
-    <div style={css("display:flex;flex-direction:column;gap:var(--s4);")}>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       {/* --------------------------------------------------------- cabecera */}
+      {/* Con el mismo margen que las demás pantallas: aquí faltaba el
+          `PANTALLA` y el curso salía pegado a la columna. Y con su portada
+          —o su logo, si el curso tiene marca propia— para que se sepa dónde
+          se está sin leer. */}
       <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;")}>
         <button onClick={alSalir} style={css(BOTON_PLANO)}>
           ← Mis cursos
         </button>
-        <h1 style={css(CABECERA + "margin:0;flex:1 1 220px;")}>{curso.titulo || "Curso sin nombre"}</h1>
+        {alEditar && (
+          <button onClick={alEditar} style={css(BOTON_NORMAL + "margin-left:auto;")}>
+            Editar el curso
+          </button>
+        )}
       </div>
+      <header
+        style={css(
+          "position:relative;overflow:hidden;border-radius:var(--r-tarjeta);min-height:200px;display:flex;align-items:flex-end;" +
+            "background:var(--bloque);box-shadow:var(--nm-alto);"
+        )}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={portadaDe(curso)} alt="" style={css("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+        <span aria-hidden="true" style={css("position:absolute;inset:0;background:linear-gradient(90deg,rgba(34,29,31,.85),rgba(34,29,31,.25));")} />
+        <div style={css("position:relative;padding:var(--pad-card);display:flex;flex-direction:column;gap:10px;")}>
+          {logoDe(curso) && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={logoDe(curso)!} alt="" style={css("height:46px;width:auto;align-self:flex-start;border-radius:var(--r-sm);")} />
+          )}
+          <h1 style={css("margin:0;font-weight:300;font-size:clamp(28px,3.4vw,44px);letter-spacing:-.03em;line-height:1.05;color:var(--sobre-bloque);")}>
+            {curso.titulo || "Curso sin nombre"}
+          </h1>
+          {curso.descripcion && (
+            <p style={css("margin:0;font-size:var(--t-body);color:var(--sobre-bloque-2);max-width:60ch;")}>{curso.descripcion}</p>
+          )}
+        </div>
+      </header>
 
       {/* ----------------------------------------------------- el progreso */}
       {total > 0 && (
@@ -158,16 +192,54 @@ export default function Reproductor({
 
       {/* ------------------------------------------- el curso todavía vacío */}
       {total === 0 ? (
-        <div
-          style={css(
-            "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
-              "padding:clamp(28px,5vw,48px) var(--pad-card);text-align:center;box-shadow:var(--nm);"
-          )}
-        >
-          <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Este curso todavía no tiene lecciones</h2>
-          <p style={css(LECTURA + "margin:0 auto;max-width:46ch;")}>
-            Iris lo está preparando. En cuanto suba la primera clase, aparece aquí.
-          </p>
+        /*
+          EL ESQUELETO DEL CURSO VACÍO. Gerson: «sé que no tiene lecciones,
+          pero haz el esqueleto, que por lo menos diga subir cosas». Una caja
+          con una frase no enseña cómo va a ser esto; el esqueleto sí: aquí el
+          vídeo, aquí las lecciones, aquí el material. Y a quien lo monta, el
+          botón para llenarlo.
+        */
+        <div data-reproductor style={css("display:grid;gap:var(--s4);align-items:start;")}>
+          <div
+            style={css(
+              "aspect-ratio:16/9;border-radius:var(--r-tarjeta);background:var(--bloque);display:grid;place-items:center;text-align:center;" +
+                "padding:var(--pad-card);color:var(--sobre-bloque);box-shadow:var(--nm-alto);"
+            )}
+          >
+            <div style={css("display:flex;flex-direction:column;align-items:center;gap:var(--s3);")}>
+              <span aria-hidden="true" style={css("width:64px;height:64px;border-radius:50%;display:grid;place-items:center;border:1.5px dashed var(--bloque-borde);color:var(--oro-luz);")}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z" /></svg>
+              </span>
+              <div style={css("font-size:var(--t-title);font-weight:500;")}>Aquí irá la primera clase</div>
+              <p style={css("margin:0;font-size:var(--t-body);color:var(--sobre-bloque-2);max-width:44ch;")}>
+                {alEditar
+                  ? "Sube el vídeo de la primera lección y el curso empieza a tomar forma."
+                  : "Iris lo está preparando. En cuanto suba la primera clase, aparece aquí."}
+              </p>
+              {alEditar && (
+                <button onClick={alEditar} style={css(botonPrincipal() + "background:var(--sobre-bloque);color:var(--vino);border-color:var(--sobre-bloque);")}>
+                  Subir la primera clase
+                </button>
+              )}
+            </div>
+          </div>
+          <nav
+            aria-label="Lecciones del curso"
+            style={css("background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);padding:var(--s4);box-shadow:var(--nm);display:flex;flex-direction:column;gap:10px;")}
+          >
+            <div style={css("font-size:var(--t-body);font-weight:500;color:var(--text);")}>Lecciones</div>
+            {[1, 2, 3].map((n) => (
+              <div key={n} style={css("display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--r-sm);border:1px dashed var(--border-strong);")}>
+                <span style={css("width:22px;height:22px;border-radius:50%;border:1.5px dashed var(--border-strong);flex:none;")} />
+                <span style={css(NOTA)}>Lección {n} · por subir</span>
+              </div>
+            ))}
+            {alEditar && (
+              <button onClick={alEditar} style={css(BOTON_NORMAL + "align-self:flex-start;margin-top:6px;")}>
+                + Añadir lecciones
+              </button>
+            )}
+          </nav>
         </div>
       ) : (
         <div style={css("display:grid;gap:var(--s4);align-items:start;")} data-reproductor>

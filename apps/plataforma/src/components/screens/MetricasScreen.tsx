@@ -45,10 +45,12 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO , PANTALLA} from "@/lib/ui";
-import { Barras, Linea, type Punto } from "../escuela/Grafico";
+import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, PANTALLA } from "@/lib/ui";
+import { Barras, Columnas, Linea, type Barra, type Punto } from "../escuela/Grafico";
+import { citas as repoCitas, clientes as repoClientes, euros, facturas as repoFacturas, totales, type Cita, type Cliente, type Factura } from "@/lib/despacho";
+import { fuenteDe } from "@/lib/despacho/fuentes";
+import Banda from "../Banda";
 import { listaUsuarios } from "@/lib/despacho/usuarios";
 import { rolesDe } from "@/lib/roles";
 import { cursos as repoCursos, todosLosAvances, totalLecciones, type Avance, type Curso } from "@/lib/escuela";
@@ -69,13 +71,28 @@ type Datos = {
    *  `Embudo`, que es quien los pinta: así los dos viven juntos y no hay que
    *  mirar dos archivos para entender un número. */
   leads: Lead[];
+  /* Lo del despacho, desde el 20 de octubre de 2026. Gerson: «que me
+     muestre realmente bien los datos que necesito ver». Lo que necesita ver
+     quien vive de esto es cuánta gente nueva llega, cuántas sesiones da y
+     cuánto factura; la escuela va después. */
+  nuevas30: number;
+  sesiones30: number;
+  facturado30: number;
+  porMes: Barra[];
+  /* Los mismos, de los 30 días anteriores: un número sin con qué compararlo
+     no dice si vas bien o mal. */
+  nuevasAntes: number;
+  sesionesAntes: number;
+  facturadoAntes: number;
+  clientas30: number;
+  clientasAntes: number;
+  fuentes: Barra[];
 };
 
 export default function MetricasScreen() {
   const [d, setD] = useState<Datos | null>(null);
   const [roto, setRoto] = useState(false);
   const [tabla, setTabla] = useState(false);
-  const quieto = useReducedMotion();
 
   const carga = useCallback(async () => {
     setRoto(false);
@@ -83,14 +100,17 @@ export default function MetricasScreen() {
       /* Los leads van en el mismo `Promise.all` y no en una llamada aparte:
          son cinco lecturas que no dependen unas de otras, y encadenarlas
          multiplicaría por cinco lo que tarda en abrirse la pantalla. */
-      const [gente, cursos, avances, visitas, leads] = await Promise.all([
+      const [gente, cursos, avances, visitas, leads, citas, facturas, clientes] = await Promise.all([
         listaUsuarios(),
         repoCursos.listar(),
         todosLosAvances(),
         todasLasVisitas(),
         ultimosLeads(500),
+        repoCitas.listar(),
+        repoFacturas.listar(),
+        repoClientes.listar(),
       ]);
-      setD(calcula(gente, cursos, avances, visitas, leads));
+      setD({ ...calcula(gente, cursos, avances, visitas, leads), ...despacho(leads, citas, facturas, clientes) });
     } catch {
       setRoto(true);
     }
@@ -104,36 +124,9 @@ export default function MetricasScreen() {
     "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);" +
     "box-shadow:var(--nm);padding:var(--s4);";
 
-  const cifra = (que: string, valor: string, i: number, tono: string) => (
-    <motion.div
-      key={que}
-      initial={quieto ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.05 + i * 0.05, duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-      style={css(tarjeta + "position:relative;overflow:hidden;")}
-    >
-      {/* Un filo de color arriba, no la tarjeta entera pintada. Cuatro tarjetas
-          de cuatro colores saturados compiten y ninguna gana; un filo las
-          distingue y deja que el número siga siendo lo que se lee. */}
-      <span
-        aria-hidden
-        style={css(`position:absolute;inset:0 0 auto;height:3px;background:var(--${tono}-tx);opacity:.55;`)}
-      />
-      <div style={css(NOTA)}>{que}</div>
-      <div
-        style={css(
-          "font-family:var(--font-display);font-size:clamp(28px,3.6vw,40px);font-weight:650;" +
-            "line-height:1.05;margin-top:8px;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.03em;"
-        )}
-      >
-        {valor}
-      </div>
-    </motion.div>
-  );
-
   const bloque = (titulo: string, dice: string, hijo: React.ReactNode) => (
     <section style={css(tarjeta)}>
-      <h2 style={css(CABECERA + "margin:0;font-size:var(--t-head);")}>{titulo}</h2>
+      <h2 style={css("margin:0;font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;line-height:1.2;color:var(--text);")}>{titulo}</h2>
       {/* Debajo del título, PARA QUÉ SIRVE. Un cuadro de mando sin esta línea
           obliga a deducir qué hacer con cada dibujo, y lo que se deduce cambia
           según el día que se tenga. */}
@@ -145,19 +138,38 @@ export default function MetricasScreen() {
   /* Una escuela sin alumnos pero con leads entrando NO está vacía: es
      exactamente el momento de la campaña, y es cuando más falta hace mirar
      esta pantalla. Antes se tapaba entera con el cartel de «nada que medir». */
-  const vacio = d && d.dias.every((x) => x.valor === 0) && d.lecciones === 0 && d.leads.length === 0;
+  const vacio =
+    d && d.dias.every((x) => x.valor === 0) && d.lecciones === 0 && d.leads.length === 0 && d.sesiones30 === 0 && d.facturado30 === 0;
 
+  /*
+   * REHECHA EL 20 DE OCTUBRE DE 2026. Gerson: «nada de lo que está ahí me
+   * gusta; arregla y ajusta bien su comunicación».
+   *
+   * Lo que fallaba no era el dato, era cómo se decía: rótulos sueltos
+   * («Lecciones terminadas», «Acaban el curso») sin decir si eso era bueno o
+   * malo, y la campaña arriba del todo con su jerga. Ahora cada cifra es una
+   * PREGUNTA que Iris se haría, con su respuesta en grande y, debajo, si va
+   * mejor o peor que el mes anterior. Primero el negocio, después la escuela,
+   * y los anuncios al final para quien quiera mirar de cerca.
+   */
   return (
-    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
-      <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
-        <h1 style={css(TITULO + "margin:0;")}>Métricas</h1>
-        <span style={css(NOTA)}>últimos 30 días</span>
-        {d && !vacio && (
-          <button onClick={() => setTabla((x) => !x)} style={css(BOTON_NORMAL + "margin-left:auto;")}>
-            {tabla ? "Ver los gráficos" : "Ver los números"}
-          </button>
-        )}
-      </div>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--gap);")}>
+      <Banda
+        foto="/escuela/banda-cursos.jpg"
+        encuadre="50% 60%"
+        titulo="Métricas"
+        sub="Cómo va tu negocio y tu escuela en los últimos 30 días, comparado con los 30 anteriores."
+        accion={
+          d && !vacio ? (
+            <button
+              onClick={() => setTabla((x) => !x)}
+              style={css(BOTON_NORMAL + "background:transparent;color:var(--sobre-bloque);border-color:var(--bloque-borde);")}
+            >
+              {tabla ? "Ver los gráficos" : "Ver en tabla"}
+            </button>
+          ) : undefined
+        }
+      />
 
       {d === null && !roto && <p style={css(NOTA + "margin:0;")}>Cargando…</p>}
 
@@ -167,96 +179,112 @@ export default function MetricasScreen() {
         </p>
       )}
 
-      {/* Una escuela recién abierta no tiene métricas, y eso no es un fallo.
-          Decirlo evita que cuatro ceros se lean como que algo está roto. */}
       {vacio && (
         <div style={css(tarjeta + "max-width:620px;")}>
           <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Todavía no hay nada que medir</h2>
           <p style={css(LECTURA + "margin:0;")}>
-            Los números salen de lo que hace la gente: los días que entran, las lecciones que terminan. En cuanto
-            empiece a entrar alguien, esta pantalla se llena sola.
+            Esto se llena solo con lo que pasa: la gente que te escribe, las sesiones que das, lo que cobras y lo que
+            hacen tus alumnos. En cuanto entre la primera persona, empieza a contar.
           </p>
         </div>
       )}
 
       {d && !vacio && !tabla && (
         <>
-          {/* LA CAMPAÑA PRIMERO, Y LA ESCUELA DESPUÉS.
-              No es un orden estético: es el orden en que pasan las cosas.
-              Primero entra alguien por un anuncio, después se hace alumno. Si
-              las cifras de la escuela fueran arriba, lo primero que se vería
-              cada mañana sería el resultado y no la causa — y la causa es lo
-              único sobre lo que se puede actuar hoy. */}
-          <h2 style={css(CABECERA + "margin:var(--s2) 0 0;font-size:var(--t-head);opacity:.7;")}>La campaña</h2>
-          <Embudo leads={d.leads} tarjeta={tarjeta} />
-
-          <h2 style={css(CABECERA + "margin:var(--s5) 0 0;font-size:var(--t-head);opacity:.7;")}>La escuela</h2>
-          <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(190px,1fr));")}>
-            {cifra("Alumnos", `${d.alumnos}`, 0, "melocoton")}
-            {cifra("Miembros", `${d.miembros}`, 1, "rosa")}
-            {cifra("Lecciones terminadas", `${d.lecciones}`, 2, "cielo")}
-            {cifra("Acaban el curso", `${d.acaban} %`, 3, "lima")}
+          {/* ------------------------------------------------- tu negocio */}
+          <h2 style={css(SECCION)}>Tu negocio</h2>
+          <div data-kpis="">
+            <Kpi pregunta="¿Cuánta gente nueva te ha escrito?" valor={`${d.nuevas30}`} ahora={d.nuevas30} antes={d.nuevasAntes} que="personas nuevas desde la web" nada="nadie" />
+            <Kpi pregunta="¿Cuántas clientas nuevas tienes?" valor={`${d.clientas30}`} ahora={d.clientas30} antes={d.clientasAntes} que="fichas nuevas en Personas" />
+            <Kpi pregunta="¿Cuántas sesiones has dado?" valor={`${d.sesiones30}`} ahora={d.sesiones30} antes={d.sesionesAntes} que="apuntadas en la agenda, sin las anuladas" />
+            <Kpi pregunta="¿Cuánto has facturado?" valor={euros(d.facturado30)} ahora={d.facturado30} antes={d.facturadoAntes} que="facturas emitidas, con IVA" oscura nada="0 €" />
           </div>
 
-          {bloque(
-            "Cuánta gente entra",
-            "Personas distintas que abrieron la escuela cada día. Para ver si lo que publicaste la semana pasada movió algo.",
-            <Linea datos={d.dias} />
-          )}
-
-          {d.caida.length > 0 &&
-            bloque(
-              "Dónde se cae la gente",
-              "De cada cien que empiezan, cuántos llegan a cada lección. El dato más incómodo y el más útil: una caída grande entre dos lecciones señala la que hay que rehacer.",
-              <Barras datos={d.caida} sufijo=" %" />
+          <div data-metricas-rejilla="">
+            {bloque(
+              "¿De dónde llega la gente?",
+              "Qué llevó a cada persona nueva a tu web: un anuncio, Instagram, Google o fue directa. Lo que más trae es donde merece la pena poner más.",
+              d.fuentes.length ? <Barras datos={d.fuentes} /> : <p style={css(NOTA + "margin:0;")}>En estos 30 días no ha entrado nadie nuevo por la web.</p>
             )}
+            {bloque(
+              "¿Cuánto has facturado cada mes?",
+              "Los últimos seis meses, para ver si el negocio sube, baja o se mantiene.",
+              d.porMes.some((x) => x.valor > 0) ? <Columnas datos={d.porMes} sufijo=" €" /> : <p style={css(NOTA + "margin:0;")}>Todavía no hay facturas emitidas.</p>
+            )}
+          </div>
 
-          {/*
-            AQUÍ ESTABA EL HUECO HONRADO, y conviene saber por qué ya no está.
+          {/* ------------------------------------------------- tu escuela */}
+          <h2 style={css(SECCION)}>Tu escuela</h2>
+          <section data-metricas-cabecera="" style={css(tarjeta + "padding:var(--pad-card);")}>
+            <dl style={css("margin:0;display:flex;flex-wrap:wrap;gap:clamp(20px,3.4vw,52px);align-items:flex-end;")}>
+              {[
+                [`${d.alumnos}`, "Alumnos", "con algún curso"],
+                [`${d.miembros}`, "Miembros", "en la comunidad"],
+                [`${d.lecciones}`, "Lecciones vistas", "entre todos"],
+              ].map(([n, que, mas]) => (
+                <div key={que} style={css("display:flex;flex-direction:column;gap:4px;")}>
+                  <dd style={css("margin:0;font-weight:300;font-size:clamp(36px,4.2vw,56px);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;color:var(--text);")}>{n}</dd>
+                  <dt style={css("font-size:var(--t-body);color:var(--text);")}>{que}</dt>
+                  <span style={css(NOTA)}>{mas}</span>
+                </div>
+              ))}
+            </dl>
+            <Medidor valor={d.acaban} que="de los que empiezan, acaban" />
+          </section>
 
-            Decía: «esto todavía no se mide; para saber el país y la ciudad hay
-            que apuntarlo en el momento de la visita, y ahora mismo no lo
-            guarda nadie». Era verdad y por eso estaba escrito en vez de
-            rellenado con números de ejemplo.
+          <div data-metricas-rejilla="">
+            {bloque(
+              "¿Cuánta gente entra a la escuela?",
+              "Personas distintas que abrieron la plataforma cada día. Si publicas algo y esta línea sube, funcionó.",
+              <Linea datos={d.dias} />
+            )}
+            {d.caida.length > 0
+              ? bloque(
+                  "¿En qué lección se va la gente?",
+                  "De cada cien que empiezan tu curso con más alumnos, cuántos llegan a cada lección. Donde la barra cae de golpe está la lección que hay que mirar.",
+                  <Barras datos={d.caida} sufijo=" %" />
+                )
+              : bloque(
+                  "¿En qué lección se va la gente?",
+                  "Saldrá en cuanto alguien empiece un curso: verás en qué lección se para la gente.",
+                  <p style={css(NOTA + "margin:0;")}>Todavía nadie ha empezado ningún curso.</p>
+                )}
+          </div>
 
-            El 19 de octubre se montó: `/api/lead` lee el país y la ciudad de
-            la cabecera que pone Vercel, y `sendLead` pega la etiqueta del
-            anuncio por el que entró cada persona. Así que el hueco se cierra
-            con datos de verdad —no con los de ejemplo que había antes de
-            todo esto— y lo que va aquí es el embudo entero.
-
-            Sigue sin guardarse la dirección de internet de nadie: país y
-            ciudad, como estaba prometido.
-          */}
-
+          {/* ------------------------------------------------- tus anuncios */}
+          <h2 style={css(SECCION)}>Tus anuncios, de cerca</h2>
+          <Embudo leads={d.leads} tarjeta={tarjeta} />
         </>
       )}
 
       {d && !vacio && tabla && (
         <section style={css(tarjeta)}>
-          <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>Los números</h2>
+          <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>En tabla</h2>
           <div style={css("overflow-x:auto;")}>
             <table style={css("width:100%;border-collapse:collapse;font-size:var(--t-body);")}>
               <caption style={css(NOTA + "text-align:left;margin-bottom:10px;")}>
-                Personas distintas que entraron cada día.
+                Últimos 30 días comparados con los 30 anteriores.
               </caption>
               <thead>
                 <tr>
-                  <th scope="col" style={css("text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text-3);font-weight:600;")}>
-                    Día
-                  </th>
-                  <th scope="col" style={css("text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text-3);font-weight:600;")}>
-                    Personas
-                  </th>
+                  {["Qué", "Ahora", "Antes"].map((h, k) => (
+                    <th key={h} scope="col" style={css("padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text-3);font-weight:500;text-align:" + (k ? "right" : "left") + ";")}>
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {d.dias.map((x) => (
-                  <tr key={x.etiqueta}>
-                    <td style={css("padding:8px 10px;border-bottom:1px solid var(--border);")}>{x.etiqueta}</td>
-                    <td style={css("padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums;")}>
-                      {x.valor}
-                    </td>
+                {[
+                  ["Gente nueva", `${d.nuevas30}`, `${d.nuevasAntes}`],
+                  ["Clientas nuevas", `${d.clientas30}`, `${d.clientasAntes}`],
+                  ["Sesiones", `${d.sesiones30}`, `${d.sesionesAntes}`],
+                  ["Facturado", euros(d.facturado30), euros(d.facturadoAntes)],
+                ].map(([q, a, b]) => (
+                  <tr key={q}>
+                    <td style={css("padding:8px 10px;border-bottom:1px solid var(--border);")}>{q}</td>
+                    <td style={css("padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums;")}>{a}</td>
+                    <td style={css("padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums;color:var(--text-3);")}>{b}</td>
                   </tr>
                 ))}
               </tbody>
@@ -268,22 +296,146 @@ export default function MetricasScreen() {
   );
 }
 
-/* ------------------------------------------------------------- la cuenta */
+/** El rótulo de cada parte de la pantalla. */
+const SECCION = "margin:var(--s3) 0 0;font-size:var(--t-head);font-weight:500;letter-spacing:-.025em;color:var(--text);";
 
 /**
- * Los números, sacados de lo que ya hay guardado.
+ * UNA CIFRA CON SU PREGUNTA Y SU COMPARACIÓN.
  *
- * Está aparte del componente a propósito: es la parte que se puede equivocar
- * —sumas, porcentajes, divisiones entre cero— y separada se puede leer entera
- * de un vistazo y comprobar sin montar una pantalla.
+ * La flecha compara con los 30 días anteriores y nada más: no hay objetivos
+ * inventados ni «buen ritmo». Si antes había cero, no se calcula un tanto por
+ * ciento —de cero a uno no es «un 100 % más», es «antes, ninguna»—.
  */
+function Kpi({
+  pregunta,
+  valor,
+  ahora,
+  antes,
+  que,
+  oscura,
+  nada = "ninguna",
+}: {
+  pregunta: string;
+  valor: string;
+  ahora: number;
+  antes: number;
+  que: string;
+  oscura?: boolean;
+  /** Cómo se dice «cero» para esta cifra: «ninguna», «0 €». */
+  nada?: string;
+}) {
+  const sube = ahora > antes;
+  const igual = ahora === antes;
+  const cambio = antes === 0 ? (ahora === 0 ? "Igual que el mes anterior" : `El mes anterior: ${nada}`) : `${sube ? "+" : ""}${Math.round(((ahora - antes) / antes) * 100)} % que el mes anterior`;
+  return (
+    <section
+      style={css(
+        "border-radius:var(--r-tarjeta);padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:10px;min-width:0;" +
+          (oscura
+            ? "background:var(--bloque);color:var(--sobre-bloque);border:1px solid var(--bloque-borde);box-shadow:var(--shadow-lg);"
+            : "background:var(--surface);border:1px solid var(--border);box-shadow:var(--nm-alto);")
+      )}
+    >
+      <h3 style={css("margin:0;font-size:var(--t-body);font-weight:500;line-height:1.35;color:" + (oscura ? "var(--sobre-bloque)" : "var(--text)") + ";")}>{pregunta}</h3>
+      <div style={css("font-weight:300;font-size:clamp(38px,3.8vw,52px);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;")}>{valor}</div>
+      <div style={css("font-size:var(--t-mini);color:" + (oscura ? "var(--sobre-bloque-2)" : "var(--text-3)") + ";")}>{que}</div>
+      <div
+        style={css(
+          "align-self:flex-start;font-size:var(--t-mini);font-weight:500;padding:4px 10px;border-radius:var(--r-pill);" +
+            (igual || antes === 0
+              ? oscura
+                ? "background:var(--bloque-2);color:var(--sobre-bloque-2);"
+                : "background:var(--surface-2);color:var(--text-3);"
+              : sube
+                ? "background:var(--lima);color:var(--lima-tx);"
+                : "background:var(--melocoton);color:var(--melocoton-tx);")
+        )}
+      >
+        {!igual && antes !== 0 && (sube ? "↑ " : "↓ ")}
+        {cambio}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * EL MEDIDOR: media rueda que se llena. Es el de la referencia, y sirve aquí
+ * para lo único que es una proporción de verdad —de cada cien que empiezan
+ * un curso, cuántos lo acaban—. Las demás cifras son cantidades y un medidor
+ * no tendría techo que marcar.
+ */
+function Medidor({ valor, que }: { valor: number; que: string }) {
+  const R = 78;
+  const largo = Math.PI * R;
+  const v = Math.max(0, Math.min(100, valor));
+  return (
+    <figure style={css("margin:0;position:relative;width:200px;flex:none;text-align:center;")}>
+      <svg width="200" height="116" viewBox="0 0 200 116" aria-hidden="true">
+        <path d={`M ${100 - R} 100 A ${R} ${R} 0 0 1 ${100 + R} 100`} fill="none" stroke="var(--surface-2)" strokeWidth="14" strokeLinecap="round" />
+        {v > 0 && (
+          <path
+            d={`M ${100 - R} 100 A ${R} ${R} 0 0 1 ${100 + R} 100`}
+            fill="none"
+            stroke="var(--oro)"
+            strokeWidth="14"
+            strokeLinecap="round"
+            strokeDasharray={`${(largo * v) / 100} ${largo}`}
+          />
+        )}
+      </svg>
+      <figcaption style={css("position:absolute;left:0;right:0;top:46px;")}>
+        <div style={css("font-weight:300;font-size:34px;letter-spacing:-.03em;line-height:1;color:var(--text);")}>{v} %</div>
+        <div style={css(NOTA + "margin-top:6px;")}>{que}</div>
+      </figcaption>
+    </figure>
+  );
+}
+
+/** Lo del despacho en los últimos 30 días, y lo facturado de seis meses. */
+function despacho(leads: Lead[], citas: Cita[], facturas: Factura[], clientes: Cliente[]) {
+  const ahora = Date.now();
+  const DIA = 24 * 3600 * 1000;
+  const hace30 = ahora - 30 * DIA;
+  const hace60 = ahora - 60 * DIA;
+  const entre = (t: number, desde: number, hasta: number) => t >= desde && t < hasta;
+  /* Nuevas = la primera vez que aparecieron, no la última vez que volvieron. */
+  const altaDe = (l: Lead) => (l.alta ?? l.visto)?.getTime() ?? 0;
+  const nuevas30 = leads.filter((l) => entre(altaDe(l), hace30, ahora + 1)).length;
+  const nuevasAntes = leads.filter((l) => entre(altaDe(l), hace60, hace30)).length;
+  const sesion = (desde: number, hasta: number) =>
+    citas.filter((c) => c.estado !== "anulada" && entre(new Date(c.inicioISO).getTime(), desde, hasta)).length;
+  const sesiones30 = sesion(hace30, ahora + 1);
+  const sesionesAntes = sesion(hace60, hace30);
+  const emitidas = facturas.filter((f) => f.estado === "emitida");
+  const dia = (t: number) => new Date(t).toISOString().slice(0, 10);
+  const cobrado = (desde: number, hasta: number) =>
+    emitidas.filter((f) => f.fecha >= dia(desde) && f.fecha < dia(hasta)).reduce((s, f) => s + totales(f).total, 0);
+  const facturado30 = cobrado(hace30, ahora + DIA);
+  const facturadoAntes = cobrado(hace60, hace30);
+  const clientas30 = clientes.filter((c) => entre(new Date(c.creada).getTime(), hace30, ahora + 1)).length;
+  const clientasAntes = clientes.filter((c) => entre(new Date(c.creada).getTime(), hace60, hace30)).length;
+  const m = new Map<string, number>();
+  for (const l of leads) if (entre(altaDe(l), hace30, ahora + 1)) m.set(fuenteDe(l), (m.get(fuenteDe(l)) ?? 0) + 1);
+  const fuentes: Barra[] = [...m.entries()].sort((a, b) => b[1] - a[1]).map(([etiqueta, valor]) => ({ etiqueta, valor }));
+  const hoy = new Date();
+  const porMes: Barra[] = Array.from({ length: 6 }, (_, i) => {
+    const m = new Date(hoy.getFullYear(), hoy.getMonth() - 5 + i, 1);
+    const clave = `${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, "0")}`;
+    return {
+      etiqueta: m.toLocaleDateString("es", { month: "short" }),
+      valor: Math.round(emitidas.filter((f) => f.fecha.startsWith(clave)).reduce((s, f) => s + totales(f).total, 0)),
+    };
+  });
+  return { nuevas30, sesiones30, facturado30, porMes, nuevasAntes, sesionesAntes, facturadoAntes, clientas30, clientasAntes, fuentes };
+}
+
 function calcula(
   gente: Array<{ roles?: string[] }>,
   cursos: Curso[],
   avances: Avance[],
   visitas: Array<{ uid: string; dias: string[] }>,
   leads: Lead[]
-): Datos {
+): Omit<Datos, keyof ReturnType<typeof despacho>> {
   const rol = (r: string) => gente.filter((p) => rolesDe(p as never).includes(r as never)).length;
 
   /* Las lecciones hechas, contando SÓLO LAS QUE SIGUEN EXISTIENDO. Si Iris

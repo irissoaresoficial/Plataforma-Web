@@ -23,6 +23,7 @@ import Menu, { BotonMenu } from "./Menu";
 import Tema from "./Tema";
 import Cuenta from "./Cuenta";
 import Avisos from "./despacho/Avisos";
+import AgenteIA from "./AgenteIA";
 import Novedades from "./despacho/Novedades";
 import Particulas from "./Particulas";
 import SinEstudio from "./SinEstudio";
@@ -248,6 +249,7 @@ export default function Shell() {
             exactamente el que luego esconde un fallo de verdad. Se arregla en
             el sitio correcto: no pedir lo que no te toca, en vez de pedirlo y
             tragarse el no. */}
+        <AgenteIA />
         {puede("despacho") && <Avisos />}
         <Tema />
         <Cuenta />

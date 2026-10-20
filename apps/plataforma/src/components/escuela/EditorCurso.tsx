@@ -48,6 +48,7 @@ import { BOTON_NORMAL, BOTON_PLANO, CAMPO, NOTA, PANTALLA, TARJETA, botonPrincip
 import Confirmar from "../Confirmar";
 import SubirVideo from "./SubirVideo";
 import Recursos from "./Recursos";
+import { portadaDe } from "@/lib/escuela/portadas";
 import { cursos as repo, nuevoId, totalLecciones, type Curso, type Leccion, type Modulo } from "@/lib/escuela";
 
 /** Un curso recién nacido: en borrador y sin nada dentro. */
@@ -286,7 +287,7 @@ export default function EditorCurso({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={c.portada || "/escuela/basico.jpg"}
+          src={portadaDe(c)}
           alt=""
           style={css("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;")}
         />

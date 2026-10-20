@@ -105,6 +105,19 @@ export function auth(): Auth | null {
   return a ? getAuth(a) : null;
 }
 
+/**
+ * UNA SEGUNDA APLICACIÓN, SÓLO PARA DAR DE ALTA.
+ *
+ * Crear una cuenta con el SDK del navegador ENTRA con esa cuenta: si se hiciera
+ * con la aplicación principal, Iris daría de alta a Ana y se quedaría dentro
+ * siendo Ana. Con una segunda instancia, la cuenta nueva se crea ahí, se sale
+ * de ella al momento y la sesión de Iris ni se entera.
+ */
+export function appAltas(): FirebaseApp | null {
+  if (!hayFirebase()) return null;
+  return getApps().find((x) => x.name === "altas") ?? initializeApp(config as Record<string, string>, "altas");
+}
+
 export function nube(): Firestore | null {
   const a = arranca();
   return a ? getFirestore(a) : null;
