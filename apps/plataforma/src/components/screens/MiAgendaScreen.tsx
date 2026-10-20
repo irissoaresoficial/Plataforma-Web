@@ -17,6 +17,7 @@ import { BOTON_NORMAL, BOTON_PLANO, CAMPO, NOTA, PANTALLA, TARJETA, botonPrincip
 import { claveDia, hora, masDias, semanaDe } from "@/lib/despacho/fechas";
 import { borraEvento, guardaEvento, misEventos, type Evento } from "@/lib/escuela/agenda";
 import Banda from "../Banda";
+import { marcaAgendaVista } from "@/lib/escuela/puntos";
 import Confirmar from "../Confirmar";
 
 const hoyClave = () => claveDia(new Date());
@@ -35,6 +36,11 @@ export default function MiAgendaScreen() {
   const [minutos, setMinutos] = useState(60);
   const [nota, setNota] = useState("");
   const [guardando, setGuardando] = useState(false);
+
+  /* Haber abierto la agenda es uno de los primeros pasos del creador. */
+  useEffect(() => {
+    if (uid) marcaAgendaVista(uid);
+  }, [uid]);
 
   const carga = useCallback(async () => {
     if (!uid) return;

@@ -47,7 +47,7 @@ import { cambiaUsuario, listaUsuarios, type FichaUsuario } from "@/lib/despacho/
 import { cursos as repoCursos, inscripciones as repoInscripciones, type Curso, type Inscripcion } from "@/lib/escuela";
 import { bajasPendientes, cierraBaja, type Baja } from "@/lib/escuela/micuenta";
 import Confirmar from "@/components/Confirmar";
-import { daDeAlta } from "@/lib/despacho/altas";
+import { borraDelTodo, daDeAlta } from "@/lib/despacho/altas";
 import { guardadoEnLaNube } from "@/lib/escuela";
 
 /** Qué abre cada llave, dicho para quien la da. */
@@ -197,6 +197,23 @@ export default function GestionScreen() {
       setFallo(e instanceof Error ? e.message : "No se ha podido dar de alta.");
     } finally {
       setDando(false);
+    }
+  }
+
+  async function borra(f: FichaUsuario) {
+    setFallo("");
+    setAltaHecha("");
+    try {
+      const que = await borraDelTodo(f.uid);
+      setGente((xs) => (xs ?? []).filter((x) => x.uid !== f.uid));
+      setAbierta(null);
+      setAltaHecha(
+        que === "todo"
+          ? `${f.nombre || f.email} borrada del todo: su cuenta, sus cursos y su avance.`
+          : `${f.nombre || f.email} ya no puede entrar. Su cuenta de acceso sigue en Firebase; si quieres, bórrala en Authentication.`
+      );
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido borrar.");
     }
   }
 
@@ -570,6 +587,17 @@ export default function GestionScreen() {
                       >
                         {p.activo ? "Apagar el acceso" : "Volver a encender el acceso"}
                       </button>
+                      {!yoMismo && (
+                        <Confirmar
+                          estilo={BOTON_PLANO + "margin-left:8px;color:var(--red);"}
+                          titulo={`Borrar a ${p.nombre || p.email}`}
+                          pregunta="Se borra su cuenta, sus accesos a cursos y su avance. No tiene vuelta atrás. Si sólo quieres que no entre por ahora, apaga el acceso."
+                          confirmar="Borrar del todo"
+                          alConfirmar={() => void borra(p)}
+                        >
+                          Borrar a esta persona
+                        </Confirmar>
+                      )}
                       <p style={css(NOTA + "margin:9px 0 0;max-width:62ch;line-height:1.5;")}>
                         Apagar el acceso deja a esa persona fuera al instante sin borrar nada: su avance, sus mensajes
                         y lo que compró siguen ahí. Si vuelve, se enciende y lo encuentra todo.

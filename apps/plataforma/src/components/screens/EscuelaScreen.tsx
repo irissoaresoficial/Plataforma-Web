@@ -47,6 +47,7 @@ import { CABECERA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
 import { IcoAgenda, IcoComunidad, IcoCursos, IcoMetricas, IcoTrofeos } from "../Iconos";
 import PanelInicio from "../escuela/PanelInicio";
 import PrimerosPasos from "../escuela/PrimerosPasos";
+import TuEspacio from "../escuela/TuEspacio";
 import {
   avance as repoAvance,
   cursos as repoCursos,
@@ -264,6 +265,9 @@ export default function EscuelaScreen() {
       {/* Los trofeos de empezar: foto, comunidad, el primer curso. */}
       <PrimerosPasos />
 
+      {/* Para quien monta cursos: todo lo que tiene dentro, en orden, y lo que viene. */}
+      {puede("crear") && <TuEspacio />}
+
       {/* --------------------------------------------- Sigue donde lo dejaste */}
       {/* Lo primero de verdad, antes que los atajos: la pregunta que trae a
           alguien a esta pantalla es «¿qué hago ahora?», y esto la contesta. */}
@@ -334,7 +338,9 @@ export default function EscuelaScreen() {
       )}
 
       {/* ------------------------------------------------------ Las puertas */}
-      {abiertas.length > 0 && (
+      {/* Al creador ya se lo cuenta «Tu espacio», paso a paso: repetirlo aquí
+          serían las mismas cinco puertas dos veces en la misma pantalla. */}
+      {abiertas.length > 0 && !puede("crear") && (
         <section>
           <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>Tu escuela</h2>
           <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(248px,1fr));")}>

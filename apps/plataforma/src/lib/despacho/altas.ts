@@ -16,7 +16,7 @@
 import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signOut, type User } from "firebase/auth";
 import { appAltas, auth } from "@/lib/firebase";
 import type { Rol } from "@/lib/roles";
-import { daAcceso } from "./usuarios";
+import { daAcceso, quitaFicha } from "./usuarios";
 
 const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com";
 
@@ -92,4 +92,29 @@ export async function daDeAlta(d: { nombre: string; email: string; roles: Rol[] 
     );
   }
   return uid;
+}
+
+/**
+ * BORRAR A ALGUIEN DEL TODO: su cuenta, su ficha, sus cursos y su avance.
+ *
+ * Lo hace la web con la llave de administrador (`DELETE /api/alta`). Si no
+ * contesta, se quita al menos la ficha: sin ficha no entra, aunque la cuenta
+ * se quede en Firebase. Se dice cuál de las dos cosas ha pasado.
+ */
+export async function borraDelTodo(uid: string): Promise<"todo" | "ficha"> {
+  const yo = auth()?.currentUser ?? null;
+  if (yo) {
+    try {
+      const r = await fetch(`${WEB}/api/alta`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${await yo.getIdToken()}` },
+        body: JSON.stringify({ uid }),
+      });
+      if (r.ok) return "todo";
+    } catch {
+      /* se cae a quitar la ficha */
+    }
+  }
+  await quitaFicha(uid);
+  return "ficha";
 }
