@@ -17,6 +17,8 @@ import ComunidadScreen from "./screens/ComunidadScreen";
 import PerfilScreen from "./screens/PerfilScreen";
 import GestionScreen from "./screens/GestionScreen";
 import TableroScreen from "./screens/TableroScreen";
+import MiAgendaScreen from "./screens/MiAgendaScreen";
+import MisMetricasScreen from "./screens/MisMetricasScreen";
 import DetalleModal from "./DetalleModal";
 import Sidebar from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
@@ -24,6 +26,7 @@ import Tema from "./Tema";
 import Cuenta from "./Cuenta";
 import Avisos from "./despacho/Avisos";
 import AgenteIA from "./AgenteIA";
+import MisPuntos from "./MisPuntos";
 import Novedades from "./despacho/Novedades";
 import Particulas from "./Particulas";
 import SinEstudio from "./SinEstudio";
@@ -249,6 +252,7 @@ export default function Shell() {
             exactamente el que luego esconde un fallo de verdad. Se arregla en
             el sitio correcto: no pedir lo que no te toca, en vez de pedirlo y
             tragarse el no. */}
+        <MisPuntos />
         <AgenteIA />
         {puede("despacho") && <Avisos />}
         <Tema />
@@ -271,6 +275,8 @@ export default function Shell() {
             El porqué de que haya animación está en globals.css. */}
         <div key={vista} data-vista="" style={css("flex:1;min-width:0;")}>
           {vista === "tablero" && <TableroScreen />}
+          {vista === "miagenda" && <MiAgendaScreen />}
+          {vista === "mismetricas" && <MisMetricasScreen />}
           {vista === "inicio" && <ConsultaScreen />}
           {faltaEstudio && <SinEstudio vista={vista} />}
           {vista === "panel" && !faltaEstudio && <PanelScreen />}

@@ -51,6 +51,8 @@ import {
   type Tema,
 } from "@/lib/escuela/comunidad";
 import { guardadoEnLaNube } from "@/lib/escuela";
+import { refrescaPuntos } from "@/lib/escuela/puntos";
+import SecretariaIA from "../escuela/SecretariaIA";
 
 /*
  * LA PRESENTACIÓN DE IRIS, mientras ella no fije la suya.
@@ -88,7 +90,7 @@ function cuando(iso: string): string {
 }
 
 export default function ComunidadScreen() {
-  const { usuario, esAdmin } = useSesion();
+  const { usuario, esAdmin, puede } = useSesion();
   const quieto = useReducedMotion();
 
   const [temas, setTemas] = useState<Tema[] | null>(null);
@@ -148,6 +150,7 @@ export default function ComunidadScreen() {
     setFallo("");
     try {
       const t = await creaTema(autor, titulo, texto);
+      refrescaPuntos();
       setTemas((xs) => [t, ...(xs ?? [])]);
       setTitulo("");
       setTexto("");
@@ -163,6 +166,7 @@ export default function ComunidadScreen() {
     setFallo("");
     try {
       const r = await responde(t.id, autor, contesta);
+      refrescaPuntos();
       setHilo((xs) => [...xs, r]);
       setContesta("");
       setTemas((xs) =>
@@ -391,10 +395,17 @@ export default function ComunidadScreen() {
             "box-shadow:var(--nm);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3);"
         )}
       >
+        <div style={css("display:flex;align-items:center;gap:10px;")}>
+          {usuario && <Foto foto={usuario.foto} nombre={usuario.nombre} tam={36} iris={esAdmin} />}
+          <div>
+            <div style={css("font-size:var(--t-body);font-weight:500;color:var(--text);")}>Deja tu comentario</div>
+            <div style={css(NOTA)}>Una duda, algo que hayas visto en tu carta, lo que quieras contar. Suma {PUNTOS_TEMA} puntos.</div>
+          </div>
+        </div>
         <input
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
-          placeholder="¿Qué quieres preguntar o contar?"
+          placeholder="Escribe aquí de qué quieres hablar"
           aria-label="Título del tema"
           style={css(CAMPO + "font-size:var(--t-read);")}
         />
@@ -459,32 +470,51 @@ export default function ComunidadScreen() {
 
       {/* ------------------------------------------- puntos, tabla, normas */}
       <aside data-comunidad-lado="" style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;")}>
-        {usuario && !esAdmin && (
-          <section style={css(TARJETA_C + "background-image:radial-gradient(420px 220px at 100% 0%,color-mix(in srgb, var(--oro-luz) 60%, transparent),transparent 70%);")}>
-            <div style={css("font-size:var(--t-mini);color:var(--gold);")}>Tus puntos</div>
+        {/*
+          LOS PUNTOS, CON CONTRASTE. Gerson: «Iris debe en su parte de
+          comunidad decir también lo de los puntos; dale más contraste». Para
+          quien participa, sus puntos y lo que le falta; para Iris, cómo se
+          ganan, para que pueda animar a la gente sabiendo qué cuenta.
+        */}
+        <section
+          style={css(
+            "border-radius:var(--r-tarjeta);padding:var(--pad-card-sm);color:var(--vino);box-shadow:0 10px 26px color-mix(in srgb, var(--oro) 35%, transparent);" +
+              "background:linear-gradient(135deg,var(--oro-luz) 0%,color-mix(in srgb, var(--oro) 75%, var(--oro-luz)) 100%);"
+          )}
+        >
+          <div style={css("font-size:var(--t-mini);font-weight:600;")}>{esAdmin ? "Así se ganan puntos aquí" : "Tus puntos"}</div>
+          {!esAdmin && (
             <div style={css("display:flex;align-items:baseline;gap:10px;margin-top:4px;")}>
-              <span style={css("font-weight:300;font-size:44px;letter-spacing:-.04em;line-height:1;")}>{mio ? mio.puntos : 0}</span>
-              <span style={css("font-size:var(--t-body);color:var(--text-2);")}>· nivel {nivel.nombre}</span>
+              <span style={css("font-weight:300;font-size:52px;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums;")}>{mio ? mio.puntos : 0}</span>
+              <span style={css("font-size:var(--t-body);font-weight:500;")}>· nivel {nivel.nombre}</span>
             </div>
-            {nivel.siguiente && (
-              <>
-                <div style={css("height:6px;border-radius:var(--r-pill);background:var(--surface-2);overflow:hidden;margin-top:12px;")}>
-                  <div
-                    style={css(
-                      `height:100%;border-radius:var(--r-pill);background:var(--oro);width:${Math.round((((mio ? mio.puntos : 0) - nivel.desde) / ((nivel.hasta ?? 1) - nivel.desde)) * 100)}%;`
-                    )}
-                  />
-                </div>
-                <div style={css("font-size:var(--t-mini);color:var(--text-3);margin-top:8px;")}>
-                  Te faltan {nivel.faltan} para {nivel.siguiente}.
-                </div>
-              </>
-            )}
-            <div style={css("font-size:var(--t-mini);color:var(--text-3);margin-top:10px;line-height:1.5;")}>
-              Abrir un tema: {PUNTOS_TEMA} puntos. Responder a alguien: {PUNTOS_RESPUESTA}.
-            </div>
-          </section>
-        )}
+          )}
+          {!esAdmin && nivel.siguiente && (
+            <>
+              <div style={css("height:8px;border-radius:var(--r-pill);background:color-mix(in srgb, var(--vino) 15%, transparent);overflow:hidden;margin-top:12px;")}>
+                <div
+                  style={css(
+                    `height:100%;border-radius:var(--r-pill);background:var(--vino);width:${Math.round((((mio ? mio.puntos : 0) - nivel.desde) / ((nivel.hasta ?? 1) - nivel.desde)) * 100)}%;`
+                  )}
+                />
+              </div>
+              <div style={css("font-size:var(--t-mini);font-weight:500;margin-top:8px;")}>Te faltan {nivel.faltan} para {nivel.siguiente}.</div>
+            </>
+          )}
+          <ul style={css("list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:var(--t-body);")}>
+            <li style={css("display:flex;justify-content:space-between;gap:10px;")}>
+              <span>Abrir un tema</span>
+              <strong style={css("font-weight:600;")}>+{PUNTOS_TEMA}</strong>
+            </li>
+            <li style={css("display:flex;justify-content:space-between;gap:10px;")}>
+              <span>Responder a alguien</span>
+              <strong style={css("font-weight:600;")}>+{PUNTOS_RESPUESTA}</strong>
+            </li>
+          </ul>
+          <div style={css("font-size:var(--t-mini);margin-top:10px;line-height:1.5;")}>
+            Niveles: Semilla, Raíz (20), Rama (60) y Árbol (150).{esAdmin ? " Tú no compites: eres la anfitriona." : ""}
+          </div>
+        </section>
 
         <section style={css(TARJETA_C)}>
           <h2 style={css("margin:0 0 var(--s3);font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;")}>Las que más participan</h2>
@@ -527,6 +557,8 @@ export default function ComunidadScreen() {
         </section>
       </aside>
       </div>
+      {/* La empresa conectada, en cada pantalla del creador. */}
+      {puede("crear") && !puede("despacho") && <SecretariaIA compacta />}
     </div>
   );
 }

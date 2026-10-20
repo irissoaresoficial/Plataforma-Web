@@ -57,7 +57,7 @@ for (const cerrada of ["estudio", "despacho", "metricas", "gestion"] as Capacida
 comprueba("creador puede crear cursos", puede(creador, "crear"), true);
 comprueba("creador entra en sus cursos", puede(creador, "cursos"), true);
 comprueba("creador entra en la escuela", puede(creador, "escuela"), true);
-comprueba("creador NO entra en comunidad", puede(creador, "comunidad"), false);
+comprueba("creador entra en comunidad", puede(creador, "comunidad"), true);
 comprueba("creador NO es admin", esAdmin(creador), false);
 comprueba("alumno NO puede crear cursos", puede(alumno, "crear"), false);
 comprueba("miembro NO puede crear cursos", puede(miembro, "crear"), false);

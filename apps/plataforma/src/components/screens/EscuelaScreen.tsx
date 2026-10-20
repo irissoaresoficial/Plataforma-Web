@@ -44,8 +44,11 @@ import { css } from "@/lib/css";
 import { useApp, type View } from "@/lib/app-context";
 import { useSesion } from "@/lib/sesion";
 import { CABECERA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
-import { IcoComunidad, IcoCursos, IcoTrofeos } from "../Iconos";
+import { IcoAgenda, IcoComunidad, IcoCursos, IcoMetricas, IcoTrofeos } from "../Iconos";
 import PanelInicio from "../escuela/PanelInicio";
+import PrimerosPasos from "../escuela/PrimerosPasos";
+import TuEspacio from "../escuela/TuEspacio";
+import TableroPersona from "../escuela/TableroPersona";
 import {
   avance as repoAvance,
   cursos as repoCursos,
@@ -96,6 +99,23 @@ const PUERTAS: Array<{ k: View; llave: Capacidad; titulo: string; que: string; I
     que: "Lo que llevas hecho, tus medallas y tus datos.",
     Ico: IcoTrofeos,
     tono: "lavanda",
+  },
+  /* Las dos del creador de cursos. Las ve quien tiene la llave de crear. */
+  {
+    k: "miagenda",
+    llave: "crear",
+    titulo: "Mi agenda",
+    que: "Tus directos, tus sesiones y tus entregas, por días.",
+    Ico: IcoAgenda,
+    tono: "cielo",
+  },
+  {
+    k: "mismetricas",
+    llave: "crear",
+    titulo: "Mis métricas",
+    que: "Cuánta gente entra a tus cursos y hasta dónde llega.",
+    Ico: IcoMetricas,
+    tono: "lima",
   },
 ];
 
@@ -165,6 +185,24 @@ export default function EscuelaScreen() {
       </div>
     );
   }
+
+  /*
+   * EL MISMO TABLERO QUE IRIS, desde el 20 de octubre de 2026. Gerson:
+   * «¿por qué el dashboard de Iris es diferente? El de Iris es mejor». Lo de
+   * abajo —saludo, primeros pasos, puertas— se queda en el archivo por si
+   * hiciera falta volver, pero ya no se pinta: el tablero lo cuenta todo. Y
+   * al creador, debajo, su espacio paso a paso.
+   */
+  return (
+    <>
+      <TableroPersona />
+      {puede("crear") && (
+        <div style={css(PANTALLA + "padding-top:0;")}>
+          <TuEspacio />
+        </div>
+      )}
+    </>
+  );
 
   /* Un solo ancho y un solo arranque para todo lo de esta pantalla: es lo que
      hacía que los textos empezaran en tres verticales distintas. */
@@ -243,6 +281,12 @@ export default function EscuelaScreen() {
         </div>
       </header>
 
+      {/* Los trofeos de empezar: foto, comunidad, el primer curso. */}
+      <PrimerosPasos />
+
+      {/* Para quien monta cursos: todo lo que tiene dentro, en orden, y lo que viene. */}
+      {puede("crear") && <TuEspacio />}
+
       {/* --------------------------------------------- Sigue donde lo dejaste */}
       {/* Lo primero de verdad, antes que los atajos: la pregunta que trae a
           alguien a esta pantalla es «¿qué hago ahora?», y esto la contesta. */}
@@ -313,7 +357,9 @@ export default function EscuelaScreen() {
       )}
 
       {/* ------------------------------------------------------ Las puertas */}
-      {abiertas.length > 0 && (
+      {/* Al creador ya se lo cuenta «Tu espacio», paso a paso: repetirlo aquí
+          serían las mismas cinco puertas dos veces en la misma pantalla. */}
+      {abiertas.length > 0 && !puede("crear") && (
         <section>
           <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>Tu escuela</h2>
           <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(248px,1fr));")}>

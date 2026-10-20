@@ -98,7 +98,7 @@ export default function Reproductor({
     });
     setFallo("");
     try {
-      const nuevo = await repoAvance.marcar(uid, curso.id, l.id, hecha);
+      const nuevo = await repoAvance.marcar(uid, curso.id, l.id, hecha, curso.autor);
       setAv(nuevo);
     } catch {
       setAv(antes);

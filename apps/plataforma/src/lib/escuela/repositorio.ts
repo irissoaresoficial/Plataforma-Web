@@ -29,6 +29,8 @@ export interface RepoInscripciones {
   deCurso(cursoId: string): Promise<Inscripcion[]>;
   dar(uid: string, cursoId: string, via?: Inscripcion["via"]): Promise<Inscripcion>;
   quitar(uid: string, cursoId: string): Promise<void>;
+  /** Las de los cursos de un creador. Para sus métricas. */
+  deAutor(uid: string): Promise<Inscripcion[]>;
 }
 
 export interface RepoAvance {
@@ -41,5 +43,7 @@ export interface RepoAvance {
    * preguntar habría un parpadeo entre el clic y la barra moviéndose. Lo que
    * hace que esto se sienta bien es que la barra se mueva EN EL MOMENTO.
    */
-  marcar(uid: string, cursoId: string, leccionId: string, hecha: boolean): Promise<Avance>;
+  marcar(uid: string, cursoId: string, leccionId: string, hecha: boolean, autor?: string): Promise<Avance>;
+  /** Los avances en los cursos de un creador. Para sus métricas. */
+  deAutor(uid: string): Promise<Avance[]>;
 }

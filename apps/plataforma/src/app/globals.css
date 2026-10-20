@@ -2056,3 +2056,56 @@ button:not(:disabled):active {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   LA SECRETARIA CON IA (components/escuela/SecretariaIA.tsx)
+
+   Texto a la izquierda y el diagrama a la derecha; en el móvil, uno encima
+   del otro. Sutil a propósito: filetes finos, una sola luz que recorre las
+   líneas de una en una y el punto de «Próximamente» que respira. Con
+   movimiento reducido, quieto.
+   --------------------------------------------------------------------------- */
+[data-ia] {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 520px);
+}
+[data-ia-fila] {
+  grid-template-columns: 170px minmax(0, 1fr);
+}
+@media (max-width: 900px) {
+  [data-ia] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+[data-ia-diagrama="estrecho"] {
+  display: none;
+}
+@media (max-width: 560px) {
+  [data-ia-fila] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-ia-diagrama="ancho"] {
+    display: none;
+  }
+  [data-ia-diagrama="estrecho"] {
+    display: block;
+  }
+}
+[data-ia-pronto] {
+  animation: ia-latido 2.6s ease-in-out infinite;
+}
+@keyframes ia-latido {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--oro-luz) 45%, transparent);
+  }
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--oro-luz) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-ia-pronto] {
+    animation: none;
+  }
+}
+

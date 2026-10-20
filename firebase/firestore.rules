@@ -361,7 +361,11 @@ service cloud.firestore {
      * identificador de otro para leer su inscripción.
      */
     match /inscripciones/{id} {
-      allow read: if esAdmin() || (dentro() && resource.data.uid == request.auth.uid);
+      /* Y el creador, las de SUS cursos: el autor va copiado en la propia
+         inscripción al darla, para poder preguntarlo así. */
+      allow read: if esAdmin()
+        || (dentro() && resource.data.uid == request.auth.uid)
+        || (esCreador() && resource.data.autor == request.auth.uid);
       allow write: if esAdmin();
     }
 
@@ -408,11 +412,13 @@ service cloud.firestore {
      * línea no regalarlo.
      */
     match /avance/{id} {
+      /* El creador lee el avance de la gente en SUS cursos —para sus
+         métricas—, por el autor que se copia al marcar una lección. */
       allow read: if esAdmin() || (dentro() && (
         resource == null
           ? id.split('__')[0] == request.auth.uid
           : resource.data.uid == request.auth.uid
-      ));
+      )) || (esCreador() && resource != null && resource.data.autor == request.auth.uid);
       /*
        * ESCRIBIR Y BORRAR SE DICEN APARTE, y no por gusto de partir reglas.
        *
@@ -565,6 +571,15 @@ service cloud.firestore {
      * tres cosas.
      */
     match /estudios/{id} { allow read, write: if esAdmin(); }
+
+    /*
+     * LA AGENDA DE CADA CREADOR. Suya y de nadie más: ni otro creador ni la
+     * propia Iris —que tiene la suya en `citas`— la leen. Es su negocio.
+     */
+    match /agenda/{id} {
+      allow read, update, delete: if esCreador() && resource.data.uid == request.auth.uid;
+      allow create: if esCreador() && request.resource.data.uid == request.auth.uid;
+    }
 
     /*
      * LAS BAJAS: «quiero que me borres».
