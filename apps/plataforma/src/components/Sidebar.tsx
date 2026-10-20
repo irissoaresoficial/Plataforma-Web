@@ -106,7 +106,7 @@ const ESCUELA: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> = [
 /** Lo de Iris que no es ni el estudio ni el despacho de siempre. */
 const DIRECCION: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> = [
   { k: "metricas", label: "Métricas", Ico: IcoMetricas, llave: "metricas" },
-  { k: "gestion", label: "Gestión", Ico: IcoGestion, llave: "gestion" },
+  { k: "gestion", label: "Altas y accesos", Ico: IcoGestion, llave: "gestion" },
 ];
 
 /**

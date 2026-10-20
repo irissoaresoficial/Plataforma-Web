@@ -168,7 +168,7 @@ export function puntoDe(p: Persona, sesiones: number): Punto {
  * discrepando el día que se cambia una.
  */
 export const FORMULARIOS: Record<string, string> = {
-  sinergia: "Pidió la prueba gratis",
+  sinergia: "Pidió el estudio Sinergia",
   membresia: "Se apuntó a la lista de espera",
   curso: "Preguntó por un curso",
   reserva: "Pidió cita",

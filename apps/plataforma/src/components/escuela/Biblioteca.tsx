@@ -19,9 +19,7 @@ import { css } from "@/lib/css";
 import { botonPrincipal, BOTON_NORMAL, NOTA, TARJETA } from "@/lib/ui";
 import { porDondeIba, progreso, totalLecciones, type Avance, type Curso } from "@/lib/escuela";
 
-const FOTOS = ["/escuela/basico.jpg", "/escuela/temario.jpg", "/escuela/material.jpg"];
-const portadaDe = (c: Curso, i: number) =>
-  c.portada && !/\.(mp4|webm|mov)(\?|$)/i.test(c.portada) ? c.portada : FOTOS[i % FOTOS.length];
+import { portadaDe } from "@/lib/escuela/portadas";
 
 export default function Biblioteca({
   cursos,

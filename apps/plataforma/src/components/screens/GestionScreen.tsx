@@ -47,6 +47,16 @@ import { cambiaUsuario, listaUsuarios, type FichaUsuario } from "@/lib/despacho/
 import { cursos as repoCursos, inscripciones as repoInscripciones, type Curso, type Inscripcion } from "@/lib/escuela";
 import { bajasPendientes, cierraBaja, type Baja } from "@/lib/escuela/micuenta";
 import Confirmar from "@/components/Confirmar";
+import { daDeAlta } from "@/lib/despacho/altas";
+import { guardadoEnLaNube } from "@/lib/escuela";
+
+/** Qué abre cada llave, dicho para quien la da. */
+const QUE_ABRE: Record<Rol, string> = {
+  alumno: "ve los cursos que le marques",
+  miembro: "entra en la comunidad",
+  creador: "monta sus propios cursos",
+  admin: "lo ve todo, como tú",
+};
 
 export default function GestionScreen() {
   const { usuario } = useSesion();
@@ -71,6 +81,14 @@ export default function GestionScreen() {
    * puede esperar a mañana.
    */
   const [bajas, setBajas] = useState<Baja[]>([]);
+
+  /* ------------------------------------------------------------ las altas */
+  const [altaNombre, setAltaNombre] = useState("");
+  const [altaCorreo, setAltaCorreo] = useState("");
+  const [altaRoles, setAltaRoles] = useState<Rol[]>(["alumno"]);
+  const [altaCursos, setAltaCursos] = useState<string[]>([]);
+  const [dando, setDando] = useState(false);
+  const [altaHecha, setAltaHecha] = useState("");
 
   const carga = useCallback(async () => {
     setFallo("");
@@ -161,6 +179,27 @@ export default function GestionScreen() {
     }
   }
 
+  async function alta() {
+    setFallo("");
+    setAltaHecha("");
+    setDando(true);
+    try {
+      const uid = await daDeAlta({ nombre: altaNombre, email: altaCorreo, roles: altaRoles });
+      /* Los cursos marcados, a la vez: dar de alta a una alumna sin su curso
+         es dejarla entrar a una pantalla vacía. */
+      await Promise.all(altaCursos.map((c) => repoInscripciones.dar(uid, c, "mano")));
+      setAltaHecha(`Hecho. A ${altaCorreo.trim()} le llega ahora un correo para poner su contraseña.`);
+      setAltaNombre("");
+      setAltaCorreo("");
+      setAltaCursos([]);
+      void carga();
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido dar de alta.");
+    } finally {
+      setDando(false);
+    }
+  }
+
   async function alternaActivo(f: FichaUsuario) {
     const antes = gente;
     setFallo("");
@@ -190,7 +229,7 @@ export default function GestionScreen() {
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
-        <h1 style={css(TITULO + "margin:0;")}>Gestión</h1>
+        <h1 style={css(TITULO + "margin:0;")}>Altas y accesos</h1>
         {gente !== null && !roto && (
           <span style={css(NOTA)}>
             {gente.length} {gente.length === 1 ? "persona" : "personas"}
@@ -199,8 +238,8 @@ export default function GestionScreen() {
       </div>
 
       <p style={css(NOTA + "margin:0;max-width:72ch;line-height:1.55;")}>
-        Aquí das acceso a mano mientras no haya pagos automáticos. Alguien te paga, lo buscas en la lista y le marcas
-        el curso. Para que aparezca aquí, antes tiene que haberse creado una cuenta en la plataforma.
+        Aquí das de alta a la gente y decides qué puede hacer cada uno. Mientras no haya pagos automáticos, cuando
+        alguien te paga lo das de alta (o lo buscas abajo) y le marcas su curso.
       </p>
 
       {fallo && (
@@ -260,6 +299,103 @@ export default function GestionScreen() {
         </section>
       )}
 
+      {/* ------------------------------------------------------- altas */}
+      {/*
+        DAR DE ALTA, ARRIBA DEL TODO. Gerson: «crear y delegar usuarios desde
+        el apartado de Iris; debe haber algo que diga ALTAS». Es lo que más se
+        va a hacer aquí, así que va lo primero y no escondido en una ficha.
+      */}
+      <section
+        style={css(
+          "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);" +
+            "box-shadow:var(--nm-alto);padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:var(--s3);"
+        )}
+      >
+        <div>
+          <h2 style={css("margin:0;font-size:var(--t-head);font-weight:500;letter-spacing:-.025em;")}>Altas</h2>
+          <p style={css(NOTA + "margin:4px 0 0;max-width:64ch;line-height:1.5;")}>
+            Das de alta a alguien con su nombre y su correo. A esa persona le llega un correo para poner su propia
+            contraseña: tú no la ves ni tienes que mandársela.
+          </p>
+        </div>
+        <div style={css("display:flex;gap:var(--s3);flex-wrap:wrap;")}>
+          <input
+            value={altaNombre}
+            onChange={(e) => setAltaNombre(e.target.value)}
+            placeholder="Nombre"
+            aria-label="Nombre de la persona"
+            style={css(CAMPO + "flex:1 1 200px;")}
+          />
+          <input
+            value={altaCorreo}
+            onChange={(e) => setAltaCorreo(e.target.value)}
+            placeholder="Correo"
+            type="email"
+            aria-label="Correo de la persona"
+            style={css(CAMPO + "flex:1 1 240px;")}
+          />
+        </div>
+        <div>
+          <div style={css(NOTA + "margin-bottom:8px;")}>Qué puede hacer</div>
+          <div style={css("display:flex;gap:7px;flex-wrap:wrap;")}>
+            {ROLES.map((r) => {
+              const si = altaRoles.includes(r);
+              return (
+                <button
+                  key={r}
+                  onClick={() => setAltaRoles((xs) => (si ? xs.filter((x) => x !== r) : [...xs, r]))}
+                  aria-pressed={si}
+                  title={QUE_ABRE[r]}
+                  style={css(pastilla(si))}
+                >
+                  {NOMBRE_ROL[r]}
+                </button>
+              );
+            })}
+          </div>
+          <p style={css(NOTA + "margin:8px 0 0;")}>
+            {altaRoles.length ? altaRoles.map((r) => `${NOMBRE_ROL[r]}: ${QUE_ABRE[r]}`).join(" · ") : "Sin ninguna llave entraría y no vería nada."}
+          </p>
+        </div>
+        {altaRoles.includes("alumno") && cursos.length > 0 && (
+          <div>
+            <div style={css(NOTA + "margin-bottom:8px;")}>Sus cursos</div>
+            <div style={css("display:flex;gap:7px;flex-wrap:wrap;")}>
+              {cursos.map((c) => {
+                const si = altaCursos.includes(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => setAltaCursos((xs) => (si ? xs.filter((x) => x !== c.id) : [...xs, c.id]))}
+                    aria-pressed={si}
+                    style={css(pastilla(si))}
+                  >
+                    {c.titulo || "Curso sin nombre"}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;")}>
+          <button
+            onClick={() => void alta()}
+            disabled={dando || !altaNombre.trim() || !altaCorreo.trim() || !guardadoEnLaNube}
+            style={css(botonPrincipal(!dando && Boolean(altaNombre.trim() && altaCorreo.trim()) && guardadoEnLaNube))}
+          >
+            {dando ? "Dando de alta…" : "Dar de alta"}
+          </button>
+          {!guardadoEnLaNube && <span style={css(NOTA)}>Sin Firebase conectado no se pueden crear cuentas.</span>}
+          {altaHecha && (
+            <span role="status" style={css("font-size:var(--t-body);color:var(--green);")}>
+              {altaHecha}
+            </span>
+          )}
+        </div>
+      </section>
+
+      <h2 style={css("margin:var(--s3) 0 0;font-size:var(--t-head);font-weight:500;letter-spacing:-.025em;")}>Quién tiene acceso</h2>
+
       <input
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
@@ -287,8 +423,8 @@ export default function GestionScreen() {
         >
           <h2 style={css("font-size:var(--t-head);margin:0 0 var(--s2);")}>Todavía no hay nadie más que tú</h2>
           <p style={css("font-size:var(--t-read);line-height:1.6;color:var(--text-3);margin:0;text-wrap:pretty;")}>
-            Cuando alguien se cree una cuenta en la plataforma, aparece en esta lista y aquí le das lo que haya
-            comprado.
+            Cuando des de alta a alguien arriba —o alguien entre con su propia cuenta—, aparece en esta lista y aquí
+            le das lo que haya comprado.
           </p>
         </div>
       )}

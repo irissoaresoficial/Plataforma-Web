@@ -22,6 +22,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const CURVA = [0.16, 1, 0.3, 1] as const;
 
@@ -55,6 +57,27 @@ export default function Puerta() {
   const [email, setEmail] = useState("");
   const [clave, setClave] = useState("");
   const [verClave, setVerClave] = useState(false);
+  /*
+   * «HE OLVIDADO MI CONTRASEÑA». Entró el 20 de octubre de 2026 con las altas
+   * desde Gestión: a quien da de alta Iris le llega un correo para poner su
+   * contraseña, y si lo pierde, éste es el camino para que le llegue otro.
+   *
+   * Se dice lo mismo exista o no la cuenta: decir «ese correo no existe» le
+   * contaría a cualquiera quién es alumno de la escuela.
+   */
+  const [recordando, setRecordando] = useState("");
+  const recuerda = async () => {
+    const a = auth();
+    const correo = email.trim().toLowerCase();
+    if (!correo) return setRecordando("Escribe arriba tu correo y vuelve a pulsar.");
+    if (!a) return setRecordando("Sin Firebase conectado no hay contraseñas que recuperar.");
+    try {
+      await sendPasswordResetEmail(a, correo);
+    } catch {
+      /* Mismo mensaje: no se cuenta si existe o no. */
+    }
+    setRecordando(`Si ${correo} tiene cuenta, te acaba de llegar un correo para poner una contraseña nueva. Mira también en spam.`);
+  };
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,6 +161,19 @@ export default function Puerta() {
           <p role="alert" className="puerta-error">
             {error}
           </p>
+
+          <button
+            type="button"
+            onClick={() => void recuerda()}
+            style={css("align-self:center;border:none;background:none;cursor:pointer;font:inherit;font-size:var(--t-mini);color:var(--text-3);text-decoration:underline;text-underline-offset:3px;")}
+          >
+            He olvidado mi contraseña
+          </button>
+          {recordando && (
+            <p role="status" style={css("margin:0;font-size:var(--t-mini);line-height:1.5;color:var(--text-2);text-align:center;")}>
+              {recordando}
+            </p>
+          )}
         </form>
 
         {/*

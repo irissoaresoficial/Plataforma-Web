@@ -42,10 +42,38 @@ import {
   listaTemas,
   responde,
   respuestasDe,
+  todasLasRespuestas,
+  clasificacion,
+  nivelDe,
+  PUNTOS_RESPUESTA,
+  PUNTOS_TEMA,
   type Respuesta,
   type Tema,
 } from "@/lib/escuela/comunidad";
 import { guardadoEnLaNube } from "@/lib/escuela";
+
+/*
+ * LA PRESENTACIÓN DE IRIS, mientras ella no fije la suya.
+ *
+ * Gerson: «haz una frase de inicio, explica quién es Iris y por qué te quiere
+ * ayudar». Está hecha SÓLO con lo que Iris ya dice de sí misma en su web —su
+ * título, desde cuándo tiene consulta y su idea de los patrones—, no con
+ * frases nuevas puestas en su boca. En cuanto ella fije un mensaje suyo, sale
+ * el suyo en lugar de éste.
+ */
+const PRESENTACION =
+  "Soy Iris Soares, terapeuta psicosomática clínica y numeróloga transgeneracional, y tengo consulta desde 2010. " +
+  "Lo que se repite en tu vida no es mala suerte: es un patrón, y los patrones se heredan. " +
+  "Esta comunidad es para que no lo mires sola. Pregunta, cuenta lo que ves en tu carta y lee a las demás.";
+
+/** Las normas de la casa. Cortas, para que se lean. */
+const NORMAS = [
+  "Aquí se habla de tú y con respeto. Nadie juzga la historia de nadie.",
+  "Lo que se cuenta aquí se queda aquí. No copies fuera lo que escriben otras.",
+  "Hablamos de patrones, no de culpables: tu familia no es el enemigo.",
+  "Esto no sustituye a un médico ni a un psicólogo. Si estás pasando por algo grave, pide ayuda profesional.",
+  "Nada de publicidad ni de vender servicios.",
+];
 
 /** «hace 3 h», «ayer», «12 oct». Lo que diría una persona, no una fecha. */
 function cuando(iso: string): string {
@@ -64,6 +92,8 @@ export default function ComunidadScreen() {
   const quieto = useReducedMotion();
 
   const [temas, setTemas] = useState<Tema[] | null>(null);
+  /** Todas las respuestas, sólo para contar los puntos. */
+  const [todas, setTodas] = useState<Respuesta[]>([]);
   const [roto, setRoto] = useState(false);
   const [fallo, setFallo] = useState("");
 
@@ -83,7 +113,9 @@ export default function ComunidadScreen() {
   const carga = useCallback(async () => {
     setRoto(false);
     try {
-      setTemas(await listaTemas());
+      const [t, r] = await Promise.all([listaTemas(), todasLasRespuestas().catch(() => [] as Respuesta[])]);
+      setTemas(t);
+      setTodas(r);
     } catch (e) {
       setTemas([]);
       setRoto(true);
@@ -296,10 +328,13 @@ export default function ComunidadScreen() {
   /* La bienvenida: el primer tema que Iris haya fijado. Si no hay, la
      pieza de arriba saluda igual, pero no se inventa ninguna frase suya. */
   const bienvenida = fijados.find((t) => t.esIris);
+  const tabla = clasificacion(temas ?? [], todas);
+  const mio = usuario ? tabla.find((p) => p.uid === usuario.uid) : undefined;
+  const nivel = nivelDe(mio ? mio.puntos : 0);
   const resto = (temas ?? []).filter((t) => !t.fijado);
 
   return (
-    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);max-width:min(var(--ancho),860px);")}>
+    <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <h1 style={css(TITULO + "margin:0;")}>Comunidad</h1>
 
       {/*
@@ -325,13 +360,18 @@ export default function ComunidadScreen() {
               ? bienvenida.texto.length > 260
                 ? bienvenida.texto.slice(0, 257) + "…"
                 : bienvenida.texto
-              : esAdmin
-                ? "Escribe tu bienvenida abajo, publícala y fíjala: saldrá aquí, con tu foto, para cada persona que entre."
-                : "Esta es la comunidad de la escuela. Pregunta, cuenta lo que ves en tu carta y lee a las demás."}
+              : PRESENTACION}
           </p>
+          {!bienvenida && esAdmin && (
+            <p style={css("margin:10px 0 0;font-size:var(--t-mini);color:var(--oro-luz);")}>
+              Esto sale con tus palabras de la web. Si escribes tu bienvenida abajo y la fijas, saldrá la tuya en su lugar.
+            </p>
+          )}
         </div>
       </section>
 
+      <div data-comunidad="">
+      <div style={css("display:flex;flex-direction:column;gap:var(--s4);min-width:0;")}>
       {!guardadoEnLaNube && (
         <p style={css(NOTA + "margin:0;")}>
           Sin conexión a la nube la comunidad no guarda nada. Es lo normal mientras se trabaja en la plataforma.
@@ -415,6 +455,81 @@ export default function ComunidadScreen() {
         <h2 style={css(CABECERA + "margin:var(--s2) 0 0;font-size:var(--t-head);")}>Lo último</h2>
       )}
       {resto.map((t, i) => ficha(t, i + fijados.length))}
+      </div>
+
+      {/* ------------------------------------------- puntos, tabla, normas */}
+      <aside data-comunidad-lado="" style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;")}>
+        {usuario && !esAdmin && (
+          <section style={css(TARJETA_C + "background-image:radial-gradient(420px 220px at 100% 0%,color-mix(in srgb, var(--oro-luz) 60%, transparent),transparent 70%);")}>
+            <div style={css("font-size:var(--t-mini);color:var(--gold);")}>Tus puntos</div>
+            <div style={css("display:flex;align-items:baseline;gap:10px;margin-top:4px;")}>
+              <span style={css("font-weight:300;font-size:44px;letter-spacing:-.04em;line-height:1;")}>{mio ? mio.puntos : 0}</span>
+              <span style={css("font-size:var(--t-body);color:var(--text-2);")}>· nivel {nivel.nombre}</span>
+            </div>
+            {nivel.siguiente && (
+              <>
+                <div style={css("height:6px;border-radius:var(--r-pill);background:var(--surface-2);overflow:hidden;margin-top:12px;")}>
+                  <div
+                    style={css(
+                      `height:100%;border-radius:var(--r-pill);background:var(--oro);width:${Math.round((((mio ? mio.puntos : 0) - nivel.desde) / ((nivel.hasta ?? 1) - nivel.desde)) * 100)}%;`
+                    )}
+                  />
+                </div>
+                <div style={css("font-size:var(--t-mini);color:var(--text-3);margin-top:8px;")}>
+                  Te faltan {nivel.faltan} para {nivel.siguiente}.
+                </div>
+              </>
+            )}
+            <div style={css("font-size:var(--t-mini);color:var(--text-3);margin-top:10px;line-height:1.5;")}>
+              Abrir un tema: {PUNTOS_TEMA} puntos. Responder a alguien: {PUNTOS_RESPUESTA}.
+            </div>
+          </section>
+        )}
+
+        <section style={css(TARJETA_C)}>
+          <h2 style={css("margin:0 0 var(--s3);font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;")}>Las que más participan</h2>
+          {tabla.length === 0 ? (
+            <p style={css(NOTA + "margin:0;line-height:1.5;")}>
+              Todavía nadie tiene puntos. Abre un tema o responde a alguien y sales aquí la primera.
+            </p>
+          ) : (
+            <ol style={css("list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;")}>
+              {tabla.slice(0, 5).map((p, i) => (
+                <li key={p.uid} style={css("display:flex;align-items:center;gap:10px;")}>
+                  <span style={css("width:22px;text-align:center;font-size:var(--t-body);font-weight:500;color:" + (i === 0 ? "var(--gold)" : "var(--text-3)") + ";")}>
+                    {i + 1}
+                  </span>
+                  <Foto foto={p.foto} nombre={p.nombre} tam={34} />
+                  <span style={css("flex:1;min-width:0;")}>
+                    <span style={css("display:block;font-size:var(--t-body);font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>
+                      {p.nombre}
+                      {usuario && p.uid === usuario.uid && <span style={css(NOTA + "font-weight:400;")}> · tú</span>}
+                    </span>
+                    <span style={css(NOTA)}>{nivelDe(p.puntos).nombre}</span>
+                  </span>
+                  <span style={css("font-size:var(--t-body);font-weight:500;font-variant-numeric:tabular-nums;color:var(--text);")}>{p.puntos}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
+
+        <section style={css(TARJETA_C)}>
+          <h2 style={css("margin:0 0 var(--s3);font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;")}>Las normas</h2>
+          <ol style={css("list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;font-size:var(--t-body);line-height:1.5;color:var(--text-2);")}>
+            {NORMAS.map((n, i) => (
+              <li key={n} style={css("display:flex;gap:10px;")}>
+                <span style={css("flex:none;width:1.4em;color:var(--gold);font-weight:500;")}>{i + 1}.</span>
+                <span>{n}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </aside>
+      </div>
     </div>
   );
 }
+
+const TARJETA_C =
+  "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);box-shadow:var(--nm);padding:var(--pad-card-sm);";
