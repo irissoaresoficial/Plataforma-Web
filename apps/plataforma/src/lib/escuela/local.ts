@@ -92,6 +92,10 @@ export const inscripcionesLocal: RepoInscripciones = {
     escribe(LS_INSCRIPCIONES, xs);
     return nueva;
   },
+  async deAutor(uid) {
+    const mios = new Set((lee<Curso>(LS_CURSOS)).filter((c) => c.autor === uid).map((c) => c.id));
+    return lee<Inscripcion>(LS_INSCRIPCIONES).filter((x) => mios.has(x.cursoId));
+  },
   async quitar(uid, cursoId) {
     escribe(
       LS_INSCRIPCIONES,
@@ -103,6 +107,10 @@ export const inscripcionesLocal: RepoInscripciones = {
 export const avanceLocal: RepoAvance = {
   async de(uid, cursoId) {
     return lee<Avance>(LS_AVANCE).find((x) => x.id === `${uid}__${cursoId}`) ?? null;
+  },
+  async deAutor(uid) {
+    const mios = new Set((lee<Curso>(LS_CURSOS)).filter((c) => c.autor === uid).map((c) => c.id));
+    return lee<Avance>(LS_AVANCE).filter((x) => mios.has(x.cursoId));
   },
   async marcar(uid, cursoId, leccionId, hecha) {
     const xs = lee<Avance>(LS_AVANCE);
