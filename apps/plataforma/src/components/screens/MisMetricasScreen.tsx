@@ -34,6 +34,8 @@ import {
 } from "@/lib/escuela";
 import { portadaDe } from "@/lib/escuela/portadas";
 import SecretariaIA from "../escuela/SecretariaIA";
+import Gasto from "../metricas/Gasto";
+import { ultimosDias, type DiaCampana } from "@/lib/despacho/campana";
 
 const DIA = 24 * 3600 * 1000;
 
@@ -41,6 +43,10 @@ export default function MisMetricasScreen() {
   const { usuario } = useSesion();
   const uid = usuario ? usuario.uid : "";
   const [d, setD] = useState<{ cursos: Curso[]; ins: Inscripcion[]; avs: Avance[] } | null>(null);
+  /* Lo que cuesta la publicidad. Va en su propio estado y no en el `Promise.all`
+     de arriba a propósito: si esto falla o llega tarde, los cursos ya están
+     pintados. Son dos cosas independientes y no tienen por qué esperarse. */
+  const [campana, setCampana] = useState<DiaCampana[]>([]);
   const [fallo, setFallo] = useState("");
   const [elegido, setElegido] = useState<string>("todos");
   /* La hora, fija al abrir: la pantalla es una foto de ese momento. */
@@ -64,6 +70,18 @@ export default function MisMetricasScreen() {
       vivo = false;
     };
   }, [uid]);
+
+  /* La campaña no depende de quién seas: es la misma para toda la casa. Por eso
+     se pide una vez al abrir y no cada vez que se cambia de curso. */
+  useEffect(() => {
+    let vivo = true;
+    void ultimosDias(60).then((x) => {
+      if (vivo) setCampana(x);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   const m = useMemo(() => {
     if (!d) return null;
@@ -206,6 +224,26 @@ export default function MisMetricasScreen() {
           </div>
         </>
       )}
+      {/* --------------------------------------------- lo que cuesta traerlos */}
+      {/* Gerson, el 20 de octubre: estas métricas «las debe ver también la otra
+          persona a la que le daremos acceso al panel de Desórdenes Amorosos».
+          Aquí ve el dinero de la campaña —gasto, clics, hasta dónde aguantan
+          el vídeo— y NO ve nada del despacho de Iris: ni clientas, ni facturas,
+          ni la lista de correos.
+
+          `leads={null}` es justo eso. No es que no haya apuntados: es que desde
+          esta pantalla no se pueden leer, y las reglas de Firestore tampoco lo
+          dejarían. El bloque lo dice con esas palabras en vez de enseñar un
+          cero que parecería un fracaso de la campaña. */}
+      {campana.length > 0 && (
+        <>
+          <h2 style={css("margin:var(--s4) 0 0;font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;")}>
+            Lo que cuesta la publicidad
+          </h2>
+          <Gasto dias={campana} leads={null} tarjeta={TARJETA + "padding:var(--pad-card-sm);"} />
+        </>
+      )}
+
       {/* La empresa conectada, en cada pantalla del creador. */}
       <SecretariaIA compacta />
     </div>
