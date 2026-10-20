@@ -108,7 +108,10 @@ const ABRE: Record<Capacidad, readonly Rol[]> = {
   gestion: ["admin"],
   cursos: ["admin", "alumno", "creador"],
   crear: ["admin", "creador"],
-  comunidad: ["admin", "miembro"],
+  /* El creador también: Gerson, el 20 de octubre de 2026, «el creador de
+     cursos debe tener también el espacio de comunidad». Es donde están las
+     personas de sus cursos. */
+  comunidad: ["admin", "miembro", "creador"],
   escuela: ["admin", "alumno", "miembro", "creador"],
 };
 

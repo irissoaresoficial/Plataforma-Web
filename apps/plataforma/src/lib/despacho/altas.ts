@@ -13,10 +13,27 @@
  * La cuenta se crea en una segunda instancia de Firebase (`appAltas`) para
  * que Iris no se quede dentro con la sesión de la persona nueva.
  */
-import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signOut, type User } from "firebase/auth";
 import { appAltas, auth } from "@/lib/firebase";
 import type { Rol } from "@/lib/roles";
 import { daAcceso } from "./usuarios";
+
+const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com";
+
+/** Pide a la web que mande la bienvenida bonita. Devuelve si salió. */
+async function bienvenidaDeLaCasa(yo: User | null, d: { email: string; nombre: string; roles: Rol[] }): Promise<boolean> {
+  if (!yo) return false;
+  try {
+    const r = await fetch(`${WEB}/api/alta`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${await yo.getIdToken()}` },
+      body: JSON.stringify(d),
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
 
 /** Una contraseña que no va a escribir nadie: sólo existe hasta que la cambie. */
 function alAzar(): string {
@@ -57,8 +74,16 @@ export async function daDeAlta(d: { nombre: string; email: string; roles: Rol[] 
   }
 
   await daAcceso({ uid, email, nombre, activo: true, roles: d.roles });
-  /* El correo para que ponga su contraseña. Si fallara, la cuenta ya está
-     hecha: se dice, y desde la puerta puede pedir «he olvidado la clave». */
+  /*
+   * EL CORREO PARA QUE PONGA SU CONTRASEÑA.
+   *
+   * Primero el de la casa, con diseño y en castellano, que lo manda la web
+   * (`apps/web/app/api/alta`) porque es ella la que tiene las llaves. Si no
+   * contesta —sin configurar, sin red—, el de Firebase de serie: es feo, pero
+   * nadie se queda sin entrar. Y si fallan los dos, la cuenta ya está hecha:
+   * se dice, y desde la puerta puede pedir «He olvidado mi contraseña».
+   */
+  if (await bienvenidaDeLaCasa(principal.currentUser, { email, nombre, roles: d.roles })) return uid;
   try {
     await sendPasswordResetEmail(principal, email);
   } catch {

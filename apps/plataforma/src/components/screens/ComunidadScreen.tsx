@@ -391,10 +391,17 @@ export default function ComunidadScreen() {
             "box-shadow:var(--nm);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3);"
         )}
       >
+        <div style={css("display:flex;align-items:center;gap:10px;")}>
+          {usuario && <Foto foto={usuario.foto} nombre={usuario.nombre} tam={36} iris={esAdmin} />}
+          <div>
+            <div style={css("font-size:var(--t-body);font-weight:500;color:var(--text);")}>Deja tu comentario</div>
+            <div style={css(NOTA)}>Una duda, algo que hayas visto en tu carta, lo que quieras contar. Suma {PUNTOS_TEMA} puntos.</div>
+          </div>
+        </div>
         <input
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
-          placeholder="¿Qué quieres preguntar o contar?"
+          placeholder="Escribe aquí de qué quieres hablar"
           aria-label="Título del tema"
           style={css(CAMPO + "font-size:var(--t-read);")}
         />
