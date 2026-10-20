@@ -38,7 +38,9 @@
  * significa que se vea.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Foto from "@/components/Foto";
+import { cambiaFoto } from "@/lib/escuela/foto";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
@@ -64,7 +66,7 @@ function fecha(iso: string): string {
 }
 
 export default function PerfilScreen() {
-  const { usuario, esAdmin } = useSesion();
+  const { usuario, esAdmin, ponFoto } = useSesion();
   const quieto = useReducedMotion();
   const uid = usuario ? usuario.uid : "";
 
@@ -172,6 +174,25 @@ export default function PerfilScreen() {
     }
   }
 
+  /* ------------------------------------------------------------- la foto */
+  const campoFoto = useRef<HTMLInputElement>(null);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
+  async function eligeFoto(f: File | undefined) {
+    if (!f || !uid) return;
+    setFallo("");
+    setAviso("");
+    setSubiendoFoto(true);
+    try {
+      ponFoto(await cambiaFoto(uid, f));
+      setAviso("Foto cambiada. Ya sale en la comunidad.");
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido subir la foto.");
+    } finally {
+      setSubiendoFoto(false);
+      if (campoFoto.current) campoFoto.current.value = "";
+    }
+  }
+
   async function bajaLosDatos() {
     setFallo("");
     setAviso("");
@@ -242,16 +263,30 @@ export default function PerfilScreen() {
 
       {/* ------------------------------------------------------ quién eres */}
       <section style={css(tarjeta + "display:flex;gap:var(--s4);align-items:center;flex-wrap:wrap;")}>
-        <span
-          aria-hidden
-          style={css(
-            "flex:none;display:grid;place-items:center;width:66px;height:66px;border-radius:50%;" +
-              "background:var(--rosa);color:var(--rosa-tx);font-weight:600;font-size:27px;" +
-              "font-family:var(--font-display);"
-          )}
-        >
-          {(nombreQueSeVe.trim()[0] || "·").toUpperCase()}
-        </span>
+        {/* LA FOTO SE CAMBIA PULSÁNDOLA. Es lo que hace cualquiera en el móvil
+            sin que se lo expliquen, y el botón de debajo lo dice por si no. */}
+        <div style={css("flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;")}>
+          <button
+            onClick={() => campoFoto.current?.click()}
+            disabled={subiendoFoto}
+            aria-label="Cambiar tu foto"
+            style={css("padding:0;border:none;background:none;cursor:pointer;border-radius:50%;opacity:" + (subiendoFoto ? 0.5 : 1) + ";")}
+          >
+            <Foto foto={usuario ? usuario.foto : undefined} nombre={nombreQueSeVe} tam={88} />
+          </button>
+          <button onClick={() => campoFoto.current?.click()} disabled={subiendoFoto} style={css(BOTON_PLANO + "font-size:var(--t-mini);")}>
+            {subiendoFoto ? "Subiendo…" : usuario && usuario.foto ? "Cambiar foto" : "Poner foto"}
+          </button>
+          <input
+            ref={campoFoto}
+            type="file"
+            accept="image/*"
+            onChange={(e) => void eligeFoto(e.target.files?.[0])}
+            style={css("display:none;")}
+            aria-hidden
+            tabIndex={-1}
+          />
+        </div>
 
         <div style={css("flex:1 1 200px;min-width:0;")}>
           <div style={css("font-size:var(--t-read);font-weight:600;color:var(--text);")}>{nombreQueSeVe || "Sin nombre"}</div>

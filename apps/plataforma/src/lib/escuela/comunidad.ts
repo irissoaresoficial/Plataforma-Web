@@ -57,6 +57,9 @@ export type Tema = {
   /** Si lo escribió Iris. Se guarda en el tema para no tener que mirar su
    *  ficha cada vez que se pinta la lista. */
   esIris: boolean;
+  /** La foto de quien escribe, copiada al escribir. Opcional: los temas de
+   *  antes de que hubiera fotos no la traen y salen con la inicial. */
+  foto?: string;
   titulo: string;
   texto: string;
   /** Fijado arriba. Sólo Iris. */
@@ -73,6 +76,7 @@ export type Respuesta = {
   uid: string;
   autor: string;
   esIris: boolean;
+  foto?: string;
   texto: string;
   creado: string;
 };
@@ -107,7 +111,7 @@ export async function listaTemas(): Promise<Tema[]> {
 }
 
 export async function creaTema(
-  autor: { uid: string; nombre: string; esIris: boolean },
+  autor: { uid: string; nombre: string; esIris: boolean; foto?: string },
   titulo: string,
   texto: string
 ): Promise<Tema> {
@@ -117,6 +121,8 @@ export async function creaTema(
     uid: autor.uid,
     autor: autor.nombre,
     esIris: autor.esIris,
+    /* Firestore no acepta `undefined`: sin foto, el campo no se escribe. */
+    ...(autor.foto ? { foto: autor.foto } : {}),
     titulo: titulo.trim(),
     texto: texto.trim(),
     fijado: false,
@@ -139,7 +145,7 @@ export async function respuestasDe(temaId: string): Promise<Respuesta[]> {
 
 export async function responde(
   temaId: string,
-  autor: { uid: string; nombre: string; esIris: boolean },
+  autor: { uid: string; nombre: string; esIris: boolean; foto?: string },
   texto: string
 ): Promise<Respuesta> {
   const b = base();
@@ -150,6 +156,8 @@ export async function responde(
     uid: autor.uid,
     autor: autor.nombre,
     esIris: autor.esIris,
+    /* Firestore no acepta `undefined`: sin foto, el campo no se escribe. */
+    ...(autor.foto ? { foto: autor.foto } : {}),
     texto: texto.trim(),
     creado: ahora,
   };

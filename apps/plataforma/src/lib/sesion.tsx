@@ -57,6 +57,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, CORREO_DUENA, hayFirebase, nube } from "./firebase";
 import { esAdmin, puede, rolesDe, type Capacidad, type Rol } from "./roles";
 import { marcaVisita } from "./escuela/trofeos";
+import { fotoLocal } from "./escuela/foto";
 
 /**
  * TRES NIVELES DE ACCESO, DESDE QUE ABRE LA ESCUELA.
@@ -93,6 +94,8 @@ export type Usuario = {
   /** Las llaves que lleva. Una ficha sin este campo se lee como
    *  administradora: ver `rolesDe` en `roles.ts`. */
   roles: Rol[];
+  /** La foto de perfil, si ha puesto una. Ver `escuela/foto.ts`. */
+  foto?: string;
 };
 
 type Estado = {
@@ -109,6 +112,8 @@ type Estado = {
   puede: (que: Capacidad) => boolean;
   /** Atajo de lo que más se pregunta. */
   esAdmin: boolean;
+  /** Pinta la foto nueva en toda la plataforma sin volver a leer la ficha. */
+  ponFoto: (url: string) => void;
 };
 
 const Ctx = createContext<Estado | null>(null);
@@ -131,7 +136,7 @@ export function SesionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!conNube) {
       /* eslint-disable-next-line react-hooks/set-state-in-effect */
-      setUsuario(LOCAL);
+      setUsuario({ ...LOCAL, foto: fotoLocal(LOCAL.uid) || undefined });
       return;
     }
     const a = auth();
@@ -213,6 +218,7 @@ export function SesionProvider({ children }: { children: ReactNode }) {
           nombre: d.nombre || u.displayName || (u.email || "").split("@")[0],
           activo: true,
           roles: rolesDe(d as { roles?: Rol[] }),
+          foto: typeof d.foto === "string" ? d.foto : undefined,
         });
       } catch (e) {
         /* Si no se puede escribir la ficha —sin red, reglas mal puestas— no se
@@ -369,6 +375,7 @@ export function SesionProvider({ children }: { children: ReactNode }) {
          respuesta correcta es la misma: no. */
       puede: (que: Capacidad) => (usuario ? puede(usuario, que) : false),
       esAdmin: usuario ? esAdmin(usuario) : false,
+      ponFoto: (url: string) => setUsuario((u) => (u ? { ...u, foto: url } : u)),
     }),
     [usuario, entrando, error, conNube, entra, sale],
   );

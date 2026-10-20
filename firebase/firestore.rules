@@ -187,10 +187,14 @@ service cloud.firestore {
          */
         || (request.auth != null
             && uid == request.auth.uid
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nombre'])
+            /* Y su foto, desde el 20 de octubre de 2026: la dirección de la
+               imagen que subió a `avatares/<su uid>/`, nada más. */
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nombre', 'foto'])
             && request.resource.data.nombre is string
             && request.resource.data.nombre.size() > 0
-            && request.resource.data.nombre.size() <= 80);
+            && request.resource.data.nombre.size() <= 80
+            && (!('foto' in request.resource.data)
+                || (request.resource.data.foto is string && request.resource.data.foto.size() <= 2000)));
       allow delete: if esAdmin() && uid != request.auth.uid;
     }
 

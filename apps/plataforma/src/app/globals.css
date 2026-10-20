@@ -1944,3 +1944,82 @@ button:not(:disabled):active {
     position: static;
   }
 }
+
+/* El Agente IA se queda en el icono en un móvil: la cabecera ya lleva la
+   marca, el menú, la campana, el tema y la cuenta, y no cabe una pastilla. */
+@media (max-width: 640px) {
+  [data-agente-texto] {
+    display: none;
+  }
+  /* Y lo que dice se abre a lo ancho de la pantalla: colgando del icono se
+     salía por la izquierda. */
+  [data-agente-hoja] {
+    position: fixed !important;
+    top: 66px !important;
+    left: 16px !important;
+    right: 16px !important;
+    width: auto !important;
+  }
+}
+
+/* El embudo de Personas: cuatro columnas en escritorio, dos en tableta, una
+   en el móvil. */
+[data-embudo] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap);
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  [data-embudo] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  [data-embudo] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Métricas: la cabecera con las cifras y el medidor, y las dos gráficas en
+   pareja. En un móvil, todo una debajo de otra. */
+[data-metricas-cabecera] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-lg);
+  flex-wrap: wrap;
+}
+[data-metricas-rejilla] {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--gap);
+}
+@media (max-width: 1000px) {
+  [data-metricas-rejilla] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* La biblioteca del alumno: lo suyo a la izquierda y lo que lleva a la
+   derecha, como la referencia. En un móvil, una columna. */
+[data-biblioteca] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--gap);
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  [data-biblioteca] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  [data-fila-curso] {
+    grid-template-columns: 96px minmax(0, 1fr) !important;
+    row-gap: 6px !important;
+  }
+  [data-fila-barra] {
+    grid-column: 2;
+  }
+}

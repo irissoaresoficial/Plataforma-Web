@@ -77,6 +77,17 @@ const ORIGENES: Record<string, string> = {
  *  vistazo. Las que no caben se dicen con un número, no se esconden. */
 const CARAS_A_LA_VISTA = 12;
 
+/** Las columnas del embudo, en el orden en que se avanza. */
+const COLUMNAS: Punto[] = ["nueva", "escrita", "clienta", "fuera"];
+const NOMBRE_COLUMNA: Record<Punto, string> = {
+  nueva: "Sin contestar",
+  escrita: "Habladas",
+  clienta: "Clientas",
+  fuera: "Descartadas",
+};
+/** Cuántas tarjetas caben en una columna antes de mandar a la lista. */
+const POR_COLUMNA = 8;
+
 /** Una persona con lo que se ha podido calcular de ella. */
 type Fila = { p: Persona; r: Relacion | null; punto: Punto };
 
@@ -88,6 +99,10 @@ export default function PersonasScreen() {
   const [todasCitas, setTodasCitas] = useState<Cita[]>([]);
   const [todasFacturas, setTodasFacturas] = useState<Factura[]>([]);
   const [busca, setBusca] = useState("");
+  /* EMBUDO O LISTA. El embudo es lo que pidió Gerson mirando su referencia
+     de CRM: ver de un golpe quién está en qué punto. La lista se queda, para
+     buscar a alguien por su nombre mientras se habla por teléfono. */
+  const [modo, setModo] = useState<"embudo" | "lista">("embudo");
   const [cargando, setCargando] = useState(true);
   // Sube de número después de cada escritura y obliga a releer. Es la forma
   // barata de que la lista y la ficha no se queden con lo de antes.
@@ -182,6 +197,18 @@ export default function PersonasScreen() {
   /* -------------------------------------------------------- la ficha abierta */
 
   const abierta = useMemo(() => gente.find((g) => g.p.llave === clienteAbierto) ?? null, [gente, clienteAbierto]);
+
+  /* Por qué formulario entró cada una, de más a menos. Quien no trae ningún
+     lead se apuntó a mano: también cuenta, y se dice. */
+  const llegadas = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const g of todas) {
+      const l = g.p.leads[0];
+      const que = l ? (FORMULARIOS[l.origen] ?? "Dejó su correo") : "Apuntada a mano";
+      m.set(que, (m.get(que) ?? 0) + 1);
+    }
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [todas]);
 
   const nueva = async () => {
     const c = await repoClientes.guardar({
@@ -416,7 +443,113 @@ export default function PersonasScreen() {
         </div>
       </section>
 
+      {/* ============================================================ el embudo */}
+      <div role="tablist" aria-label="Cómo ver a las personas" style={css("display:flex;gap:6px;margin-bottom:var(--s4);padding:5px;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--border);width:max-content;box-shadow:var(--shadow-sm);")}>
+        {(["embudo", "lista"] as const).map((m) => (
+          <button
+            key={m}
+            role="tab"
+            aria-selected={modo === m}
+            onClick={() => setModo(m)}
+            style={css(
+              "padding:8px 18px;border:none;border-radius:var(--r-pill);cursor:pointer;font:inherit;font-size:var(--t-mini);font-weight:500;" +
+                (modo === m ? "background:var(--accion);color:var(--sobre-accion);" : "background:transparent;color:var(--text-2);")
+            )}
+          >
+            {m === "embudo" ? "Embudo" : "Lista"}
+          </button>
+        ))}
+      </div>
+
+      {modo === "embudo" && !cargando && (
+        <>
+          <div data-embudo="" style={css("margin-bottom:var(--gap-lg);")}>
+            {COLUMNAS.map((k) => {
+              const aqui = gente.filter((g) => g.punto === k);
+              const tono = TONO_PUNTO[k];
+              return (
+                <section
+                  key={k}
+                  aria-label={NOMBRE_COLUMNA[k]}
+                  style={css(
+                    "min-width:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:var(--r-tarjeta);" +
+                      "background:color-mix(in srgb, var(--surface) 55%, transparent);border:1px solid var(--border);"
+                  )}
+                >
+                  <div
+                    style={css(
+                      "display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border-radius:var(--r-pill);" +
+                        "background:var(--surface);border:1px solid var(--border);font-size:var(--t-mini);font-weight:500;color:var(--text);"
+                    )}
+                  >
+                    <span aria-hidden="true" style={css("width:8px;height:8px;border-radius:50%;background:" + (tono ? `var(--${tono}-tx)` : "var(--text-4)") + ";")} />
+                    {NOMBRE_COLUMNA[k]}
+                    <span style={css("color:var(--text-3);font-weight:400;")}>{aqui.length}</span>
+                  </div>
+                  {aqui.length === 0 && <p style={css(NOTA + "margin:6px 0;text-align:center;")}>Nadie</p>}
+                  {aqui.slice(0, POR_COLUMNA).map((g, i) => {
+                    const cuelga = g.r ? loQueCuelga(g.r) : "";
+                    const l = g.p.leads[0];
+                    const debajo = g.r
+                      ? comoVaCorto(g.r)
+                      : l
+                        ? `${FORMULARIOS[l.origen] ?? "Dejó su correo"}${l.visto ? ` · ${diaMinimo(l.visto)}` : ""}`
+                        : g.p.email;
+                    return (
+                      <motion.button
+                        key={g.p.llave}
+                        initial={quieto ? false : { opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.26, delay: Math.min(i, 7) * 0.03, ease: [0.16, 1, 0.3, 1] }}
+                        onClick={() => setClienteAbierto(g.p.llave)}
+                        style={css(
+                          "display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;font:inherit;" +
+                            "padding:10px 12px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);" +
+                            (g.p.llave === clienteAbierto ? "outline:2px solid var(--accion-borde);" : "")
+                        )}
+                      >
+                        <Avatar nombre={g.p.nombre} tamano={34} />
+                        <span style={css("min-width:0;flex:1;")}>
+                          <span style={css("display:block;font-size:var(--t-body);font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>
+                            {enTitulo(g.p.nombre)}
+                          </span>
+                          <span style={css("display:block;font-size:var(--t-mini);color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{debajo}</span>
+                          {cuelga && <span style={css("display:block;font-size:var(--t-micro);font-weight:500;color:var(--red);margin-top:2px;")}>{cuelga}</span>}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                  {aqui.length > POR_COLUMNA && (
+                    <button onClick={() => setModo("lista")} style={css("border:none;background:none;cursor:pointer;font:inherit;" + NOTA)}>
+                      y {aqui.length - POR_COLUMNA} más · ver en la lista
+                    </button>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+
+          {/* DE DÓNDE LLEGAN. Lo que dice si la web trabaja: cuántas personas
+              entraron por cada formulario. Contado de lo que hay, nada más. */}
+          {llegadas.length > 0 && (
+            <section style={css(TARJETA + PAD + "margin-bottom:var(--gap-lg);display:flex;flex-direction:column;gap:var(--s3);")}>
+              <h2 style={css("margin:0;font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;")}>De dónde llegan</h2>
+              {llegadas.map(([que, n]) => (
+                <div key={que} style={css("display:grid;grid-template-columns:minmax(0,220px) 1fr auto;gap:var(--s3);align-items:center;font-size:var(--t-body);")}>
+                  <span style={css("color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{que}</span>
+                  <span style={css("height:10px;border-radius:var(--r-pill);background:var(--surface-2);overflow:hidden;")}>
+                    <span style={css(`display:block;height:100%;width:${(n / llegadas[0][1]) * 100}%;border-radius:var(--r-pill);background:var(--accion);`)} />
+                  </span>
+                  <span style={css("font-variant-numeric:tabular-nums;color:var(--text);font-weight:500;")}>{n}</span>
+                </div>
+              ))}
+            </section>
+          )}
+        </>
+      )}
+
       {/* =============================================================== la lista */}
+      {modo === "lista" && (
       <section style={css(TARJETA + PAD + "min-width:0;overflow:hidden;")}>
         {cargando ? (
           <Vacio>Un momento…</Vacio>
@@ -432,6 +565,7 @@ export default function PersonasScreen() {
           </div>
         )}
       </section>
+      )}
 
       <AvisoNavegador que="Las fichas y las notas" />
 
