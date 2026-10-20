@@ -44,14 +44,21 @@ import {
   type Curso,
 } from "@/lib/escuela";
 
+/** Las fotos de la casa para los cursos que todavía no tienen portada. */
+const FOTOS = ["/escuela/basico.jpg", "/escuela/temario.jpg", "/escuela/material.jpg"];
+
 type Donde =
   | { que: "lista" }
   | { que: "edita"; curso: Curso }
   | { que: "ve"; curso: Curso };
 
 export default function CursosScreen() {
-  const { usuario, esAdmin } = useSesion();
+  const { usuario, esAdmin, puede } = useSesion();
   const uid = usuario ? usuario.uid : "";
+  /* Quien monta cursos sin ser Iris. Ve los suyos —en borrador también— y los
+     que haya comprado, y edita sólo los suyos. */
+  const creador = !esAdmin && puede("crear");
+  const esMio = (c: Curso) => esAdmin || (creador && c.autor === uid);
   const [donde, setDonde] = useState<Donde>({ que: "lista" });
   const [lista, setLista] = useState<Curso[] | null>(null);
   const [avances, setAvances] = useState<Record<string, Avance | null>>({});
@@ -78,17 +85,40 @@ export default function CursosScreen() {
         setLista([]);
         return;
       }
-      const [publicados, mias] = await Promise.all([
+      const [publicados, mias, propios] = await Promise.all([
         repoCursos.publicados(),
         repoInscripciones.deAlumno(uid),
+        puede("crear") ? repoCursos.deAutor(uid) : Promise.resolve([] as Curso[]),
       ]);
       const permitidos = new Set(mias.map((i) => i.cursoId));
-      setLista(publicados.filter((c) => permitidos.has(c.id)));
+      const comprados = publicados.filter((c) => permitidos.has(c.id) && !propios.some((p) => p.id === c.id));
+      setLista([...propios, ...comprados]);
     } catch (e) {
       setLista([]);
       setFallo(e instanceof Error ? e.message : "No se han podido cargar los cursos.");
     }
-  }, [esAdmin, uid]);
+  }, [esAdmin, puede, uid]);
+
+  /*
+   * UN CURSO NUEVO DE UN CREADOR SE GUARDA ANTES DE ABRIRLO.
+   *
+   * Iris puede subir vídeos a un curso que todavía no existe en la base; un
+   * creador no, porque las reglas de subida miran en la ficha del curso de
+   * quién es. Si no estuviera guardado, el primer vídeo que subiera fallaría
+   * con un «no autorizado» que no explica nada. Guardado vacío, en borrador,
+   * no lo ve nadie y las subidas ya saben que es suyo.
+   */
+  async function nuevo() {
+    if (esAdmin) return setDonde({ que: "edita", curso: cursoNuevo() });
+    setFallo("");
+    const c: Curso = { ...cursoNuevo(), autor: uid, autorNombre: usuario ? usuario.nombre : "" };
+    try {
+      await repoCursos.guardar(c);
+      setDonde({ que: "edita", curso: c });
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido crear el curso.");
+    }
+  }
 
   useEffect(() => {
     void carga();
@@ -117,6 +147,7 @@ export default function CursosScreen() {
     return (
       <EditorCurso
         inicial={donde.curso}
+        publica={esAdmin}
         alSalir={() => {
           setDonde({ que: "lista" });
           void carga();
@@ -141,9 +172,9 @@ export default function CursosScreen() {
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
         <h1 style={css(TITULO + "margin:0;")}>{esAdmin ? "Cursos" : "Mis cursos"}</h1>
-        {esAdmin && (
+        {(esAdmin || creador) && (
           <button
-            onClick={() => setDonde({ que: "edita", curso: cursoNuevo() })}
+            onClick={() => void nuevo()}
             style={css(botonPrincipal() + "margin-left:auto;")}
           >
             + Nuevo curso
@@ -177,14 +208,19 @@ export default function CursosScreen() {
               "padding:clamp(32px,6vw,64px) var(--pad-card);text-align:center;box-shadow:var(--nm);"
           )}
         >
-          {esAdmin ? (
+          {esAdmin || creador ? (
             <>
               <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Todavía no has creado ningún curso</h2>
               <p style={css(LECTURA + "margin:0 auto var(--s4);max-width:52ch;")}>
                 Un curso se monta en varios ratos: lo empiezas, lo dejas, lo sigues. Mientras no lo publiques no lo ve
                 nadie, así que puedes crearlo ahora aunque sólo tengas el nombre.
               </p>
-              <button onClick={() => setDonde({ que: "edita", curso: cursoNuevo() })} style={css(botonPrincipal())}>
+              {creador && (
+                <p style={css(LECTURA + "margin:0 auto var(--s4);max-width:52ch;")}>
+                  Cuando esté listo, pides que se publique e Iris lo revisa.
+                </p>
+              )}
+              <button onClick={() => void nuevo()} style={css(botonPrincipal())}>
                 Crear el primer curso
               </button>
             </>
@@ -211,7 +247,6 @@ export default function CursosScreen() {
         {(lista ?? []).map((c, i) => {
           const total = totalLecciones(c);
           const parte = progreso(c, avances[c.id] ?? null);
-          const inicial = (c.titulo.trim()[0] || "·").toUpperCase();
           return (
             <motion.article
               key={c.id}
@@ -219,8 +254,8 @@ export default function CursosScreen() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(0.06 * i, 0.3), duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
               style={css(
-                "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
-                  "box-shadow:var(--nm);overflow:hidden;display:flex;flex-direction:column;"
+                "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);" +
+                  "box-shadow:var(--nm-alto);overflow:hidden;display:flex;flex-direction:column;"
               )}
             >
               {/* La portada. Sin imagen sale la inicial sobre un fondo liso, y
@@ -228,7 +263,7 @@ export default function CursosScreen() {
                   un curso es lo que hace que el curso no se cree. */}
               <div
                 style={css(
-                  "aspect-ratio:16/9;background:color-mix(in srgb, var(--text) 8%, transparent);" +
+                  "position:relative;aspect-ratio:16/9;background:var(--bloque);" +
                     "display:grid;place-items:center;overflow:hidden;"
                 )}
               >
@@ -240,9 +275,21 @@ export default function CursosScreen() {
                     style={css("width:100%;height:100%;object-fit:cover;display:block;")}
                   />
                 ) : (
-                  <span style={css("font-family:var(--font-display);font-size:44px;color:var(--text-4);")}>
-                    {inicial}
-                  </span>
+                  /* Sin portada, una foto de la casa en vez del cuadro gris
+                     con una letra: así cada curso se ve como un curso aunque
+                     no tenga imagen propia todavía. */
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={FOTOS[i % FOTOS.length]}
+                      alt=""
+                      style={css("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")}
+                    />
+                    <span
+                      aria-hidden="true"
+                      style={css("position:absolute;inset:0;background:linear-gradient(180deg,rgba(34,29,31,.15),rgba(34,29,31,.75));")}
+                    />
+                  </>
                 )}
               </div>
 
@@ -253,7 +300,7 @@ export default function CursosScreen() {
                   </h2>
                   {/* El borrador se marca con una palabra y no con un color: un
                       color hay que haber aprendido qué significa. */}
-                  {esAdmin && !c.publicado && (
+                  {esMio(c) && !c.publicado && !c.revision && (
                     <span
                       style={css(
                         "font-size:var(--t-micro);font-weight:600;letter-spacing:.08em;text-transform:uppercase;" +
@@ -264,7 +311,20 @@ export default function CursosScreen() {
                       Borrador
                     </span>
                   )}
+                  {/* Para Iris es una tarea; para el creador, un estado. */}
+                  {esMio(c) && !c.publicado && c.revision && (
+                    <span
+                      style={css(
+                        "font-size:var(--t-micro);font-weight:500;padding:2px 8px;border-radius:var(--r-pill);" +
+                          "background:var(--oro-luz);color:var(--vino);"
+                      )}
+                    >
+                      {esAdmin ? "Pide publicar" : "En revisión"}
+                    </span>
+                  )}
                 </div>
+
+                {esAdmin && c.autorNombre && <span style={css(NOTA)}>De {c.autorNombre}</span>}
 
                 {c.descripcion && (
                   <p style={css(NOTA + "margin:0;line-height:1.5;")}>
@@ -293,7 +353,7 @@ export default function CursosScreen() {
                   <button onClick={() => setDonde({ que: "ve", curso: c })} style={css(botonPrincipal() + "flex:1 1 auto;")}>
                     {parte > 0 && parte < 1 ? "Seguir" : "Entrar"}
                   </button>
-                  {esAdmin && (
+                  {esMio(c) && (
                     <button onClick={() => setDonde({ que: "edita", curso: c })} style={css(BOTON_NORMAL)}>
                       Editar
                     </button>

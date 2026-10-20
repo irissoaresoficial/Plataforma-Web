@@ -27,6 +27,16 @@ function Caja({ size = 20, children }: P & { children: React.ReactNode }) {
   );
 }
 
+/** El tablero: cuatro piezas de distinto tamaño, como la pantalla que abre. */
+export const IcoTablero = (p: P) => (
+  <Caja {...p}>
+    <rect x="3.5" y="3.5" width="7.5" height="9.5" rx="2" />
+    <rect x="13" y="3.5" width="7.5" height="5.5" rx="2" />
+    <rect x="13" y="11" width="7.5" height="9.5" rx="2" />
+    <rect x="3.5" y="15" width="7.5" height="5.5" rx="2" />
+  </Caja>
+);
+
 /** La semilla de la vida: el estudio entero visto de una vez. */
 export const IcoResumen = (p: P) => (
   <Caja {...p}>

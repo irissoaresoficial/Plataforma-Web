@@ -80,7 +80,18 @@
      Y el fondo es cálido, no gris. Un #f5f5f7 de sistema al lado del oro y del
      granate de la casa se ve azulado y barato.
      ------------------------------------------------------------------------- */
-  --bg: #f7f4ef;
+  /*
+   * BAJADO EL 20 DE OCTUBRE DE 2026: «no hay contraste en ninguno de sus
+   * apartados». Medido, tenía razón: entre el fondo #f7f4ef y la tarjeta
+   * blanca había 1,10:1, que a efectos prácticos es el mismo color. La tarjeta
+   * sólo existía por su sombra, y con la pantalla a medio brillo desaparecía.
+   *
+   * Ahora el fondo es la arena de la web un punto más honda: 1,24:1 contra la
+   * tarjeta, que se ve a un metro, y el texto más flojo (`--text-4`) sigue en
+   * 4,56:1 sobre él. No baja más porque más abajo el gris de apoyo deja de
+   * llegar al 4,5 y la pantalla se ensucia.
+   */
+  --bg: #ece6da;
   /* Opacas. Translúcidas dejaban pasar el fondo y cada tarjeta cogía un tinte
    * distinto según sobre qué parte del velo cayera. El cristal está abajo, y
    * sólo para lo que de verdad flota por encima del contenido. */
@@ -99,8 +110,9 @@
    * tarjetas FLOTAN; aquí estaban ENMARCADAS. Un marco visible alrededor de
    * cada bloque convierte una pantalla en una hoja de cálculo.
    */
-  --border: #eeebe5;
-  --border-strong: #ddd9d2;
+  /* Subido con el fondo: el de antes, sobre la tarjeta blanca, no se veía. */
+  --border: #e4ded2;
+  --border-strong: #d6cfc1;
   --border-accent: rgba(125, 95, 30, 0.32);
 
   /* -------------------------------------------------------------------------
@@ -214,7 +226,9 @@
      es lo único que se recorta contra ese fondo. La regla no cambia —«la acción
      tiene su propio color»—, cambia cuál es ese color en cada cara.
      ------------------------------------------------------------------------- */
-  --accion: #4a1a26;
+  /* El vino de la web, exacto. Aquí ponía #4a1a26: casi el mismo, que es peor
+     que otro distinto, porque nadie lo ve y la marca deja de ser una. */
+  --accion: #451a25;
   --accion-honda: #35111a;
   --accion-suave: rgba(74, 26, 38, 0.075);
   --accion-borde: rgba(74, 26, 38, 0.26);
@@ -248,6 +262,35 @@
        · NO SON PARA GRÁFICOS. En un gráfico el color dice magnitud o serie, y
          eso tiene sus propias reglas. Ver `components/escuela/Grafico.tsx`.
      ------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------
+     LOS COLORES DE LA CASA, CON SU NOMBRE DE LA WEB.
+
+     Los mismos valores que `apps/web/app/globals.css` y que MARCA.md. Hasta
+     hoy la plataforma los usaba sin nombrarlos —el oro iba escrito a mano en
+     media docena de sitios— y así no hay forma de saber si las dos mitades
+     siguen siendo la misma marca.
+     ------------------------------------------------------------------------- */
+  --vino: #451a25;
+  --oro: #a9884f;
+  --oro-luz: #e2cda2;
+  --arena: #f1ede4;
+
+  /*
+   * EL BLOQUE OSCURO: la pieza en vino que ancla una pantalla clara.
+   *
+   * La referencia que mandó Gerson lo tiene y es lo que le da el contraste: una
+   * pantalla toda en tarjetas blancas no tiene dónde caer la vista. Un bloque
+   * oscuro, uno y no más, dice «aquí está lo que hay que mirar».
+   *
+   * En oscuro no puede ser vino sobre negro, así que sube de luz hasta
+   * recortarse; la tinta de encima no cambia.
+   */
+  --bloque: var(--vino);
+  --bloque-2: rgba(255, 255, 255, 0.08);
+  --bloque-borde: rgba(226, 205, 162, 0.22);
+  --sobre-bloque: #fbf6ee;
+  --sobre-bloque-2: rgba(251, 246, 238, 0.72);
+
   --lima: #e4f2a8;
   --lima-tx: #4a5416;
   --rosa: #f7d9e9;
@@ -506,6 +549,9 @@
    * tinta el claro. El color sigue diciendo lo mismo —rosa es la comunidad— y
    * la pantalla sigue siendo oscura.
    */
+  --bloque: #3a1a22;
+  --bloque-borde: rgba(226, 205, 162, 0.28);
+
   --lima: #2c3410;
   --lima-tx: #d8e89a;
   --rosa: #42182f;
@@ -575,7 +621,12 @@
    * tinte se colaba a través de ellos: la cabecera se veía de un color en el
    * borde izquierdo y de otro en el derecho. Aquí queda como calor, no como
    * color. */
-  background-image: radial-gradient(1300px 760px at 12% -12%, rgba(201, 168, 76, 0.045), transparent 62%);
+  /* Y UNA LUZ DE ORO arriba a la derecha, como la de la referencia. No es un
+     adorno: es lo que hace que el fondo tenga un sitio de donde viene la luz y
+     las tarjetas blancas se lean apoyadas en algo, no flotando en la nada. */
+  background-image:
+    radial-gradient(1100px 680px at 100% -10%, rgba(226, 205, 162, 0.55), transparent 62%),
+    radial-gradient(1300px 760px at 12% -12%, rgba(201, 168, 76, 0.045), transparent 62%);
   background-attachment: fixed;
 }
 :root[data-tema="oscuro"] [data-app-root] {
@@ -1819,5 +1870,77 @@ button:not(:disabled):active {
   .grafico-toca:hover,
   .grafico-toca:active {
     transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   EL TABLERO (components/screens/TableroScreen.tsx)
+
+   La rejilla va aquí y no en el componente porque cambia con el ancho, y eso
+   sólo lo sabe hacer el CSS. Cuatro columnas en escritorio, como la
+   referencia; dos en un portátil estrecho o una tableta; una en el móvil.
+   --------------------------------------------------------------------------- */
+[data-tablero-cabecera] {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gap-lg);
+  flex-wrap: wrap;
+}
+[data-tablero-rejilla] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap);
+}
+[data-tablero-columna] {
+  grid-row: span 2;
+}
+[data-tablero-agenda] {
+  grid-column: span 2;
+}
+@media (max-width: 1180px) {
+  [data-tablero-rejilla] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  [data-tablero-columna] {
+    grid-row: auto;
+  }
+}
+@media (max-width: 680px) {
+  [data-tablero-rejilla] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-tablero-agenda] {
+    grid-column: auto;
+  }
+  [data-tablero-dias] {
+    overflow-x: auto;
+    grid-template-columns: repeat(7, minmax(64px, 1fr)) !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   EL EDITOR DE CURSOS (components/escuela/EditorCurso.tsx)
+
+   Los tres pasos a la izquierda y «Publicar» a la derecha, quieto mientras
+   se baja por un temario largo. Por debajo de 1100 px la columna pasa abajo:
+   ahí no caben las dos y el formulario manda.
+   --------------------------------------------------------------------------- */
+[data-editor-rejilla] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--gap);
+  align-items: start;
+}
+[data-editor-lado] {
+  position: sticky;
+  top: 150px;
+}
+@media (max-width: 1100px) {
+  [data-editor-rejilla] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-editor-lado] {
+    position: static;
   }
 }
