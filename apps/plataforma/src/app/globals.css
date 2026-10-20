@@ -2023,3 +2023,17 @@ button:not(:disabled):active {
     grid-column: 2;
   }
 }
+
+/* La comunidad: la conversación a la izquierda; los puntos, la tabla y las
+   normas a la derecha. En el móvil, los puntos y las normas van debajo. */
+[data-comunidad] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--gap);
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  [data-comunidad] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
