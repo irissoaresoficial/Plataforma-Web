@@ -26,6 +26,11 @@
  * recorre las líneas de una en una y mucho aire. Y el texto deja de anunciar
  * «un agente de IA»: dice qué trabajo le quita de encima, en tres líneas.
  *
+ * TERCERA, con la foto. Gerson trajo la referencia: unas manos con el móvil
+ * en penumbra, la app en la pantalla. La entera lleva esa foto a sangre por
+ * la derecha (en el móvil, arriba), fundida con el granate; el diagrama se
+ * queda en la compacta, que es la que sale al pie de cada apartado.
+ *
  * SÓLO PARA CREADORES. Con `compacta` sale en la parte de abajo de cada una de
  * sus pantallas; entera, en su inicio.
  */
@@ -140,7 +145,7 @@ function Diagrama({ medida, tope, solo = false }: { medida: keyof typeof MEDIDAS
 export default function SecretariaIA({ compacta = false }: { compacta?: boolean }) {
   return (
     <section
-      data-ia=""
+      data-ia={compacta ? "" : "foto"}
       style={css(
         "position:relative;overflow:hidden;border-radius:var(--r-tarjeta);display:grid;align-items:center;" +
           (compacta ? "gap:var(--gap);padding:var(--pad-card-sm);" : "gap:var(--gap-lg);padding:var(--pad-card);") +
@@ -181,9 +186,15 @@ export default function SecretariaIA({ compacta = false }: { compacta?: boolean 
           <p style={css("margin:0;font-size:var(--t-mini);color:var(--sobre-bloque-2);")}>Cuando esté listo, lo activarás desde aquí. No tienes que preparar nada.</p>
         )}
       </div>
-      {/* La compacta usa siempre el lienzo estrecho: a 190 px de alto, el ancho dejaba la letra en 8. */}
-      {!compacta && <Diagrama medida="ancho" tope={300} />}
-      <Diagrama medida="estrecho" tope={compacta ? 230 : 260} solo={compacta} />
+      {compacta ? (
+        /* Siempre el lienzo estrecho: a 190 px de alto, el ancho dejaba la letra en 8. */
+        <Diagrama medida="estrecho" tope={230} solo />
+      ) : (
+        <div data-ia-foto="" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/escuela/secretaria.webp" alt="" width={896} height={1120} loading="lazy" />
+        </div>
+      )}
     </section>
   );
 }

@@ -2071,13 +2071,43 @@ button:not(:disabled):active {
 [data-ia-fila] {
   grid-template-columns: 170px minmax(0, 1fr);
 }
-@media (max-width: 900px) {
-  [data-ia] {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 [data-ia-diagrama="estrecho"] {
   display: none;
+}
+/* La entera: la foto a sangre por la derecha, fundida hacia el texto. La
+   máscara sólo lee la opacidad: el color del token no se pinta. */
+[data-ia="foto"] {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+}
+[data-ia-foto] {
+  align-self: stretch;
+  position: relative;
+  min-height: 560px;
+  margin: calc(-1 * var(--pad-card)) calc(-1 * var(--pad-card)) calc(-1 * var(--pad-card)) 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, var(--text) 30%);
+  mask-image: linear-gradient(90deg, transparent 0%, var(--text) 30%);
+}
+[data-ia-foto] img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 35%;
+}
+@media (max-width: 900px) {
+  [data-ia],
+  [data-ia="foto"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-ia-foto] {
+    order: -1;
+    min-height: 0;
+    height: 420px;
+    margin: calc(-1 * var(--pad-card)) calc(-1 * var(--pad-card)) 0;
+    -webkit-mask-image: linear-gradient(180deg, var(--text) 65%, transparent 100%);
+    mask-image: linear-gradient(180deg, var(--text) 65%, transparent 100%);
+  }
 }
 @media (max-width: 560px) {
   [data-ia-fila] {

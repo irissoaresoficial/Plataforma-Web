@@ -127,6 +127,10 @@ export default function ComunidadScreen() {
 
   useEffect(() => {
     void carga();
+    /* Cuando el aviso en vivo ve un mensaje nuevo, la lista se relee sola. */
+    const otraVez = () => void carga();
+    window.addEventListener("es33:comunidad", otraVez);
+    return () => window.removeEventListener("es33:comunidad", otraVez);
   }, [carga]);
 
   async function abre(t: Tema) {

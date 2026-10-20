@@ -43,6 +43,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
+import { useSesion } from "@/lib/sesion";
 import { escuchaNovedades, suena, type Novedad } from "@/lib/despacho/enVivo";
 import { Avatar } from "./Piezas";
 
@@ -50,6 +51,8 @@ const SEGUNDOS = 8000;
 
 export default function Novedades() {
   const { setView } = useApp();
+  const { usuario } = useSesion();
+  const yo = usuario ? usuario.uid : undefined;
   const [cola, setCola] = useState<Novedad[]>([]);
   const [parado, setParado] = useState(false);
   const quieto = useReducedMotion();
@@ -66,13 +69,13 @@ export default function Novedades() {
         return [...c, n].slice(-3);
       });
       if (typeof document !== "undefined" && !document.hidden) suena();
-    });
+    }, yo);
     return () => {
       soltar();
       relojes.current.forEach((t) => window.clearTimeout(t));
       relojes.current.clear();
     };
-  }, []);
+  }, [yo]);
 
   /* El reloj de irse. Se rehace entero cada vez que cambia la cola o se para:
      así «parado» detiene TODAS las tarjetas, no sólo la que está debajo del
@@ -137,7 +140,7 @@ export default function Novedades() {
             <span style={css("min-width:0;flex:1;")}>
               <span
                 style={css(
-                  "display:block;font-size:var(--t-body);font-weight:600;color:var(--text);" +
+                  "display:block;font-size:var(--t-body);font-weight:500;color:var(--text);" +
                     "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;",
                 )}
               >
