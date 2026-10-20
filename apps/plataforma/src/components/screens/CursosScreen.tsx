@@ -44,6 +44,9 @@ import {
   type Curso,
 } from "@/lib/escuela";
 
+/** Las fotos de la casa para los cursos que todavía no tienen portada. */
+const FOTOS = ["/escuela/basico.jpg", "/escuela/temario.jpg", "/escuela/material.jpg"];
+
 type Donde =
   | { que: "lista" }
   | { que: "edita"; curso: Curso }
@@ -244,7 +247,6 @@ export default function CursosScreen() {
         {(lista ?? []).map((c, i) => {
           const total = totalLecciones(c);
           const parte = progreso(c, avances[c.id] ?? null);
-          const inicial = (c.titulo.trim()[0] || "·").toUpperCase();
           return (
             <motion.article
               key={c.id}
@@ -252,8 +254,8 @@ export default function CursosScreen() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(0.06 * i, 0.3), duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
               style={css(
-                "background:var(--surface);border:1px solid var(--border);border-radius:var(--r);" +
-                  "box-shadow:var(--nm);overflow:hidden;display:flex;flex-direction:column;"
+                "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);" +
+                  "box-shadow:var(--nm-alto);overflow:hidden;display:flex;flex-direction:column;"
               )}
             >
               {/* La portada. Sin imagen sale la inicial sobre un fondo liso, y
@@ -261,7 +263,7 @@ export default function CursosScreen() {
                   un curso es lo que hace que el curso no se cree. */}
               <div
                 style={css(
-                  "aspect-ratio:16/9;background:color-mix(in srgb, var(--text) 8%, transparent);" +
+                  "position:relative;aspect-ratio:16/9;background:var(--bloque);" +
                     "display:grid;place-items:center;overflow:hidden;"
                 )}
               >
@@ -273,9 +275,21 @@ export default function CursosScreen() {
                     style={css("width:100%;height:100%;object-fit:cover;display:block;")}
                   />
                 ) : (
-                  <span style={css("font-family:var(--font-display);font-size:44px;color:var(--text-4);")}>
-                    {inicial}
-                  </span>
+                  /* Sin portada, una foto de la casa en vez del cuadro gris
+                     con una letra: así cada curso se ve como un curso aunque
+                     no tenga imagen propia todavía. */
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={FOTOS[i % FOTOS.length]}
+                      alt=""
+                      style={css("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")}
+                    />
+                    <span
+                      aria-hidden="true"
+                      style={css("position:absolute;inset:0;background:linear-gradient(180deg,rgba(34,29,31,.15),rgba(34,29,31,.75));")}
+                    />
+                  </>
                 )}
               </div>
 

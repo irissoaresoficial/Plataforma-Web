@@ -1918,3 +1918,29 @@ button:not(:disabled):active {
     grid-template-columns: repeat(7, minmax(64px, 1fr)) !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   EL EDITOR DE CURSOS (components/escuela/EditorCurso.tsx)
+
+   Los tres pasos a la izquierda y «Publicar» a la derecha, quieto mientras
+   se baja por un temario largo. Por debajo de 1100 px la columna pasa abajo:
+   ahí no caben las dos y el formulario manda.
+   --------------------------------------------------------------------------- */
+[data-editor-rejilla] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--gap);
+  align-items: start;
+}
+[data-editor-lado] {
+  position: sticky;
+  top: 150px;
+}
+@media (max-width: 1100px) {
+  [data-editor-rejilla] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-editor-lado] {
+    position: static;
+  }
+}
