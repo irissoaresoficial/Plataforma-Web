@@ -187,7 +187,7 @@ export const TITULAR = {
  * ============================================================================
  *
  * Gerson, el 19 de octubre: «lo de la masterclass está para el 26 de noviembre
- * de 15 a 16 horas».
+ * de 9 a 10 pm», corregido después de las 15:00 que se dijo primero.
  *
  * Hasta hoy la fecha no existía, y por eso la web decía «te aviso en cuanto
  * haya fecha» en cuatro sitios distintos. Ahora existe, y se escribe UNA VEZ.
@@ -207,14 +207,14 @@ export const TITULAR = {
  */
 export const MASTERCLASS = {
   titulo: 'Desórdenes Amorosos',
-  /** Como se lee en una frase: «el jueves 26 de noviembre, de 15:00 a 16:00». */
-  cuando: 'el jueves 26 de noviembre, de 15:00 a 16:00',
+  /** Como se lee en una frase: «el jueves 26 de noviembre, de 21:00 a 22:00». */
+  cuando: 'el jueves 26 de noviembre, de 21:00 a 22:00',
   /** Más corto, para un botón o un titular de anuncio. */
-  corto: '26 de noviembre · 15:00',
+  corto: '26 de noviembre · 21:00',
   /** Hora de España peninsular. Va escrito porque hay gente apuntada fuera. */
   zona: 'hora de España (Madrid)',
-  iso: '2026-11-26T15:00:00+01:00',
-  isoFin: '2026-11-26T16:00:00+01:00',
+  iso: '2026-11-26T21:00:00+01:00',
+  isoFin: '2026-11-26T22:00:00+01:00',
 };
 
 export const CONTACTO = {
