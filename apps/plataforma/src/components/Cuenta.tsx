@@ -12,6 +12,7 @@
  * como si fuera Iris.
  */
 
+import Foto from "./Foto";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { css } from "@/lib/css";
@@ -41,7 +42,6 @@ export default function Cuenta() {
   }, [abierto]);
 
   if (!usuario) return null;
-  const inicial = usuario.nombre.trim().charAt(0).toUpperCase() || "?";
 
   return (
     <div ref={caja} style={css("position:relative;flex:none;")}>
@@ -51,12 +51,11 @@ export default function Cuenta() {
         aria-expanded={abierto}
         aria-label={`Cuenta de ${usuario.email}`}
         style={css(
-          "width:38px;height:38px;display:grid;place-items:center;border-radius:50%;cursor:pointer;" +
-            "border:1px solid var(--border-strong);background:var(--surface);color:var(--gold-deep);" +
-            "font-family:var(--font-display);font-size:15px;font-weight:500;line-height:1;"
+          "width:38px;height:38px;display:grid;place-items:center;border-radius:50%;cursor:pointer;padding:0;" +
+            "border:1px solid var(--border-strong);background:var(--surface);overflow:hidden;"
         )}
       >
-        {inicial}
+        <Foto foto={usuario.foto} nombre={usuario.nombre} tam={36} />
       </button>
 
       <AnimatePresence>

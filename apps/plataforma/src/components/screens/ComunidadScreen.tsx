@@ -34,6 +34,7 @@ import { css } from "@/lib/css";
 import { BOTON_NORMAL, BOTON_PLANO, CAMPO, CABECERA, LECTURA, NOTA, TITULO, botonPrincipal , PANTALLA} from "@/lib/ui";
 import { useSesion } from "@/lib/sesion";
 import Confirmar from "../Confirmar";
+import Foto from "../Foto";
 import {
   borraTema,
   creaTema,
@@ -76,7 +77,7 @@ export default function ComunidadScreen() {
   const [contesta, setContesta] = useState("");
 
   const autor = usuario
-    ? { uid: usuario.uid, nombre: usuario.nombre || "Sin nombre", esIris: esAdmin }
+    ? { uid: usuario.uid, nombre: usuario.nombre || "Sin nombre", esIris: esAdmin, foto: usuario.foto }
     : null;
 
   const carga = useCallback(async () => {
@@ -166,19 +167,8 @@ export default function ComunidadScreen() {
 
   /* ------------------------------------------------------------- pintura */
 
-  const avatar = (nombre: string, deIris: boolean, grande = false) => (
-    <span
-      aria-hidden
-      style={css(
-        `flex:none;display:grid;place-items:center;width:${grande ? 40 : 32}px;height:${grande ? 40 : 32}px;` +
-          "border-radius:50%;font-weight:600;font-size:var(--t-body);" +
-          (deIris
-            ? "background:var(--gold-soft);color:var(--gold-deep);"
-            : "background:var(--rosa);color:var(--rosa-tx);")
-      )}
-    >
-      {(nombre.trim()[0] || "·").toUpperCase()}
-    </span>
+  const avatar = (nombre: string, deIris: boolean, grande = false, foto?: string) => (
+    <Foto foto={foto || (deIris ? "/iris.jpg" : undefined)} nombre={nombre} tam={grande ? 40 : 32} iris={deIris} />
   );
 
   const ficha = (t: Tema, i: number) => {
@@ -200,7 +190,7 @@ export default function ComunidadScreen() {
         )}
       >
         <div style={css("display:flex;gap:var(--s3);")}>
-          {avatar(t.autor, t.esIris, true)}
+          {avatar(t.autor, t.esIris, true, t.foto)}
           <div style={css("flex:1;min-width:0;")}>
             <div style={css("display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;")}>
               <span style={css("font-size:var(--t-body);font-weight:600;color:var(--text);")}>{t.autor}</span>
@@ -259,7 +249,7 @@ export default function ComunidadScreen() {
                 <div style={css("margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:var(--s3);")}>
                   {hilo.map((r) => (
                     <div key={r.id} style={css("display:flex;gap:11px;")}>
-                      {avatar(r.autor, r.esIris)}
+                      {avatar(r.autor, r.esIris, false, r.foto)}
                       <div style={css("flex:1;min-width:0;")}>
                         <div style={css("display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;")}>
                           <span style={css("font-size:var(--t-mini);font-weight:600;color:var(--text-2);")}>
@@ -303,11 +293,44 @@ export default function ComunidadScreen() {
   };
 
   const fijados = (temas ?? []).filter((t) => t.fijado);
+  /* La bienvenida: el primer tema que Iris haya fijado. Si no hay, la
+     pieza de arriba saluda igual, pero no se inventa ninguna frase suya. */
+  const bienvenida = fijados.find((t) => t.esIris);
   const resto = (temas ?? []).filter((t) => !t.fijado);
 
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);max-width:min(var(--ancho),860px);")}>
       <h1 style={css(TITULO + "margin:0;")}>Comunidad</h1>
+
+      {/*
+        IRIS RECIBE A QUIEN ENTRA. Gerson: «la idea es que esté ahí, ya como
+        puesto, Iris saludando a las personas». Con su foto de verdad y, si ha
+        fijado un mensaje, sus palabras: las que ella escribió, no unas que
+        pongamos nosotros en su boca.
+      */}
+      <section
+        style={css(
+          "position:relative;overflow:hidden;border-radius:var(--r-tarjeta);background:var(--bloque);color:var(--sobre-bloque);" +
+            "box-shadow:var(--nm-alto);display:flex;gap:var(--s4);align-items:center;padding:var(--pad-card-sm);flex-wrap:wrap;"
+        )}
+      >
+        <Foto foto={bienvenida?.foto || (esAdmin && usuario ? usuario.foto : undefined) || "/iris.jpg"} nombre="Iris" tam={84} iris />
+        <div style={css("flex:1 1 260px;min-width:0;")}>
+          <div style={css("font-size:var(--t-mini);color:var(--oro-luz);")}>Iris Soares · Escuela de Sabiduría 33</div>
+          <div style={css("font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;margin-top:4px;")}>
+            {bienvenida ? bienvenida.titulo : `Hola, ${(usuario ? usuario.nombre : "").split(" ")[0] || "bienvenida"}`}
+          </div>
+          <p style={css("margin:6px 0 0;font-size:var(--t-body);line-height:1.55;color:var(--sobre-bloque-2);white-space:pre-wrap;")}>
+            {bienvenida
+              ? bienvenida.texto.length > 260
+                ? bienvenida.texto.slice(0, 257) + "…"
+                : bienvenida.texto
+              : esAdmin
+                ? "Escribe tu bienvenida abajo, publícala y fíjala: saldrá aquí, con tu foto, para cada persona que entre."
+                : "Esta es la comunidad de la escuela. Pregunta, cuenta lo que ves en tu carta y lee a las demás."}
+          </p>
+        </div>
+      </section>
 
       {!guardadoEnLaNube && (
         <p style={css(NOTA + "margin:0;")}>

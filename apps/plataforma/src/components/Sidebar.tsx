@@ -340,7 +340,11 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
    * un hueco vacío, que es peor que no verlo: le dice que ahí hay algo suyo
    * que no le dejan ver.
    */
-  const escuela = ESCUELA.filter((x) => puede(x.llave));
+  /* EL RECIBIDOR, FUERA PARA IRIS. Gerson: «eso de recibidor erradícalo».
+     Era la portada de los alumnos repetida dentro de la de Iris, que ya tiene
+     su tablero. Para un alumno o un creador sigue siendo su «Inicio»: es la
+     única puerta que tienen. */
+  const escuela = ESCUELA.filter((x) => puede(x.llave) && !(x.k === "escuela" && puede("despacho")));
   const direccion = DIRECCION.filter((x) => puede(x.llave));
   const verEstudio = puede("estudio");
   const verDespacho = puede("despacho");
@@ -515,9 +519,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
       {escuela.length > 0 && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
           {verDespacho && grupo("Escuela")}
-          {escuela.map(({ k, label, Ico }) =>
-            fila(view === k, Ico, k === "escuela" && verDespacho ? "Recibidor" : label, ir(k))
-          )}
+          {escuela.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
         </div>
       )}
 
@@ -528,6 +530,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
           {direccion.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
         </div>
       )}
+
     </nav>
   );
 }

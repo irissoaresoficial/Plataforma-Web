@@ -1944,3 +1944,20 @@ button:not(:disabled):active {
     position: static;
   }
 }
+
+/* El Agente IA se queda en el icono en un móvil: la cabecera ya lleva la
+   marca, el menú, la campana, el tema y la cuenta, y no cabe una pastilla. */
+@media (max-width: 640px) {
+  [data-agente-texto] {
+    display: none;
+  }
+  /* Y lo que dice se abre a lo ancho de la pantalla: colgando del icono se
+     salía por la izquierda. */
+  [data-agente-hoja] {
+    position: fixed !important;
+    top: 66px !important;
+    left: 16px !important;
+    right: 16px !important;
+    width: auto !important;
+  }
+}
