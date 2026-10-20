@@ -47,7 +47,7 @@ function cabeceras(origen: string): Record<string, string> {
   return permitido(origen)
     ? {
         'Access-Control-Allow-Origin': origen,
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'POST, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         Vary: 'Origin',
       }
@@ -61,6 +61,71 @@ export async function OPTIONS(request: Request) {
   return new Response(null, { status: 204, headers: cabeceras(request.headers.get('origin') || '') });
 }
 
+/** Quién lo pide: tiene que ser una administradora activa. Devuelve su uid. */
+async function administradora(request: Request): Promise<string | null> {
+  const base = db();
+  if (!base) return null;
+  const vale = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+  let uid = '';
+  try {
+    uid = (await getAuth(getApp()).verifyIdToken(vale)).uid;
+  } catch {
+    return null;
+  }
+  const ficha = (await base.doc(`usuarios/${uid}`).get()).data();
+  const roles: string[] = Array.isArray(ficha?.roles) ? ficha.roles : [];
+  return ficha?.activo === true && (roles.length === 0 || roles.includes('admin')) ? uid : null;
+}
+
+/**
+ * BORRAR A ALGUIEN DE VERDAD. Gerson: «quiero borrar a esta gente de aquí».
+ *
+ * Desde el navegador sólo se puede quitar la ficha; la cuenta de acceso se
+ * queda en Firebase. Aquí, con la llave de administrador, se va todo: la
+ * cuenta, la ficha, sus accesos a cursos y su avance. Sus mensajes de la
+ * comunidad se quedan —son parte de conversaciones de otras—; si los pide
+ * borrar, se borran a mano desde la comunidad.
+ *
+ * Nadie se borra a sí misma: dejaría la plataforma sin administradora.
+ */
+export async function DELETE(request: Request) {
+  const origen = request.headers.get('origin') || '';
+  if (!permitido(origen)) return responde({ ok: false, motivo: 'origen' }, 403, origen);
+  const base = db();
+  if (!base) return responde({ ok: false, motivo: 'sin_configurar' }, 503, origen);
+  const yo = await administradora(request);
+  if (!yo) return responde({ ok: false, motivo: 'permiso' }, 403, origen);
+
+  let uid = '';
+  try {
+    uid = String((await request.json()).uid || '');
+  } catch {
+    return responde({ ok: false, motivo: 'datos' }, 400, origen);
+  }
+  if (!uid) return responde({ ok: false, motivo: 'datos' }, 400, origen);
+  if (uid === yo) return responde({ ok: false, motivo: 'tu_misma' }, 400, origen);
+
+  try {
+    await getAuth(getApp())
+      .deleteUser(uid)
+      .catch((e: { code?: string }) => {
+        if (e?.code !== 'auth/user-not-found') throw e;
+      });
+    const lote = base.batch();
+    lote.delete(base.doc(`usuarios/${uid}`));
+    for (const col of ['inscripciones', 'avance']) {
+      const r = await base.collection(col).where('uid', '==', uid).get();
+      r.docs.forEach((d) => lote.delete(d.ref));
+    }
+    lote.delete(base.doc(`visitas/${uid}`));
+    await lote.commit();
+    return responde({ ok: true }, 200, origen);
+  } catch (e) {
+    console.error('[alta] no se ha podido borrar', e);
+    return responde({ ok: false, motivo: 'borrar' }, 502, origen);
+  }
+}
+
 export async function POST(request: Request) {
   const origen = request.headers.get('origin') || '';
   if (!permitido(origen)) return responde({ ok: false, motivo: 'origen' }, 403, origen);
@@ -70,17 +135,7 @@ export async function POST(request: Request) {
   if (!base || !clave) return responde({ ok: false, motivo: 'sin_configurar' }, 503, origen);
 
   /* 1. Quién lo pide: tiene que ser una administradora activa. */
-  const vale = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  let uid = '';
-  try {
-    uid = (await getAuth(getApp()).verifyIdToken(vale)).uid;
-  } catch {
-    return responde({ ok: false, motivo: 'vale' }, 401, origen);
-  }
-  const ficha = (await base.doc(`usuarios/${uid}`).get()).data();
-  const roles: string[] = Array.isArray(ficha?.roles) ? ficha.roles : [];
-  const esAdmin = ficha?.activo === true && (roles.length === 0 || roles.includes('admin'));
-  if (!esAdmin) return responde({ ok: false, motivo: 'permiso' }, 403, origen);
+  if (!(await administradora(request))) return responde({ ok: false, motivo: 'permiso' }, 403, origen);
 
   /* 2. A quién. */
   let d: { email?: string; nombre?: string; roles?: string[] };

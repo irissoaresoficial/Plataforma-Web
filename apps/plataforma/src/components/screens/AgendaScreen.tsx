@@ -45,7 +45,8 @@ import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD, PAD_SM, RAYA, TARJETA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
 import Confirmar from "../Confirmar";
-import { AvisoNavegador, Avatar, Cabecera, Estado, Vacio, useEstrecho } from "../despacho/Piezas";
+import { AvisoNavegador, Avatar, Estado, Vacio, useEstrecho } from "../despacho/Piezas";
+import Banda from "../Banda";
 import HojaLateral from "../despacho/HojaLateral";
 import MiniCalendario from "../despacho/MiniCalendario";
 import RejillaSemana from "../despacho/RejillaSemana";
@@ -570,9 +571,22 @@ export default function AgendaScreen() {
 
   return (
     <main style={css("max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);min-width:0;")}>
-      <Cabecera
+      {/* LA CABECERA CON FOTO, como Personas y Cursos. Gerson: «la agenda de
+          Iris aparece horrible». Un título suelto sobre el fondo y una
+          rejilla gris hundida: no se sabía si era una pantalla o un hueco. */}
+      <Banda
+        foto="/escuela/basico.jpg"
+        encuadre="50% 55%"
         titulo="Agenda"
-        pie="Pulsa un hueco para apuntar algo."
+        sub="Pulsa un hueco de la semana para apuntar una sesión."
+        cifras={
+          cargando
+            ? []
+            : [
+                { n: hoyQuedan, que: "Hoy" },
+                { n: enLosDias.filter((c) => c.estado !== "anulada").length, que: vista === "semana" ? "Esta semana" : "Este día" },
+              ]
+        }
       />
 
       <div

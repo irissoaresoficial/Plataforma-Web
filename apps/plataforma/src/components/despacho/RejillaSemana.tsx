@@ -190,7 +190,9 @@ export default function RejillaSemana({
         "min-width:0;overflow:auto;overscroll-behavior:contain;max-height:calc(100vh - 260px);" +
           /* El tiempo vacío es un hueco: el arena de la casa, hundido. Sobre él
              cada sesión se levanta como una tarjeta. */
-          "background:var(--surface-2);border-radius:var(--r);box-shadow:var(--nm-hondo);"
+          /* Papel blanco y no un hueco gris: la semana es donde se trabaja y
+             tiene que leerse como una hoja, con las sesiones de color encima. */
+          "background:var(--surface);border-radius:var(--r);border:1px solid var(--border);"
       )}
     >
       <div style={css(`display:grid;grid-template-columns:${columnas};min-width:${dias.length > 2 ? 640 : 0}px;`)}>
@@ -238,7 +240,7 @@ export default function RejillaSemana({
         })}
 
         {/* ------------------------------------------------- la columna de horas */}
-        <div style={css(`position:sticky;left:0;z-index:${CAPA.HORAS};background:var(--surface-2);height:${alto}px;`)}>
+        <div style={css(`position:sticky;left:0;z-index:${CAPA.HORAS};background:var(--surface);height:${alto}px;`)}>
           {horas.map((h, i) => (
             <div
               key={h}
@@ -273,7 +275,14 @@ export default function RejillaSemana({
           const esHoy = k === claveDia(ahora);
 
           return (
-            <div key={k} style={css(`position:relative;height:${alto}px;border-left:1px solid var(--border);`)}>
+            <div
+              key={k}
+              style={css(
+                `position:relative;height:${alto}px;border-left:1px solid var(--border);` +
+                  /* Hoy, teñido: se encuentra sin buscarlo. */
+                  (esHoy ? "background:var(--accion-suave);" : "")
+              )}
+            >
               {/* Las franjas de media hora son las que se pulsan para apuntar
                   algo a esa hora. Sin ellas habría que ir al formulario y
                   teclear el día y la hora que ya se están señalando con el dedo. */}
