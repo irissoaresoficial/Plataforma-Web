@@ -1980,3 +1980,23 @@ button:not(:disabled):active {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Métricas: la cabecera con las cifras y el medidor, y las dos gráficas en
+   pareja. En un móvil, todo una debajo de otra. */
+[data-metricas-cabecera] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-lg);
+  flex-wrap: wrap;
+}
+[data-metricas-rejilla] {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--gap);
+}
+@media (max-width: 1000px) {
+  [data-metricas-rejilla] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

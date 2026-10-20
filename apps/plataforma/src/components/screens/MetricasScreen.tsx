@@ -48,7 +48,8 @@ import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, TITULO , PANTALLA} from "@/lib/ui";
-import { Barras, Linea, type Punto } from "../escuela/Grafico";
+import { Barras, Columnas, Linea, type Barra, type Punto } from "../escuela/Grafico";
+import { citas as repoCitas, euros, facturas as repoFacturas, totales, type Cita, type Factura } from "@/lib/despacho";
 import { listaUsuarios } from "@/lib/despacho/usuarios";
 import { rolesDe } from "@/lib/roles";
 import { cursos as repoCursos, todosLosAvances, totalLecciones, type Avance, type Curso } from "@/lib/escuela";
@@ -69,6 +70,14 @@ type Datos = {
    *  `Embudo`, que es quien los pinta: así los dos viven juntos y no hay que
    *  mirar dos archivos para entender un número. */
   leads: Lead[];
+  /* Lo del despacho, desde el 20 de octubre de 2026. Gerson: «que me
+     muestre realmente bien los datos que necesito ver». Lo que necesita ver
+     quien vive de esto es cuánta gente nueva llega, cuántas sesiones da y
+     cuánto factura; la escuela va después. */
+  nuevas30: number;
+  sesiones30: number;
+  facturado30: number;
+  porMes: Barra[];
 };
 
 export default function MetricasScreen() {
@@ -83,14 +92,16 @@ export default function MetricasScreen() {
       /* Los leads van en el mismo `Promise.all` y no en una llamada aparte:
          son cinco lecturas que no dependen unas de otras, y encadenarlas
          multiplicaría por cinco lo que tarda en abrirse la pantalla. */
-      const [gente, cursos, avances, visitas, leads] = await Promise.all([
+      const [gente, cursos, avances, visitas, leads, citas, facturas] = await Promise.all([
         listaUsuarios(),
         repoCursos.listar(),
         todosLosAvances(),
         todasLasVisitas(),
         ultimosLeads(500),
+        repoCitas.listar(),
+        repoFacturas.listar(),
       ]);
-      setD(calcula(gente, cursos, avances, visitas, leads));
+      setD({ ...calcula(gente, cursos, avances, visitas, leads), ...despacho(leads, citas, facturas) });
     } catch {
       setRoto(true);
     }
@@ -122,7 +133,7 @@ export default function MetricasScreen() {
       <div style={css(NOTA)}>{que}</div>
       <div
         style={css(
-          "font-family:var(--font-display);font-size:clamp(28px,3.6vw,40px);font-weight:650;" +
+          "font-family:var(--font-display);font-size:clamp(28px,3.6vw,40px);font-weight:300;" +
             "line-height:1.05;margin-top:8px;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.03em;"
         )}
       >
@@ -145,7 +156,8 @@ export default function MetricasScreen() {
   /* Una escuela sin alumnos pero con leads entrando NO está vacía: es
      exactamente el momento de la campaña, y es cuando más falta hace mirar
      esta pantalla. Antes se tapaba entera con el cartel de «nada que medir». */
-  const vacio = d && d.dias.every((x) => x.valor === 0) && d.lecciones === 0 && d.leads.length === 0;
+  const vacio =
+    d && d.dias.every((x) => x.valor === 0) && d.lecciones === 0 && d.leads.length === 0 && d.sesiones30 === 0 && d.facturado30 === 0;
 
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
@@ -187,22 +199,49 @@ export default function MetricasScreen() {
               las cifras de la escuela fueran arriba, lo primero que se vería
               cada mañana sería el resultado y no la causa — y la causa es lo
               único sobre lo que se puede actuar hoy. */}
-          <h2 style={css(CABECERA + "margin:var(--s2) 0 0;font-size:var(--t-head);opacity:.7;")}>La campaña</h2>
-          <Embudo leads={d.leads} tarjeta={tarjeta} />
+          {/*
+            LA CABECERA DE LA REFERENCIA: cuatro cifras grandes en fino y un
+            medidor. Las cuatro son las que deciden si el mes va bien —quién
+            llega, cuánto se trabaja, cuánto se cobra, cuánta escuela hay— y
+            el medidor es lo único que es un porcentaje.
+          */}
+          <section data-metricas-cabecera="" style={css(tarjeta + "padding:var(--pad-card);background-image:radial-gradient(700px 300px at 100% 0%,color-mix(in srgb, var(--oro-luz) 55%, transparent),transparent 70%);")}>
+            <dl style={css("margin:0;display:flex;flex-wrap:wrap;gap:clamp(20px,3.4vw,52px);align-items:flex-end;")}>
+              {[
+                [`${d.nuevas30}`, "Personas nuevas"],
+                [`${d.sesiones30}`, "Sesiones"],
+                [euros(d.facturado30), "Facturado"],
+                [`${d.alumnos}`, "Alumnos"],
+              ].map(([n, que]) => (
+                <div key={que} style={css("display:flex;flex-direction:column;gap:6px;")}>
+                  <dd style={css("margin:0;font-weight:300;font-size:clamp(36px,4.4vw,60px);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;color:var(--text);white-space:nowrap;")}>{n}</dd>
+                  <dt style={css(NOTA)}>{que}</dt>
+                </div>
+              ))}
+            </dl>
+            <Medidor valor={d.acaban} que="Acaban el curso" />
+          </section>
 
-          <h2 style={css(CABECERA + "margin:var(--s5) 0 0;font-size:var(--t-head);opacity:.7;")}>La escuela</h2>
-          <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(190px,1fr));")}>
-            {cifra("Alumnos", `${d.alumnos}`, 0, "melocoton")}
-            {cifra("Miembros", `${d.miembros}`, 1, "rosa")}
-            {cifra("Lecciones terminadas", `${d.lecciones}`, 2, "cielo")}
-            {cifra("Acaban el curso", `${d.acaban} %`, 3, "lima")}
+          <div data-metricas-rejilla="">
+            {bloque(
+              "Cuánta gente entra",
+              "Personas distintas que abrieron la escuela cada día. Para ver si lo que publicaste la semana pasada movió algo.",
+              <Linea datos={d.dias} />
+            )}
+            {bloque(
+              "Lo facturado, mes a mes",
+              "Facturas emitidas de los últimos seis meses, con IVA. Las anuladas no cuentan.",
+              d.porMes.some((x) => x.valor > 0) ? <Columnas datos={d.porMes} sufijo=" €" /> : <p style={css(NOTA + "margin:0;")}>Todavía no hay facturas emitidas.</p>
+            )}
           </div>
 
-          {bloque(
-            "Cuánta gente entra",
-            "Personas distintas que abrieron la escuela cada día. Para ver si lo que publicaste la semana pasada movió algo.",
-            <Linea datos={d.dias} />
-          )}
+          <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(190px,1fr));")}>
+            {cifra("Miembros", `${d.miembros}`, 0, "rosa")}
+            {cifra("Lecciones terminadas", `${d.lecciones}`, 1, "cielo")}
+          </div>
+
+          <h2 style={css(CABECERA + "margin:var(--s3) 0 0;font-size:var(--t-head);")}>La campaña</h2>
+          <Embudo leads={d.leads} tarjeta={tarjeta} />
 
           {d.caida.length > 0 &&
             bloque(
@@ -277,13 +316,70 @@ export default function MetricasScreen() {
  * —sumas, porcentajes, divisiones entre cero— y separada se puede leer entera
  * de un vistazo y comprobar sin montar una pantalla.
  */
+/**
+ * EL MEDIDOR: media rueda que se llena. Es el de la referencia, y sirve aquí
+ * para lo único que es una proporción de verdad —de cada cien que empiezan
+ * un curso, cuántos lo acaban—. Las demás cifras son cantidades y un medidor
+ * no tendría techo que marcar.
+ */
+function Medidor({ valor, que }: { valor: number; que: string }) {
+  const R = 78;
+  const largo = Math.PI * R;
+  const v = Math.max(0, Math.min(100, valor));
+  return (
+    <figure style={css("margin:0;position:relative;width:200px;flex:none;text-align:center;")}>
+      <svg width="200" height="116" viewBox="0 0 200 116" aria-hidden="true">
+        <path d={`M ${100 - R} 100 A ${R} ${R} 0 0 1 ${100 + R} 100`} fill="none" stroke="var(--surface-2)" strokeWidth="14" strokeLinecap="round" />
+        {v > 0 && (
+          <path
+            d={`M ${100 - R} 100 A ${R} ${R} 0 0 1 ${100 + R} 100`}
+            fill="none"
+            stroke="var(--oro)"
+            strokeWidth="14"
+            strokeLinecap="round"
+            strokeDasharray={`${(largo * v) / 100} ${largo}`}
+          />
+        )}
+      </svg>
+      <figcaption style={css("position:absolute;left:0;right:0;top:46px;")}>
+        <div style={css("font-weight:300;font-size:34px;letter-spacing:-.03em;line-height:1;color:var(--text);")}>{v} %</div>
+        <div style={css(NOTA + "margin-top:6px;")}>{que}</div>
+      </figcaption>
+    </figure>
+  );
+}
+
+/** Lo del despacho en los últimos 30 días, y lo facturado de seis meses. */
+function despacho(leads: Lead[], citas: Cita[], facturas: Factura[]) {
+  const ahora = Date.now();
+  const hace30 = ahora - 30 * 24 * 3600 * 1000;
+  const nuevas30 = leads.filter((l) => l.visto && l.visto.getTime() >= hace30).length;
+  const sesiones30 = citas.filter((c) => {
+    const t = new Date(c.inicioISO).getTime();
+    return c.estado !== "anulada" && t >= hace30 && t <= ahora;
+  }).length;
+  const emitidas = facturas.filter((f) => f.estado === "emitida");
+  const desde30 = new Date(hace30).toISOString().slice(0, 10);
+  const facturado30 = emitidas.filter((f) => f.fecha >= desde30).reduce((s, f) => s + totales(f).total, 0);
+  const hoy = new Date();
+  const porMes: Barra[] = Array.from({ length: 6 }, (_, i) => {
+    const m = new Date(hoy.getFullYear(), hoy.getMonth() - 5 + i, 1);
+    const clave = `${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, "0")}`;
+    return {
+      etiqueta: m.toLocaleDateString("es", { month: "short" }),
+      valor: Math.round(emitidas.filter((f) => f.fecha.startsWith(clave)).reduce((s, f) => s + totales(f).total, 0)),
+    };
+  });
+  return { nuevas30, sesiones30, facturado30, porMes };
+}
+
 function calcula(
   gente: Array<{ roles?: string[] }>,
   cursos: Curso[],
   avances: Avance[],
   visitas: Array<{ uid: string; dias: string[] }>,
   leads: Lead[]
-): Datos {
+): Omit<Datos, "nuevas30" | "sesiones30" | "facturado30" | "porMes"> {
   const rol = (r: string) => gente.filter((p) => rolesDe(p as never).includes(r as never)).length;
 
   /* Las lecciones hechas, contando SÓLO LAS QUE SIGUEN EXISTIENDO. Si Iris
