@@ -43,7 +43,7 @@ export default function Legal() {
     <PaginaTexto
       titulo="Aviso legal"
       entradilla="Quién está detrás de esta web, qué se ofrece en ella y con qué reglas. Sin letra pequeña."
-      actualizado="4 de septiembre de 2026"
+      actualizado="18 de octubre de 2026"
     >
       <Aparece>
         <h2>Quién es responsable de esta web</h2>

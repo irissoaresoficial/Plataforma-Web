@@ -37,7 +37,7 @@ export default function Privacidad() {
     <PaginaTexto
       titulo="Qué hacemos con tus datos"
       entradilla="En claro y sin rodeos: qué se te pide, para qué, quién más lo ve, cuánto tiempo se guarda y cómo pedir que se borre."
-      actualizado="4 de septiembre de 2026"
+      actualizado="19 de octubre de 2026"
     >
       <Aparece>
         <h2>Quién responde de tus datos</h2>
