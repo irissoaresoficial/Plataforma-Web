@@ -38,6 +38,7 @@ const admin = { roles: ["admin"] as Rol[] };
 const alumno = { roles: ["alumno"] as Rol[] };
 const miembro = { roles: ["miembro"] as Rol[] };
 const ambos = { roles: ["alumno", "miembro"] as Rol[] };
+const creador = { roles: ["creador"] as Rol[] };
 const vieja = {};
 const rota = { roles: ["jefa", ""] as unknown as Rol[] };
 
@@ -48,7 +49,19 @@ for (const cerrada of ["estudio", "despacho", "metricas", "gestion"] as Capacida
   comprueba(`alumno NO abre ${cerrada}`, puede(alumno, cerrada), false);
   comprueba(`miembro NO abre ${cerrada}`, puede(miembro, cerrada), false);
   comprueba(`alumno+miembro NO abre ${cerrada}`, puede(ambos, cerrada), false);
+  comprueba(`creador NO abre ${cerrada}`, puede(creador, cerrada), false);
 }
+
+/* ── 1b. El creador monta cursos, y sólo eso ─────────────────────────── */
+
+comprueba("creador puede crear cursos", puede(creador, "crear"), true);
+comprueba("creador entra en sus cursos", puede(creador, "cursos"), true);
+comprueba("creador entra en la escuela", puede(creador, "escuela"), true);
+comprueba("creador NO entra en comunidad", puede(creador, "comunidad"), false);
+comprueba("creador NO es admin", esAdmin(creador), false);
+comprueba("alumno NO puede crear cursos", puede(alumno, "crear"), false);
+comprueba("miembro NO puede crear cursos", puede(miembro, "crear"), false);
+comprueba("admin puede crear cursos", puede(admin, "crear"), true);
 
 /* ── 2. Cada llave abre lo suyo, y sólo lo suyo ──────────────────────── */
 

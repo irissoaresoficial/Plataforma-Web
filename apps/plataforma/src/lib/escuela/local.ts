@@ -50,6 +50,9 @@ export const cursosLocal: RepoCursos = {
   async listar() {
     return lee<Curso>(LS_CURSOS).sort((a, b) => b.tocado.localeCompare(a.tocado));
   },
+  async deAutor(uid) {
+    return (await this.listar()).filter((c) => c.autor === uid);
+  },
   async publicados() {
     return (await this.listar()).filter((c) => c.publicado);
   },

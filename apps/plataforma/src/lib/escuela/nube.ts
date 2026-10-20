@@ -67,6 +67,17 @@ export const cursosNube: RepoCursos = {
       .sort((a, b2) => b2.tocado.localeCompare(a.tocado));
   },
 
+  /* Filtrado en el servidor por lo mismo que los publicados: un creador no
+     puede leer los cursos de otro, así que pedirlos todos fallaría entero. */
+  async deAutor(uid) {
+    const b = baseOpcional();
+    if (!b) return [];
+    const r = await getDocs(query(collection(b, "cursos"), where("autor", "==", uid)));
+    return r.docs
+      .map((d) => conId<Curso>(d.id, d.data()))
+      .sort((a, b2) => b2.tocado.localeCompare(a.tocado));
+  },
+
   async obtener(id) {
     const b = baseOpcional();
     if (!b) return null;

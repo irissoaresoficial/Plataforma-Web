@@ -89,12 +89,15 @@ export default function Recursos({
   cursoId,
   recursos,
   puedeEditar = false,
+  enPaso = false,
   alCambiar,
 }: {
   cursoId: string;
   recursos: Recurso[];
   /** Iris sube y quita; una alumna sólo mira y baja. */
   puedeEditar?: boolean;
+  /** Dentro del editor el título ya lo pone el paso: aquí no se repite. */
+  enPaso?: boolean;
   /** La lista nueva. Quien llama la guarda en el curso. */
   alCambiar?: (nuevos: Recurso[]) => void;
 }) {
@@ -158,14 +161,14 @@ export default function Recursos({
   return (
     <section style={css("display:flex;flex-direction:column;gap:var(--s3);")}>
       <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
-        <h2 style={css(CABECERA + "margin:0;font-size:var(--t-head);")}>Material del curso</h2>
+        {!enPaso && <h2 style={css(CABECERA + "margin:0;font-size:var(--t-head);")}>Material del curso</h2>}
         {hay && (
           <span style={css(NOTA)}>
             {recursos.length} {recursos.length === 1 ? "archivo" : "archivos"}
           </span>
         )}
         {puedeEditar && !elegido && (
-          <button onClick={() => campo.current?.click()} style={css(BOTON_NORMAL + "margin-left:auto;")}>
+          <button onClick={() => campo.current?.click()} style={css(BOTON_NORMAL + (enPaso ? "" : "margin-left:auto;"))}>
             + Subir un archivo
           </button>
         )}
@@ -244,8 +247,7 @@ export default function Recursos({
 
       {!hay && puedeEditar && (
         <p style={css(NOTA + "margin:0;line-height:1.55;max-width:60ch;")}>
-          Aquí va lo que repartes con este curso: la plantilla del Espejo y la Máscara, la tabla de letras, los audios. Lo
-          que hoy mandas por correo cada vez.
+          Todavía no hay ningún archivo. Sube aquí lo que repartes con este curso: un PDF, una plantilla, un audio.
         </p>
       )}
 

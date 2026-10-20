@@ -145,6 +145,22 @@ export type Curso = {
    * se puede leer aunque alguien adivine su dirección.
    */
   publicado: boolean;
+  /**
+   * QUIÉN LO MONTA: el `uid` de su creador. Vacío o ausente = es de Iris, que
+   * es lo que son todos los cursos que existían antes del 20 de octubre de
+   * 2026. Las reglas de Firestore lo usan para que cada creador toque los
+   * suyos y ninguno más, y no se puede cambiar una vez puesto.
+   */
+  autor?: string;
+  /** El nombre del creador, copiado al crear, para que Iris sepa de quién es
+   *  sin ir a buscarlo. */
+  autorNombre?: string;
+  /**
+   * EL CREADOR PIDE QUE SE PUBLIQUE. Un creador no publica: marca esto, e Iris
+   * lo ve en su lista con la etiqueta «Pide publicar» y decide. Al publicarlo
+   * ella, se apaga.
+   */
+  revision?: boolean;
   modulos: Modulo[];
   /**
    * Los archivos que se bajan: el manual, la plantilla, el audio.

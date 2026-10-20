@@ -75,6 +75,10 @@ service cloud.firestore {
     function esAdmin() {
       return dentro() && ('admin' in roles() || roles().size() == 0);
     }
+    /* Quien monta cursos propios. Lo mismo que `lib/roles.ts`. */
+    function esCreador() {
+      return dentro() && 'creador' in roles();
+    }
 
     /**
      * EL ARRANQUE: CÓMO ENTRA LA PRIMERA PERSONA.
@@ -301,13 +305,39 @@ service cloud.firestore {
      * se va a mirar el día que se monte el pago, y porque un «ya lo haremos»
      * que no está escrito en ninguna parte no se hace nunca.
      *
-     * Escribir, sólo Iris. Y `publicados()` filtra en el servidor por eso
+     * Escribir: Iris, y cada creador lo suyo (abajo). Y `publicados()` filtra en el servidor por eso
      * mismo: si un alumno pidiera todos los cursos, Firestore rechaza la
      * consulta entera en vez de devolverle los que sí puede ver.
      */
+    /*
+     * Y DESDE EL 20 DE OCTUBRE DE 2026, LOS CREADORES. Cuatro candados:
+     *
+     *   1. Leen SUS cursos —borradores incluidos— por el campo `autor`. Los
+     *      de otro creador, sólo si están publicados, como cualquiera.
+     *   2. Crean un curso sólo a su nombre y en borrador.
+     *   3. Al editar no pueden cambiar ni el autor ni `publicado`: no se
+     *      quitan la autoría para pasársela a otro, y no publican. Publicar
+     *      es de Iris; el creador marca `revision` y ella decide.
+     *   4. Borran sólo lo suyo y sólo en borrador. Un curso publicado tiene
+     *      alumnos dentro, y borrarlo es de Iris.
+     */
     match /cursos/{id} {
-      allow read: if esAdmin() || (dentro() && resource.data.publicado == true);
-      allow write: if esAdmin();
+      allow read: if esAdmin()
+        || (dentro() && resource.data.publicado == true)
+        || (esCreador() && resource.data.autor == request.auth.uid);
+      allow create: if esAdmin()
+        || (esCreador()
+            && request.resource.data.get('autor', '') == request.auth.uid
+            && request.resource.data.publicado == false);
+      allow update: if esAdmin()
+        || (esCreador()
+            && resource.data.get('autor', '') == request.auth.uid
+            && request.resource.data.get('autor', '') == request.auth.uid
+            && request.resource.data.publicado == resource.data.publicado);
+      allow delete: if esAdmin()
+        || (esCreador()
+            && resource.data.get('autor', '') == request.auth.uid
+            && resource.data.publicado == false);
     }
 
     /*

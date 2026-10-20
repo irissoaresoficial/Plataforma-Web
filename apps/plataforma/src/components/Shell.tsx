@@ -16,6 +16,7 @@ import MetricasScreen from "./screens/MetricasScreen";
 import ComunidadScreen from "./screens/ComunidadScreen";
 import PerfilScreen from "./screens/PerfilScreen";
 import GestionScreen from "./screens/GestionScreen";
+import TableroScreen from "./screens/TableroScreen";
 import DetalleModal from "./DetalleModal";
 import Sidebar from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
@@ -267,6 +268,7 @@ export default function Shell() {
             animación de entrada de `[data-vista]` no vuelve a dispararse nunca.
             El porqué de que haya animación está en globals.css. */}
         <div key={vista} data-vista="" style={css("flex:1;min-width:0;")}>
+          {vista === "tablero" && <TableroScreen />}
           {vista === "inicio" && <ConsultaScreen />}
           {faltaEstudio && <SinEstudio vista={vista} />}
           {vista === "panel" && !faltaEstudio && <PanelScreen />}
