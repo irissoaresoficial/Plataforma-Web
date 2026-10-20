@@ -44,7 +44,7 @@ export type Novedad = {
   titulo: string;
   detalle: string;
   /** A dónde lleva pulsarlo. */
-  pantalla: "personas" | "agenda";
+  pantalla: "personas" | "agenda" | "comunidad";
 };
 
 /** Cómo se llama cada origen cuando se avisa de él. Las mismas palabras que en
@@ -68,7 +68,7 @@ const ORIGENES: Record<string, string> = {
  * Sin él, una migración o una importación masiva de datos entregaría miles de
  * documentos de golpe en la primera respuesta.
  */
-export function escuchaNovedades(alLlegar: (n: Novedad) => void): Unsubscribe {
+export function escuchaNovedades(alLlegar: (n: Novedad) => void, yo?: string): Unsubscribe {
   const base = nube();
   if (!base) return () => {};
 
@@ -134,6 +134,49 @@ export function escuchaNovedades(alLlegar: (n: Novedad) => void): Unsubscribe {
       () => {},
     ),
   );
+
+  /* --------------------------------------------------------- comunidad
+   * Gerson, el 20 de octubre de 2026: «en el panel de Iris debe verse la
+   * notificación al instante de que alguien comentó». Mismo mecanismo que los
+   * leads: oreja puesta en temas y respuestas, la primera entrega se traga y
+   * sólo se avisa de lo que llega después.
+   *
+   * Lo que escribe la propia Iris no se avisa: se lo acaba de ver escribir.
+   * Y se avisa también a la pantalla de Comunidad (evento `es33:comunidad`),
+   * para que si la tiene abierta el mensaje aparezca sin recargar. */
+  const recorta = (t: string, n = 70) => (t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t);
+  const deComunidad = (coleccion: "temas" | "respuestas") => {
+    let primera = true;
+    return onSnapshot(
+      query(collection(base, coleccion), orderBy("creado", "desc"), limit(30)),
+      (foto) => {
+        if (primera) {
+          primera = false;
+          return;
+        }
+        let hubo = false;
+        foto.docChanges().forEach((c) => {
+          if (c.type !== "added") return;
+          const d = c.doc.data() as Record<string, unknown>;
+          if (yo && d.uid === yo) return;
+          hubo = true;
+          const quien = String(d.autor || "").trim() || "Alguien";
+          const texto = String((coleccion === "temas" ? d.titulo || d.texto : d.texto) || "").trim();
+          alLlegar({
+            id: `${coleccion}:${c.doc.id}`,
+            titulo: quien,
+            detalle: coleccion === "temas"
+              ? (texto ? `ha escrito en la comunidad: «${recorta(texto)}»` : "ha escrito en la comunidad")
+              : (texto ? `ha respondido: «${recorta(texto)}»` : "ha respondido en la comunidad"),
+            pantalla: "comunidad",
+          });
+        });
+        if (hubo && typeof window !== "undefined") window.dispatchEvent(new Event("es33:comunidad"));
+      },
+      () => {},
+    );
+  };
+  sueltas.push(deComunidad("temas"), deComunidad("respuestas"));
 
   return () => sueltas.forEach((s) => s());
 }
