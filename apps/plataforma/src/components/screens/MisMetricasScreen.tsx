@@ -231,16 +231,18 @@ export default function MisMetricasScreen() {
           el vídeo— y NO ve nada del despacho de Iris: ni clientas, ni facturas,
           ni la lista de correos.
 
-          `leads={null}` es justo eso. No es que no haya apuntados: es que desde
-          esta pantalla no se pueden leer, y las reglas de Firestore tampoco lo
-          dejarían. El bloque lo dice con esas palabras en vez de enseñar un
-          cero que parecería un fracaso de la campaña. */}
+          Los apuntados que enseña son un RECUENTO guardado en `campana`, no la
+          lista de `leads`: el número de personas sí, quiénes son no. Así esta
+          persona ve el coste por apuntado —que es lo que necesita para decidir—
+          sin que le llegue ni un correo ajeno. Y es exactamente el mismo número
+          que ve Iris, porque sale del mismo sitio: dos pantallas que dieran
+          costes distintos para lo mismo valdrían menos que una sola. */}
       {campana.length > 0 && (
         <>
           <h2 style={css("margin:var(--s4) 0 0;font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;")}>
             Lo que cuesta la publicidad
           </h2>
-          <Gasto dias={campana} leads={null} tarjeta={TARJETA + "padding:var(--pad-card-sm);"} />
+          <Gasto dias={campana} tarjeta={TARJETA + "padding:var(--pad-card-sm);"} />
         </>
       )}
 

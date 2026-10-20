@@ -63,6 +63,11 @@ const doc = {
   impresiones: n(d.impresiones),
   alcance: n(d.alcance),
   clics: n(d.clics),
+  /* Cuántos llegaron a CARGAR la página. Siempre son menos que los clics:
+     hay quien se arrepiente o cierra antes de que cargue. La diferencia entre
+     clics y aterrizajes mide lo lenta que va la web, no lo malo que es el
+     anuncio. */
+  aterrizajes: n(d.aterrizajes),
   frecuencia: n(d.frecuencia),
   escrito: new Date().toISOString(),
 };
@@ -83,6 +88,58 @@ if (Array.isArray(d.anuncios) && d.anuncios.length) {
 }
 
 initializeApp({ credential: cert(JSON.parse(readFileSync(llave, "utf8"))) });
-await getFirestore().collection("campana").doc(d.dia).set(doc);
-console.log(`Apuntado el ${d.dia}: ${doc.gasto} €, ${doc.clics} clics, ${doc.alcance} personas.`);
+const base = getFirestore();
+
+/*
+ * LOS APUNTADOS SE CUENTAN AQUÍ, NO SE PASAN POR LA ENTRADA.
+ *
+ * Y es a propósito. Este número —cuánta gente dejó su correo ese día— es la
+ * mitad que convierte el gasto en una decisión: sin él sólo se sabe lo que
+ * cuesta un clic, que no es lo que se compra. Si se pasara a mano, el día que
+ * alguien se equivocara al teclearlo el coste por persona saldría mal y nadie
+ * lo notaría, porque no hay con qué compararlo.
+ *
+ * Contándolo contra `leads` no hay forma de que discrepe de la realidad: la
+ * realidad es `leads`.
+ *
+ * SE GUARDA EL NÚMERO Y NADA MÁS. Ni correos, ni nombres, ni de dónde son. En
+ * `campana` puede leer cualquiera que esté dentro de la plataforma —incluida
+ * la persona a quien Iris delegue un curso— y esa gente no tiene por qué ver
+ * la lista de personas. Un recuento no es un dato personal; una lista sí.
+ */
+const desde = new Date(`${d.dia}T00:00:00.000Z`);
+const hasta = new Date(`${d.dia}T23:59:59.999Z`);
+let apuntados = 0;
+let dePago = 0;
+try {
+  const r = await base.collection("leads").get();
+  for (const x of r.docs) {
+    const v = x.data();
+    /* `alta` puede ser marca de tiempo de Firestore o texto, según por dónde
+       entrara el lead. Las dos formas tienen que contar igual. */
+    const t = v.alta?.toDate ? v.alta.toDate() : v.alta ? new Date(v.alta) : null;
+    if (!t || t < desde || t > hasta) continue;
+    apuntados += 1;
+    if (v.campana?.source) dePago += 1;
+  }
+} catch (e) {
+  /* Si no se puede contar, se dice y se escribe el resto. Un gasto apuntado
+     sin su recuento vale más que no apuntar nada. */
+  console.error("Aviso: no se han podido contar los apuntados:", e.message);
+}
+doc.apuntados = apuntados;
+doc.apuntadosDePago = dePago;
+
+await base.collection("campana").doc(d.dia).set(doc);
+console.log(
+  `Apuntado el ${d.dia}: ${doc.gasto} €, ${doc.clics} clics, ${doc.aterrizajes} aterrizajes, ` +
+    `${doc.alcance} personas, ${apuntados} apuntados (${dePago} de la campaña).`,
+);
+if (doc.clics >= 25 && apuntados === 0) {
+  console.warn(
+    "\n  OJO: hubo clics y CERO apuntados. O la gente no rellena el formulario,\n" +
+      "  o el formulario no está guardando en Firestore. Hay que comprobarlo\n" +
+      "  antes de seguir gastando.",
+  );
+}
 process.exit(0);

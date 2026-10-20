@@ -274,7 +274,7 @@ export default function MetricasScreen() {
               trae cada anuncio, y esto dice cuánto costó. En ese orden la
               división —euros entre personas— se hace sola al leer. */}
           <h2 style={css(SECCION)}>Lo que cuesta la publicidad</h2>
-          <Gasto dias={d.campana} leads={d.leads} tarjeta={tarjeta} />
+          <Gasto dias={d.campana} tarjeta={tarjeta} />
         </>
       )}
 

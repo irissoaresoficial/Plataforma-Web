@@ -44,6 +44,7 @@
 import { NextResponse } from 'next/server';
 import { parseLead } from '@/lib/booking';
 import { guardaLead } from '@/lib/leads-firebase';
+import { dondeEsta } from '@/lib/donde';
 import { enviaCorreosDeLead } from '@/lib/correo';
 
 export const runtime = 'nodejs';
@@ -89,39 +90,6 @@ function recortaIp(ip: string): string {
   return 'desconocida';
 }
 
-/**
- * DE QUÉ PAÍS Y CIUDAD ENTRA, SIN GUARDAR LA DIRECCIÓN DE NADIE.
- *
- * Vercel resuelve la ubicación por su cuenta antes de que la petición llegue
- * aquí y la escribe en tres cabeceras. O sea que el país y la ciudad salen
- * gratis, sin llamar a ningún servicio de terceros y sin mandarle a nadie la
- * IP de quien visita — que es la forma habitual de hacer esto y la que habría
- * que declarar en la política de privacidad como cesión a un tercero.
- *
- * El país viene en dos letras («ES») y se deja así: es el estándar ISO y es lo
- * que entiende cualquier herramienta. La ciudad viene codificada para poder
- * viajar en una cabecera, así que hay que descodificarla o Valencia se guarda
- * como «Valencia» pero Córdoba se guarda como «C%C3%B3rdoba».
- *
- * Y AQUÍ ESTÁ LA LÍNEA QUE NO SE CRUZA: país y ciudad, nunca la IP entera.
- * «España · Valencia» contesta lo que Gerson necesita para decidir dónde
- * anuncia y a qué hora publica. La IP completa no añadiría ni un dato útil
- * para eso y convertiría la tabla de leads en un fichero de datos personales
- * mucho más delicado. Ver también `recortaIp`, abajo.
- */
-function dondeEsta(request: Request): { pais: string; ciudad: string } {
-  const h = request.headers;
-  const pais = (h.get('x-vercel-ip-country') || '').slice(0, 2).toUpperCase();
-  const bruta = h.get('x-vercel-ip-city') || '';
-  let ciudad = '';
-  try {
-    ciudad = decodeURIComponent(bruta).slice(0, 60);
-  } catch {
-    /* Una cabecera mal codificada no puede tumbar un lead. Se guarda cruda. */
-    ciudad = bruta.slice(0, 60);
-  }
-  return { pais, ciudad };
-}
 
 export async function POST(request: Request) {
   const url = process.env.APPS_SCRIPT_URL;

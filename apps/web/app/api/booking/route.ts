@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { parseBooking } from '@/lib/booking';
 import { guardaCita, guardaLead, guardaReserva } from '@/lib/leads-firebase';
+import { dondeEsta } from '@/lib/donde';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -76,7 +77,21 @@ export async function POST(request: Request) {
    *     Nace como `pedida`: la web no confirma nada por su cuenta.
    */
   const [enReservas, enLeads] = await Promise.all([
-    guardaReserva({ ...booking, ip: ip.slice(0, 45) }),
+    /*
+     * AQUÍ SE GUARDABA LA IP ENTERA, Y ERA UNA INFRACCIÓN EN ACTIVO.
+     *
+     * El formulario de la web dejó de guardarla hace tiempo —es dato personal
+     * del artículo 4.1 del RGPD— pero las reservas se quedaron fuera del
+     * arreglo, porque la función que lo hace bien vivía escondida dentro de
+     * `api/lead/route.ts` y desde aquí no se podía usar. Seis reservas reales
+     * quedaron con la dirección completa de esas personas dentro.
+     *
+     * Ahora las dos rutas llaman al mismo `dondeEsta`, que vive en
+     * `lib/donde.ts` justo para que no pueda volver a aplicarse a medias.
+     * «España · Valencia» dice lo mismo que hace falta saber y no identifica
+     * a nadie.
+     */
+    guardaReserva({ ...booking, ...dondeEsta(request) }),
     guardaLead(
       {
         email: booking.email,

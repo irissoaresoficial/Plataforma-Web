@@ -229,7 +229,33 @@ export function Linea({ datos, alto = 200 }: { datos: Punto[]; alto?: number }) 
 
 /* ──────────────────────────────────────────────────────── barras echadas ── */
 
-export type Barra = { etiqueta: string; detalle?: string; valor: number };
+export type Barra = {
+  etiqueta: string;
+  detalle?: string;
+  /** Lo que mide la barra. Siempre un número: es lo que da el ancho. */
+  valor: number;
+  /**
+   * Qué ESCRIBIR al final de la barra, cuando no es el número pelado.
+   *
+   * Hace falta para el dinero. «10,5 €» es correcto pero se lee mal en una
+   * columna de importes; lo que se espera ver es «10,50 €». Y eso no se puede
+   * sacar del número sin saber que es dinero, que es justo lo que esta pieza
+   * no sabe ni tiene por qué saber. Así que lo trae ya escrito quien lo sabe.
+   */
+  texto?: string;
+};
+
+/**
+ * El número al final de la barra, en español.
+ *
+ * ESTO ESTABA PINTANDO EL NÚMERO EN CRUDO, y se veía: 6210 sin punto de los
+ * miles, y 10.5 con el punto decimal de otro idioma justo al lado de un
+ * «22,78 €» con coma. Dos separadores distintos para lo mismo en la misma
+ * pantalla es de las cosas que hacen que un panel parezca a medio hacer.
+ */
+function enEspanol(n: number): string {
+  return n.toLocaleString("es-ES", { maximumFractionDigits: 2 });
+}
 
 /**
  * Comparar cuánto, con nombres largos.
@@ -251,9 +277,15 @@ export function Barras({ datos, sufijo = "" }: { datos: Barra[]; sufijo?: string
               {d.detalle && <span style={css(NOTA + "margin-left:7px;")}>{d.detalle}</span>}
             </span>
             {/* El número al final de la barra, no encima: ahí no tapa el dato. */}
-            <span style={css("font-size:var(--t-mini);font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;")}>
-              {d.valor}
-              {sufijo}
+            {/* `nowrap`: sin esto, en el móvil «10,50 €» parte el símbolo del
+                importe y el euro se cae solo a la línea de abajo. */}
+            <span
+              style={css(
+                "font-size:var(--t-mini);font-weight:600;color:var(--text);" +
+                  "font-variant-numeric:tabular-nums;white-space:nowrap;",
+              )}
+            >
+              {d.texto ?? `${enEspanol(d.valor)}${sufijo}`}
             </span>
           </div>
           <div
