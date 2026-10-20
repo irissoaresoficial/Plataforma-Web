@@ -2060,32 +2060,34 @@ button:not(:disabled):active {
 /* ---------------------------------------------------------------------------
    LA SECRETARIA CON IA (components/escuela/SecretariaIA.tsx)
 
-   Texto a la izquierda y el diagrama a la derecha; en el móvil, uno encima
-   del otro. Sutil a propósito: filetes finos, una sola luz que recorre las
-   líneas de una en una y el punto de «Próximamente» que respira. Con
-   movimiento reducido, quieto.
+   La misma pieza en todos los apartados del creador: texto a la izquierda y
+   la foto a sangre a la derecha (en el móvil, arriba). Detrás, un degradado
+   que se mueve muy despacio; encima, partículas doradas que suben. Todo a muy
+   poca opacidad. Con movimiento reducido, quieto y sin partículas.
    --------------------------------------------------------------------------- */
-[data-ia] {
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 520px);
-}
 [data-ia-fila] {
   grid-template-columns: 170px minmax(0, 1fr);
 }
-[data-ia-diagrama="estrecho"] {
-  display: none;
-}
-/* La entera: la foto a sangre por la derecha, fundida hacia el texto. La
-   máscara sólo lee la opacidad: el color del token no se pinta. */
 [data-ia="foto"] {
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
 }
+
+/* La foto, a sangre por la derecha y fundida hacia el texto. La máscara sólo
+   lee la opacidad: el color del token no se pinta. */
 [data-ia-foto] {
+  z-index: 1;
   align-self: stretch;
   position: relative;
   min-height: 560px;
-  margin: calc(-1 * var(--pad-card)) calc(-1 * var(--pad-card)) calc(-1 * var(--pad-card)) 0;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, var(--text) 30%);
-  mask-image: linear-gradient(90deg, transparent 0%, var(--text) 30%);
+  margin: calc(-1 * var(--ia-pad)) calc(-1 * var(--ia-pad)) calc(-1 * var(--ia-pad)) 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, var(--text) 32%);
+  mask-image: linear-gradient(90deg, transparent 0%, var(--text) 32%);
+}
+[data-ia-compacta] [data-ia-foto] {
+  min-height: 340px;
+}
+[data-ia-compacta] [data-ia-foto] img {
+  object-position: 60% 12%;
 }
 [data-ia-foto] img {
   position: absolute;
@@ -2095,29 +2097,92 @@ button:not(:disabled):active {
   object-fit: cover;
   object-position: 60% 35%;
 }
+
+/* El degradado de detrás: tres manchas de la casa que se mueven muy despacio. */
+[data-ia-aurora] {
+  position: absolute;
+  inset: -30%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 22% 30%, color-mix(in srgb, var(--oro-luz) 16%, transparent), transparent 70%),
+    radial-gradient(34% 40% at 62% 78%, color-mix(in srgb, var(--oro) 22%, transparent), transparent 70%),
+    radial-gradient(44% 50% at 8% 92%, color-mix(in srgb, var(--vino) 70%, var(--sobre-bloque) 8%), transparent 70%);
+  filter: blur(10px);
+  animation: ia-aurora 22s ease-in-out infinite alternate;
+}
+@keyframes ia-aurora {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, -4%, 0) rotate(8deg) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-5%, 5%, 0) rotate(-6deg) scale(1.04);
+  }
+}
+
+/* Las partículas: puntos dorados que suben y se apagan. Por encima de la foto
+   también, para que las dos mitades sean una sola pieza. */
+[data-ia-particulas] {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+[data-ia-particulas] span {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--oro-luz);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--oro-luz) 70%, transparent);
+  opacity: 0;
+  animation-name: ia-sube;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes ia-sube {
+  0% {
+    transform: translate3d(0, 24px, 0);
+    opacity: 0;
+  }
+  30% {
+    opacity: var(--ia-luz);
+  }
+  100% {
+    transform: translate3d(10px, -90px, 0);
+    opacity: 0;
+  }
+}
+
+/* La segunda línea del titular, en degradado de cremas a oro. */
+[data-ia-degradado] {
+  background: linear-gradient(90deg, var(--sobre-bloque) 0%, var(--oro-luz) 60%, var(--oro) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @media (max-width: 900px) {
-  [data-ia],
   [data-ia="foto"] {
     grid-template-columns: minmax(0, 1fr);
   }
-  [data-ia-foto] {
+  [data-ia-foto],
+  [data-ia-compacta] [data-ia-foto] {
     order: -1;
     min-height: 0;
     height: 420px;
-    margin: calc(-1 * var(--pad-card)) calc(-1 * var(--pad-card)) 0;
-    -webkit-mask-image: linear-gradient(180deg, var(--text) 65%, transparent 100%);
-    mask-image: linear-gradient(180deg, var(--text) 65%, transparent 100%);
+    margin: calc(-1 * var(--ia-pad)) calc(-1 * var(--ia-pad)) 0;
+    -webkit-mask-image: linear-gradient(180deg, var(--text) 62%, transparent 100%);
+    mask-image: linear-gradient(180deg, var(--text) 62%, transparent 100%);
+  }
+  [data-ia-compacta] [data-ia-foto] {
+    height: 320px;
   }
 }
 @media (max-width: 560px) {
   [data-ia-fila] {
     grid-template-columns: minmax(0, 1fr);
-  }
-  [data-ia-diagrama="ancho"] {
-    display: none;
-  }
-  [data-ia-diagrama="estrecho"] {
-    display: block;
   }
 }
 [data-ia-pronto] {
@@ -2134,8 +2199,12 @@ button:not(:disabled):active {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-ia-pronto] {
+  [data-ia-pronto],
+  [data-ia-aurora] {
     animation: none;
+  }
+  [data-ia-particulas] {
+    display: none;
   }
 }
 
