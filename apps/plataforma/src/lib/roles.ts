@@ -45,9 +45,16 @@
  */
 
 /** Las tres llaves. */
-export type Rol = "admin" | "alumno" | "miembro";
+/*
+ * `creador` entró el 20 de octubre de 2026: «necesito que las personas puedan
+ * montar su curso». Monta y edita SUS cursos y nada más: no ve los de nadie,
+ * ni el despacho, ni el estudio. Y no publica: pide que se publique, y lo
+ * publica Iris. La escuela lleva su nombre, así que lo que sale a la vista lo
+ * mira ella antes.
+ */
+export type Rol = "admin" | "alumno" | "miembro" | "creador";
 
-export const ROLES: readonly Rol[] = ["admin", "alumno", "miembro"] as const;
+export const ROLES: readonly Rol[] = ["admin", "alumno", "miembro", "creador"] as const;
 
 /**
  * Lo que se puede hacer, en vez de quién se es.
@@ -69,6 +76,8 @@ export type Capacidad =
   | "gestion"
   /** Ver los cursos que uno ha comprado. */
   | "cursos"
+  /** Montar cursos propios. Publicarlos sigue siendo de Iris. */
+  | "crear"
   /** Entrar en la comunidad. */
   | "comunidad"
   /**
@@ -97,9 +106,10 @@ const ABRE: Record<Capacidad, readonly Rol[]> = {
   estudio: ["admin"],
   metricas: ["admin"],
   gestion: ["admin"],
-  cursos: ["admin", "alumno"],
+  cursos: ["admin", "alumno", "creador"],
+  crear: ["admin", "creador"],
   comunidad: ["admin", "miembro"],
-  escuela: ["admin", "alumno", "miembro"],
+  escuela: ["admin", "alumno", "miembro", "creador"],
 };
 
 /** Lo mínimo que hace falta saber de alguien para decidir si pasa. */
@@ -157,6 +167,7 @@ export const NOMBRE_ROL: Record<Rol, string> = {
   admin: "administradora",
   alumno: "alumno",
   miembro: "miembro",
+  creador: "creador de cursos",
 };
 
 /**

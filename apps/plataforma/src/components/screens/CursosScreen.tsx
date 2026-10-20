@@ -50,8 +50,12 @@ type Donde =
   | { que: "ve"; curso: Curso };
 
 export default function CursosScreen() {
-  const { usuario, esAdmin } = useSesion();
+  const { usuario, esAdmin, puede } = useSesion();
   const uid = usuario ? usuario.uid : "";
+  /* Quien monta cursos sin ser Iris. Ve los suyos —en borrador también— y los
+     que haya comprado, y edita sólo los suyos. */
+  const creador = !esAdmin && puede("crear");
+  const esMio = (c: Curso) => esAdmin || (creador && c.autor === uid);
   const [donde, setDonde] = useState<Donde>({ que: "lista" });
   const [lista, setLista] = useState<Curso[] | null>(null);
   const [avances, setAvances] = useState<Record<string, Avance | null>>({});
@@ -78,17 +82,40 @@ export default function CursosScreen() {
         setLista([]);
         return;
       }
-      const [publicados, mias] = await Promise.all([
+      const [publicados, mias, propios] = await Promise.all([
         repoCursos.publicados(),
         repoInscripciones.deAlumno(uid),
+        puede("crear") ? repoCursos.deAutor(uid) : Promise.resolve([] as Curso[]),
       ]);
       const permitidos = new Set(mias.map((i) => i.cursoId));
-      setLista(publicados.filter((c) => permitidos.has(c.id)));
+      const comprados = publicados.filter((c) => permitidos.has(c.id) && !propios.some((p) => p.id === c.id));
+      setLista([...propios, ...comprados]);
     } catch (e) {
       setLista([]);
       setFallo(e instanceof Error ? e.message : "No se han podido cargar los cursos.");
     }
-  }, [esAdmin, uid]);
+  }, [esAdmin, puede, uid]);
+
+  /*
+   * UN CURSO NUEVO DE UN CREADOR SE GUARDA ANTES DE ABRIRLO.
+   *
+   * Iris puede subir vídeos a un curso que todavía no existe en la base; un
+   * creador no, porque las reglas de subida miran en la ficha del curso de
+   * quién es. Si no estuviera guardado, el primer vídeo que subiera fallaría
+   * con un «no autorizado» que no explica nada. Guardado vacío, en borrador,
+   * no lo ve nadie y las subidas ya saben que es suyo.
+   */
+  async function nuevo() {
+    if (esAdmin) return setDonde({ que: "edita", curso: cursoNuevo() });
+    setFallo("");
+    const c: Curso = { ...cursoNuevo(), autor: uid, autorNombre: usuario ? usuario.nombre : "" };
+    try {
+      await repoCursos.guardar(c);
+      setDonde({ que: "edita", curso: c });
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido crear el curso.");
+    }
+  }
 
   useEffect(() => {
     void carga();
@@ -117,6 +144,7 @@ export default function CursosScreen() {
     return (
       <EditorCurso
         inicial={donde.curso}
+        publica={esAdmin}
         alSalir={() => {
           setDonde({ que: "lista" });
           void carga();
@@ -141,9 +169,9 @@ export default function CursosScreen() {
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
         <h1 style={css(TITULO + "margin:0;")}>{esAdmin ? "Cursos" : "Mis cursos"}</h1>
-        {esAdmin && (
+        {(esAdmin || creador) && (
           <button
-            onClick={() => setDonde({ que: "edita", curso: cursoNuevo() })}
+            onClick={() => void nuevo()}
             style={css(botonPrincipal() + "margin-left:auto;")}
           >
             + Nuevo curso
@@ -177,14 +205,19 @@ export default function CursosScreen() {
               "padding:clamp(32px,6vw,64px) var(--pad-card);text-align:center;box-shadow:var(--nm);"
           )}
         >
-          {esAdmin ? (
+          {esAdmin || creador ? (
             <>
               <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Todavía no has creado ningún curso</h2>
               <p style={css(LECTURA + "margin:0 auto var(--s4);max-width:52ch;")}>
                 Un curso se monta en varios ratos: lo empiezas, lo dejas, lo sigues. Mientras no lo publiques no lo ve
                 nadie, así que puedes crearlo ahora aunque sólo tengas el nombre.
               </p>
-              <button onClick={() => setDonde({ que: "edita", curso: cursoNuevo() })} style={css(botonPrincipal())}>
+              {creador && (
+                <p style={css(LECTURA + "margin:0 auto var(--s4);max-width:52ch;")}>
+                  Cuando esté listo, pides que se publique e Iris lo revisa.
+                </p>
+              )}
+              <button onClick={() => void nuevo()} style={css(botonPrincipal())}>
                 Crear el primer curso
               </button>
             </>
@@ -253,7 +286,7 @@ export default function CursosScreen() {
                   </h2>
                   {/* El borrador se marca con una palabra y no con un color: un
                       color hay que haber aprendido qué significa. */}
-                  {esAdmin && !c.publicado && (
+                  {esMio(c) && !c.publicado && !c.revision && (
                     <span
                       style={css(
                         "font-size:var(--t-micro);font-weight:600;letter-spacing:.08em;text-transform:uppercase;" +
@@ -264,7 +297,20 @@ export default function CursosScreen() {
                       Borrador
                     </span>
                   )}
+                  {/* Para Iris es una tarea; para el creador, un estado. */}
+                  {esMio(c) && !c.publicado && c.revision && (
+                    <span
+                      style={css(
+                        "font-size:var(--t-micro);font-weight:500;padding:2px 8px;border-radius:var(--r-pill);" +
+                          "background:var(--oro-luz);color:var(--vino);"
+                      )}
+                    >
+                      {esAdmin ? "Pide publicar" : "En revisión"}
+                    </span>
+                  )}
                 </div>
+
+                {esAdmin && c.autorNombre && <span style={css(NOTA)}>De {c.autorNombre}</span>}
 
                 {c.descripcion && (
                   <p style={css(NOTA + "margin:0;line-height:1.5;")}>
@@ -293,7 +339,7 @@ export default function CursosScreen() {
                   <button onClick={() => setDonde({ que: "ve", curso: c })} style={css(botonPrincipal() + "flex:1 1 auto;")}>
                     {parte > 0 && parte < 1 ? "Seguir" : "Entrar"}
                   </button>
-                  {esAdmin && (
+                  {esMio(c) && (
                     <button onClick={() => setDonde({ que: "edita", curso: c })} style={css(BOTON_NORMAL)}>
                       Editar
                     </button>

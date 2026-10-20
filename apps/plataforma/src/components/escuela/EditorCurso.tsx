@@ -69,10 +69,13 @@ type Estado = "limpio" | "sucio" | "guardando" | "error";
 
 export default function EditorCurso({
   inicial,
+  publica,
   alSalir,
   alGuardar,
 }: {
   inicial: Curso;
+  /** Iris publica; un creador sólo pide que se publique. */
+  publica: boolean;
   alSalir: () => void;
   /** Para que la lista de fuera se entere sin volver a preguntar a la base. */
   alGuardar: (c: Curso) => void;
@@ -296,6 +299,43 @@ export default function EditorCurso({
           que lo ve todo el mundo o sólo quien lo ha comprado — y esa duda, en
           la pantalla de quien publica, es la que hace que no se publique.
         */}
+        {/*
+          EL CREADOR NO PUBLICA: PIDE. La casilla es la misma y en el mismo
+          sitio, para que no haya dos maneras de hacer lo mismo; lo que cambia
+          es lo que significa marcarla. Las reglas de Firestore lo aseguran
+          además: aunque alguien tocara esto desde la consola, un creador no
+          puede cambiar `publicado`.
+        */}
+        {!publica && (
+          <div
+            style={css(
+              "display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:var(--r-sm);" +
+                "border:1px solid var(--border);background:color-mix(in srgb, var(--text) 3%, transparent);"
+            )}
+          >
+            <input
+              id="curso-revision"
+              type="checkbox"
+              checked={c.publicado || Boolean(c.revision)}
+              disabled={c.publicado}
+              onChange={(e) => cambia({ revision: e.target.checked })}
+              style={css("margin-top:3px;width:17px;height:17px;flex:none;cursor:pointer;")}
+            />
+            <label htmlFor="curso-revision" style={css("cursor:pointer;")}>
+              <span style={css("display:block;font-size:var(--t-body);font-weight:500;color:var(--text);")}>
+                {c.publicado ? "Publicado" : "Pedir que se publique"}
+              </span>
+              <span style={css(NOTA + "display:block;margin-top:3px;line-height:1.5;")}>
+                {c.publicado
+                  ? "Ya lo ven sus alumnos. Lo que cambies se ve en cuanto guardes."
+                  : c.revision
+                    ? "Iris lo revisa y lo publica. Puedes seguir cambiándolo mientras."
+                    : "Es un borrador: no lo ve nadie más que tú. Márcalo cuando esté listo y guarda."}
+              </span>
+            </label>
+          </div>
+        )}
+        {publica && (
         <div
           style={css(
             "display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:var(--r-sm);" +
@@ -306,7 +346,7 @@ export default function EditorCurso({
             id="curso-publicado"
             type="checkbox"
             checked={c.publicado}
-            onChange={(e) => cambia({ publicado: e.target.checked })}
+            onChange={(e) => cambia(e.target.checked ? { publicado: true, revision: false } : { publicado: false })}
             style={css("margin-top:3px;width:17px;height:17px;flex:none;cursor:pointer;")}
           />
           <label htmlFor="curso-publicado" style={css("cursor:pointer;")}>
@@ -316,10 +356,13 @@ export default function EditorCurso({
             <span style={css(NOTA + "display:block;margin-top:3px;line-height:1.5;")}>
               {c.publicado
                 ? "Lo ven las personas que han entrado en la escuela. Mientras no cobres por él, el acceso lo das tú desde Gestión."
-                : "Es un borrador: no lo ve nadie más que tú. Puedes dejarlo a medias y seguir otro día."}
+                : c.revision
+                  ? `${c.autorNombre || "Su creador"} pide que lo publiques. Míralo y, si está bien, márcalo y guarda.`
+                  : "Es un borrador: no lo ve nadie más que tú. Puedes dejarlo a medias y seguir otro día."}
             </span>
           </label>
         </div>
+        )}
       </section>
 
       {/* ------------------------------------------------------ el temario */}

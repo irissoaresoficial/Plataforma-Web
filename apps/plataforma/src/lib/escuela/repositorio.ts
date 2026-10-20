@@ -15,6 +15,8 @@ export interface RepoCursos {
   listar(): Promise<Curso[]>;
   /** Los publicados, para quien no es Iris. */
   publicados(): Promise<Curso[]>;
+  /** Los que monta un creador, publicados o no. */
+  deAutor(uid: string): Promise<Curso[]>;
   obtener(id: string): Promise<Curso | null>;
   guardar(c: Curso): Promise<Curso>;
   borrar(id: string): Promise<void>;
