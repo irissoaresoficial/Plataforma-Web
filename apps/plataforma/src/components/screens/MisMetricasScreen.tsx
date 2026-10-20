@@ -33,6 +33,7 @@ import {
   type Inscripcion,
 } from "@/lib/escuela";
 import { portadaDe } from "@/lib/escuela/portadas";
+import SecretariaIA from "../escuela/SecretariaIA";
 
 const DIA = 24 * 3600 * 1000;
 
@@ -205,6 +206,8 @@ export default function MisMetricasScreen() {
           </div>
         </>
       )}
+      {/* La empresa conectada, en cada pantalla del creador. */}
+      <SecretariaIA compacta />
     </div>
   );
 }

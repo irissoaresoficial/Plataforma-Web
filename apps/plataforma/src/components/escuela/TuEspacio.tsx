@@ -19,6 +19,7 @@ import { css } from "@/lib/css";
 import { useApp, type View } from "@/lib/app-context";
 import { TARJETA } from "@/lib/ui";
 import { IcoAgenda, IcoComunidad, IcoCursos, IcoMetricas } from "../Iconos";
+import SecretariaIA from "./SecretariaIA";
 
 type Ico = (p: { size?: number }) => React.JSX.Element;
 
@@ -62,38 +63,7 @@ export default function TuEspacio() {
       </ol>
 
       {/* ------------------------------------------ el agente, anunciado */}
-      <div
-        style={css(
-          "position:relative;overflow:hidden;border-radius:var(--r-tarjeta);padding:var(--pad-card);display:flex;gap:var(--gap-lg);align-items:center;flex-wrap:wrap;" +
-            "background:var(--bloque);color:var(--sobre-bloque);border:1px solid var(--bloque-borde);box-shadow:var(--shadow-lg);" +
-            "background-image:radial-gradient(520px 260px at 100% 0%,color-mix(in srgb, var(--oro) 35%, transparent),transparent 70%);"
-        )}
-      >
-        <div style={css("flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:10px;")}>
-          <span style={css("align-self:flex-start;font-size:var(--t-mini);font-weight:600;padding:4px 12px;border-radius:var(--r-pill);background:var(--oro-luz);color:var(--vino);")}>
-            ✦ Próximamente
-          </span>
-          <h3 style={css("margin:0;font-weight:300;font-size:clamp(28px,3vw,40px);letter-spacing:-.03em;line-height:1.1;")}>Tu secretaria con inteligencia artificial</h3>
-          <p style={css("margin:0;font-size:var(--t-body);line-height:1.6;color:var(--sobre-bloque-2);max-width:56ch;")}>
-            Un agente que conocerá tu negocio y te ayudará con tu agenda, tus citas y tus cobros. Para que tú te dediques a lo tuyo: tus clientes.
-          </p>
-        </div>
-        <ul style={css("list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;flex:0 1 260px;")}>
-          {[
-            ["Agenda", "Organiza tu semana y te avisa de lo que viene."],
-            ["Citas", "Reserva y confirma con tus clientes por ti."],
-            ["Pagos", "Cobra y lleva la cuenta de lo que entra."],
-          ].map(([q, d]) => (
-            <li key={q} style={css("display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-lg);background:var(--bloque-2);border:1px solid var(--bloque-borde);")}>
-              <span aria-hidden="true" style={css("color:var(--oro-luz);")}>✦</span>
-              <span>
-                <span style={css("display:block;font-size:var(--t-body);font-weight:500;")}>{q}</span>
-                <span style={css("display:block;font-size:var(--t-mini);color:var(--sobre-bloque-2);")}>{d}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <SecretariaIA />
     </section>
   );
 }

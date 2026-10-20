@@ -46,6 +46,7 @@ import {
   type Avance,
   type Curso,
 } from "@/lib/escuela";
+import SecretariaIA from "../escuela/SecretariaIA";
 
 
 type Donde =
@@ -406,6 +407,8 @@ export default function CursosScreen() {
           );
         })}
       </div>
+      {/* La empresa conectada, en cada pantalla del creador. */}
+      {puede("crear") && !puede("despacho") && <SecretariaIA compacta />}
     </div>
   );
 }
