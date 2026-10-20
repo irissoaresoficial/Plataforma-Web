@@ -111,17 +111,17 @@ function useDatos() {
 /* ------------------------------------------------------------- vocabulario */
 
 /** La pieza: blanca, canto blando, borde que se ve. */
-const PIEZA =
+export const PIEZA =
   "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);box-shadow:var(--nm-alto);padding:var(--pad-card-sm);min-width:0;display:flex;flex-direction:column;gap:var(--s3);";
 /** La pieza oscura. Una por pantalla: si hubiera dos, ninguna anclaría. */
-const PIEZA_OSCURA =
+export const PIEZA_OSCURA =
   "background:var(--bloque);border:1px solid var(--bloque-borde);border-radius:var(--r-tarjeta);box-shadow:var(--shadow-lg);padding:var(--pad-card-sm);min-width:0;display:flex;flex-direction:column;gap:var(--s3);color:var(--sobre-bloque);";
-const TITULO_PIEZA = "font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;line-height:1.15;color:var(--text);";
-const CIFRA = "font-weight:300;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;";
-const APOYO = "font-size:var(--t-mini);color:var(--text-3);line-height:1.4;";
+export const TITULO_PIEZA = "font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;line-height:1.15;color:var(--text);";
+export const CIFRA = "font-weight:300;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;";
+export const APOYO = "font-size:var(--t-mini);color:var(--text-3);line-height:1.4;";
 
 /** La flecha redonda de la esquina: «esto se abre». */
-function Abrir({ onClick, etiqueta, oscura }: { onClick: () => void; etiqueta: string; oscura?: boolean }) {
+export function Abrir({ onClick, etiqueta, oscura }: { onClick: () => void; etiqueta: string; oscura?: boolean }) {
   return (
     <button
       onClick={onClick}
@@ -143,7 +143,7 @@ function Abrir({ onClick, etiqueta, oscura }: { onClick: () => void; etiqueta: s
 
 const INICIALES = ["L", "M", "X", "J", "V", "S", "D"];
 
-function saludo(d: Date): string {
+export function saludo(d: Date): string {
   const h = d.getHours();
   if (h < 6) return "Buenas noches";
   if (h < 13) return "Buenos días";
@@ -152,7 +152,7 @@ function saludo(d: Date): string {
 }
 
 /** «1 h 30 min», «45 min», «6 h». */
-function tiempo(min: number): string {
+export function tiempo(min: number): string {
   const h = Math.floor(min / 60);
   const m = Math.round(min % 60);
   if (h && m) return `${h} h ${m} min`;
@@ -161,7 +161,7 @@ function tiempo(min: number): string {
 }
 
 /** La cifra grande, que tiene que caber en un renglón: «6,5 h», «45 min». */
-function horas(min: number): string {
+export function horas(min: number): string {
   if (min < 60) return `${min} min`;
   const h = Math.round((min / 60) * 10) / 10;
   return `${String(h).replace(".", ",")} h`;
@@ -364,7 +364,7 @@ function Retrato({ alPulsar }: { alPulsar: () => void }) {
 
 /* ================================================================== semana */
 
-function Semana({ semana, citas, hoy, abrir }: { semana: Date[]; citas: Cita[]; hoy: Date; abrir: () => void }) {
+export function Semana({ semana, citas, hoy, abrir }: { semana: Date[]; citas: Cita[]; hoy: Date; abrir: () => void }) {
   const minutosDia = semana.map((d) => {
     const k = claveDia(d);
     return citas.filter((c) => claveDia(new Date(c.inicioISO)) === k).reduce((s, c) => s + c.minutos, 0);
@@ -695,7 +695,7 @@ function Portada({ curso }: { curso: Curso }) {
 
 /* ============================================================ la semana, día a día */
 
-function AgendaSemana({
+export function AgendaSemana({
   semana,
   citas,
   hoy,

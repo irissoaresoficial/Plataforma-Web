@@ -43,6 +43,12 @@ let cache: { clave: string; cuando: number; valor: MisPuntos } | null = null;
 /** Olvida lo guardado: después de escribir algo, para que se vea al momento. */
 export function refrescaPuntos() {
   cache = null;
+  /* Y se avisa a la pastilla de la cabecera, para que cuente y celebre. */
+  try {
+    window.dispatchEvent(new Event("es33:puntos"));
+  } catch {
+    /* fuera del navegador no hay nadie a quien avisar */
+  }
 }
 
 export async function misPuntos(uid: string, foto: boolean, puede: (c: Capacidad) => boolean): Promise<MisPuntos> {

@@ -2056,3 +2056,61 @@ button:not(:disabled):active {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   LA SECRETARIA CON IA (components/escuela/SecretariaIA.tsx)
+
+   Texto a la izquierda y el diagrama a la derecha; en el móvil, uno encima
+   del otro. La luz corre por las líneas, el centro late y la pastilla de
+   «Próximamente» tiene un brillo que pasa. Con movimiento reducido, quieto.
+   --------------------------------------------------------------------------- */
+[data-ia] {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 480px);
+}
+@media (max-width: 900px) {
+  [data-ia] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+[data-ia-flujo] {
+  animation: ia-flujo 1.6s linear infinite;
+}
+[data-ia-halo] {
+  transform-origin: 240px 150px;
+  animation: ia-latido 2.8s ease-in-out infinite;
+}
+[data-ia-pronto] {
+  background: linear-gradient(110deg, var(--oro-luz) 0%, var(--oro-luz) 40%, var(--sobre-bloque) 50%, var(--oro-luz) 60%, var(--oro-luz) 100%);
+  background-size: 250% 100%;
+  animation: ia-brillo 3.2s ease-in-out infinite;
+}
+@keyframes ia-flujo {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+@keyframes ia-latido {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.25;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.5;
+  }
+}
+@keyframes ia-brillo {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-ia-flujo],
+  [data-ia-halo],
+  [data-ia-pronto] {
+    animation: none;
+  }
+}

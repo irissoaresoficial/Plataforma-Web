@@ -19,6 +19,7 @@ import { borraEvento, guardaEvento, misEventos, type Evento } from "@/lib/escuel
 import Banda from "../Banda";
 import { marcaAgendaVista } from "@/lib/escuela/puntos";
 import Confirmar from "../Confirmar";
+import SecretariaIA from "../escuela/SecretariaIA";
 
 const hoyClave = () => claveDia(new Date());
 
@@ -224,6 +225,8 @@ export default function MiAgendaScreen() {
           )}
         </aside>
       </div>
+      {/* La empresa conectada, en cada pantalla del creador. */}
+      <SecretariaIA compacta />
     </div>
   );
 }

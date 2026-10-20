@@ -52,6 +52,7 @@ import {
 } from "@/lib/escuela/comunidad";
 import { guardadoEnLaNube } from "@/lib/escuela";
 import { refrescaPuntos } from "@/lib/escuela/puntos";
+import SecretariaIA from "../escuela/SecretariaIA";
 
 /*
  * LA PRESENTACIÓN DE IRIS, mientras ella no fije la suya.
@@ -89,7 +90,7 @@ function cuando(iso: string): string {
 }
 
 export default function ComunidadScreen() {
-  const { usuario, esAdmin } = useSesion();
+  const { usuario, esAdmin, puede } = useSesion();
   const quieto = useReducedMotion();
 
   const [temas, setTemas] = useState<Tema[] | null>(null);
@@ -556,6 +557,8 @@ export default function ComunidadScreen() {
         </section>
       </aside>
       </div>
+      {/* La empresa conectada, en cada pantalla del creador. */}
+      {puede("crear") && !puede("despacho") && <SecretariaIA compacta />}
     </div>
   );
 }

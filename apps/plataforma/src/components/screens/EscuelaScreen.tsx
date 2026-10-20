@@ -48,6 +48,7 @@ import { IcoAgenda, IcoComunidad, IcoCursos, IcoMetricas, IcoTrofeos } from "../
 import PanelInicio from "../escuela/PanelInicio";
 import PrimerosPasos from "../escuela/PrimerosPasos";
 import TuEspacio from "../escuela/TuEspacio";
+import TableroPersona from "../escuela/TableroPersona";
 import {
   avance as repoAvance,
   cursos as repoCursos,
@@ -184,6 +185,24 @@ export default function EscuelaScreen() {
       </div>
     );
   }
+
+  /*
+   * EL MISMO TABLERO QUE IRIS, desde el 20 de octubre de 2026. Gerson:
+   * «¿por qué el dashboard de Iris es diferente? El de Iris es mejor». Lo de
+   * abajo —saludo, primeros pasos, puertas— se queda en el archivo por si
+   * hiciera falta volver, pero ya no se pinta: el tablero lo cuenta todo. Y
+   * al creador, debajo, su espacio paso a paso.
+   */
+  return (
+    <>
+      <TableroPersona />
+      {puede("crear") && (
+        <div style={css(PANTALLA + "padding-top:0;")}>
+          <TuEspacio />
+        </div>
+      )}
+    </>
+  );
 
   /* Un solo ancho y un solo arranque para todo lo de esta pantalla: es lo que
      hacía que los textos empezaran en tres verticales distintas. */
