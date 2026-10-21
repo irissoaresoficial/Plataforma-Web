@@ -177,6 +177,66 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
 
   return (
     <>
+      {/* ------------------------------------------------------------- el plan */}
+      {/* VA EL PRIMERO, Y ESO ES LA MITAD DE LO QUE HACE.
+          Un panel que empieza con «llevamos gastado 4,92 €» obliga a quien lo
+          abre a adivinar si eso es mucho o poco, pronto o tarde, bien o mal.
+          Empezando por «esta semana se recogen datos», el gasto que viene
+          debajo ya significa algo. */}
+      {t.plan && (
+        <section
+          style={css(
+            tarjeta +
+              "background:var(--bloque);color:var(--sobre-bloque);border-color:var(--bloque-borde);" +
+              "box-shadow:var(--shadow-lg);max-width:none;",
+          )}
+        >
+          <div style={css(NOTA + "color:var(--sobre-bloque-2);")}>El plan</div>
+          <h2
+            style={css(
+              "font-family:var(--font-display);font-size:clamp(22px,2.6vw,30px);font-weight:620;" +
+                "letter-spacing:-.022em;line-height:1.15;margin:8px 0 var(--s3);color:inherit;",
+            )}
+          >
+            {t.plan.fase}
+          </h2>
+
+          <div
+            style={css(
+              "display:grid;gap:var(--s4);grid-template-columns:repeat(auto-fit,minmax(260px,1fr));align-items:start;",
+            )}
+          >
+            <div>
+              <div style={css(NOTA + "color:var(--sobre-bloque-2);margin-bottom:6px;")}>Qué se hace estos días</div>
+              <p style={css("margin:0;font-size:var(--t-read);line-height:1.6;color:inherit;text-wrap:pretty;")}>
+                {t.plan.semana}
+              </p>
+            </div>
+            <div>
+              <div style={css(NOTA + "color:var(--sobre-bloque-2);margin-bottom:6px;")}>Qué toca después</div>
+              <p style={css("margin:0;font-size:var(--t-read);line-height:1.6;color:inherit;text-wrap:pretty;")}>
+                {t.plan.despues}
+              </p>
+            </div>
+          </div>
+
+          {t.plan.cincoDias && (
+            <p
+              style={css(
+                "margin:var(--s4) 0 0;padding-top:var(--s3);border-top:1px solid var(--bloque-borde);" +
+                  "font-size:var(--t-read);line-height:1.6;color:inherit;",
+              )}
+            >
+              En los próximos cinco días se esperan entre{" "}
+              <strong>
+                {miles(t.plan.cincoDias.min)} y {miles(t.plan.cincoDias.max)} personas apuntadas
+              </strong>
+              .
+            </p>
+          )}
+        </section>
+      )}
+
       <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(190px,1fr));")}>
         {cifra("Llevamos gastado", euros(t.gasto), `Desde el ${corto(t.desde)}`)}
         {cifra("Han hecho clic", miles(t.clics), `A ${euros(t.porClic)} cada clic`)}
