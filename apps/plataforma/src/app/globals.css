@@ -2208,3 +2208,29 @@ button:not(:disabled):active {
   }
 }
 
+
+/* ---------------------------------------------------------------------------
+   LA GUÍA DE PRIMEROS PASOS (components/escuela/GuiaPasos.tsx)
+
+   El halo dorado alrededor de lo que hay que pulsar: late despacio, como el
+   punto de una notificación de iPhone. Con movimiento reducido, quieto.
+   --------------------------------------------------------------------------- */
+html[data-guia="1"] body {
+  padding-bottom: 96px;
+}
+[data-guia-halo] {
+  animation: guia-late 1.8s ease-in-out infinite;
+}
+@keyframes guia-late {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--oro) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--oro) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-guia-halo] {
+    animation: none;
+  }
+}

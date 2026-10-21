@@ -50,6 +50,7 @@ export default function Cuenta() {
         aria-haspopup="menu"
         aria-expanded={abierto}
         aria-label={`Cuenta de ${usuario.email}`}
+        data-guia="foto"
         style={css(
           "width:38px;height:38px;display:grid;place-items:center;border-radius:50%;cursor:pointer;padding:0;" +
             "border:1px solid var(--border-strong);background:var(--surface);overflow:hidden;"

@@ -349,6 +349,7 @@ export default function Reproductor({
 
                 <div style={css("display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;margin-top:var(--s2);")}>
                   <button
+                    data-guia="leccion"
                     onClick={() => marca(leccion, !hechas.has(leccion.id))}
                     style={css(hechas.has(leccion.id) ? BOTON_NORMAL : botonPrincipal())}
                   >
