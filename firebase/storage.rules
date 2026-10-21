@@ -101,7 +101,8 @@ service firebase.storage {
      */
     function esAutor(cursoId) {
       return request.auth != null
-        && firestore.get(/databases/(default)/documents/cursos/$(cursoId)).data.get('autor', '') == request.auth.uid
+        && (firestore.get(/databases/(default)/documents/cursos/$(cursoId)).data.get('autor', '') == request.auth.uid
+            || request.auth.uid in firestore.get(/databases/(default)/documents/cursos/$(cursoId)).data.get('equipo', []))
         && firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.activo == true
         && 'creador' in firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.get('roles', []);
     }

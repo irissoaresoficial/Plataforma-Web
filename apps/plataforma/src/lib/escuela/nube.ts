@@ -26,6 +26,9 @@ import {
   query,
   setDoc,
   where,
+  writeBatch,
+  type Firestore,
+  type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { nube } from "@/lib/firebase";
 import type { Avance, Curso, Inscripcion } from "./tipos";
@@ -40,6 +43,43 @@ const baseOpcional = () => nube();
 
 function conId<T>(id: string, datos: unknown): T {
   return { ...(datos as object), id } as T;
+}
+
+/**
+ * LO QUE LLEVA UN CREADOR: lo que tiene a su nombre y lo de los cursos en
+ * cuyo equipo está. Son dos preguntas porque Firestore no junta «autor es X
+ * o X está en el equipo» en una; se juntan aquí, sin repetidos.
+ *
+ * Si la del equipo falla —las reglas nuevas todavía sin publicar— se queda
+ * con la del autor: lo que había antes sigue funcionando igual.
+ */
+async function suyos(b: Firestore, coleccion: string, uid: string): Promise<QueryDocumentSnapshot[]> {
+  const [delAutor, delEquipo] = await Promise.all([
+    getDocs(query(collection(b, coleccion), where("autor", "==", uid))),
+    getDocs(query(collection(b, coleccion), where("equipo", "array-contains", uid))).catch(() => null),
+  ]);
+  const vistos = new Map<string, QueryDocumentSnapshot>();
+  [...delAutor.docs, ...(delEquipo?.docs ?? [])].forEach((d) => vistos.set(d.id, d));
+  return [...vistos.values()];
+}
+
+/**
+ * IRIS CAMBIA QUIÉN LLEVA UN CURSO.
+ *
+ * El equipo va copiado en cada inscripción y en cada avance del curso —es lo
+ * que deja a cada uno ver las métricas—, así que al cambiarlo se cambia en
+ * todos a la vez. Sólo lo puede hacer Iris: las reglas no dejan a un creador
+ * tocar ni el equipo del curso ni nada de nadie.
+ */
+export async function cambiaEquipo(cursoId: string, equipo: string[], equipoNombres: Record<string, string>): Promise<void> {
+  const b = base();
+  const lote = writeBatch(b);
+  lote.set(doc(b, "cursos", cursoId), { equipo, equipoNombres }, { merge: true });
+  for (const col of ["inscripciones", "avance"]) {
+    const r = await getDocs(query(collection(b, col), where("cursoId", "==", cursoId)));
+    r.docs.forEach((d) => lote.set(d.ref, { equipo }, { merge: true }));
+  }
+  await lote.commit();
 }
 
 export const cursosNube: RepoCursos = {
@@ -72,8 +112,8 @@ export const cursosNube: RepoCursos = {
   async deAutor(uid) {
     const b = baseOpcional();
     if (!b) return [];
-    const r = await getDocs(query(collection(b, "cursos"), where("autor", "==", uid)));
-    return r.docs
+    const docs = await suyos(b, "cursos", uid);
+    return docs
       .map((d) => conId<Curso>(d.id, d.data()))
       .sort((a, b2) => b2.tocado.localeCompare(a.tocado));
   },
@@ -114,6 +154,7 @@ export const inscripcionesNube: RepoInscripciones = {
        mirando un campo del propio. */
     const curso = await getDoc(doc(base(), "cursos", cursoId));
     const autor = curso.exists() ? (curso.data().autor as string | undefined) : undefined;
+    const equipo = curso.exists() ? ((curso.data().equipo as string[] | undefined) ?? []) : [];
     const nueva: Inscripcion = {
       id: `${uid}__${cursoId}`,
       uid,
@@ -121,6 +162,7 @@ export const inscripcionesNube: RepoInscripciones = {
       desde: new Date().toISOString(),
       via,
       ...(autor ? { autor } : {}),
+      ...(equipo.length ? { equipo } : {}),
     };
     await setDoc(doc(base(), "inscripciones", nueva.id), nueva);
     return nueva;
@@ -131,8 +173,7 @@ export const inscripcionesNube: RepoInscripciones = {
   async deAutor(uid) {
     const b = baseOpcional();
     if (!b) return [];
-    const r = await getDocs(query(collection(b, "inscripciones"), where("autor", "==", uid)));
-    return r.docs.map((d) => conId<Inscripcion>(d.id, d.data()));
+    return (await suyos(b, "inscripciones", uid)).map((d) => conId<Inscripcion>(d.id, d.data()));
   },
 };
 
@@ -175,10 +216,9 @@ export const avanceNube: RepoAvance = {
   async deAutor(uid) {
     const b = baseOpcional();
     if (!b) return [];
-    const r = await getDocs(query(collection(b, "avance"), where("autor", "==", uid)));
-    return r.docs.map((d) => conId<Avance>(d.id, d.data()));
+    return (await suyos(b, "avance", uid)).map((d) => conId<Avance>(d.id, d.data()));
   },
-  async marcar(uid, cursoId, leccionId, hecha, autor) {
+  async marcar(uid, cursoId, leccionId, hecha, autor, equipo) {
     const b = base();
     const id = `${uid}__${cursoId}`;
     const referencia = doc(b, "avance", id);
@@ -191,6 +231,7 @@ export const avanceNube: RepoAvance = {
         hechas: hecha ? arrayUnion(leccionId) : arrayRemove(leccionId),
         tocado: new Date().toISOString(),
         ...(autor ? { autor } : {}),
+        ...(equipo && equipo.length ? { equipo } : {}),
       },
       { merge: true }
     );

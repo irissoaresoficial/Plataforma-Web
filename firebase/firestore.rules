@@ -325,18 +325,33 @@ service cloud.firestore {
      *   4. Borran sólo lo suyo y sólo en borrador. Un curso publicado tiene
      *      alumnos dentro, y borrarlo es de Iris.
      */
+    /*
+     * Y DESDE EL 21 DE OCTUBRE, EL EQUIPO. Un curso puede llevarlo más de un
+     * creador (Desórdenes Amorosos: Gerson y Marco, con Iris). Los del campo
+     * `equipo` leen y editan el curso como su autor, con los mismos candados,
+     * y uno más: nadie de fuera de Iris toca el equipo, ni para meterse ni
+     * para sacar a otro. Borrar sigue siendo sólo del autor.
+     */
+    function loLleva(datos) {
+      return datos.get('autor', '') == request.auth.uid
+        || request.auth.uid in datos.get('equipo', []);
+    }
+
     match /cursos/{id} {
       allow read: if esAdmin()
         || (dentro() && resource.data.publicado == true)
-        || (esCreador() && resource.data.autor == request.auth.uid);
+        || (esCreador() && loLleva(resource.data));
       allow create: if esAdmin()
         || (esCreador()
             && request.resource.data.get('autor', '') == request.auth.uid
-            && request.resource.data.publicado == false);
+            && request.resource.data.publicado == false
+            && request.resource.data.get('equipo', []).size() == 0);
       allow update: if esAdmin()
         || (esCreador()
-            && resource.data.get('autor', '') == request.auth.uid
-            && request.resource.data.get('autor', '') == request.auth.uid
+            && loLleva(resource.data)
+            && request.resource.data.get('autor', '') == resource.data.get('autor', '')
+            && request.resource.data.get('equipo', []) == resource.data.get('equipo', [])
+            && request.resource.data.get('equipoNombres', {}) == resource.data.get('equipoNombres', {})
             && request.resource.data.publicado == resource.data.publicado);
       allow delete: if esAdmin()
         || (esCreador()
@@ -365,7 +380,7 @@ service cloud.firestore {
          inscripción al darla, para poder preguntarlo así. */
       allow read: if esAdmin()
         || (dentro() && resource.data.uid == request.auth.uid)
-        || (esCreador() && resource.data.autor == request.auth.uid);
+        || (esCreador() && loLleva(resource.data));
       allow write: if esAdmin();
     }
 
@@ -418,7 +433,7 @@ service cloud.firestore {
         resource == null
           ? id.split('__')[0] == request.auth.uid
           : resource.data.uid == request.auth.uid
-      )) || (esCreador() && resource != null && resource.data.autor == request.auth.uid);
+      )) || (esCreador() && resource != null && loLleva(resource.data));
       /*
        * ESCRIBIR Y BORRAR SE DICEN APARTE, y no por gusto de partir reglas.
        *
@@ -432,7 +447,10 @@ service cloud.firestore {
        * artículo 17 del reglamento europeo), y con `write` a secas la baja
        * dejaba el avance dentro para siempre.
        */
-      allow create, update: if dentro() && request.resource.data.uid == request.auth.uid;
+      allow create: if dentro() && request.resource.data.uid == request.auth.uid;
+      /* Iris también cambia el avance de otros, y sólo para una cosa: copiar
+         en él el equipo del curso cuando lo cambia (ver `cambiaEquipo`). */
+      allow update: if esAdmin() || (dentro() && request.resource.data.uid == request.auth.uid);
       allow delete: if esAdmin() || (dentro() && resource.data.uid == request.auth.uid);
     }
 

@@ -46,6 +46,7 @@ import {
   type Avance,
   type Curso,
 } from "@/lib/escuela";
+import { loLleva } from "@/lib/escuela/tipos";
 import SecretariaIA from "../escuela/SecretariaIA";
 
 
@@ -60,7 +61,7 @@ export default function CursosScreen() {
   /* Quien monta cursos sin ser Iris. Ve los suyos —en borrador también— y los
      que haya comprado, y edita sólo los suyos. */
   const creador = !esAdmin && puede("crear");
-  const esMio = (c: Curso) => esAdmin || (creador && c.autor === uid);
+  const esMio = (c: Curso) => esAdmin || (creador && loLleva(c, uid));
   const [donde, setDonde] = useState<Donde>({ que: "lista" });
   const [lista, setLista] = useState<Curso[] | null>(null);
   const [avances, setAvances] = useState<Record<string, Avance | null>>({});
