@@ -43,7 +43,7 @@ export interface RepoAvance {
    * preguntar habría un parpadeo entre el clic y la barra moviéndose. Lo que
    * hace que esto se sienta bien es que la barra se mueva EN EL MOMENTO.
    */
-  marcar(uid: string, cursoId: string, leccionId: string, hecha: boolean, autor?: string): Promise<Avance>;
+  marcar(uid: string, cursoId: string, leccionId: string, hecha: boolean, autor?: string, equipo?: string[]): Promise<Avance>;
   /** Los avances en los cursos de un creador. Para sus métricas. */
   deAutor(uid: string): Promise<Avance[]>;
 }

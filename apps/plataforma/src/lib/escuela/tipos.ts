@@ -156,6 +156,18 @@ export type Curso = {
    *  sin ir a buscarlo. */
   autorNombre?: string;
   /**
+   * EL EQUIPO: otros creadores que llevan el curso a la vez que su autor.
+   *
+   * Gerson, el 21 de octubre de 2026: Marco y él llevan Desórdenes Amorosos
+   * junto a Iris, «deben compartir métricas». Los del equipo lo editan y ven
+   * sus métricas igual que el autor; no lo publican ni lo borran, y no se
+   * añaden a sí mismos: el equipo sólo lo toca Iris. Van los `uid`, que es lo
+   * que miran las reglas, y al lado sus nombres para pintarlos sin tener que
+   * leer fichas que un creador no puede leer.
+   */
+  equipo?: string[];
+  equipoNombres?: Record<string, string>;
+  /**
    * EL CREADOR PIDE QUE SE PUBLIQUE. Un creador no publica: marca esto, e Iris
    * lo ve en su lista con la etiqueta «Pide publicar» y decide. Al publicarlo
    * ella, se apaga.
@@ -197,6 +209,8 @@ export type Inscripcion = {
   /** El creador del curso, copiado al dar el acceso: es lo que le deja ver
    *  quién tiene su curso sin ver lo de nadie más. Vacío en cursos de Iris. */
   autor?: string;
+  /** El equipo del curso, copiado por lo mismo. */
+  equipo?: string[];
 };
 
 /** Por dónde va una persona en un curso. */
@@ -211,7 +225,13 @@ export type Avance = {
   /** El creador del curso, por lo mismo que en la inscripción: así puede ver
    *  cómo avanza su gente. */
   autor?: string;
+  equipo?: string[];
 };
+
+/** Si quien mira lleva el curso: es su autor o está en su equipo. */
+export function loLleva(c: Pick<Curso, "autor" | "equipo">, uid: string): boolean {
+  return Boolean(uid) && (c.autor === uid || (c.equipo ?? []).includes(uid));
+}
 
 /* ------------------------------------------------------------------ cuentas */
 

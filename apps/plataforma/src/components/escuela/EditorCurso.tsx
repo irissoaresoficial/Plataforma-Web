@@ -50,6 +50,9 @@ import SubirVideo from "./SubirVideo";
 import Recursos from "./Recursos";
 import { portadaDe } from "@/lib/escuela/portadas";
 import { cursos as repo, nuevoId, totalLecciones, type Curso, type Leccion, type Modulo } from "@/lib/escuela";
+import { cambiaEquipo } from "@/lib/escuela/nube";
+import { useSesion } from "@/lib/sesion";
+import { listaUsuarios, type FichaUsuario } from "@/lib/despacho/usuarios";
 
 /** Un curso recién nacido: en borrador y sin nada dentro. */
 export function cursoNuevo(): Curso {
@@ -654,9 +657,130 @@ export default function EditorCurso({
               </label>
             </div>
             )}
+            <Equipo
+              curso={c}
+              decide={publica}
+              alCambiar={(equipo, equipoNombres) => {
+                const nuevo = { ...c, equipo, equipoNombres };
+                setC(nuevo);
+                alGuardar(nuevo);
+              }}
+            />
           </section>
         </aside>
       </div>
+    </div>
+  );
+}
+
+/**
+ * QUIÉN LLEVA EL CURSO.
+ *
+ * Gerson, el 21 de octubre de 2026: Marco y él llevan Desórdenes Amorosos con
+ * Iris y «deben compartir métricas». Iris marca aquí a los creadores que lo
+ * llevan; se guarda en el momento —no espera al botón de guardar— porque
+ * además de en el curso se copia en cada inscripción y avance, que es lo que
+ * les deja ver las métricas. Un creador sólo ve con quién lo lleva.
+ */
+function Equipo({
+  curso,
+  decide,
+  alCambiar,
+}: {
+  curso: Curso;
+  decide: boolean;
+  alCambiar: (equipo: string[], nombres: Record<string, string>) => void;
+}) {
+  const { usuario } = useSesion();
+  const yo = usuario ? usuario.uid : "";
+  const [creadores, setCreadores] = useState<FichaUsuario[] | null>(null);
+  const [guardando, setGuardando] = useState("");
+  const [fallo, setFallo] = useState("");
+  const equipo = curso.equipo ?? [];
+  const nombres = curso.equipoNombres ?? {};
+
+  useEffect(() => {
+    if (!decide) return;
+    listaUsuarios()
+      .then((xs) => setCreadores(xs.filter((f) => f.activo && (f.roles ?? []).includes("creador") && f.uid !== curso.autor)))
+      .catch(() => setCreadores([]));
+  }, [decide, curso.autor]);
+
+  async function cambia(f: FichaUsuario) {
+    const dentro = equipo.includes(f.uid);
+    const nuevo = dentro ? equipo.filter((u) => u !== f.uid) : [...equipo, f.uid];
+    const nuevosNombres = { ...nombres };
+    if (dentro) delete nuevosNombres[f.uid];
+    else nuevosNombres[f.uid] = f.nombre || f.email;
+    setGuardando(f.uid);
+    setFallo("");
+    try {
+      await cambiaEquipo(curso.id, nuevo, nuevosNombres);
+      alCambiar(nuevo, nuevosNombres);
+    } catch (e) {
+      setFallo(e instanceof Error ? e.message : "No se ha podido guardar el equipo.");
+    } finally {
+      setGuardando("");
+    }
+  }
+
+  const caja =
+    "display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:var(--r-sm);" +
+    "border:1px solid var(--border);background:color-mix(in srgb, var(--text) 3%, transparent);";
+
+  if (!decide) {
+    const otros = [
+      ...(curso.autor && curso.autor !== yo ? [curso.autorNombre] : []),
+      ...equipo.filter((u) => u !== yo).map((u) => nombres[u]),
+    ].filter(Boolean);
+    if (!equipo.length) return null;
+    return (
+      <div style={css(caja)}>
+        <span style={css("font-size:var(--t-body);font-weight:500;color:var(--text);")}>Quién lo lleva</span>
+        <span style={css(NOTA + "line-height:1.5;")}>
+          Lo llevas con Iris{otros.length ? ` y ${otros.join(", ")}` : ""}. Todos lo editáis y veis las mismas métricas.
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={css(caja)}>
+      <span style={css("font-size:var(--t-body);font-weight:500;color:var(--text);")}>Quién lo lleva contigo</span>
+      <span style={css(NOTA + "line-height:1.5;")}>
+        Los creadores que marques lo editan y ven sus métricas. No lo publican ni lo borran: eso sigue siendo tuyo.
+        {curso.autorNombre ? ` Lo creó ${curso.autorNombre}.` : ""}
+      </span>
+      {creadores === null ? (
+        <span style={css(NOTA)}>Cargando creadores…</span>
+      ) : creadores.length === 0 ? (
+        <span style={css(NOTA)}>Todavía no hay más creadores. Se dan de alta en Altas y accesos.</span>
+      ) : (
+        <div style={css("display:flex;gap:7px;flex-wrap:wrap;")}>
+          {creadores.map((f) => {
+            const si = equipo.includes(f.uid);
+            return (
+              <button
+                key={f.uid}
+                onClick={() => void cambia(f)}
+                disabled={Boolean(guardando)}
+                aria-pressed={si}
+                style={css(
+                  "font:inherit;font-size:var(--t-mini);font-weight:500;padding:7px 13px;border-radius:var(--r-pill);cursor:pointer;" +
+                    (si
+                      ? "background:var(--accion);color:var(--sobre-bloque);border:1px solid var(--accion);"
+                      : "background:transparent;color:var(--text-2);border:1px solid var(--border);") +
+                    (guardando === f.uid ? "opacity:.6;" : "")
+                )}
+              >
+                {si ? "✓ " : "+ "}
+                {f.nombre || f.email}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {fallo && <span role="alert" style={css("font-size:var(--t-mini);color:var(--red);")}>{fallo}</span>}
     </div>
   );
 }

@@ -10,7 +10,7 @@
  * guarda nada.
  */
 
-import type { Avance, Curso, Inscripcion } from "./tipos";
+import { loLleva, type Avance, type Curso, type Inscripcion } from "./tipos";
 import type { RepoAvance, RepoCursos, RepoInscripciones } from "./repositorio";
 
 const LS_CURSOS = "es33.cursos.v1";
@@ -51,7 +51,7 @@ export const cursosLocal: RepoCursos = {
     return lee<Curso>(LS_CURSOS).sort((a, b) => b.tocado.localeCompare(a.tocado));
   },
   async deAutor(uid) {
-    return (await this.listar()).filter((c) => c.autor === uid);
+    return (await this.listar()).filter((c) => loLleva(c, uid));
   },
   async publicados() {
     return (await this.listar()).filter((c) => c.publicado);
@@ -93,7 +93,7 @@ export const inscripcionesLocal: RepoInscripciones = {
     return nueva;
   },
   async deAutor(uid) {
-    const mios = new Set((lee<Curso>(LS_CURSOS)).filter((c) => c.autor === uid).map((c) => c.id));
+    const mios = new Set((lee<Curso>(LS_CURSOS)).filter((c) => loLleva(c, uid)).map((c) => c.id));
     return lee<Inscripcion>(LS_INSCRIPCIONES).filter((x) => mios.has(x.cursoId));
   },
   async quitar(uid, cursoId) {
@@ -109,7 +109,7 @@ export const avanceLocal: RepoAvance = {
     return lee<Avance>(LS_AVANCE).find((x) => x.id === `${uid}__${cursoId}`) ?? null;
   },
   async deAutor(uid) {
-    const mios = new Set((lee<Curso>(LS_CURSOS)).filter((c) => c.autor === uid).map((c) => c.id));
+    const mios = new Set((lee<Curso>(LS_CURSOS)).filter((c) => loLleva(c, uid)).map((c) => c.id));
     return lee<Avance>(LS_AVANCE).filter((x) => mios.has(x.cursoId));
   },
   async marcar(uid, cursoId, leccionId, hecha) {

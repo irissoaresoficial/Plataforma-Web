@@ -47,7 +47,7 @@ import { cambiaUsuario, listaUsuarios, type FichaUsuario } from "@/lib/despacho/
 import { cursos as repoCursos, inscripciones as repoInscripciones, type Curso, type Inscripcion } from "@/lib/escuela";
 import { bajasPendientes, cierraBaja, type Baja } from "@/lib/escuela/micuenta";
 import Confirmar from "@/components/Confirmar";
-import { borraDelTodo, daDeAlta } from "@/lib/despacho/altas";
+import { borraDelTodo, daDeAlta, pruebaDeBienvenida } from "@/lib/despacho/altas";
 import { guardadoEnLaNube } from "@/lib/escuela";
 
 /** Qué abre cada llave, dicho para quien la da. */
@@ -88,6 +88,7 @@ export default function GestionScreen() {
   const [altaRoles, setAltaRoles] = useState<Rol[]>(["alumno"]);
   const [altaCursos, setAltaCursos] = useState<string[]>([]);
   const [dando, setDando] = useState(false);
+  const [probando, setProbando] = useState(false);
   const [altaHecha, setAltaHecha] = useState("");
 
   const carga = useCallback(async () => {
@@ -184,11 +185,16 @@ export default function GestionScreen() {
     setAltaHecha("");
     setDando(true);
     try {
-      const uid = await daDeAlta({ nombre: altaNombre, email: altaCorreo, roles: altaRoles });
+      const { uid, correo, porQue } = await daDeAlta({ nombre: altaNombre, email: altaCorreo, roles: altaRoles });
       /* Los cursos marcados, a la vez: dar de alta a una alumna sin su curso
          es dejarla entrar a una pantalla vacía. */
       await Promise.all(altaCursos.map((c) => repoInscripciones.dar(uid, c, "mano")));
-      setAltaHecha(`Hecho. A ${altaCorreo.trim()} le llega ahora un correo para poner su contraseña.`);
+      if (correo === "casa") {
+        setAltaHecha(`Hecho. A ${altaCorreo.trim()} le llega ahora la bienvenida de la escuela para poner su contraseña.`);
+      } else {
+        setAltaHecha(`Cuenta creada. Le ha llegado el correo de Firebase de serie, no el de la escuela.`);
+        setFallo(`Por qué no ha salido el de la escuela: ${porQue}`);
+      }
       setAltaNombre("");
       setAltaCorreo("");
       setAltaCursos([]);
@@ -197,6 +203,19 @@ export default function GestionScreen() {
       setFallo(e instanceof Error ? e.message : "No se ha podido dar de alta.");
     } finally {
       setDando(false);
+    }
+  }
+
+  async function prueba() {
+    setFallo("");
+    setAltaHecha("");
+    setProbando(true);
+    try {
+      const r = await pruebaDeBienvenida();
+      if (r.ok) setAltaHecha(`Prueba mandada${r.a ? ` a ${r.a}` : ""}. Mírala en tu correo: es la que recibirá la gente.`);
+      else setFallo(`La bienvenida de la escuela no sale. ${r.porQue}`);
+    } finally {
+      setProbando(false);
     }
   }
 
@@ -401,6 +420,14 @@ export default function GestionScreen() {
             style={css(botonPrincipal(!dando && Boolean(altaNombre.trim() && altaCorreo.trim()) && guardadoEnLaNube))}
           >
             {dando ? "Dando de alta…" : "Dar de alta"}
+          </button>
+          <button
+            onClick={() => void prueba()}
+            disabled={probando || !guardadoEnLaNube}
+            title="Te manda a ti la bienvenida, sin crear a nadie"
+            style={css(BOTON_PLANO)}
+          >
+            {probando ? "Mandando…" : "Mandarme una prueba del correo"}
           </button>
           {!guardadoEnLaNube && <span style={css(NOTA)}>Sin Firebase conectado no se pueden crear cuentas.</span>}
           {altaHecha && (
