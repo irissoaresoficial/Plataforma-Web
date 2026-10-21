@@ -13,6 +13,9 @@
  * terapeutas: un solo lugar para crecer y expandir tu conocimiento y empresa».
  * Y lo de «secretaria», fuera: no es innovador.
  *
+ * Y DESPUÉS: «habla como si Iris lo escribiera». Va en primera persona y
+ * firmado por ella.
+ *
  * LO QUE SE DICE DE IRIS ES LO QUE ELLA DICE DE SÍ MISMA en la web —terapeuta
  * psicosomática clínica, numeróloga transgeneracional, consulta desde 2010—.
  * Nada de cifras de alumnos ni frases que no haya dicho.
@@ -23,9 +26,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 
 const QUE_HACEMOS: Array<[string, string, string]> = [
-  ["✦", "Aprendemos", "De quien ya ha recorrido el camino, con cursos pensados para la consulta real."],
-  ["◎", "Aportamos", "Lo que sabe cada uno vale. Aquí se comparte en la comunidad y en sus propios cursos."],
-  ["❋", "Nos ayudamos", "Una duda, un caso difícil, un mal día. Aquí hay alguien que lo entiende."],
+  ["✦", "Aprendemos", "Cursos pensados para la consulta de verdad, de quien ya ha recorrido el camino."],
+  ["◎", "Aportamos", "Lo que tú sabes vale. Compártelo en la comunidad o en tus propios cursos."],
+  ["❋", "Nos ayudamos", "Una duda, un caso difícil, un mal día. Aquí siempre habrá alguien que lo entienda."],
 ];
 
 export default function AcercaDe({ compacta = false }: { compacta?: boolean }) {
@@ -141,10 +144,10 @@ export default function AcercaDe({ compacta = false }: { compacta?: boolean }) {
 
                   <div style={css("padding:28px 30px 30px;display:flex;flex-direction:column;gap:24px;")}>
                     <section style={css("display:flex;flex-direction:column;gap:10px;")}>
-                      <h3 style={css("margin:0;font-size:var(--t-mini);font-weight:500;color:var(--gold);")}>Por qué existe</h3>
+                      <h3 style={css("margin:0;font-size:var(--t-mini);font-weight:500;color:var(--gold);")}>Por qué he creado este lugar</h3>
                       <p style={css("margin:0;font-size:var(--t-read);line-height:1.6;")}>
-                        Ser terapeuta suele ser un trabajo solitario. Se aprende solo, se trabaja solo y se crece solo. Esta escuela nace para
-                        que no sea así.
+                        Llevo en consulta desde 2010, y ser terapeuta puede ser muy solitario: se aprende a solas, se trabaja a solas y se
+                        crece a solas. He creado esta escuela para que no tenga que ser así.
                       </p>
                       {/* Iris, en pequeño y redonda: quien está detrás, sin hacer de esto un anuncio. */}
                       <div style={css("display:flex;gap:14px;align-items:center;margin-top:6px;")}>
@@ -157,14 +160,14 @@ export default function AcercaDe({ compacta = false }: { compacta?: boolean }) {
                           style={css("flex:none;width:60px;height:60px;border-radius:50%;object-fit:cover;object-position:50% 22%;box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--oro);")}
                         />
                         <p style={css("margin:0;font-size:var(--t-body);line-height:1.55;color:var(--text-3);")}>
-                          <strong style={css("font-weight:500;color:var(--text);")}>Iris Soares</strong>, terapeuta psicosomática clínica y
-                          numeróloga transgeneracional, con consulta desde 2010. Lo que quiere es sencillo: ayudar a las personas que ayudan a otras.
+                          Soy <strong style={css("font-weight:500;color:var(--text);")}>Iris Soares</strong>, terapeuta psicosomática clínica y
+                          numeróloga transgeneracional. Lo que quiero es sencillo: ayudar a las personas que ayudan a otras.
                         </p>
                       </div>
                     </section>
 
                     <section style={css("display:grid;gap:10px;")}>
-                      <h3 style={css("margin:0;font-size:var(--t-mini);font-weight:500;color:var(--gold);")}>Lo que hacemos aquí</h3>
+                      <h3 style={css("margin:0;font-size:var(--t-mini);font-weight:500;color:var(--gold);")}>Lo que quiero que encuentres aquí</h3>
                       {QUE_HACEMOS.map(([ico, que, como]) => (
                         <div
                           key={que}
@@ -210,10 +213,18 @@ export default function AcercaDe({ compacta = false }: { compacta?: boolean }) {
                         Un asistente inteligente para terapeutas
                       </h3>
                       <p style={css("position:relative;z-index:1;margin:0;font-size:var(--t-body);line-height:1.6;color:var(--sobre-bloque-2);")}>
-                        Pensado para nuestra profesión, no adaptado de otra. Te ayudará a organizar tu consulta, a preparar lo que enseñas y a
-                        entender cómo crece tu trabajo. Un solo lugar para crecer y expandir tu conocimiento y tu empresa.
+                        Lo estamos preparando pensando en nuestra profesión, no adaptado de otra. Te ayudará a organizar tu consulta, a
+                        preparar lo que enseñas y a entender cómo crece tu trabajo. Un solo lugar para crecer y expandir tu conocimiento y tu
+                        empresa.
                       </p>
                     </section>
+
+                    {/* La firma: lo escribe ella. */}
+                    <p style={css("margin:0;font-size:var(--t-read);line-height:1.5;")}>
+                      Gracias por estar aquí.
+                      <br />
+                      <span style={css("color:var(--gold);font-weight:500;")}>Iris</span>
+                    </p>
 
                     <button
                       onClick={() => setAbierta(false)}
