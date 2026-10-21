@@ -1,4 +1,5 @@
 "use client";
+import AcercaDe from "./AcercaDe";
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
@@ -559,7 +560,7 @@ export default function Sidebar() {
           (lateral ? "238px" : "62px") +
           /* Cristal, igual que la cabecera: es la otra pieza que se queda quieta
              mientras el contenido pasa por detrás. */
-          ";height:calc(100vh - 63px);overflow-y:auto;overflow-x:hidden;padding:14px 12px 28px;background:var(--vidrio);backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);border-right:1px solid var(--border);transition:width var(--t-lento) var(--curva);"
+          ";height:calc(100vh - 63px);overflow-y:auto;overflow-x:hidden;padding:14px 12px 16px;display:flex;flex-direction:column;background:var(--vidrio);backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);border-right:1px solid var(--border);transition:width var(--t-lento) var(--curva);"
       )}
     >
       <button
@@ -576,6 +577,12 @@ export default function Sidebar() {
         {lateral && "Plegar"}
       </button>
       <NavDisciplinas compacta={!lateral} />
+      {/* Abajo del todo: los primeros pasos (los pinta `escuela/GuiaPasos.tsx`
+          aquí dentro, en `data-guia-ancla`) y «Acerca de esto». */}
+      <div style={css("margin-top:auto;padding-top:var(--s4);display:flex;flex-direction:column;gap:6px;")}>
+        <div data-guia-ancla="" />
+        <AcercaDe compacta={!lateral} />
+      </div>
     </aside>
   );
 }
