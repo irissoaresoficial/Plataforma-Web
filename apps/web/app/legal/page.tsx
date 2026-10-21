@@ -15,7 +15,7 @@ import PaginaTexto from '@/components/PaginaTexto';
  * pantalla, y lo que ya se ve al cargar no entra — ya ha entrado.
  */
 import Aparece from '@/components/Aparece';
-import { CONTACTO, TITULAR } from '@/content/site';
+import { CONTACTO, TITULAR, falta } from '@/content/site';
 import { Texto } from '@/components/Pendiente';
 
 export const metadata = {
@@ -43,7 +43,7 @@ export default function Legal() {
     <PaginaTexto
       titulo="Aviso legal"
       entradilla="Quién está detrás de esta web, qué se ofrece en ella y con qué reglas. Sin letra pequeña."
-      actualizado="18 de octubre de 2026"
+      actualizado="21 de octubre de 2026"
     >
       <Aparece>
         <h2>Quién es responsable de esta web</h2>
@@ -53,9 +53,11 @@ export default function Legal() {
         <li>
           <strong>Titular:</strong> <Texto valor={TITULAR.nombre} />
         </li>
-        <li>
-          <strong>NIF:</strong> <Texto valor={TITULAR.nif} />
-        </li>
+        {!falta(TITULAR.nif) && (
+          <li>
+            <strong>NIF:</strong> {TITULAR.nif}
+          </li>
+        )}
         <li>
           <strong>Dirección:</strong> <Texto valor={TITULAR.direccion} />
         </li>
