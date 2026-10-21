@@ -9,8 +9,7 @@ import PaginaTexto from '@/components/PaginaTexto';
  * quita el estilo a nada.
  */
 import Aparece from '@/components/Aparece';
-import { CONTACTO, TITULAR } from '@/content/site';
-import { Texto } from '@/components/Pendiente';
+import { CONTACTO, TITULAR, falta } from '@/content/site';
 
 export const metadata = {
   title: 'Tus datos · Iris Soares',
@@ -37,15 +36,16 @@ export default function Privacidad() {
     <PaginaTexto
       titulo="Qué hacemos con tus datos"
       entradilla="En claro y sin rodeos: qué se te pide, para qué, quién más lo ve, cuánto tiempo se guarda y cómo pedir que se borre."
-      actualizado="19 de octubre de 2026"
+      actualizado="21 de octubre de 2026"
     >
       <Aparece>
         <h2>Quién responde de tus datos</h2>
       </Aparece>
       <Aparece retraso={1}>
       <p>
-        <Texto valor={TITULAR.nombre} />, NIF <Texto valor={TITULAR.nif} />. Puedes escribir
-        a {CONTACTO.email} para cualquier cosa de esta página.
+        {TITULAR.nombre}
+        {!falta(TITULAR.nif) && <>, NIF {TITULAR.nif}</>}, con domicilio en {TITULAR.direccion}. Puedes escribir a{' '}
+        {CONTACTO.email} para cualquier cosa de esta página.
       </p>
 
       </Aparece>
