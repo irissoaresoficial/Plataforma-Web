@@ -163,9 +163,16 @@ gtag('js',new Date());gtag('config','${GOOGLE}');`}
           está el botón del chat y encima de él salen los susurros. */}
       {leido && decision === null && (
         <div className="cookies" role="dialog" aria-label="Uso de cookies de medición">
+          {/* CORTO A PROPÓSITO, Y SIGUE DICIENDO LO QUE TIENE QUE DECIR.
+              Antes eran cuatro líneas en un móvil y el cartel se comía el
+              tercio de abajo de la pantalla, justo encima del formulario de
+              la masterclass. La ley pide que se entienda PARA QUÉ son y que
+              haya un sitio donde leer el detalle; no pide un párrafo. El
+              para qué está en la primera frase, el detalle está en el
+              enlace, y las dos respuestas siguen pesando lo mismo. */}
           <p className="cookies-txt">
-            Usamos cookies para saber qué anuncios traen gente y cuáles no. Nada más: ni se te perfila, ni se comparte
-            quién eres. <Link href="/privacidad">Cómo tratamos tus datos</Link>.
+            Cookies sólo para saber qué anuncios funcionan. No se te perfila.{' '}
+            <Link href="/privacidad">Cómo tratamos tus datos</Link>.
           </p>
           <div className="cookies-botones">
             {/* Los dos botones iguales de tamaño y de peso, y el «no» primero.

@@ -5708,6 +5708,25 @@ body[data-nav-claro='si'] .sello-color {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
+/* EN EL MÓVIL, LO MÁS BAJO POSIBLE. Medido: en una pantalla de 430 x 932 este
+   cartel ocupaba 230 px —el tercio de abajo— y caía justo encima del
+   formulario de la masterclass, que es la única pieza de la web que tiene que
+   verse. Con el texto más corto y menos aire baja a poco más de la mitad.
+   No se le quita ningún botón ni se esconde: sigue tapando algo, porque un
+   aviso que no se ve no es un aviso. Pero tapa la mitad. */
+@media (max-width: 640px) {
+  .cookies {
+    gap: 10px;
+    padding: 13px 15px;
+    border-radius: 15px;
+  }
+  .cookies-txt {
+    line-height: 1.45;
+  }
+  .cookies-botones button {
+    padding: 9px 12px;
+  }
+}
 .cookies-txt {
   margin: 0;
   font-size: var(--t-nota);
