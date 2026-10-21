@@ -55,7 +55,34 @@ import { recuerdaCampana } from '@/lib/campana';
 
 const LLAVE = 'es33-medicion';
 
-const META = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+/**
+ * EL NÚMERO DEL PÍXEL VA ESCRITO AQUÍ, Y NO ES UN DESCUIDO.
+ *
+ * Estaba sólo en una variable de Vercel, y eso ya salió caro una vez: las
+ * variables `NEXT_PUBLIC_` se cuecen dentro del código AL COMPILAR, así que
+ * ponerla en el panel no basta —hay que volver a desplegar— y si alguien se
+ * salta ese segundo paso, el píxel no carga y nadie se entera. La web sigue
+ * funcionando igual de bien y los anuncios gastan a ciegas. Pasó, y se
+ * tardaron días en verlo.
+ *
+ * UN NÚMERO DE PÍXEL NO ES UN SECRETO: va dentro de la página, a la vista de
+ * cualquiera que mire el código fuente. No hay nada que proteger. Así que vive
+ * en el repositorio, como el resto de la configuración que no es secreta:
+ * queda en el historial, se revisa en un cambio, y no depende de que alguien
+ * se acuerde de tocar un panel.
+ *
+ * LA VARIABLE SIGUE MANDANDO SI EXISTE. Es la escotilla para probar con otro
+ * píxel sin tocar el código. Pero si contiene un número VIEJO, gana ella y el
+ * de aquí abajo no se usa: por eso, al cambiar de píxel, hay que borrar la
+ * variable de Vercel o actualizarla.
+ *
+ * 1146543124979316 es el píxel de la cuenta publicitaria 289692277, que es la
+ * que paga los anuncios. El anterior (1114301841361501) vivía en otro
+ * portafolio al que esa cuenta no llega, y por eso no se podía optimizar a
+ * registros ni construir públicos: Meta medía, pero la cuenta no podía leer
+ * lo medido.
+ */
+const META = process.env.NEXT_PUBLIC_META_PIXEL_ID || '1146543124979316';
 const GOOGLE = process.env.NEXT_PUBLIC_GOOGLE_TAG_ID;
 
 export default function Medicion() {
@@ -136,9 +163,16 @@ gtag('js',new Date());gtag('config','${GOOGLE}');`}
           está el botón del chat y encima de él salen los susurros. */}
       {leido && decision === null && (
         <div className="cookies" role="dialog" aria-label="Uso de cookies de medición">
+          {/* CORTO A PROPÓSITO, Y SIGUE DICIENDO LO QUE TIENE QUE DECIR.
+              Antes eran cuatro líneas en un móvil y el cartel se comía el
+              tercio de abajo de la pantalla, justo encima del formulario de
+              la masterclass. La ley pide que se entienda PARA QUÉ son y que
+              haya un sitio donde leer el detalle; no pide un párrafo. El
+              para qué está en la primera frase, el detalle está en el
+              enlace, y las dos respuestas siguen pesando lo mismo. */}
           <p className="cookies-txt">
-            Usamos cookies para saber qué anuncios traen gente y cuáles no. Nada más: ni se te perfila, ni se comparte
-            quién eres. <Link href="/privacidad">Cómo tratamos tus datos</Link>.
+            Cookies sólo para saber qué anuncios funcionan. No se te perfila.{' '}
+            <Link href="/privacidad">Cómo tratamos tus datos</Link>.
           </p>
           <div className="cookies-botones">
             {/* Los dos botones iguales de tamaño y de peso, y el «no» primero.

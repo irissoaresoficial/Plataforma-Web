@@ -1361,6 +1361,37 @@ html[data-portada='si'] #chat-launcher {
   max-width: 460px;
   margin: 0 auto;
 }
+
+/*
+ * EN EL MÓVIL EL FORMULARIO VA ANTES QUE EL VÍDEO. MEDIDO, NO OPINADO.
+ *
+ * En escritorio esto no es problema: vídeo y formulario van uno al lado del
+ * otro y los dos se ven de entrada. En el móvil la rejilla se apila, y el
+ * orden del código ponía el formulario DEBAJO de las fotos de Marco e Iris y
+ * del vídeo. Resultado medido en una pantalla de 430 x 932, que es un móvil
+ * normal: el botón «Quiero mi plaza» empezaba en el píxel 1253. O sea, a una
+ * pantalla y media de distancia, invisible hasta que alguien se molesta en
+ * bajar.
+ *
+ * Y quien llega de un anuncio no se molesta. Ha dado un toque con el pulgar,
+ * ve algo que no le pide nada, y vuelve a lo que estaba haciendo. 163 clics
+ * sin un solo registro en el primer día de campaña, y este era el motivo más
+ * probable.
+ *
+ * El vídeo no se quita ni se esconde: baja. Quien quiera verlo lo tiene justo
+ * debajo, y quien ya se ha convencido con el titular puede apuntarse sin
+ * recorrer dos minutos de vídeo y dos biografías para encontrar dónde.
+ *
+ * Sólo por debajo de 960 px: en escritorio el orden de siempre es el bueno.
+ */
+@media (max-width: 959px) {
+  .casa-mc-rejilla .casa-mc-caja {
+    order: 1;
+  }
+  .casa-mc-rejilla .casa-mc-izq {
+    order: 2;
+  }
+}
 /* Pegado arriba junto al vídeo en escritorio, centrado en el móvil. */
 @media (min-width: 960px) {
   .casa-mc-rejilla .casa-mc-caja {

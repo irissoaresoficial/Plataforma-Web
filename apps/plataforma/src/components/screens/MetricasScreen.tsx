@@ -57,6 +57,8 @@ import { cursos as repoCursos, todosLosAvances, totalLecciones, type Avance, typ
 import { porDia, todasLasVisitas } from "@/lib/escuela/trofeos";
 import { ultimosLeads, type Lead } from "@/lib/despacho/leads";
 import Embudo from "../metricas/Embudo";
+import Gasto from "../metricas/Gasto";
+import { ultimosDias, type DiaCampana } from "@/lib/despacho/campana";
 
 type Datos = {
   dias: Punto[];
@@ -71,6 +73,9 @@ type Datos = {
    *  `Embudo`, que es quien los pinta: así los dos viven juntos y no hay que
    *  mirar dos archivos para entender un número. */
   leads: Lead[];
+  /** Lo que ha costado la publicidad, un documento por día. Lo escribe un
+   *  proceso de fuera; aquí sólo se lee. Vacío mientras no haya corrido. */
+  campana: DiaCampana[];
   /* Lo del despacho, desde el 20 de octubre de 2026. Gerson: «que me
      muestre realmente bien los datos que necesito ver». Lo que necesita ver
      quien vive de esto es cuánta gente nueva llega, cuántas sesiones da y
@@ -100,7 +105,7 @@ export default function MetricasScreen() {
       /* Los leads van en el mismo `Promise.all` y no en una llamada aparte:
          son cinco lecturas que no dependen unas de otras, y encadenarlas
          multiplicaría por cinco lo que tarda en abrirse la pantalla. */
-      const [gente, cursos, avances, visitas, leads, citas, facturas, clientes] = await Promise.all([
+      const [gente, cursos, avances, visitas, leads, citas, facturas, clientes, campana] = await Promise.all([
         listaUsuarios(),
         repoCursos.listar(),
         todosLosAvances(),
@@ -109,8 +114,17 @@ export default function MetricasScreen() {
         repoCitas.listar(),
         repoFacturas.listar(),
         repoClientes.listar(),
+        /* Lo de la campaña entra en el mismo paquete que lo demás. Y no puede
+           tumbar la pantalla: `ultimosDias` devuelve lista vacía si no hay
+           permiso o no hay nube, en vez de lanzar. Las métricas de la escuela
+           tienen que verse aunque lo de la publicidad falle. */
+        ultimosDias(60),
       ]);
-      setD({ ...calcula(gente, cursos, avances, visitas, leads), ...despacho(leads, citas, facturas, clientes) });
+      setD({
+        ...calcula(gente, cursos, avances, visitas, leads),
+        ...despacho(leads, citas, facturas, clientes),
+        campana,
+      });
     } catch {
       setRoto(true);
     }
@@ -254,6 +268,13 @@ export default function MetricasScreen() {
           {/* ------------------------------------------------- tus anuncios */}
           <h2 style={css(SECCION)}>Tus anuncios, de cerca</h2>
           <Embudo leads={d.leads} tarjeta={tarjeta} />
+
+          {/* --------------------------------------- lo que cuesta el dinero */}
+          {/* Va DESPUÉS del embudo a propósito: el embudo dice cuánta gente
+              trae cada anuncio, y esto dice cuánto costó. En ese orden la
+              división —euros entre personas— se hace sola al leer. */}
+          <h2 style={css(SECCION)}>Inversión publicitaria</h2>
+          <Gasto dias={d.campana} tarjeta={tarjeta} />
         </>
       )}
 
@@ -435,7 +456,9 @@ function calcula(
   avances: Avance[],
   visitas: Array<{ uid: string; dias: string[] }>,
   leads: Lead[]
-): Omit<Datos, keyof ReturnType<typeof despacho>> {
+/* `campana` queda fuera igual que lo del despacho: no se calcula aquí, se
+   lee de su propia colección y se mete en el objeto al final. */
+): Omit<Datos, keyof ReturnType<typeof despacho> | "campana"> {
   const rol = (r: string) => gente.filter((p) => rolesDe(p as never).includes(r as never)).length;
 
   /* Las lecciones hechas, contando SÓLO LAS QUE SIGUEN EXISTIENDO. Si Iris

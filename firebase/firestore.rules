@@ -591,6 +591,37 @@ service cloud.firestore {
     match /estudios/{id} { allow read, write: if esAdmin(); }
 
     /*
+     * LO QUE CUESTA LA PUBLICIDAD: UN DOCUMENTO POR DÍA.
+     *
+     * Gerson, el 20 de octubre de 2026: quiere ver en la plataforma el gasto y
+     * cuánta gente entra, «y estas métricas las debe ver también la otra
+     * persona a la que le daremos acceso al panel de Desórdenes Amorosos».
+     *
+     * LEER: cualquiera que esté dentro. No hay nada personal aquí —son
+     * importes, impresiones y clics de una campaña— y restringirlo a Iris
+     * dejaría fuera justo a quien lleva el curso que la campaña anuncia. Un
+     * alumno que llegue a verlo no se entera de nada que le importe.
+     *
+     * ESCRIBIR: NADIE. Ni Iris. Y es lo más importante de este bloque.
+     *
+     * Estos números no son una opinión: son lo que dijo Meta. Los escribe el
+     * proceso diario con la llave de administración, que se salta estas reglas
+     * por definición. Si además se pudieran teclear desde el navegador, el día
+     * que alguien corrigiera un gasto «porque no le cuadraba» esta pantalla
+     * dejaría de ser una medición para pasar a ser una creencia, y el coste por
+     * persona apuntada —que es el número con el que se decide dónde va el
+     * dinero— saldría de una cuenta con un lado inventado.
+     *
+     * El identificador del documento es la fecha, `2026-10-20`. Eso hace que
+     * repetir el proceso un mismo día PISE el dato en vez de duplicarlo: si
+     * falla y se reintenta, no quedan dos gastos del martes sumándose.
+     */
+    match /campana/{dia} {
+      allow read: if dentro();
+      allow write: if false;
+    }
+
+    /*
      * LA AGENDA DE CADA CREADOR. Suya y de nadie más: ni otro creador ni la
      * propia Iris —que tiene la suya en `citas`— la leen. Es su negocio.
      */
