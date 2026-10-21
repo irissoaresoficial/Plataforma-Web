@@ -95,13 +95,13 @@ function Aro({ hechos, total, tam = 34 }: { hechos: number; total: number; tam?:
   const k = total ? hechos / total : 0;
   return (
     <svg width={tam} height={tam} viewBox={`0 0 ${tam} ${tam}`} aria-hidden style={css("flex:none;transform:rotate(-90deg);")}>
-      <circle cx={tam / 2} cy={tam / 2} r={r} fill="none" stroke="var(--border-strong)" strokeWidth="3" />
+      <circle cx={tam / 2} cy={tam / 2} r={r} fill="none" stroke="var(--bloque-borde)" strokeWidth="3" />
       <motion.circle
         cx={tam / 2}
         cy={tam / 2}
         r={r}
         fill="none"
-        stroke="var(--oro)"
+        stroke="var(--oro-luz)"
         strokeWidth="3"
         strokeLinecap="round"
         strokeDasharray={largo}
@@ -123,6 +123,9 @@ export default function GuiaPasos() {
   const [sitio, setSitio] = useState<Caja | null>(null);
   const [listo, setListo] = useState(false);
   const [ancho, setAncho] = useState(1440);
+  /* El hueco que deja la columna para la pastilla. Sin columna (móvil), null. */
+  const [ancla, setAncla] = useState<HTMLElement | null>(null);
+  const [cajaAncla, setCajaAncla] = useState<Caja | null>(null);
   const uid = usuario ? usuario.uid : "";
   const foto = usuario ? Boolean(usuario.foto) : false;
 
@@ -153,7 +156,7 @@ export default function GuiaPasos() {
 
   /* Mientras la pastilla está, la página deja hueco abajo para que no tape
      lo último que hay en ella. */
-  const activa = Boolean(siguiente);
+  const activa = Boolean(siguiente) && !ancla;
   useEffect(() => {
     if (!activa) return;
     document.documentElement.dataset.guia = "1";
@@ -181,6 +184,11 @@ export default function GuiaPasos() {
       }
       setListo(bienvenidaVista);
       setSitio(buscaSitio(siguiente.k));
+      const a = document.querySelector<HTMLElement>("[data-guia-ancla]");
+      const r = a ? a.getBoundingClientRect() : null;
+      const vale = a && r && r.width > 30 && a.offsetParent !== null;
+      setAncla(vale ? a : null);
+      setCajaAncla(vale && r ? { x: r.left, y: r.top, w: r.width, h: r.height } : null);
     };
     mira();
     const t = window.setInterval(mira, 350);
@@ -199,6 +207,10 @@ export default function GuiaPasos() {
   const hechos = total - pendientes.length;
   const quedan = pendientes.reduce((s, x) => s + x.puntos, 0);
   const movil = ancho < 760;
+  /* Con la pastilla en la columna, la lista y la nube suelta salen a su
+     derecha, a la altura de abajo. */
+  const alLado = cajaAncla ? `left:${cajaAncla.x + cajaAncla.w + 26}px;bottom:24px;` : "";
+  const estrecha = Boolean(cajaAncla && cajaAncla.w < 120);
   const nubeFuera = luego !== siguiente.k && listo && !abierta;
   /* En el sitio exacto sólo si el sitio está; si no, encima de la pastilla. */
   const anclada = Boolean(sitio);
@@ -238,7 +250,9 @@ export default function GuiaPasos() {
             ? `left:${pos.left}px;top:${pos.top}px;width:${Math.min(ANCHO_NUBE, ancho - 24)}px;`
             : movil
               ? "left:12px;right:12px;bottom:84px;"
-              : `left:24px;bottom:92px;width:${ANCHO_NUBE}px;`) +
+              : alLado
+                ? `${alLado}width:${ANCHO_NUBE}px;`
+                : `left:24px;bottom:92px;width:${ANCHO_NUBE}px;`) +
           "padding:16px 16px 14px;border-radius:var(--r-lg);background:var(--bloque);color:var(--sobre-bloque);" +
           "border:1px solid var(--bloque-borde);box-shadow:0 18px 50px color-mix(in srgb, var(--bloque) 45%, transparent);"
       )}
@@ -299,6 +313,45 @@ export default function GuiaPasos() {
     </motion.div>
   );
 
+  /* La pastilla: siempre, hasta el último paso. En la columna cuando la hay
+     —granate, para que destaque sobre el cristal—; si no, flotando abajo. */
+  const pastilla = (
+    <motion.button
+      onClick={() => setAbierta((a) => !a)}
+      aria-expanded={abierta}
+      aria-label={estrecha ? `Primeros pasos: ${hechos} de ${total}` : undefined}
+      initial={quieto ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={muelle}
+      style={css(
+        (ancla ? "position:relative;width:100%;" : "position:fixed;z-index:63;" + (movil ? "left:12px;right:12px;bottom:14px;" : "left:24px;bottom:24px;")) +
+          "display:flex;align-items:center;gap:11px;cursor:pointer;font:inherit;text-align:left;" +
+          (estrecha ? "justify-content:center;padding:6px;" : "padding:9px 14px 9px 9px;") +
+          (ancla ? "border-radius:var(--r);" : "border-radius:var(--r-pill);") +
+          "background:var(--bloque);color:var(--sobre-bloque);border:1px solid var(--bloque-borde);" +
+          "box-shadow:0 10px 30px color-mix(in srgb, var(--bloque) 35%, transparent);"
+      )}
+    >
+      <span style={css("position:relative;display:grid;place-items:center;flex:none;")}>
+        <Aro hechos={hechos} total={total} />
+        <span style={css("position:absolute;font-size:var(--t-mini);font-weight:500;color:var(--sobre-bloque);")}>{hechos}</span>
+      </span>
+      {!estrecha && (
+        <>
+          <span style={css("display:flex;flex-direction:column;line-height:1.25;min-width:0;")}>
+            <span style={css("font-size:var(--t-body);font-weight:500;letter-spacing:-.01em;")}>Primeros pasos</span>
+            <span style={css("font-size:var(--t-mini);color:var(--sobre-bloque-2);")}>
+              {hechos} de {total} · <span style={css("color:var(--oro-luz);font-weight:500;")}>+{quedan} puntos</span>
+            </span>
+          </span>
+          <span aria-hidden style={css("margin-left:auto;padding-left:4px;color:var(--oro-luz);font-size:var(--t-mini);")}>
+            {abierta ? "▾" : "▴"}
+          </span>
+        </>
+      )}
+    </motion.button>
+  );
+
   return createPortal(
     <>
       {/* El halo que late alrededor de lo que hay que pulsar. */}
@@ -334,7 +387,7 @@ export default function GuiaPasos() {
             transition={muelle}
             style={css(
               "position:fixed;z-index:63;" +
-                (movil ? "left:12px;right:12px;bottom:84px;" : "left:24px;bottom:92px;width:340px;") +
+                (movil ? "left:12px;right:12px;bottom:84px;" : alLado ? `${alLado}width:340px;` : "left:24px;bottom:92px;width:340px;") +
                 "padding:18px;border-radius:var(--r-tarjeta);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);color:var(--text);"
             )}
           >
@@ -399,33 +452,8 @@ export default function GuiaPasos() {
         )}
       </AnimatePresence>
 
-      {/* La pastilla: siempre, hasta el último paso. */}
-      <motion.button
-        onClick={() => setAbierta((a) => !a)}
-        aria-expanded={abierta}
-        initial={quieto ? false : { opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={muelle}
-        style={css(
-          "position:fixed;z-index:63;display:flex;align-items:center;gap:11px;cursor:pointer;font:inherit;text-align:left;" +
-            (movil ? "left:12px;right:12px;bottom:14px;" : "left:24px;bottom:24px;") +
-            "padding:8px 18px 8px 9px;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);color:var(--text);"
-        )}
-      >
-        <span style={css("position:relative;display:grid;place-items:center;")}>
-          <Aro hechos={hechos} total={total} />
-          <span style={css("position:absolute;font-size:var(--t-mini);font-weight:500;color:var(--text);")}>{hechos}</span>
-        </span>
-        <span style={css("display:flex;flex-direction:column;line-height:1.2;")}>
-          <span style={css("font-size:var(--t-body);font-weight:500;letter-spacing:-.01em;")}>Primeros pasos</span>
-          <span style={css("font-size:var(--t-mini);color:var(--text-3);")}>
-            {hechos} de {total} · <span style={css("color:var(--gold);font-weight:500;")}>{quedan} puntos por ganar</span>
-          </span>
-        </span>
-        <span aria-hidden style={css("margin-left:auto;padding-left:6px;color:var(--text-3);font-size:var(--t-mini);")}>
-          {abierta ? "▾" : "▴"}
-        </span>
-      </motion.button>
+      {!ancla && pastilla}
+      {ancla && createPortal(pastilla, ancla)}
     </>,
     document.body
   );
