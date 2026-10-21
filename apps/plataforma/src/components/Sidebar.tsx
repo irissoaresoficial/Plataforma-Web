@@ -205,12 +205,13 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
     Ico: Ico,
     label: string,
     onClick: () => void,
-    opts?: { grande?: boolean; abierta?: boolean; apagado?: boolean }
+    opts?: { grande?: boolean; abierta?: boolean; apagado?: boolean; guia?: string }
   ) => {
-    const { grande, abierta, apagado } = opts ?? {};
+    const { grande, abierta, apagado, guia } = opts ?? {};
     return (
       <button
         key={label}
+        data-guia={guia ? `nav-${guia}` : undefined}
         onClick={apagado ? undefined : onClick}
         disabled={apagado}
         title={compacta ? label : apagado ? "Primero genera un estudio" : undefined}
@@ -519,7 +520,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
       {escuela.length > 0 && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
           {verDespacho && grupo("Escuela")}
-          {escuela.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
+          {escuela.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k), { guia: k }))}
         </div>
       )}
 
@@ -529,7 +530,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
       {puede("crear") && !verDespacho && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
           {grupo("Tu espacio")}
-          {fila(view === "miagenda", IcoAgenda, "Mi agenda", ir("miagenda"))}
+          {fila(view === "miagenda", IcoAgenda, "Mi agenda", ir("miagenda"), { guia: "miagenda" })}
           {fila(view === "mismetricas", IcoMetricas, "Mis métricas", ir("mismetricas"))}
         </div>
       )}

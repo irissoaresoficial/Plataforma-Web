@@ -205,6 +205,7 @@ export default function CursosScreen() {
         accion={
           (esAdmin || creador) && (
             <button
+              data-guia="curso"
               onClick={() => void nuevo()}
               style={css(botonPrincipal() + "background:var(--sobre-bloque);color:var(--vino);border-color:var(--sobre-bloque);")}
             >
@@ -398,7 +399,7 @@ export default function CursosScreen() {
                     {parte > 0 && parte < 1 ? "Seguir" : "Entrar"}
                   </button>
                   {esMio(c) && (
-                    <button onClick={() => setDonde({ que: "edita", curso: c })} style={css(BOTON_NORMAL)}>
+                    <button data-guia="editar" onClick={() => setDonde({ que: "edita", curso: c })} style={css(BOTON_NORMAL)}>
                       Editar
                     </button>
                   )}

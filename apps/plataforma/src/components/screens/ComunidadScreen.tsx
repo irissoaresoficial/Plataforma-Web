@@ -254,7 +254,7 @@ export default function ComunidadScreen() {
             {t.texto && <p style={css(LECTURA + "margin:0;white-space:pre-wrap;")}>{t.texto}</p>}
 
             <div style={css("display:flex;gap:var(--s3);align-items:center;margin-top:var(--s3);flex-wrap:wrap;")}>
-              <button onClick={() => void abre(t)} style={css(BOTON_NORMAL)}>
+              <button data-guia={t.uid === (usuario ? usuario.uid : "") ? undefined : "resp"} onClick={() => void abre(t)} style={css(BOTON_NORMAL)}>
                 {t.respuestas === 0
                   ? dentro
                     ? "Cerrar"
@@ -411,6 +411,7 @@ export default function ComunidadScreen() {
           onChange={(e) => setTitulo(e.target.value)}
           placeholder="Escribe aquí de qué quieres hablar"
           aria-label="Título del tema"
+          data-guia="tema"
           style={css(CAMPO + "font-size:var(--t-read);")}
         />
         {/* El cuerpo sólo aparece cuando hay título: un cajón de dos campos

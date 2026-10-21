@@ -27,6 +27,7 @@ import Cuenta from "./Cuenta";
 import Avisos from "./despacho/Avisos";
 import AgenteIA from "./AgenteIA";
 import MisPuntos from "./MisPuntos";
+import GuiaPasos from "./escuela/GuiaPasos";
 import Novedades from "./despacho/Novedades";
 import Particulas from "./Particulas";
 import SinEstudio from "./SinEstudio";
@@ -305,6 +306,9 @@ export default function Shell() {
           podían recibir un no. Éstas ni se quejaban —tienen su propio manejo
           de error, que calla— así que el gasto no se veía por ninguna parte. */}
       {puede("despacho") && <Novedades />}
+      {/* Los primeros pasos, con su nube, para quien no es Iris. Se van solos
+          cuando están todos hechos. Por qué y cómo: `escuela/GuiaPasos.tsx`. */}
+      {!puede("despacho") && <GuiaPasos />}
 
       <DetalleModal />
     </div>

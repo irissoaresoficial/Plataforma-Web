@@ -267,6 +267,7 @@ export default function PerfilScreen() {
             sin que se lo expliquen, y el botón de debajo lo dice por si no. */}
         <div style={css("flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;")}>
           <button
+            data-guia="foto-perfil"
             onClick={() => campoFoto.current?.click()}
             disabled={subiendoFoto}
             aria-label="Cambiar tu foto"
