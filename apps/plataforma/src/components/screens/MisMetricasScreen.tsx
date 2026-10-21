@@ -240,7 +240,7 @@ export default function MisMetricasScreen() {
       {campana.length > 0 && (
         <>
           <h2 style={css("margin:var(--s4) 0 0;font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;")}>
-            Lo que cuesta la publicidad
+            Inversión publicitaria
           </h2>
           <Gasto dias={campana} tarjeta={TARJETA + "padding:var(--pad-card-sm);"} />
         </>

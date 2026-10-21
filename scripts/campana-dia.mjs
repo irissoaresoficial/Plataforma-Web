@@ -71,6 +71,20 @@ const doc = {
   frecuencia: n(d.frecuencia),
   escrito: new Date().toISOString(),
 };
+/*
+ * LA PREVISIÓN: cuánta gente se espera apuntar en toda la campaña.
+ *
+ * La escribe quien lleva la publicidad, con los números delante, y la pantalla
+ * de métricas enseña la más reciente. Es lo que Iris y quien lleve un curso
+ * ven en vez del aviso de problemas, que es cosa del chat y no de ellas.
+ *
+ * Va como rango, nunca como número exacto: depende de qué porcentaje de los
+ * que entran se apunta, y eso no se sabe hasta que entra gente. Un número
+ * redondo sería una suposición disfrazada de dato.
+ */
+if (d.prevision) {
+  doc.prevision = { min: n(d.prevision.min), max: n(d.prevision.max) };
+}
 if (d.video) {
   doc.video = {
     empiezan: n(d.video.empiezan),

@@ -99,6 +99,23 @@ export type DiaCampana = {
    * 2,5 la gente ya ha visto esto demasiadas veces y el coste sube solo.
    */
   frecuencia: number;
+  /**
+   * Cuánta gente se espera apuntar en toda la campaña. Un rango, no un número.
+   *
+   * NO SE CALCULA EN LA PANTALLA, Y ESO ES LO IMPORTANTE. Para estimarlo hace
+   * falta saber el presupuesto que queda, los días hasta la masterclass y qué
+   * porcentaje de los que entran se apunta — y lo último no se sabe hasta que
+   * hay gente apuntada. Una pantalla que se inventara ese número lo haría con
+   * una suposición escondida dentro, y nadie podría discutirla porque nadie la
+   * vería.
+   *
+   * Así que la escribe quien lleva la campaña, con los números delante, y se
+   * revisa cada día. Es una previsión firmada, no una fórmula anónima.
+   *
+   * Va en el documento del día, así que la pantalla usa siempre la del día más
+   * reciente: la previsión de ayer ya no vale si hoy cambió algo.
+   */
+  prevision?: { min: number; max: number };
   /** Lo que ha pasado con cada vídeo, si ese día corrían vídeos. */
   video?: {
     /** Empezaron a verlo. */
@@ -149,6 +166,13 @@ function leeDia(id: string, d: Record<string, unknown>): DiaCampana {
     apuntados: num(d.apuntados),
     apuntadosDePago: num(d.apuntadosDePago),
     frecuencia: num(d.frecuencia),
+    prevision:
+      d.prevision && typeof d.prevision === "object"
+        ? {
+            min: num((d.prevision as Record<string, unknown>).min),
+            max: num((d.prevision as Record<string, unknown>).max),
+          }
+        : undefined,
     video: v
       ? {
           empiezan: num(v.empiezan),
@@ -210,6 +234,8 @@ export type TotalCampana = {
   ctr: number;
   /** La frecuencia del último día con datos, que es la que importa hoy. */
   frecuencia: number;
+  /** La previsión más reciente que se haya escrito. Sin ella no se enseña. */
+  prevision?: { min: number; max: number };
   /** Desde cuándo y hasta cuándo hay datos. Vacío si no hay ninguno. */
   desde: string;
   hasta: string;
@@ -254,6 +280,9 @@ export function suma(dias: DiaCampana[]): TotalCampana {
     porClic: t.clics > 0 ? t.gasto / t.clics : 0,
     ctr: t.impresiones > 0 ? (t.clics / t.impresiones) * 100 : 0,
     frecuencia: conDatos.length ? conDatos[conDatos.length - 1].frecuencia : 0,
+    /* La ÚLTIMA que se escribió, recorriendo hacia atrás: los días viejos
+       pueden no llevarla, y la de ayer queda anulada por la de hoy. */
+    prevision: [...dias].reverse().find((d) => d.prevision)?.prevision,
     desde: dias.length ? dias[0].dia : "",
     hasta: dias.length ? dias[dias.length - 1].dia : "",
   };

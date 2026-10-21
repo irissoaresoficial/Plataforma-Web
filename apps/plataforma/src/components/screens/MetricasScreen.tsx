@@ -273,7 +273,7 @@ export default function MetricasScreen() {
           {/* Va DESPUÉS del embudo a propósito: el embudo dice cuánta gente
               trae cada anuncio, y esto dice cuánto costó. En ese orden la
               división —euros entre personas— se hace sola al leer. */}
-          <h2 style={css(SECCION)}>Lo que cuesta la publicidad</h2>
+          <h2 style={css(SECCION)}>Inversión publicitaria</h2>
           <Gasto dias={d.campana} tarjeta={tarjeta} />
         </>
       )}

@@ -52,7 +52,7 @@
 
 import { useMemo } from "react";
 import { css } from "@/lib/css";
-import { CABECERA, LECTURA, NOTA } from "@/lib/ui";
+import { APOYO, CABECERA, LECTURA, NOTA } from "@/lib/ui";
 import { Barras, Linea, type Punto } from "../escuela/Grafico";
 import { euros } from "@/lib/despacho";
 import { suma, type DiaCampana } from "@/lib/despacho/campana";
@@ -122,7 +122,10 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
   const bloque = (titulo: string, dice: string, hijo: React.ReactNode) => (
     <section style={css(tarjeta)}>
       <h2 style={css(CABECERA + "margin:0;font-size:var(--t-head);")}>{titulo}</h2>
-      <p style={css(NOTA + "margin:6px 0 var(--s4);max-width:62ch;line-height:1.5;")}>{dice}</p>
+      {/* APOYO y no NOTA: `--text-4` es el gris de los pies de foto, y esta
+          frase no es un pie — es la que dice qué hay que mirar en el
+          gráfico de debajo. Si no se lee, el gráfico no se entiende. */}
+      <p style={css(APOYO + "margin:6px 0 var(--s4);max-width:62ch;")}>{dice}</p>
       {hijo}
     </section>
   );
@@ -136,7 +139,7 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
             : ""),
       )}
     >
-      <div style={css(NOTA + (destacar ? "color:var(--sobre-bloque-2);" : ""))}>{que}</div>
+      <div style={css(NOTA + (destacar ? "color:var(--sobre-bloque-2);" : "color:var(--text-3);"))}>{que}</div>
       <div
         style={css(
           "font-family:var(--font-display);font-size:clamp(28px,3.6vw,40px);font-weight:650;" +
@@ -146,7 +149,7 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
       >
         {valor}
       </div>
-      <div style={css(NOTA + "margin-top:6px;line-height:1.45;" + (destacar ? "color:var(--sobre-bloque-2);" : ""))}>
+      <div style={css(NOTA + "margin-top:6px;line-height:1.45;" + (destacar ? "color:var(--sobre-bloque-2);" : "color:var(--text-3);"))}>
         {pie}
       </div>
     </div>
@@ -156,7 +159,7 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
   if (dias.length === 0) {
     return (
       <section style={css(tarjeta + "max-width:640px;")}>
-        <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Lo que cuesta la publicidad</h2>
+        <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Inversión publicitaria</h2>
         <p style={css(LECTURA + "margin:0;")}>
           Aquí van el gasto de cada día, cuánta gente ve los anuncios, cuántas llegan a la web y —lo que de verdad
           importa— cuánto cuesta cada persona que acaba dejando su correo. Los números se escriben una vez al día;
@@ -188,24 +191,51 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
         {cifra("Personas distintas", miles(t.alcance), "El mejor día, no la suma")}
       </div>
 
-      {/* --------------------------------------------------- el aviso que importa */}
-      {/* Hay clics suficientes para esperar al menos una persona apuntada y no
-          hay ninguna. O la página no convence, o el formulario no guarda. Las
-          dos cosas cuestan dinero cada hora que pasan sin mirarse, así que esto
-          se dice arriba y en grande, no en una nota al pie. */}
-      {t.apuntados === 0 && t.clics >= 25 && (
-        <section
-          style={css(
-            tarjeta + "max-width:70ch;border-color:var(--red,#b3261e);border-width:1.5px;",
-          )}
-        >
-          <h2 style={css(CABECERA + "margin:0 0 var(--s2);color:var(--red,#b3261e);")}>
-            Han entrado {miles(t.clics)} personas y no se ha apuntado ninguna
-          </h2>
-          <p style={css(LECTURA + "margin:0;")}>
-            Con esta cantidad de visitas ya debería haber alguien en la lista. O la página no está convenciendo, o el
-            formulario no está guardando. Conviene entrar en la página de la masterclass, rellenarla con un correo de
-            prueba y comprobar que esa persona aparece aquí. Mientras tanto el dinero sigue saliendo.
+      {/* ------------------------------------------------------- lo que esperamos */}
+      {/*
+       * AQUÍ HABÍA UN CARTEL ROJO QUE DECÍA «han entrado X personas y no se ha
+       * apuntado ninguna», y se ha quitado a propósito.
+       *
+       * Gerson, el 21 de octubre: «no quiero que muestres esto, esto me lo
+       * dices a mí; mejor coloca, se espera conseguir x a x leads; los
+       * problemas aquí en el chat».
+       *
+       * Y tiene razón. Esta pantalla no la abre sólo quien lleva la campaña:
+       * la abren Iris y la persona a quien se le delega un curso. Para ellas,
+       * un aviso en rojo diciendo que algo puede estar roto no es información
+       * útil —no pueden arreglarlo— sino una alarma sobre un trabajo que no es
+       * el suyo. Un panel que asusta a quien no puede actuar deja de abrirse.
+       *
+       * El aviso NO se ha perdido: vive donde sirve, que es el informe diario
+       * de quien lleva la publicidad. El script que escribe estos números
+       * (`scripts/campana-dia.mjs`) sigue gritando en la consola cuando hay
+       * clics y cero apuntados.
+       *
+       * En su lugar va lo que sí le sirve a quien mira: cuántas personas se
+       * esperan. Y se dice con un rango y no con un número, porque un número
+       * exacto sería mentira: esto depende de cuánta gente se apunte de la que
+       * entra, y eso no se sabe hasta que entra.
+       */}
+      {t.prevision && (
+        <section style={css(tarjeta + "max-width:70ch;")}>
+          <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Lo que esperamos</h2>
+          <p style={css(LECTURA + "margin:0 0 var(--s2);")}>
+            Con el presupuesto de esta campaña se esperan entre{" "}
+            <strong>
+              {miles(t.prevision.min)} y {miles(t.prevision.max)} personas apuntadas
+            </strong>
+            {t.apuntadosDePago > 0 ? (
+              <>
+                {" "}
+                antes de la masterclass. Van <strong>{miles(t.apuntadosDePago)}</strong>.
+              </>
+            ) : (
+              <> antes de la masterclass.</>
+            )}
+          </p>
+          <p style={css(APOYO + "margin:0;")}>
+            Es una previsión, no una promesa: depende de cuánta gente se apunte de la que entra en la página, y eso se
+            va sabiendo sobre la marcha. Se ajusta cada día con los números reales.
           </p>
         </section>
       )}
@@ -241,7 +271,7 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
       )}
 
       <section style={css(tarjeta + "max-width:70ch;")}>
-        <p style={css(NOTA + "margin:0;line-height:1.5;")}>
+        <p style={css(APOYO + "margin:0;")}>
           Los números de Meta se escriben una vez al día, así que pueden ir hasta un día por detrás. El{" "}
           <strong>coste por apuntado</strong> no lo sabe Meta: sale de cruzar lo que se gastó con la gente que de verdad
           dejó su correo. <strong>Personas distintas</strong> es el mejor día y no la suma de todos, porque sumarlos
