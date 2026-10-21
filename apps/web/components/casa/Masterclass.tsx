@@ -98,14 +98,35 @@ export default function Masterclass() {
         <div className="casa-mc-dentro">
           <div className="casa-mc-texto">
             <span className="casa-mc-rotulo">Masterclass gratuita · Escuela de Sabiduría 33</span>
+            {/*
+              EL TITULAR ERA «Hay una forma de amar que no elegiste», y es más
+              bonito que éste. Se ha cambiado igual, y conviene saber por qué.
+
+              Esa frase es una IDEA: hay que pararse un segundo a entenderla.
+              Funciona para quien ya sigue a Iris. No funciona para quien llega
+              de un anuncio, porque esa persona no ha venido a leer: ha dado un
+              toque con el pulgar y decide en dos segundos si esto va con ella
+              o cierra.
+
+              Lo que hace que se quede no es una idea bonita, es reconocerse.
+              «¿Por qué siempre acaba igual?» es una pregunta que alguien se ha
+              hecho en voz baja, probablemente más de una vez. Quien no se la
+              ha hecho nunca, se va — y eso también está bien, porque cada una
+              de esas personas nos cuesta dinero.
+
+              La idea de antes no se ha perdido: ha bajado a la frase de abajo,
+              que es donde funciona, una vez que la persona ya ha decidido
+              quedarse a leer.
+            */}
             <h1 className="casa-mc-h1">
-              Hay una forma de amar
+              ¿Por qué siempre
               <br />
-              que no elegiste
+              acaba igual?
             </h1>
             <p className="casa-mc-p">
-              Desórdenes Amorosos. Lo que se repite en tu forma de querer no
-              empezó contigo: estaba en casa antes de que llegaras.
+              Cambias de persona y vuelve la misma discusión, el mismo final.
+              Desórdenes Amorosos: lo que se repite en tu forma de querer no
+              empezó contigo, estaba en casa antes de que llegaras.
             </p>
           </div>
 

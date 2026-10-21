@@ -33,7 +33,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: `${CASA}/masterclass`,
-    title: 'Hay una forma de amar que no elegiste',
+    /* Igual que el titular de la página: lo que se comparte por WhatsApp
+       tiene que decir lo mismo que lo que se ve al entrar. */
+    title: '¿Por qué siempre acaba igual?',
     description:
       `${MASTERCLASS.titulo}: masterclass gratuita y en directo, ${MASTERCLASS.cuando}. Escuela de Sabiduría 33.`,
     siteName: 'Escuela de Sabiduría 33',
