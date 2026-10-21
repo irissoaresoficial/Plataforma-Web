@@ -20,19 +20,46 @@ import { daAcceso, quitaFicha } from "./usuarios";
 
 const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com";
 
-/** Pide a la web que mande la bienvenida bonita. Devuelve si salió. */
-async function bienvenidaDeLaCasa(yo: User | null, d: { email: string; nombre: string; roles: Rol[] }): Promise<boolean> {
-  if (!yo) return false;
+/** Cómo ha ido el correo bonito: salió, o por qué no, con palabras. */
+export type Bienvenida = { ok: true; a?: string } | { ok: false; porQue: string };
+
+/**
+ * Pide a la web que mande la bienvenida bonita.
+ *
+ * Antes devolvía sólo sí o no, y con un no se mandaba el de Firebase de serie
+ * sin decir nada: así es como «seguía llegando feo» sin que nadie supiera por
+ * qué. Ahora vuelve con el motivo que da la web, o con el de no llegar a ella.
+ */
+async function bienvenidaDeLaCasa(yo: User | null, d: { email?: string; nombre?: string; roles?: Rol[]; prueba?: boolean }): Promise<Bienvenida> {
+  if (!yo) return { ok: false, porQue: "No hay sesión abierta." };
+  let r: Response;
   try {
-    const r = await fetch(`${WEB}/api/alta`, {
+    r = await fetch(`${WEB}/api/alta`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${await yo.getIdToken()}` },
       body: JSON.stringify(d),
     });
-    return r.ok;
   } catch {
-    return false;
+    return {
+      ok: false,
+      porQue: `La plataforma no llega a la web (${WEB}). En Vercel, en el proyecto de la plataforma, NEXT_PUBLIC_WEB_URL tiene que ser la dirección exacta de la web, con https://.`,
+    };
   }
+  const j = (await r.json().catch(() => ({}))) as { ok?: boolean; a?: string; detalle?: string; motivo?: string };
+  if (r.ok && j.ok) return { ok: true, a: j.a };
+  return {
+    ok: false,
+    porQue:
+      j.detalle ||
+      (r.status === 404
+        ? `En ${WEB} no está la parte que manda el correo (/api/alta). ¿Es esa la dirección de la web?`
+        : `La web ha contestado ${r.status}${j.motivo ? ` (${j.motivo})` : ""}.`),
+  };
+}
+
+/** Manda la bienvenida a quien está dentro, sin crear a nadie: para verla antes de dar de alta. */
+export async function pruebaDeBienvenida(): Promise<Bienvenida> {
+  return bienvenidaDeLaCasa(auth()?.currentUser ?? null, { prueba: true });
 }
 
 /** Una contraseña que no va a escribir nadie: sólo existe hasta que la cambie. */
@@ -42,7 +69,10 @@ function alAzar(): string {
   return Array.from(b, (x) => x.toString(36).padStart(2, "0")).join("") + "Aa1!";
 }
 
-export async function daDeAlta(d: { nombre: string; email: string; roles: Rol[] }): Promise<string> {
+/** Lo que ha pasado al dar de alta: la cuenta, y qué correo le ha llegado. */
+export type Alta = { uid: string; correo: "casa" | "firebase"; porQue?: string };
+
+export async function daDeAlta(d: { nombre: string; email: string; roles: Rol[] }): Promise<Alta> {
   const email = d.email.trim().toLowerCase();
   const nombre = d.nombre.trim();
   if (!nombre) throw new Error("Falta el nombre.");
@@ -83,7 +113,8 @@ export async function daDeAlta(d: { nombre: string; email: string; roles: Rol[] 
    * nadie se queda sin entrar. Y si fallan los dos, la cuenta ya está hecha:
    * se dice, y desde la puerta puede pedir «He olvidado mi contraseña».
    */
-  if (await bienvenidaDeLaCasa(principal.currentUser, { email, nombre, roles: d.roles })) return uid;
+  const casa = await bienvenidaDeLaCasa(principal.currentUser, { email, nombre, roles: d.roles });
+  if (casa.ok) return { uid, correo: "casa" };
   try {
     await sendPasswordResetEmail(principal, email);
   } catch {
@@ -91,7 +122,7 @@ export async function daDeAlta(d: { nombre: string; email: string; roles: Rol[] 
       `La cuenta de ${nombre} está creada, pero no se ha podido mandar el correo para su contraseña. Que entre en la plataforma y pulse «He olvidado mi contraseña».`
     );
   }
-  return uid;
+  return { uid, correo: "firebase", porQue: casa.porQue };
 }
 
 /**

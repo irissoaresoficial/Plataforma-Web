@@ -11,8 +11,9 @@
  * administrador y se mira su ficha. Sin eso, cualquiera podría usar esta
  * dirección para mandar correos con el nombre de Iris a quien quisiera.
  *
- * Si algo falla, contesta con el motivo y la plataforma manda el correo de
- * Firebase de serie, que es feo pero funciona: nadie se queda sin entrar.
+ * Si algo falla, contesta con el motivo —y con `detalle`, en castellano— y
+ * la plataforma lo enseña antes de mandar el de Firebase de serie, que es feo
+ * pero funciona: nadie se queda sin entrar.
  */
 import { getApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
@@ -126,41 +127,102 @@ export async function DELETE(request: Request) {
   }
 }
 
+/**
+ * POR QUÉ NO SALE EL CORREO BONITO, DICHO CON PALABRAS.
+ *
+ * Gerson, el 21 de octubre de 2026: «el mensaje que llega de creación de
+ * cuenta sigue llegando feo». Llegaba el de Firebase de serie porque esto
+ * fallaba y la plataforma, sin saber por qué, mandaba el de recambio en
+ * silencio. Ahora cada fallo vuelve con `detalle`: qué falta y dónde se pone.
+ * Nada de lo que va en `detalle` es secreto: son nombres de variables y el
+ * mensaje de error de Resend o de Firebase.
+ *
+ * Y CON `prueba: true` el correo se le manda a quien lo pide —a Iris—, sin
+ * crear a nadie: para ver cómo llega antes de dar de alta a una persona.
+ */
 export async function POST(request: Request) {
   const origen = request.headers.get('origin') || '';
-  if (!permitido(origen)) return responde({ ok: false, motivo: 'origen' }, 403, origen);
+  if (!permitido(origen)) return responde({ ok: false, motivo: 'origen', detalle: `La web no acepta llamadas desde ${origen || 'este sitio'}.` }, 403, origen);
 
   const base = db();
   const clave = process.env.RESEND_API_KEY || '';
-  if (!base || !clave) return responde({ ok: false, motivo: 'sin_configurar' }, 503, origen);
+  if (!base || !clave) {
+    const falta = [!base && 'FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL y FIREBASE_PRIVATE_KEY', !clave && 'RESEND_API_KEY'].filter(Boolean).join(' y ');
+    return responde({ ok: false, motivo: 'sin_configurar', detalle: `En Vercel, en el proyecto de la web, falta ${falta}.` }, 503, origen);
+  }
 
   /* 1. Quién lo pide: tiene que ser una administradora activa. */
-  if (!(await administradora(request))) return responde({ ok: false, motivo: 'permiso' }, 403, origen);
+  const yo = await administradora(request);
+  if (!yo) {
+    return responde(
+      {
+        ok: false,
+        motivo: 'permiso',
+        detalle:
+          'La web no te reconoce como administradora. O la web y la plataforma usan proyectos de Firebase distintos (FIREBASE_PROJECT_ID tiene que ser plataforma-d3c55), o tu ficha no tiene la llave de administradora.',
+      },
+      403,
+      origen
+    );
+  }
 
   /* 2. A quién. */
-  let d: { email?: string; nombre?: string; roles?: string[] };
+  let d: { email?: string; nombre?: string; roles?: string[]; prueba?: boolean };
   try {
     d = await request.json();
   } catch {
     return responde({ ok: false, motivo: 'datos' }, 400, origen);
   }
-  const email = String(d.email || '').trim().toLowerCase();
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return responde({ ok: false, motivo: 'correo' }, 400, origen);
+  let email = String(d.email || '').trim().toLowerCase();
+  let nombre = String(d.nombre || '');
+  let roles = Array.isArray(d.roles) ? d.roles.map(String) : [];
+  if (d.prueba) {
+    const cuenta = await getAuth(getApp()).getUser(yo);
+    email = (cuenta.email || '').toLowerCase();
+    nombre = cuenta.displayName || String((await base.doc(`usuarios/${yo}`).get()).data()?.nombre || '');
+    roles = ['creador'];
+  }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return responde({ ok: false, motivo: 'correo', detalle: 'Ese correo no está bien escrito.' }, 400, origen);
 
-  /* 3. El enlace y el correo. */
+  /* 3. El enlace. */
+  let enlace = '';
   try {
-    const enlace = await getAuth(getApp()).generatePasswordResetLink(email, { url: PLATAFORMA });
-    const { asunto, html } = correoDeBienvenida({
-      nombre: String(d.nombre || ''),
-      enlace,
-      roles: Array.isArray(d.roles) ? d.roles.map(String) : [],
-      plataforma: PLATAFORMA,
-    });
+    enlace = await getAuth(getApp()).generatePasswordResetLink(email, { url: PLATAFORMA });
+  } catch (e) {
+    const c = (e as { code?: string; message?: string }) || {};
+    console.error('[alta] no se ha podido hacer el enlace', e);
+    return responde(
+      {
+        ok: false,
+        motivo: 'enlace',
+        detalle: /continue-uri|unauthorized/i.test(`${c.code} ${c.message}`)
+          ? `Firebase no deja volver a ${PLATAFORMA}: añádelo en Authentication → Configuración → Dominios autorizados.`
+          : `Firebase no ha hecho el enlace de contraseña: ${c.code || c.message || 'sin motivo'}.`,
+      },
+      502,
+      origen
+    );
+  }
+
+  /* 4. El correo. */
+  try {
+    const { asunto, html } = correoDeBienvenida({ nombre, enlace, roles, plataforma: PLATAFORMA });
     const r = await new Resend(clave).emails.send({ from: DE, to: email, replyTo: CONTESTAR_A, subject: asunto, html });
     if (r.error) throw new Error(r.error.message);
-    return responde({ ok: true }, 200, origen);
+    return responde({ ok: true, a: email }, 200, origen);
   } catch (e) {
+    const m = e instanceof Error ? e.message : String(e);
     console.error('[alta] no se ha podido mandar la bienvenida', e);
-    return responde({ ok: false, motivo: 'envio' }, 502, origen);
+    return responde(
+      {
+        ok: false,
+        motivo: 'envio',
+        detalle: /domain|verif/i.test(m)
+          ? `Resend no deja mandar desde ${DE}: el dominio no está verificado en Resend → Domains. Detalle: ${m}`
+          : `Resend no lo ha mandado: ${m}`,
+      },
+      502,
+      origen
+    );
   }
 }
