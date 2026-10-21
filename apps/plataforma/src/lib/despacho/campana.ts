@@ -116,6 +116,35 @@ export type DiaCampana = {
    * reciente: la previsión de ayer ya no vale si hoy cambió algo.
    */
   prevision?: { min: number; max: number };
+  /**
+   * EL PLAN: qué se está haciendo ahora y qué toca después.
+   *
+   * Gerson, el 21 de octubre: «quiero que dejes el plan de la publicidad
+   * arriba del coste semanal; por ejemplo, esta semana qué se hará —se
+   * recogerán datos para que el algoritmo entienda—, y luego revisar en qué
+   * mejorar; luego di también el estimado de las personas en los próximos 5
+   * días».
+   *
+   * Y es lo primero que hay que leer, no lo último. Un panel que empieza con
+   * «llevamos gastado 4,92 €» obliga a quien mira a adivinar si eso es bueno.
+   * Empezando por «esta semana se recogen datos» ya sabe qué está pasando, y
+   * entonces el gasto significa algo.
+   *
+   * SE ESCRIBE A MANO, como la previsión, y por el mismo motivo: no hay
+   * fórmula que diga «esta semana toca esperar y la que viene toca cambiar el
+   * público». Eso lo decide quien lleva la campaña mirando los números, y se
+   * revisa cada mañana.
+   */
+  plan?: {
+    /** La fase, en dos o tres palabras: «Semana 1 · Recoger datos». */
+    fase: string;
+    /** Qué se hace estos días, y POR QUÉ. Sin el porqué no es un plan. */
+    semana: string;
+    /** Qué toca revisar o cambiar después, y con qué lo decidiremos. */
+    despues: string;
+    /** Cuánta gente se espera apuntar en los próximos cinco días. */
+    cincoDias?: { min: number; max: number };
+  };
   /** Lo que ha pasado con cada vídeo, si ese día corrían vídeos. */
   video?: {
     /** Empezaron a verlo. */
@@ -166,6 +195,19 @@ function leeDia(id: string, d: Record<string, unknown>): DiaCampana {
     apuntados: num(d.apuntados),
     apuntadosDePago: num(d.apuntadosDePago),
     frecuencia: num(d.frecuencia),
+    plan:
+      d.plan && typeof d.plan === "object"
+        ? (() => {
+            const pl = d.plan as Record<string, unknown>;
+            const cd = pl.cincoDias as Record<string, unknown> | undefined;
+            return {
+              fase: typeof pl.fase === "string" ? pl.fase : "",
+              semana: typeof pl.semana === "string" ? pl.semana : "",
+              despues: typeof pl.despues === "string" ? pl.despues : "",
+              cincoDias: cd ? { min: num(cd.min), max: num(cd.max) } : undefined,
+            };
+          })()
+        : undefined,
     prevision:
       d.prevision && typeof d.prevision === "object"
         ? {
@@ -236,6 +278,8 @@ export type TotalCampana = {
   frecuencia: number;
   /** La previsión más reciente que se haya escrito. Sin ella no se enseña. */
   prevision?: { min: number; max: number };
+  /** El plan más reciente. Como la previsión: el de hoy anula el de ayer. */
+  plan?: DiaCampana["plan"];
   /** Desde cuándo y hasta cuándo hay datos. Vacío si no hay ninguno. */
   desde: string;
   hasta: string;
@@ -283,6 +327,7 @@ export function suma(dias: DiaCampana[]): TotalCampana {
     /* La ÚLTIMA que se escribió, recorriendo hacia atrás: los días viejos
        pueden no llevarla, y la de ayer queda anulada por la de hoy. */
     prevision: [...dias].reverse().find((d) => d.prevision)?.prevision,
+    plan: [...dias].reverse().find((d) => d.plan)?.plan,
     desde: dias.length ? dias[0].dia : "",
     hasta: dias.length ? dias[dias.length - 1].dia : "",
   };

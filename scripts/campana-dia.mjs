@@ -85,6 +85,25 @@ const doc = {
 if (d.prevision) {
   doc.prevision = { min: n(d.prevision.min), max: n(d.prevision.max) };
 }
+/*
+ * EL PLAN: qué se hace estos días, qué toca después y cuánta gente se espera
+ * en los próximos cinco. Sale ARRIBA del todo en la pantalla, antes del
+ * dinero, porque sin él las cifras no dicen si vamos bien o mal.
+ *
+ * Como la previsión, se escribe a mano: no hay fórmula que diga «esta semana
+ * toca esperar y la que viene toca cambiar el público». Y se revisa cada
+ * mañana, porque un plan de hace una semana ya no es un plan.
+ */
+if (d.plan) {
+  doc.plan = {
+    fase: String(d.plan.fase || "").slice(0, 120),
+    semana: String(d.plan.semana || "").slice(0, 700),
+    despues: String(d.plan.despues || "").slice(0, 700),
+  };
+  if (d.plan.cincoDias) {
+    doc.plan.cincoDias = { min: n(d.plan.cincoDias.min), max: n(d.plan.cincoDias.max) };
+  }
+}
 if (d.video) {
   doc.video = {
     empiezan: n(d.video.empiezan),
