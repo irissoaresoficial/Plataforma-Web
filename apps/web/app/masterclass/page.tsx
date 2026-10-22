@@ -28,7 +28,7 @@ export const metadata: Metadata = {
        QUIÉN LA DA sigue sin ir aquí: lo que firma es la escuela. Esto se ve al
        compartir el enlace por WhatsApp, donde más se nota una promesa floja.
        La fecha se escribe sola desde `content/site.ts`: un solo sitio. */
-    `Masterclass gratuita de numerología transgeneracional, ${MASTERCLASS.cuando}, en directo. Lo que se repite en tu forma de querer no empezó contigo. Escuela de Sabiduría 33.`,
+    `Masterclass de numerología transgeneracional, ${MASTERCLASS.cuando}, en directo. Lo que se repite en tu forma de querer no empezó contigo. Escuela de Sabiduría 33.`,
   alternates: { canonical: '/masterclass' },
   openGraph: {
     type: 'website',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
        tiene que decir lo mismo que lo que se ve al entrar. */
     title: '¿Por qué siempre acaba igual?',
     description:
-      `${MASTERCLASS.titulo}: masterclass gratuita y en directo, ${MASTERCLASS.cuando}. Escuela de Sabiduría 33.`,
+      `${MASTERCLASS.titulo}: masterclass en directo, ${MASTERCLASS.cuando}. Escuela de Sabiduría 33.`,
     siteName: 'Escuela de Sabiduría 33',
     locale: 'es_ES',
     images: [`${CASA}/images/desordenes-aterrizaje-cartel.jpg`],

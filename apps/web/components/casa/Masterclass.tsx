@@ -97,7 +97,7 @@ export default function Masterclass() {
 
         <div className="casa-mc-dentro">
           <div className="casa-mc-texto">
-            <span className="casa-mc-rotulo">Masterclass gratuita · Escuela de Sabiduría 33</span>
+            <span className="casa-mc-rotulo">Masterclass en directo · Escuela de Sabiduría 33</span>
             {/*
               EL TITULAR ERA «Hay una forma de amar que no elegiste», y es más
               bonito que éste. Se ha cambiado igual, y conviene saber por qué.
@@ -240,10 +240,15 @@ export default function Masterclass() {
              * «puedo borrarme cuando quiera» ya está dentro de la casilla de
              * consentimiento del formulario, que es donde la ley la pide.
              *
-             * Lo que hay ahora dice las dos cosas que mueven a alguien que
-             * acaba de leer «esto es para ti si…» y está decidiendo: que es
-             * gratuita y que es en directo. Ni una más —ver el comentario de
-             * abajo, que es el que manda.
+             * Lo que hay ahora dice lo único que mueve a alguien que acaba
+             * de leer «esto es para ti si…» y está decidiendo: que es en
+             * directo. Decía también que era gratuita; Gerson lo quitó el 22
+             * de octubre, de la web y de los anuncios a la vez. Cuesta algún
+             * clic —el precio cero siempre los sube— y a cambio no atrae al
+             * que viene sólo porque no paga, que es justo el que luego no
+             * aparece. Para una clase que tiene que estar llena el día 26,
+             * sale a cuenta. Ni una palabra más —ver el comentario de abajo,
+             * que es el que manda.
              *
              * El botón dice lo mismo que el del formulario —«Quiero mi
              * plaza»— a propósito: es la misma acción, así que son las mismas
@@ -263,8 +268,8 @@ export default function Masterclass() {
               Si te has reconocido en algo de esto
             </h2>
             <p className="casa-mc-cierre-p">
-              Es {MASTERCLASS.cuando}, en directo y gratuita. Déjame tu nombre y
-              tu correo y te mando el enlace.
+              Es {MASTERCLASS.cuando}, en directo. Déjame tu nombre y tu correo y te
+              mando el enlace.
             </p>
             <a href="#apuntarse" className="casa-mc-da-boton casa-brillo">
               Quiero mi plaza

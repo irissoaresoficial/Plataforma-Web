@@ -88,8 +88,8 @@ export default function Discografia() {
             pierdes.
           </p>
           <p className="casa-disco-nota">
-            Se entra por la masterclass, que es gratuita. Quien se apunta se
-            entera de los siguientes sin tener que estar mirando.
+            Se entra por la masterclass. Quien se apunta se entera de los
+            siguientes sin tener que estar mirando.
           </p>
         </div>
 
@@ -119,7 +119,7 @@ export default function Discografia() {
                 </span>
                 <span className="casa-disco-pie">
                   <strong>{c.titulo}</strong>
-                  <small>{falta(c.fechas) ? 'Masterclass gratuita' : c.fechas}</small>
+                  <small>{falta(c.fechas) ? 'Masterclass en directo' : c.fechas}</small>
                 </span>
               </Link>
             </li>

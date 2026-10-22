@@ -281,7 +281,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
 
   return (
     <form ref={caja} className="casa-registro" onSubmit={enviar} noValidate>
-      <h2 className="casa-registro-h">Apúntate gratis</h2>
+      <h2 className="casa-registro-h">Apúntate a la masterclass</h2>
       {/* UNA LÍNEA Y NO TRES. Decía «déjame tu nombre y tu correo y te
           escribo en cuanto haya fecha, la masterclass es gratuita», y de ahí
           «tu nombre y tu correo» lo dicen las dos casillas de debajo y «es
