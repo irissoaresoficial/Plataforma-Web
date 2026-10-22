@@ -242,7 +242,15 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
           único honrado que se podía decir. Ahora lo honrado y lo que más
           convierte coinciden: una fecha concreta quita la duda de «¿y esto
           cuándo es?», que es la que frena a mitad del formulario. */}
-      <p className="casa-registro-p">{MASTERCLASS.cuando}.</p>
+      {/* En mayúscula porque aquí es una frase entera y no el final de otra.
+          `cuando` se escribe en minúscula a propósito —«es el jueves 26…»— y
+          eso está bien en los seis sitios donde va dentro de una frase; en
+          este va sola, y una línea que empieza en minúscula debajo de un
+          titular se lee como un descuido. Se arregla aquí y no en el dato,
+          que es el que tiene la forma correcta. */}
+      <p className="casa-registro-p">
+        {MASTERCLASS.cuando.charAt(0).toUpperCase() + MASTERCLASS.cuando.slice(1)}.
+      </p>
 
       <label className="casa-campo" htmlFor={`${id}-n`}>
         <span>Tu nombre</span>
