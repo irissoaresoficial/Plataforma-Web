@@ -1,4 +1,5 @@
 "use client";
+import AcercaDe from "./AcercaDe";
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
@@ -205,12 +206,13 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
     Ico: Ico,
     label: string,
     onClick: () => void,
-    opts?: { grande?: boolean; abierta?: boolean; apagado?: boolean }
+    opts?: { grande?: boolean; abierta?: boolean; apagado?: boolean; guia?: string }
   ) => {
-    const { grande, abierta, apagado } = opts ?? {};
+    const { grande, abierta, apagado, guia } = opts ?? {};
     return (
       <button
         key={label}
+        data-guia={guia ? `nav-${guia}` : undefined}
         onClick={apagado ? undefined : onClick}
         disabled={apagado}
         title={compacta ? label : apagado ? "Primero genera un estudio" : undefined}
@@ -519,7 +521,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
       {escuela.length > 0 && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
           {verDespacho && grupo("Escuela")}
-          {escuela.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k)))}
+          {escuela.map(({ k, label, Ico }) => fila(view === k, Ico, label, ir(k), { guia: k }))}
         </div>
       )}
 
@@ -529,7 +531,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
       {puede("crear") && !verDespacho && (
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
           {grupo("Tu espacio")}
-          {fila(view === "miagenda", IcoAgenda, "Mi agenda", ir("miagenda"))}
+          {fila(view === "miagenda", IcoAgenda, "Mi agenda", ir("miagenda"), { guia: "miagenda" })}
           {fila(view === "mismetricas", IcoMetricas, "Mis métricas", ir("mismetricas"))}
         </div>
       )}
@@ -558,7 +560,7 @@ export default function Sidebar() {
           (lateral ? "238px" : "62px") +
           /* Cristal, igual que la cabecera: es la otra pieza que se queda quieta
              mientras el contenido pasa por detrás. */
-          ";height:calc(100vh - 63px);overflow-y:auto;overflow-x:hidden;padding:14px 12px 28px;background:var(--vidrio);backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);border-right:1px solid var(--border);transition:width var(--t-lento) var(--curva);"
+          ";height:calc(100vh - 63px);overflow-y:auto;overflow-x:hidden;padding:14px 12px 16px;display:flex;flex-direction:column;background:var(--vidrio);backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);border-right:1px solid var(--border);transition:width var(--t-lento) var(--curva);"
       )}
     >
       <button
@@ -575,6 +577,12 @@ export default function Sidebar() {
         {lateral && "Plegar"}
       </button>
       <NavDisciplinas compacta={!lateral} />
+      {/* Abajo del todo: los primeros pasos (los pinta `escuela/GuiaPasos.tsx`
+          aquí dentro, en `data-guia-ancla`) y «Acerca de esto». */}
+      <div style={css("margin-top:auto;padding-top:var(--s4);display:flex;flex-direction:column;gap:6px;")}>
+        <div data-guia-ancla="" />
+        <AcercaDe compacta={!lateral} />
+      </div>
     </aside>
   );
 }

@@ -38,6 +38,11 @@
  * suben. Las dos cosas van a muy poca opacidad: tienen que notarse sin
  * mirarlas. Con movimiento reducido, quietas.
  *
+ * QUINTA, el 21 de octubre: «eso de secretaria quítalo, no es innovador:
+ * asistente inteligente para terapeutas, un solo lugar para crecer y expandir
+ * tu conocimiento y empresa». El archivo se sigue llamando así para no tocar
+ * cinco imports; lo que se lee ya no dice secretaria en ninguna parte.
+ *
  * SÓLO PARA CREADORES. Con `compacta` sale en la parte de abajo de cada una de
  * sus pantallas; entera, en su inicio.
  */
@@ -65,9 +70,9 @@ const VUELTA = 7.2; // segundos que tarda la luz en pasar por las seis líneas
 
 /** Lo que hará, dicho como trabajo que deja de ser suyo. */
 const HARA: Array<[string, string]> = [
-  ["Da las citas", "Contesta a quien pide sesión y la cuadra con tu agenda."],
-  ["Confirma y recuerda", "Avisa el día antes y recoloca el hueco si alguien cancela."],
-  ["Lleva los cobros", "Envía el pago con la cita y te dice cuándo ha entrado."],
+  ["Ordena tu consulta", "Citas, recordatorios y cobros, sin que tengas que estar encima."],
+  ["Te ayuda a enseñar", "Estructura e ideas para tus cursos a partir de lo que ya sabes."],
+  ["Lee tus números", "Te dice qué funciona y dónde está creciendo tu trabajo."],
 ];
 
 /** Ya no se pinta (ver CUARTA, arriba); se queda por si vuelve. */
@@ -82,7 +87,7 @@ export function Diagrama({ medida, tope, solo = false }: { medida: keyof typeof 
       data-ia-diagrama={solo ? undefined : medida}
       viewBox={`0 0 ${ANCHO} ${ALTO}`}
       role="img"
-      aria-label="Agenda, cursos, comunidad y métricas, que ya tienes, y citas y cobros, que llegarán, conectados a tu asistente"
+      aria-label="Agenda, cursos, comunidad y métricas, que ya tienes, y citas y cobros, que llegarán, conectados a tu asistente inteligente"
       style={css(`width:100%;height:auto;max-height:${tope}px;`)}
     >
       <defs>
@@ -197,12 +202,12 @@ export default function SecretariaIA({ compacta = false }: { compacta?: boolean 
           Próximamente
         </span>
         <h2 style={css("margin:0;font-weight:300;letter-spacing:-.025em;line-height:1.1;" + (compacta ? "font-size:clamp(25px,2.5vw,34px);" : "font-size:clamp(28px,3.1vw,42px);"))}>
-          Una secretaria
+          Un asistente inteligente
           <br />
-          <span data-ia-degradado="">que ya conoce tu consulta.</span>
+          <span data-ia-degradado="">para terapeutas.</span>
         </h2>
         <p style={css("margin:0;font-size:var(--t-body);line-height:1.65;color:var(--sobre-bloque-2);max-width:46ch;")}>
-          Un asistente que trabaja con lo que ya tienes aquí —tu agenda, tus cursos, tu comunidad y tus números— para que tú sólo atiendas.
+          Pensado para nuestra profesión. Un solo lugar para crecer y expandir tu conocimiento y tu empresa, con lo que ya tienes aquí: tu agenda, tus cursos, tu comunidad y tus números.
         </p>
         {compacta ? (
           <ul style={css("margin:2px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px;")}>

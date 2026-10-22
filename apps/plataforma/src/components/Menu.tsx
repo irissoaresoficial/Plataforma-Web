@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp, PESTANAS, VISTAS_DE_ESTUDIO } from "@/lib/app-context";
 import { NavDisciplinas } from "./Sidebar";
+import AcercaDe from "./AcercaDe";
 
 /**
  * El menú de móvil y tableta en vertical.
@@ -94,6 +95,9 @@ export default function Menu({ abierto, cerrar }: { abierto: boolean; cerrar: ()
                 misma lista, en el mismo orden, con los mismos nombres.
             */}
             <NavDisciplinas alCambiar={cerrar} />
+            <div style={css("margin-top:var(--s4);")}>
+              <AcercaDe />
+            </div>
           </motion.aside>
         </motion.div>
       )}

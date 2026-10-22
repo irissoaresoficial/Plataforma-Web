@@ -487,7 +487,7 @@ export default function EditorCurso({
                       </div>
 
                       <div style={css("display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;")}>
-                        <div style={css("flex:1 1 260px;min-width:0;")}>
+                        <div data-guia="clase" style={css("flex:1 1 260px;min-width:0;")}>
                           <SubirVideo
                             cursoId={c.id}
                             valor={l.video}
@@ -615,7 +615,7 @@ export default function EditorCurso({
                   onChange={(e) => cambia({ revision: e.target.checked })}
                   style={css("margin-top:3px;width:17px;height:17px;flex:none;cursor:pointer;")}
                 />
-                <label htmlFor="curso-revision" style={css("cursor:pointer;")}>
+                <label htmlFor="curso-revision" data-guia="publicar" style={css("cursor:pointer;")}>
                   <span style={css("display:block;font-size:var(--t-body);font-weight:500;color:var(--text);")}>
                     {c.publicado ? "Publicado" : "Pedir que se publique"}
                   </span>

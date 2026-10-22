@@ -51,7 +51,7 @@ export default function AgenteIA() {
           <path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z" />
           <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" />
         </svg>
-        <span data-agente-texto="" style={css("font-size:var(--t-mini);font-weight:500;")}>Agente IA</span>
+        <span data-agente-texto="" style={css("font-size:var(--t-mini);font-weight:500;")}>Asistente IA</span>
         <span
           data-agente-texto=""
           style={css("font-size:var(--t-micro);font-weight:500;padding:3px 8px;border-radius:var(--r-pill);background:var(--oro-luz);color:var(--vino);")}
@@ -76,9 +76,9 @@ export default function AgenteIA() {
             )}
           >
             <div style={css("font-size:var(--t-mini);color:var(--oro-luz);")}>Próximamente</div>
-            <div style={css("font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;margin-top:4px;")}>Agente IA</div>
+            <div style={css("font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;margin-top:4px;")}>Asistente inteligente</div>
             <p style={css("margin:8px 0 0;font-size:var(--t-body);line-height:1.5;color:var(--sobre-bloque-2);")}>
-              Un agente de reservas y una agenda inteligente para tu negocio de terapeuta.
+              Para terapeutas. Un solo lugar para crecer y expandir tu conocimiento y tu empresa.
             </p>
           </motion.div>
         )}

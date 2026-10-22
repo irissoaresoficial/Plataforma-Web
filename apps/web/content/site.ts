@@ -170,15 +170,21 @@ export const PRESENTAN: Presenta[] = [
 
 /**
  * Datos fiscales del aviso legal y de la política de datos. Son obligatorios
- * por ley: mientras estén en PENDIENTE, la web los enseña marcados.
+ * por ley.
+ *
+ * Nombre y dirección, el 21 de octubre de 2026: los que constan como titular
+ * del dominio (Iris Soares, Vigo). Gerson: «esto fatal, estamos en plena
+ * publicidad». El NIF sigue sin dárnoslo nadie y NO se inventa: mientras falte,
+ * el aviso legal no enseña esa línea en rojo ante la gente que llega de los
+ * anuncios. Hay que ponerlo cuanto antes: la Ley 34/2002 (art. 10) lo pide.
  */
 export const TITULAR = {
   /** Nombre y apellidos, o la razón social si factura una sociedad. */
-  nombre: PENDIENTE,
+  nombre: 'Iris Soares',
   /** NIF o CIF. */
   nif: PENDIENTE,
   /** Domicilio fiscal completo. */
-  direccion: PENDIENTE,
+  direccion: 'Rúa de Urzáiz, 158, 3, 36205 Vigo (Pontevedra), España',
 };
 
 /**
