@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { recuerdaCampana } from '@/lib/campana';
 import { LLAVE_MEDICION, PIXEL_META } from '@/lib/pixel';
@@ -68,6 +68,81 @@ export default function Medicion() {
   /** `null` mientras no se sabe; luego, lo que haya decidido la persona. */
   const [decision, setDecision] = useState<'si' | 'no' | null>(null);
   const [leido, setLeido] = useState(false);
+  const cartel = useRef<HTMLDivElement | null>(null);
+
+  /*
+   * ============================================================================
+   * EL CARTEL SE QUITABA DE EN MEDIO DEL BOTÓN DE APUNTARSE. AHORA NO.
+   * ============================================================================
+   *
+   * ESTO COSTÓ UNA CAMPAÑA ENTERA, así que queda escrito con todo detalle.
+   *
+   * El cartel está `position: fixed` abajo. Flota por encima de la página: no
+   * ocupa sitio, así que lo que haya debajo queda tapado y no hay forma de
+   * tocarlo. Y el 21 de octubre se movió el formulario de la masterclass hacia
+   * arriba para que se viera al entrar — lo cual estaba bien— y el botón
+   * «Quiero mi plaza» aterrizó exactamente donde flota el cartel.
+   *
+   * Medido con un navegador de verdad, en tres móviles:
+   *
+   *   430 x 932  el cartel va de y=760 a y=922. El botón, en y=857. Al pulsar
+   *              el botón se pulsaba «Aceptar» del cartel.
+   *   390 x 844  la casilla del consentimiento, tapada por el texto del cartel.
+   *   360 x 800  casilla y botón por debajo del pliegue, y al bajar el cartel
+   *              los sigue tapando, porque va fijo.
+   *
+   * O sea: una persona venía del anuncio, escribía su nombre y su correo, iba a
+   * marcar la casilla y a darle al botón — y lo que había encima era el cartel
+   * de cookies. Muchas le darían a «Aceptar» creyendo que se apuntaban, verían
+   * desaparecer el cartel, no pasaría nada más, y se irían. Cero apuntados con
+   * casi doscientos clics pagados no era el anuncio: era esto.
+   *
+   * ---------------------------------------------------------------------------
+   * EL ARREGLO: QUE EL CARTEL OCUPE SITIO AUNQUE FLOTE
+   * ---------------------------------------------------------------------------
+   * Mientras el cartel está en pantalla se le mide el alto de verdad y se le
+   * mete ese mismo alto de hueco al final de la página. Así no hay nada que
+   * quede inalcanzable: lo que el cartel tapa se puede dejar a la vista
+   * bajando un poco, que es lo que hace cualquiera.
+   *
+   * SE MIDE Y NO SE PONE A OJO porque el alto cambia: en el móvil el cartel es
+   * más compacto, el texto se parte en más o menos líneas según el ancho, y la
+   * barra de abajo del iPhone (`safe-area-inset-bottom`) añade lo suyo. Un
+   * número escrito a mano acierta en el móvil del que lo midió y falla en el
+   * siguiente.
+   *
+   * El hueco desaparece en cuanto la persona contesta, porque entonces el
+   * cartel ya no existe.
+   */
+  useEffect(() => {
+    const caja = cartel.current;
+    const cuerpo = document.body;
+    if (!caja) {
+      cuerpo.classList.remove('cartel-abierto');
+      cuerpo.style.removeProperty('--cartel-alto');
+      return;
+    }
+
+    const mide = () => {
+      /* `+ 18` es el aire entre el final del contenido y el cartel: pegados
+         justos sigue pareciendo que algo queda debajo. */
+      const alto = Math.ceil(caja.getBoundingClientRect().height) + 18;
+      cuerpo.style.setProperty('--cartel-alto', `${alto}px`);
+      cuerpo.classList.add('cartel-abierto');
+    };
+    mide();
+
+    /* El texto se re-parte al girar el móvil o al cambiar la letra del
+       sistema, y entonces el alto cambia. Si no se vuelve a medir, el hueco se
+       queda corto justo en el móvil de quien gira la pantalla. */
+    const ojo = new ResizeObserver(mide);
+    ojo.observe(caja);
+    return () => {
+      ojo.disconnect();
+      cuerpo.classList.remove('cartel-abierto');
+      cuerpo.style.removeProperty('--cartel-alto');
+    };
+  }, [leido, decision]);
 
   useEffect(() => {
     /* DE QUÉ ANUNCIO VIENE, Y ESTO VA ANTES DE TODO LO DEMÁS.
@@ -141,7 +216,7 @@ gtag('js',new Date());gtag('config','${GOOGLE}');`}
           Abajo a la izquierda, que es la esquina que queda libre: a la derecha
           está el botón del chat y encima de él salen los susurros. */}
       {leido && decision === null && (
-        <div className="cookies" role="dialog" aria-label="Uso de cookies de medición">
+        <div ref={cartel} className="cookies" role="dialog" aria-label="Uso de cookies de medición">
           {/* CORTO A PROPÓSITO, Y SIGUE DICIENDO LO QUE TIENE QUE DECIR.
               Antes eran cuatro líneas en un móvil y el cartel se comía el
               tercio de abajo de la pantalla, justo encima del formulario de

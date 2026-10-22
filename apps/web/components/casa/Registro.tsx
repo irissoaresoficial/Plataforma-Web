@@ -62,6 +62,8 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
+  /* Plegado al entrar: el porqué está junto al campo, más abajo. */
+  const [whatsappAbierto, setWhatsappAbierto] = useState(false);
   const [aceptado, setAceptado] = useState(false);
   const [trampa, setTrampa] = useState('');
   const [error, setError] = useState('');
@@ -269,20 +271,39 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
         />
       </label>
 
-      <label className="casa-campo" htmlFor={`${id}-w`}>
-        <span>
-          WhatsApp <em>(opcional)</em>
-        </span>
-        <input
-          id={`${id}-w`}
-          name="whatsapp"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          value={whatsapp}
-          onChange={(e) => setWhatsapp(e.target.value)}
-        />
-      </label>
+      {/*
+        EL WHATSAPP, PLEGADO. Y NO ES UN ADORNO: SON 89 PÍXELES.
+        ------------------------------------------------------------------
+        Este campo ocupaba 89 px de la primera pantalla, y en un móvil de 390
+        de alto esos 89 px son la diferencia entre ver el botón de apuntarse y
+        no verlo. Medido: con el campo abierto el botón caía en y=864 de una
+        pantalla de 844 — fuera. Plegado cae dentro.
+
+        Y es opcional de verdad: el enlace del grupo de WhatsApp se da en la
+        pantalla de gracias, así que para apuntarse nunca hizo falta. Quien
+        quiera darlo lo da en un toque; quien no, no paga su sitio en pantalla.
+      */}
+      {whatsappAbierto ? (
+        <label className="casa-campo" htmlFor={`${id}-w`}>
+          <span>
+            WhatsApp <em>(opcional)</em>
+          </span>
+          <input
+            id={`${id}-w`}
+            name="whatsapp"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            value={whatsapp}
+            onChange={(e) => setWhatsapp(e.target.value)}
+            autoFocus
+          />
+        </label>
+      ) : (
+        <button type="button" className="casa-registro-mas" onClick={() => setWhatsappAbierto(true)}>
+          + Añadir mi WhatsApp <em>(opcional)</em>
+        </button>
+      )}
 
       {/* La trampa. Ni se ve ni la anuncia un lector de pantalla ni la
           alcanza el tabulador; un robot la rellena igual. */}

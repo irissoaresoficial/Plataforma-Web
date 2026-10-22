@@ -1492,6 +1492,35 @@ html[data-portada='si'] #chat-launcher {
   color: #9b1c2c;
 }
 
+/* ------------------------------------------- abrir el campo del WhatsApp */
+/* Un enlace con forma de enlace y no de botón, a propósito: en un formulario
+   sólo puede haber una cosa que parezca el botón, y es la que envía. Si esto
+   pareciera un botón más, habría dos y la gente dudaría — y una duda delante
+   de un formulario es una persona que se va.
+   Mide 24 px en vez de los 89 que medía el campo abierto. El porqué de que
+   esté plegado está escrito en `Registro.tsx`, junto al campo. */
+.casa-registro-mas {
+  align-self: flex-start;
+  margin: -2px 0 2px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  /* El granate de la casa, que sobre el papel da contraste de sobra y dice
+     «esto se puede tocar» sin gritar. */
+  color: var(--vino);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.casa-registro-mas em {
+  font-style: normal;
+  font-weight: 400;
+  color: #55504f;
+}
+
 .casa-registro-boton {
   margin-top: 4px;
   padding: 14px 24px;

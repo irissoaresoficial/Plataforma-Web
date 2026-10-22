@@ -5708,6 +5708,28 @@ body[data-nav-claro='si'] .sello-color {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
+/*
+ * EL HUECO QUE TIENE QUE DEJAR EL CARTEL, Y POR QUÉ EXISTE ESTA REGLA.
+ *
+ * El cartel va `position: fixed`: flota y no ocupa sitio, así que todo lo que
+ * cae debajo queda tapado y no se puede tocar. En la masterclass lo que caía
+ * debajo era la casilla del consentimiento y el botón «Quiero mi plaza»: una
+ * persona que venía del anuncio rellenaba el formulario y, al ir a enviarlo,
+ * pulsaba «Aceptar» del cartel. Cero apuntados con casi cuatrocientos clics
+ * pagados no era el anuncio: era esto.
+ *
+ * Con este hueco, lo que el cartel tapa se deja a la vista bajando un poco,
+ * que es lo que hace cualquiera.
+ *
+ * La clase y el alto los pone `components/Medicion.tsx`, que mide el cartel de
+ * verdad en cada móvil en vez de confiar en un número escrito a mano —el alto
+ * cambia con el ancho, con la letra del sistema y con la barra de abajo del
+ * iPhone—; el razonamiento entero está allí. El valor de reserva de aquí sólo
+ * se usa en el caso raro de que la clase llegue antes que la medida.
+ */
+body.cartel-abierto {
+  padding-bottom: var(--cartel-alto, 180px);
+}
 /* EN EL MÓVIL, LO MÁS BAJO POSIBLE. Medido: en una pantalla de 430 x 932 este
    cartel ocupaba 230 px —el tercio de abajo— y caía justo encima del
    formulario de la masterclass, que es la única pieza de la web que tiene que
@@ -5726,6 +5748,63 @@ body[data-nav-claro='si'] .sello-color {
   .cookies-botones button {
     padding: 9px 12px;
   }
+}
+/*
+ * ============================================================================
+ * EN EL MÓVIL, EL CARTEL SE VA ARRIBA. ES EL ARREGLO QUE IMPORTA.
+ * ============================================================================
+ *
+ * Medido con un navegador de verdad, con el cartel abajo:
+ *
+ *   430 x 932  el cartel ocupa de y=760 a y=922 y el botón «Quiero mi plaza»
+ *              está en y=857. Al pulsar el botón se pulsaba «Aceptar».
+ *   390 x 844  la casilla del consentimiento, tapada por el texto del cartel.
+ *   360 x 800  casilla y botón por debajo del pliegue, y el cartel, que va
+ *              fijo abajo, los vuelve a tapar al bajar.
+ *
+ * O sea que abajo, en un móvil, el cartel vive exactamente donde está la única
+ * acción que paga esta web. Y hacerlo más pequeño no lo arregla: el formulario
+ * de la masterclass mide 517 px y la pantalla útil son 932 menos lo que ocupe
+ * el cartel; no caben los dos abajo por mucho que se recorte el texto.
+ *
+ * Arriba no estorba a nada: lo que tapa es el sello y el menú — cosas por las
+ * que una persona que viene de un anuncio se va de la página, no por las que
+ * se apunta—, y lo hace sólo hasta que contesta. La ley pide lo mismo arriba
+ * que abajo: que se vea antes de cargar nada, que explique para qué, y que
+ * decir «no» cueste lo mismo que decir «sí». Todo eso sigue igual.
+ *
+ * En el ordenador se queda abajo a la izquierda: allí sobra sitio y no se cruza
+ * con nada.
+ */
+@media (max-width: 959px) {
+  .cookies {
+    top: calc(clamp(10px, 2vw, 24px) + env(safe-area-inset-top));
+    bottom: auto;
+    /* Centrado, que arriba es donde se mira. */
+    left: 50%;
+    width: min(calc(100vw - 24px), 420px);
+    /* Entra cayendo, no subiendo: ahora viene de arriba. Lleva nombre propio
+       en vez de redefinir el de abajo dentro de la consulta de medios, que es
+       de las cosas que funcionan hasta que un navegador decide que no. */
+    animation-name: cookies-entra-arriba;
+  }
+  /*
+   * Y AQUÍ NO SE AÑADE NINGÚN HUECO, a propósito.
+   *
+   * Abajo el hueco hacía falta porque el cartel tapaba el final de la página y
+   * no había forma de bajar más. Arriba no: lo único que el cartel tapa es la
+   * franja de arriba de la pantalla, y lo que caiga ahí se saca de debajo
+   * subiendo un dedo. Meter hueco arriba sería peor que no hacer nada —
+   * empujaría el formulario 180 px hacia abajo y lo sacaría de la primera
+   * pantalla, que es justo lo que llevamos dos días arreglando.
+   */
+  body.cartel-abierto {
+    padding-bottom: 0;
+  }
+}
+@keyframes cookies-entra-arriba {
+  from { opacity: 0; transform: translate(-50%, -14px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
 }
 .cookies-txt {
   margin: 0;
