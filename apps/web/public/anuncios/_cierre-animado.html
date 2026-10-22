@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cierre animado · Desórdenes Amorosos</title>
+<style>
+  /* ══════════════════════════════════════════════════════════════════════
+     CIERRE DE LOS ANUNCIOS — 1080×1920, 4,6 s
+
+     Gerson, 22 de octubre: «haz el mismo estilo animación apple style,
+     utiliza bien los keyframes y las animaciones hazlas con javascript
+     (solo pon al final algo como apúntate ahora, la fecha y cta de click
+     y regístrate)».
+
+     Por qué el movimiento lo manda JavaScript y no el CSS: esto se graba
+     fotograma a fotograma. Una animación de CSS la mueve el reloj del
+     navegador, que no sabe nada de la grabación, y saldrían fotogramas a
+     medio fundir. Con la Web Animations API las animaciones nacen en
+     pausa y se les dice `currentTime` para cada 1/30 de segundo: cada
+     foto cae exactamente donde la receta dice que debe caer.
+
+     Lo de «apple style» en concreto son cuatro cosas, y ninguna es un
+     efecto: curvas de salida muy largas (todo frena despacio y nada
+     rebota), entradas escalonadas de ~160 ms, los elementos entran
+     desenfocados y se enfocan, y mucho aire alrededor de una sola frase.
+     ══════════════════════════════════════════════════════════════════ */
+
+  @font-face {
+    font-family: 'Instrument Sans';
+    src: url('instrument-sans.woff2') format('woff2');
+    font-weight: 300 500;
+    font-display: block;
+  }
+
+  :root {
+    /* MARCA.md §3. Un color se usa por su token, nunca por su hexadecimal. */
+    --papel: #ffffff;
+    --arena: #f1ede4;
+    --vino: #451a25;
+    --oro-tinta: #7d5f1e;
+    --oro-luz: #e2cda2;
+    --tinta: #221d1f;
+    --linea: #e9e5df;
+    --radio-pildora: 100px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #000; }
+
+  #lienzo {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: var(--papel);
+    font-family: 'Instrument Sans', system-ui, sans-serif;
+    color: var(--tinta);
+  }
+
+  /* ─────────────────────────────────────────────────────── el fondo */
+  /* Dos luces enormes y desenfocadas, no un degradado cruzando la pieza.
+     Se mueven despacio durante los 4,6 s para que la imagen no parezca
+     una foto fija pegada al final del vídeo. */
+  .luz { position: absolute; border-radius: 50%; filter: blur(150px); will-change: transform, opacity; }
+  .luz-a { width: 1200px; height: 1200px; background: var(--oro-luz); top: -300px; left: -320px; opacity: .26; }
+  .luz-b { width: 1000px; height: 1000px; background: #efd9dd; bottom: -260px; right: -280px; opacity: .24; }
+  .vel { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.3) 42%, rgba(255,255,255,.85)); }
+
+  /* ──────────────────────────────────────────────────── la columna */
+  .centro {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 0 110px;
+    text-align: center;
+  }
+
+  .pieza { will-change: transform, opacity, filter; }
+
+  .sello { width: 164px; height: 164px; display: block; }
+
+  .casa {
+    margin-top: 30px;
+    font-size: 40px; font-weight: 500;
+    letter-spacing: 0.015em;
+    line-height: 1.18;
+    color: var(--vino);
+  }
+
+  .frase {
+    margin-top: 78px;
+    font-size: 132px; font-weight: 300;
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+    color: var(--tinta);
+  }
+
+  .cuando {
+    margin-top: 40px;
+    font-size: 42px; font-weight: 400;
+    letter-spacing: -0.012em;
+    color: var(--oro-tinta);
+  }
+  .cuando .sep { opacity: .45; padding: 0 10px; }
+
+  .boton {
+    position: relative;
+    margin-top: 80px;
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 124px; padding: 0 78px;
+    border-radius: var(--radio-pildora);
+    background: var(--vino);
+    color: var(--papel);
+    font-size: 46px; font-weight: 500;
+    letter-spacing: -0.008em;
+    overflow: hidden;
+    box-shadow: 0 30px 70px -34px rgba(69,26,37,.65);
+  }
+  /* El brillo que cruza el botón una vez. Es lo único que se mueve
+     después de que todo haya entrado: señala dónde hay que pulsar. */
+  .brillo {
+    position: absolute; top: 0; bottom: 0; width: 280px;
+    background: linear-gradient(100deg, rgba(255,255,255,0), rgba(255,255,255,.3), rgba(255,255,255,0));
+    will-change: transform;
+  }
+
+  .web {
+    margin-top: 44px;
+    font-size: 34px; font-weight: 400;
+    letter-spacing: 0.055em;
+    text-transform: lowercase;
+    color: rgba(34,29,31,.52);
+  }
+
+</style>
+</head>
+<body>
+
+<div id="lienzo">
+  <i class="luz luz-a" id="luzA"></i>
+  <i class="luz luz-b" id="luzB"></i>
+  <div class="vel"></div>
+
+  <div class="centro">
+    <img class="pieza sello" id="pSello" src="logo-360.png" alt="">
+    <p class="pieza casa" id="pCasa">Desórdenes Amorosos</p>
+    <h1 class="pieza frase" id="pFrase">Apúntate ahora</h1>
+    <p class="pieza cuando" id="pCuando">Jueves 26 de noviembre<span class="sep">·</span>21:00 h</p>
+    <div class="pieza boton" id="pBoton">Reserva tu plaza gratis<i class="brillo" id="pBrillo"></i></div>
+    <p class="pieza web" id="pWeb">escueladesabiduria33.com</p>
+  </div>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════
+   EL RELOJ
+
+   Todas las animaciones nacen en pausa. `window.__t(t)` las coloca en el
+   instante t (en segundos) y el navegador repinta. El grabador pide
+   t = 0, 1/30, 2/30… y saca una foto de cada uno. Así la animación es
+   idéntica cada vez que se graba, y no depende de lo que tarde el
+   ordenador en dibujar.
+   ═════════════════════════════════════════════════════════════════════ */
+
+const DUR = 4.6;                                   // segundos de cierre
+
+/* Las curvas. SALIDA es la de Apple: arranca rápido y tarda una eternidad
+   en frenar, sin rebotar nunca. Es lo que hace que algo «aterrice» en vez
+   de «llegar». SUAVE es para lo que solo cambia de opacidad. */
+const SALIDA = 'cubic-bezier(0.16, 1, 0.3, 1)';
+const SUAVE  = 'cubic-bezier(0.33, 0, 0.2, 1)';
+
+const animaciones = [];
+
+/* entra(): la entrada estándar de cada elemento.
+   Sube 46 px, pasa de 0,96 a 1 de tamaño, de desenfocado a nítido y de
+   transparente a opaco. Todo con la misma curva y el mismo reparto de
+   tiempos: lo que da sensación de sistema, no de efectos sueltos. */
+function entra(el, retraso, { sube = 46, dur = 1.15, escala = 0.965, desenfoque = 10 } = {}) {
+  const a = el.animate(
+    [
+      { opacity: 0, filter: `blur(${desenfoque}px)`, transform: `translateY(${sube}px) scale(${escala})` },
+      { opacity: 1, offset: 0.55, filter: 'blur(0px)', transform: 'translateY(0px) scale(1)' },
+      { opacity: 1, filter: 'blur(0px)', transform: 'translateY(0px) scale(1)' },
+    ],
+    { duration: dur * 1000, delay: retraso * 1000, easing: SALIDA, fill: 'both' }
+  );
+  a.pause();
+  animaciones.push(a);
+  return a;
+}
+
+/* 1 · El sello y el nombre de la casa. Entran juntos pero escalonados:
+       primero quién lo da, luego qué es. */
+entra(document.getElementById('pSello'), 0.10, { sube: 30, escala: 0.86, desenfoque: 14 });
+entra(document.getElementById('pCasa'),  0.26, { sube: 34 });
+
+/* 2 · La frase. Es lo único grande de la pieza, así que entra sola y con
+       más recorrido que el resto. */
+entra(document.getElementById('pFrase'), 0.52, { sube: 60, dur: 1.3, escala: 0.955, desenfoque: 16 });
+
+/* 3 · La fecha, el botón y la dirección. Cada uno 160 ms detrás del
+       anterior: el ojo los lee en ese orden sin tener que buscarlos. */
+entra(document.getElementById('pCuando'), 0.86);
+entra(document.getElementById('pBoton'),  1.02, { sube: 40, escala: 0.94 });
+entra(document.getElementById('pWeb'),    1.18, { sube: 28 });
+
+/* 4 · El brillo cruza el botón una vez, ya entrado todo. No se repite:
+       un brillo que da vueltas es un banner, no un anuncio. */
+{
+  const a = document.getElementById('pBrillo').animate(
+    [{ transform: 'translateX(-340px) skewX(-18deg)' }, { transform: 'translateX(760px) skewX(-18deg)' }],
+    { duration: 1100, delay: 2050, easing: SUAVE, fill: 'both' }
+  );
+  a.pause();
+  animaciones.push(a);
+}
+
+/* 5 · Las dos luces del fondo, moviéndose durante toda la pieza. Es lo
+       que evita que el cierre parezca una foto pegada al final. */
+for (const [id, dx, dy, esc] of [['luzA', 120, 90, 1.12], ['luzB', -110, -70, 1.1]]) {
+  const a = document.getElementById(id).animate(
+    [{ transform: 'translate(0px, 0px) scale(1)' },
+     { transform: `translate(${dx}px, ${dy}px) scale(${esc})` }],
+    { duration: DUR * 1000, easing: 'linear', fill: 'both' }
+  );
+  a.pause();
+  animaciones.push(a);
+}
+
+/* El grabador llama a esto. */
+window.__t = (t) => {
+  const ms = Math.max(0, Math.min(DUR, t)) * 1000;
+  for (const a of animaciones) a.currentTime = ms;
+};
+
+window.__dur = DUR;
+
+/* `__listo` solo dice que sí cuando la tipografía y el logotipo están
+   cargados. Sin esto, los primeros fotogramas saldrían con la letra del
+   sistema y el hueco del logotipo vacío. */
+window.__listo = false;
+Promise.all([
+  document.fonts.ready,
+  new Promise((r) => {
+    const im = document.getElementById('pSello');
+    if (im.complete) return r();
+    im.addEventListener('load', r, { once: true });
+    im.addEventListener('error', r, { once: true });
+  }),
+]).then(() => { window.__t(0); window.__listo = true; });
+</script>
+</body>
+</html>
