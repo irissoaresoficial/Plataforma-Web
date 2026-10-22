@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Creativos · según MARCA.md</title>
+<title>Creativos · marco y retratos alineados</title>
 <style>
   @font-face {
     font-family: 'Instrument Sans';
@@ -10,13 +10,7 @@
     font-weight: 300 700;
     font-display: block;
   }
-
-  /* ══════════════════════════════════════════════════════════════════════
-     LOS TOKENS DE LA MARCA, COPIADOS DE `MARCA.md` §3 Y §4.
-     Ni uno escrito a mano. Si hiciera falta un color que no está —un rosa,
-     por ejemplo— se añade primero allí y se usa después, que es lo que dice
-     la regla madre (§1).
-     ══════════════════════════════════════════════════════════════════════ */
+  /* Tokens copiados de MARCA.md §2, §3 y §4. Ni uno a ojo. */
   :root {
     --vino: #451a25;
     --oro: #a9884f;
@@ -26,27 +20,20 @@
     --papel: #ffffff;
     --arena: #f1ede4;
     --linea: #e9e5df;
-
-    /* §2 Los pesos. Por encima de 500 no se sube. */
+    --sobre-bloque: #fbf6ee;
     --peso-fino: 300;
     --peso-texto: 400;
     --peso-medio: 500;
-
-    /* §4 Las formas. Sólo estos radios. */
-    --radio: 4px;
-    --radio-chico: 3px;
     --radio-medio: 12px;
     --radio-suave: 25px;
     --radio-pildora: 100px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: #9ca3af;
     font-family: 'Instrument Sans', system-ui, sans-serif;
     display: flex; flex-wrap: wrap; gap: 40px; padding: 40px;
   }
-
   .pieza {
     position: relative; overflow: hidden;
     width: 1080px; height: 1350px;
@@ -57,88 +44,98 @@
   }
   .p916 { height: 1920px; }
 
-  /* ------------------------------------------------------------ cabecera */
   .cabecera { display: flex; align-items: center; justify-content: space-between; }
-  .marca {
-    font-size: 19px; font-weight: var(--peso-medio);
-    letter-spacing: .32em; text-transform: uppercase;
-    color: var(--vino);
-  }
+  .marca { font-size: 19px; font-weight: var(--peso-medio); letter-spacing: .32em; text-transform: uppercase; }
   .pastilla {
     display: inline-flex; align-items: center; gap: 11px;
-    height: 42px; padding: 0 20px;
-    border-radius: var(--radio-pildora);
+    height: 42px; padding: 0 20px; border-radius: var(--radio-pildora);
     border: 1px solid var(--oro);
     font-size: 17px; font-weight: var(--peso-medio);
-    letter-spacing: .16em; text-transform: uppercase;
-    color: var(--oro-tinta);
+    letter-spacing: .16em; text-transform: uppercase; color: var(--oro-tinta);
   }
   .brasa { width: 9px; height: 9px; border-radius: 50%; background: var(--oro-tinta); }
 
-  /* ------------------------------------------------------------- titular */
-  /* §2: el contraste sale del TAMAÑO y del ESPACIO, no del peso. 300, como
-     manda `--peso-fino`, y grande. Eso es «Apple style modern light». */
-  .titular {
-    margin-top: 52px;
-    font-size: 122px; font-weight: var(--peso-fino);
-    line-height: .98; letter-spacing: -.035em;
-    text-wrap: balance;
-    max-width: 880px;
+  /* ══════════════════════════════════════════════════════════════════════
+     LA FRASE, ENMARCADA.
+     Gerson: «la frase como tal debe enmarcarse en algo, tiene que mostrarse
+     un poco más imponente». El marco es EL bloque oscuro de la pieza — y es
+     el único, porque la regla de la plataforma dice «la pieza oscura que
+     ancla una pantalla clara: UNA POR PANTALLA». Por eso la fecha, que antes
+     era el bloque granate, pasa a ser una ficha clara con filete dorado.
+     El peso sigue en 300: lo imponente lo pone el marco y el tamaño, no la
+     negrita (MARCA.md §2).
+     ══════════════════════════════════════════════════════════════════════ */
+  .marco-frase {
+    margin-top: 40px;
+    padding: 52px 54px 56px;
+    background: var(--vino);
+    color: var(--sobre-bloque);
+    border-radius: var(--radio-suave);
   }
-  .titular.largo { font-size: 104px; }
-  /* El énfasis, con el dorado que SÍ se lee sobre claro (§3). Nunca --oro. */
-  .titular b { font-weight: var(--peso-fino); color: var(--oro-tinta); }
+  .titular {
+    font-size: 108px; font-weight: var(--peso-fino);
+    line-height: .97; letter-spacing: -.035em;
+  }
+  .titular.largo { font-size: 94px; }
+  .titular b { font-weight: var(--peso-fino); color: var(--oro-luz); }
 
-  .lista { margin-top: 44px; display: flex; flex-direction: column; gap: 14px; }
+  .lista { margin-top: 46px; display: flex; flex-direction: column; gap: 16px; }
   .lista li {
     list-style: none; display: flex; align-items: baseline; gap: 16px;
-    font-size: 28px; font-weight: var(--peso-texto); letter-spacing: -.008em;
-    color: var(--tinta);
+    font-size: 29px; font-weight: var(--peso-texto); letter-spacing: -.008em; color: var(--tinta);
   }
   .lista li::before {
-    content: ''; flex: none;
-    width: 9px; height: 9px; border-radius: 50%;
+    content: ''; flex: none; width: 9px; height: 9px; border-radius: 50%;
     background: var(--oro); transform: translateY(-4px);
   }
 
-  /* ═════════════════════════════════════════════════ la franja de abajo
-     TRES PANELES Y NI UNA LETRA ENCIMA DE UNA CARA.
-     Los retratos van en su propio panel y el texto en el suyo. Así el solape
-     no es «poco probable»: es imposible por construcción. */
-  .franja {
-    margin-top: auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1.25fr;
-    gap: 22px;
-  }
-  .panel {
+  /* ══════════════════════════════════════════════════════════════════════
+     LOS RETRATOS: CENTRADOS, DEL MISMO TAMAÑO Y SIN CORTAR.
+     Antes iban a sangre en un panel más alto que ancho, y como las dos fotos
+     vienen ya recortadas al ras de la cabeza, a Marco se le cortaba el pelo
+     por arriba. Ahora cada foto va ENTERA dentro de un marco cuadrado
+     —`contain`, no `cover`— con el mismo aire alrededor en las dos. Así:
+       · no se corta nada, ni a él ni a ella;
+       · las dos caras quedan a la misma altura, porque el marco es el mismo;
+       · y se ven «un poco más alejadas», que es lo que se pidió.
+     El día que haya fotos con más aire de origen, se cambia `contain` por
+     `cover` y se gana resolución. Hasta entonces, mejor entera y pequeña que
+     grande y descabezada.
+     ══════════════════════════════════════════════════════════════════════ */
+  .franja { margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .retrato {
+    aspect-ratio: 1 / 1;
+    background: var(--papel);
+    border: 1px solid var(--linea);
     border-radius: var(--radio-suave);
-    overflow: hidden;
+    padding: 22px;
+    display: flex; align-items: center; justify-content: center;
   }
-  .retrato { position: relative; height: 420px; background-color: var(--linea); }
-  .retrato .foto { position: absolute; inset: 0; background-size: cover; }
-  .retrato.iris .foto { background-image: url('iris-retrato.jpg'); background-position: 50% 32%; }
-  .retrato.marco .foto { background-image: url('marco-retrato.jpg'); background-position: 50% 30%; }
-  /* El nombre va DEBAJO del retrato, sobre el fondo crema. Nunca encima. */
-  .nombre { margin-top: 16px; }
+  .retrato img {
+    width: 100%; height: 100%;
+    object-fit: contain; object-position: center;
+    border-radius: var(--radio-medio);
+  }
+  .nombre { margin-top: 18px; }
   .nombre b { display: block; font-size: 26px; font-weight: var(--peso-medio); letter-spacing: -.012em; }
-  .nombre span { display: block; margin-top: 3px; font-size: 19px; font-weight: var(--peso-texto); color: var(--oro-tinta); }
+  .nombre span { display: block; margin-top: 3px; font-size: 17px; font-weight: var(--peso-texto); color: var(--oro-tinta); }
 
-  /* §3 de la plataforma: «la pieza oscura que ancla una pantalla clara. UNA
-     POR PANTALLA». Ésta es la única, y lleva la cita. */
+  /* La fecha, ahora en claro con filete dorado: el bloque oscuro ya lo gasta
+     la frase, y sólo puede haber uno. */
   .cita {
-    height: 420px; padding: 34px 34px 30px;
-    background: var(--vino); color: #fbf6ee;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--oro);
+    border-radius: var(--radio-suave);
+    padding: 30px 30px 28px;
     display: flex; flex-direction: column; justify-content: space-between;
   }
-  .cita .dia { font-size: 19px; font-weight: var(--peso-medio); letter-spacing: .24em; text-transform: uppercase; color: var(--oro-luz); }
-  .cita .numero { margin-top: 4px; font-size: 158px; font-weight: var(--peso-fino); line-height: .84; letter-spacing: -.05em; }
-  .cita .mes { margin-top: 10px; font-size: 42px; font-weight: var(--peso-fino); letter-spacing: -.02em; color: var(--oro-luz); }
-  .cita .raya { height: 1px; background: rgba(251,246,238,.28); }
-  .cita .hora { font-size: 34px; font-weight: var(--peso-fino); letter-spacing: -.02em; }
-  .cita .donde { margin-top: 6px; font-size: 17px; font-weight: var(--peso-medio); letter-spacing: .18em; text-transform: uppercase; color: var(--oro-luz); }
+  .cita .dia { font-size: 18px; font-weight: var(--peso-medio); letter-spacing: .24em; text-transform: uppercase; color: var(--oro-tinta); }
+  .cita .numero { margin-top: 2px; font-size: 128px; font-weight: var(--peso-fino); line-height: .84; letter-spacing: -.05em; }
+  .cita .mes { margin-top: 6px; font-size: 34px; font-weight: var(--peso-fino); letter-spacing: -.02em; color: var(--oro-tinta); }
+  .cita .raya { height: 1px; background: var(--linea); margin-bottom: 14px; }
+  .cita .hora { font-size: 29px; font-weight: var(--peso-fino); letter-spacing: -.02em; }
+  .cita .donde { margin-top: 5px; font-size: 16px; font-weight: var(--peso-medio); letter-spacing: .18em; text-transform: uppercase; color: var(--oro-tinta); }
 
-  /* ------------------------------------------------------------------ pie */
   .pie {
     margin-top: 34px; padding-top: 24px;
     border-top: 1px solid var(--linea);
@@ -151,38 +148,14 @@
 </head>
 <body>
 
-<!-- ╔══════════════════════════════════════════════════════════════════════╗
-     ║  REHECHO CONTRA `MARCA.md`, QUE ES EL DOCUMENTO QUE MANDA             ║
-     ║                                                                      ║
-     ║  Lo anterior rompía cuatro reglas escritas, y por eso no se parecía a ║
-     ║  esta marca:                                                         ║
-     ║                                                                      ║
-     ║   §2  «Por encima de 500 no se sube. Un titular no se enfatiza       ║
-     ║        engordándolo.» Iban todos a 700. Ahora a 300 —`--peso-fino`—  ║
-     ║        y grandes: el contraste sale del tamaño y del espacio, que es ║
-     ║        lo que Gerson pidió dos veces como «Apple style modern light».║
-     ║   §3  «Un color se usa por su token, nunca por su hexadecimal.» Me   ║
-     ║        inventé un dorado, un rosa y un malva. Fuera los tres: aquí   ║
-     ║        sólo entran --vino, --oro, --oro-tinta, --oro-luz, --arena,   ║
-     ║        --linea y --tinta. Si hace falta un rosa, se añade primero a  ║
-     ║        MARCA.md y se usa después.                                    ║
-     ║   §4  Radios 4 / 3 / 12 / 25 / 100. Usaba 26, 44 y 999 a ojo.        ║
-     ║   §8.3 «Se mide, no se mira por encima: contraste, encuadre y        ║
-     ║        SOLAPES se comprueban con una captura y un número.» No lo     ║
-     ║        medí, y le tapé la cara a la clienta con un titular.          ║
-     ║                                                                      ║
-     ║  EL SOLAPE AHORA ES IMPOSIBLE, no improbable: los retratos viven en  ║
-     ║  su propio panel y el texto en el suyo. Un nombre nunca va encima de ║
-     ║  una cara; va debajo, sobre el crema. Y hay un script al lado que lo ║
-     ║  comprueba y falla si algún texto pisa un retrato.                   ║
-     ╚══════════════════════════════════════════════════════════════════════╝ -->
-
-<div class="pieza" id="b1-acaba-igual">
+<div class="pieza" id="m1-acaba-igual">
   <div class="cabecera">
     <span class="marca">Iris Soares</span>
     <span class="pastilla"><i class="brasa"></i>En directo · Gratis</span>
   </div>
-  <h1 class="titular">Por qué siempre <b>acaba igual</b></h1>
+  <div class="marco-frase">
+    <h1 class="titular">Por qué<br>siempre<br><b>acaba igual</b></h1>
+  </div>
   <ul class="lista">
     <li>Siempre el mismo tipo de persona.</li>
     <li>La misma discusión, con otra cara.</li>
@@ -190,21 +163,21 @@
   </ul>
   <div class="franja">
     <div>
-      <div class="panel retrato iris"><i class="foto"></i></div>
+      <div class="retrato"><img src="iris-retrato.jpg" alt="Iris Soares"></div>
       <div class="nombre"><b>Iris Soares</b><span>Numerología transgeneracional</span></div>
     </div>
     <div>
-      <div class="panel retrato marco"><i class="foto"></i></div>
+      <div class="retrato"><img src="marco-retrato.jpg" alt="Marco Célio"></div>
       <div class="nombre"><b>Marco Célio</b><span>Psicología clínica</span></div>
     </div>
-    <div class="panel cita">
+    <div class="cita">
       <div>
         <p class="dia">Jueves</p>
         <p class="numero">26</p>
         <p class="mes">noviembre</p>
       </div>
       <div>
-        <div class="raya" style="margin-bottom:18px"></div>
+        <div class="raya"></div>
         <p class="hora">21:00 – 22:00</p>
         <p class="donde">Online · En directo</p>
       </div>
@@ -216,12 +189,14 @@
   </div>
 </div>
 
-<div class="pieza" id="b2-tres-fechas">
+<div class="pieza" id="m2-tres-fechas">
   <div class="cabecera">
     <span class="marca">Iris Soares</span>
     <span class="pastilla"><i class="brasa"></i>En directo · Gratis</span>
   </div>
-  <h1 class="titular largo">Trae tres <b>fechas de nacimiento</b></h1>
+  <div class="marco-frase">
+    <h1 class="titular largo">Trae tres<br><b>fechas de nacimiento</b></h1>
+  </div>
   <ul class="lista">
     <li>La edad a la que cada una se emparejó.</li>
     <li>El tipo de persona que eligió.</li>
@@ -229,21 +204,21 @@
   </ul>
   <div class="franja">
     <div>
-      <div class="panel retrato iris"><i class="foto"></i></div>
+      <div class="retrato"><img src="iris-retrato.jpg" alt="Iris Soares"></div>
       <div class="nombre"><b>Iris Soares</b><span>Numerología transgeneracional</span></div>
     </div>
     <div>
-      <div class="panel retrato marco"><i class="foto"></i></div>
+      <div class="retrato"><img src="marco-retrato.jpg" alt="Marco Célio"></div>
       <div class="nombre"><b>Marco Célio</b><span>Psicología clínica</span></div>
     </div>
-    <div class="panel cita">
+    <div class="cita">
       <div>
         <p class="dia">Jueves</p>
         <p class="numero">26</p>
         <p class="mes">noviembre</p>
       </div>
       <div>
-        <div class="raya" style="margin-bottom:18px"></div>
+        <div class="raya"></div>
         <p class="hora">21:00 – 22:00</p>
         <p class="donde">Online · En directo</p>
       </div>
@@ -255,12 +230,14 @@
   </div>
 </div>
 
-<div class="pieza p916" id="b1-acaba-igual-9x16">
+<div class="pieza p916" id="m1-acaba-igual-9x16">
   <div class="cabecera">
     <span class="marca">Iris Soares</span>
     <span class="pastilla"><i class="brasa"></i>En directo · Gratis</span>
   </div>
-  <h1 class="titular" style="margin-top:150px">Por qué siempre <b>acaba igual</b></h1>
+  <div class="marco-frase" style="margin-top:150px">
+    <h1 class="titular">Por qué<br>siempre<br><b>acaba igual</b></h1>
+  </div>
   <ul class="lista">
     <li>Siempre el mismo tipo de persona.</li>
     <li>La misma discusión, con otra cara.</li>
@@ -268,21 +245,21 @@
   </ul>
   <div class="franja">
     <div>
-      <div class="panel retrato iris"><i class="foto"></i></div>
+      <div class="retrato"><img src="iris-retrato.jpg" alt="Iris Soares"></div>
       <div class="nombre"><b>Iris Soares</b><span>Numerología transgeneracional</span></div>
     </div>
     <div>
-      <div class="panel retrato marco"><i class="foto"></i></div>
+      <div class="retrato"><img src="marco-retrato.jpg" alt="Marco Célio"></div>
       <div class="nombre"><b>Marco Célio</b><span>Psicología clínica</span></div>
     </div>
-    <div class="panel cita">
+    <div class="cita">
       <div>
         <p class="dia">Jueves</p>
         <p class="numero">26</p>
         <p class="mes">noviembre</p>
       </div>
       <div>
-        <div class="raya" style="margin-bottom:18px"></div>
+        <div class="raya"></div>
         <p class="hora">21:00 – 22:00</p>
         <p class="donde">Online · En directo</p>
       </div>
