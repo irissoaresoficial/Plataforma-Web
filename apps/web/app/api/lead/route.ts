@@ -46,6 +46,8 @@ import { parseLead } from '@/lib/booking';
 import { guardaLead } from '@/lib/leads-firebase';
 import { dondeEsta } from '@/lib/donde';
 import { enviaCorreosDeLead } from '@/lib/correo';
+import { avisaMeta, galletasDeMeta } from '@/lib/capi';
+import { SITIO } from '@/lib/seo';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -88,6 +90,31 @@ function recortaIp(ip: string): string {
     return grupos.length ? `${grupos.join(':')}::` : 'desconocida';
   }
   return 'desconocida';
+}
+
+/**
+ * EL BLOQUE QUE DICE SI META PUEDE ENTERARSE, Y CON QUÉ IDENTIFICADOR.
+ *
+ * Lo manda `lib/sendLead.ts` y NO entra en la base de datos: no es un dato del
+ * lead, es un permiso y un número de referencia para esta petición.
+ *
+ * El permiso lo pone el navegador leyendo lo que la persona contestó al cartel
+ * de cookies. Sí, eso significa que alguien podría escribir `true` a mano con
+ * las herramientas del navegador — y lo único que conseguiría es que Meta se
+ * enterase de su propio registro. No hay nada que proteger ahí. Lo que importa
+ * es el caso normal: quien dijo «no, gracias» manda `false`, y entonces no sale
+ * nada hacia Meta.
+ *
+ * Ante cualquier cosa rara —el bloque no viene, viene a medias, viene con otro
+ * tipo— la respuesta es que NO hay permiso. Un formulario viejo cacheado en el
+ * navegador de alguien no lleva este bloque, y lo correcto es no mandar nada.
+ */
+function leePermisoDeMeta(body: unknown): { id: string; permitido: boolean } {
+  const bloque = (body as { meta?: unknown } | null)?.meta;
+  if (!bloque || typeof bloque !== 'object') return { id: '', permitido: false };
+  const m = bloque as { id?: unknown; consentimiento?: unknown };
+  const id = typeof m.id === 'string' ? m.id.trim().slice(0, 80) : '';
+  return { id, permitido: m.consentimiento === true && Boolean(id) };
 }
 
 
@@ -141,6 +168,49 @@ export async function POST(request: Request) {
     ip: recortaIp(ip),
     agente: (request.headers.get('user-agent') || '').slice(0, 200),
   });
+
+  /* --------------------------------------------------------------- 1.b */
+  /*
+   * QUE META SE ENTERE, Y SÓLO SI ELLA DIJO QUE SÍ.
+   *
+   * Va aquí, pegado a lo de guardar, por una razón de fondo: este servidor es
+   * el único sitio del mundo que SABE que el registro ha ocurrido. El píxel del
+   * navegador manda el suyo también, pero se pierde con un bloqueador, con un
+   * iPhone o con una pestaña que se cierra en el momento malo — y esta campaña
+   * ya estuvo gastando con el píxel sin disparar. Los dos avisos llevan el mismo
+   * `id` y Meta los junta en uno.
+   *
+   * Lo que se le manda y por qué cada cosa está escrito en `lib/capi.ts`.
+   * Lo que NO se le manda si no hay permiso: absolutamente nada.
+   *
+   * No se le mira el resultado para decidir qué contestarle a la persona. Que
+   * Meta acepte o no un evento no cambia que ella se ha apuntado.
+   */
+  const permisoMeta = leePermisoDeMeta(body);
+  if (permisoMeta.permitido) {
+    const { fbc, fbp } = galletasDeMeta(request);
+    const avisado = await avisaMeta({
+      email: lead.email,
+      id: permisoMeta.id,
+      /* La página desde la que se envió el formulario. Meta la exige para los
+         eventos de web, y además dice por qué puerta entró. */
+      url: request.headers.get('referer') || SITIO,
+      agente: request.headers.get('user-agent') || '',
+      /* Entera, y sólo hacia Meta. En nuestra base va recortada, arriba. */
+      ip: ip !== 'local' ? ip : undefined,
+      fbc,
+      fbp,
+      /* De los tres orígenes que el servidor conoce. Nada más: el detalle es
+         texto libre y a un tercero no se le manda texto libre. */
+      contenido: lead.origen,
+    });
+    /* `sin_token` no es un fallo: es que la variable de Vercel todavía no
+       está puesta, y mientras no esté no hay nada que avisar. Lo demás sí hay
+       que poder buscarlo en los registros. */
+    if (!avisado.enviado && avisado.motivo !== 'sin_token') {
+      console.error('[lead] META NO AVISADO', lead.origen, '·', avisado.motivo);
+    }
+  }
 
   /* ---------------------------------------------------------------- 2 */
   /* LOS CORREOS. No lanza nunca: si Resend no está configurado o falla,

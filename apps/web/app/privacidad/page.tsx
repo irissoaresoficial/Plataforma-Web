@@ -127,6 +127,21 @@ export default function Privacidad() {
           Guarda el correo electrónico y el registro del envío en Estados Unidos, amparado en las
           cláusulas contractuales tipo de la Unión Europea y en el marco de privacidad UE-EE. UU.
         </li>
+        {/* META ENTRA AQUÍ EL MISMO DÍA QUE EL SERVIDOR EMPIEZA A AVISARLE.
+            Antes del 22 de octubre lo único que llegaba a Meta lo mandaba el
+            píxel desde el navegador de la persona, y por eso bastaba con el
+            apartado de cookies. Desde hoy el servidor también le avisa de los
+            registros (`lib/capi.ts`), y eso es una comunicación de datos que
+            hacemos nosotros: el artículo 13 del RGPD obliga a nombrar al
+            destinatario, decir qué recibe y decir dónde está. Si algún día se
+            quita ese aviso, hay que quitar este punto. */}
+        <li>
+          <strong>Meta</strong> (Facebook e Instagram): si aceptaste el cartel de medición, recibe
+          que alguien se ha apuntado, con tu correo cifrado para poder reconocerte. Es lo que
+          permite saber qué anuncio trae gente de verdad. Los datos se tratan en Irlanda y en
+          Estados Unidos, amparado en las cláusulas contractuales tipo de la Unión Europea y en el
+          marco de privacidad UE-EE. UU. Si dijiste «no, gracias», Meta no recibe nada.
+        </li>
         <li>
           <strong>Vercel</strong>: aloja esta web.
         </li>
@@ -135,7 +150,11 @@ export default function Privacidad() {
           directos a Stripe; esta web no los ve ni los guarda.
         </li>
       </ul>
-      <p>No se venden tus datos a nadie, ni se ceden para publicidad de terceros.</p>
+      <p>
+        No se venden tus datos a nadie, ni se ceden para que otros te anuncien sus cosas. Lo único
+        que sale hacia una plataforma de publicidad es lo que cuenta el punto de Meta, y sólo si
+        aceptaste el cartel.
+      </p>
 
       </Aparece>
 
@@ -187,9 +206,24 @@ export default function Privacidad() {
       </p>
       <p>
         Lo que se envía es que alguien ha abierto el chat, ha reservado, ha dejado su correo, ha
-        calculado su número o hasta dónde ha visto un vídeo. <strong>Nunca se envía quién eres:</strong>{' '}
-        ni tu nombre, ni tu correo, ni tu teléfono, ni tu fecha de nacimiento. Y si no hay ninguna
-        campaña en marcha, no verás el cartel porque no hay nada que cargar.
+        calculado su número o hasta dónde ha visto un vídeo. <strong>Nunca se envía tu nombre, ni
+        tu teléfono, ni tu fecha de nacimiento.</strong> Y si no hay ninguna campaña en marcha, no
+        verás el cartel porque no hay nada que cargar.
+      </p>
+      <p>
+        <strong>Tu correo sí, en un caso, y te lo contamos entero.</strong> Si aceptaste el cartel y
+        además dejas tu correo en un formulario, nuestro servidor le avisa a Meta de que alguien se
+        ha apuntado. Para que Meta pueda reconocerte le manda tu correo <strong>cifrado</strong>:
+        convertido en una cadena de letras y números que no se puede leer ni deshacer, aunque sí le
+        sirve para saber que eres tú si ya tenía ese mismo correo. Van también tu dirección de
+        internet y tu navegador, que Meta ya recibe del píxel que aceptaste. No va tu nombre.
+      </p>
+      <p>
+        Sirve para una cosa sola: saber qué anuncio trae gente que de verdad se apunta, y dejar de
+        pagar por los que no. Se hace desde el servidor y no desde tu navegador porque desde el
+        navegador se pierde la mitad de los avisos, y una campaña que no sabe qué funciona se gasta
+        el dinero a ciegas. <strong>Si dijiste «no, gracias» al cartel, no se envía nada de esto: ni
+        tu correo cifrado, ni nada.</strong>
       </p>
 
       </Aparece>

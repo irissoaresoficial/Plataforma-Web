@@ -4,6 +4,7 @@ import Script from 'next/script';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { recuerdaCampana } from '@/lib/campana';
+import { LLAVE_MEDICION, PIXEL_META } from '@/lib/pixel';
 
 /**
  * ============================================================================
@@ -53,36 +54,14 @@ import { recuerdaCampana } from '@/lib/campana';
  * web hace de verdad es peor que no tenerla.
  */
 
-const LLAVE = 'es33-medicion';
-
-/**
- * EL NÚMERO DEL PÍXEL VA ESCRITO AQUÍ, Y NO ES UN DESCUIDO.
- *
- * Estaba sólo en una variable de Vercel, y eso ya salió caro una vez: las
- * variables `NEXT_PUBLIC_` se cuecen dentro del código AL COMPILAR, así que
- * ponerla en el panel no basta —hay que volver a desplegar— y si alguien se
- * salta ese segundo paso, el píxel no carga y nadie se entera. La web sigue
- * funcionando igual de bien y los anuncios gastan a ciegas. Pasó, y se
- * tardaron días en verlo.
- *
- * UN NÚMERO DE PÍXEL NO ES UN SECRETO: va dentro de la página, a la vista de
- * cualquiera que mire el código fuente. No hay nada que proteger. Así que vive
- * en el repositorio, como el resto de la configuración que no es secreta:
- * queda en el historial, se revisa en un cambio, y no depende de que alguien
- * se acuerde de tocar un panel.
- *
- * LA VARIABLE SIGUE MANDANDO SI EXISTE. Es la escotilla para probar con otro
- * píxel sin tocar el código. Pero si contiene un número VIEJO, gana ella y el
- * de aquí abajo no se usa: por eso, al cambiar de píxel, hay que borrar la
- * variable de Vercel o actualizarla.
- *
- * 1146543124979316 es el píxel de la cuenta publicitaria 289692277, que es la
- * que paga los anuncios. El anterior (1114301841361501) vivía en otro
- * portafolio al que esa cuenta no llega, y por eso no se podía optimizar a
- * registros ni construir públicos: Meta medía, pero la cuenta no podía leer
- * lo medido.
- */
-const META = process.env.NEXT_PUBLIC_META_PIXEL_ID || '1146543124979316';
+/* EL NÚMERO DEL PÍXEL Y LA LLAVE DEL CARTEL SE HAN MUDADO a `lib/pixel.ts`,
+   con el porqué de cada uno escrito al lado. Se fueron de aquí el día que el
+   servidor también necesitó saberlos: ahora el registro le llega a Meta por dos
+   vías —este píxel y la API del servidor, en `lib/capi.ts`— y las dos tienen
+   que apuntar al mismo píxel. Dos copias del número habrían sido, algún día,
+   dos números distintos. */
+const META = PIXEL_META;
+const LLAVE = LLAVE_MEDICION;
 const GOOGLE = process.env.NEXT_PUBLIC_GOOGLE_TAG_ID;
 
 export default function Medicion() {

@@ -87,7 +87,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
       .filter(Boolean)
       .join(' · ');
 
-    const ok = await sendLead({
+    const { ok, eventoId } = await sendLead({
       email: email.trim(),
       nombre: nombre.trim(),
       /* `curso` es uno de los tres orígenes que el servidor conoce. De qué
@@ -100,7 +100,10 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
     setEnviando(false);
 
     if (ok) {
-      medir('lead', { origen: 'masterclass' });
+      /* `eventoId` es el mismo con el que el servidor ha avisado a Meta por su
+         cuenta. Los dos avisos se juntan en UN registro, no en dos: el porqué
+         está en `lib/capi.ts`. */
+      medir('lead', { origen: 'masterclass' }, eventoId);
       setHecho(true);
     } else {
       setError(`No he podido guardarlo ahora mismo. Inténtalo en un minuto o escribe a ${CONTACTO.email}.`);

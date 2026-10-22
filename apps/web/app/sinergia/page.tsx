@@ -111,7 +111,10 @@ export default function Sinergia() {
           (r.repeticiones.length ? ` · ${r.repeticiones.length} repeticiones` : ''),
         asunto: paraElla.asunto,
         parrafos: paraElla.parrafos,
-      }).then(setLeadOk);
+        /* `sendLead` devolvía un sí/no; ahora devuelve también el identificador
+           con el que se cuenta el registro en Meta. Aquí sólo interesa el sí/no:
+           esta página no mide el lead en el píxel. */
+      }).then(({ ok }) => setLeadOk(ok));
     }
   };
 

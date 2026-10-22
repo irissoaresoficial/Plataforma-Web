@@ -122,7 +122,7 @@ export default function LeadForm({
     setErr('');
     setSending(true);
     const partes = [detalle, whatsapp.trim() ? `WhatsApp: ${whatsapp.trim()}` : ''].filter(Boolean);
-    const ok = await sendLead({
+    const { ok, eventoId } = await sendLead({
       email,
       nombre,
       origen,
@@ -136,7 +136,10 @@ export default function LeadForm({
       /* Un correo dejado no es una venta, pero sí es la señal más barata que
          tiene esta web: es por lo que puede pujar una campaña fría mientras no
          haya reservas suficientes para que Meta aprenda de ellas. */
-      medir('lead', { origen });
+      /* El tercer argumento es el identificador que ha usado el servidor para
+         avisar a Meta por su cuenta: los dos avisos cuentan un registro, no
+         dos. El porqué está en `lib/capi.ts`. */
+      medir('lead', { origen }, eventoId);
       setDone(true);
     }
     else setErr(`No he podido guardarlo ahora mismo. Inténtalo en un minuto o escribe a ${CONTACTO.email}.`);

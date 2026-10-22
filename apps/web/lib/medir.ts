@@ -121,12 +121,18 @@ type Ventana = Window & {
  * exactamente el tipo de cosa por la que multa la Agencia de Protección de
  * Datos, y además las dos plataformas lo prohíben en sus condiciones.
  */
-export function medir(evento: Evento, datos?: Record<string, string | number>) {
+export function medir(evento: Evento, datos?: Record<string, string | number>, id?: string) {
   if (typeof window === 'undefined') return;
   const w = window as Ventana;
   const n = NOMBRES[evento];
   try {
-    w.fbq?.(n.propio ? 'trackCustom' : 'track', n.meta, datos);
+    /* `id` ES PARA QUE NO SE CUENTE DOS VECES, y sólo lo usa el registro.
+       Desde el 22 de octubre el servidor también le cuenta a Meta que alguien
+       se ha apuntado (`lib/capi.ts`), porque el navegador se pierde avisos:
+       bloqueadores, iPhone, pestañas que se cierran. Los dos avisos llevan el
+       mismo identificador y Meta los junta en uno. Sin él vería dos registros
+       por persona, creería que convierte el doble, y pujaría el doble. */
+    w.fbq?.(n.propio ? 'trackCustom' : 'track', n.meta, datos, id ? { eventID: id } : undefined);
     w.gtag?.('event', n.google, datos);
   } catch {
     /* Que una plataforma de anuncios se caiga no puede romper una reserva.
