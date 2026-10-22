@@ -54,6 +54,32 @@ export type Evento =
   /** Alguien ha calculado su número gratis. Es el gancho, no la venta. */
   | 'numero'
   /**
+   * EL FORMULARIO HA ENTRADO EN PANTALLA. Y el siguiente, que ha escrito algo.
+   *
+   * Gerson, el 22 de octubre, después de pagar 18 € y no conseguir ni un
+   * registro: «¿qué podemos mejorar para tener resultados más precisos?».
+   *
+   * Esto es lo que faltaba para contestar a eso. Hasta hoy el embudo tenía un
+   * agujero: se sabía cuánta gente LLEGA a la página y cuánta se APUNTA, y
+   * entre esas dos cifras no había nada. Con 26 llegadas y cero registros no
+   * se podía distinguir entre tres problemas que se arreglan de tres maneras
+   * opuestas:
+   *
+   *   · No bajan hasta el formulario       → el problema es la página de arriba.
+   *   · Lo ven y no escriben nada          → el problema es lo que se promete.
+   *   · Lo empiezan y lo abandonan         → el problema es el propio formulario.
+   *
+   * Con estos dos eventos cada mañana se sabe cuál de los tres es, y se toca
+   * ese y no los otros dos.
+   *
+   * VAN COMO PROPIOS Y NO COMO `ViewContent`: ese nombre ya lo usa el número
+   * gratis, y dos cosas distintas con el mismo nombre se suman en el informe
+   * de Meta sin avisar. Un número que mezcla dos cosas es peor que no tenerlo,
+   * porque se usa igual para decidir.
+   */
+  | 'formularioVisto'
+  | 'formularioEmpezado'
+  /**
    * HA DADO AL PLAY. Y los cuatro de abajo, cuánto ha aguantado.
    *
    * Gerson pidió esto por su nombre: «quiero ver qué me hacen las personas, si
@@ -91,6 +117,8 @@ const NOMBRES: Record<Evento, { meta: string; google: string; propio?: true }> =
   reserva: { meta: 'Schedule', google: 'reserva_hecha' },
   lead: { meta: 'Lead', google: 'generate_lead' },
   numero: { meta: 'ViewContent', google: 'numero_calculado' },
+  formularioVisto: { meta: 'FormularioVisto', google: 'formulario_visto', propio: true },
+  formularioEmpezado: { meta: 'FormularioEmpezado', google: 'formulario_empezado', propio: true },
 
   /* LOS DEL VÍDEO VAN MARCADOS COMO PROPIOS, y no es un capricho.
      Meta tiene una lista cerrada de eventos estándar —Lead, Contact, Schedule,

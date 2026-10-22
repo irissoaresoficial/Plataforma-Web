@@ -37,7 +37,7 @@
  */
 
 import Link from 'next/link';
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { sendLead } from '@/lib/sendLead';
 import { medir } from '@/lib/medir';
 import { CONTACTO, MASTERCLASS } from '@/content/site';
@@ -69,6 +69,57 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
   const [error, setError] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [hecho, setHecho] = useState(false);
+
+  /* ──────────────────────────────────────────────────────────────────────
+     LOS DOS ESCALONES QUE FALTABAN DEL EMBUDO
+
+     Hasta hoy se contaba quién LLEGA a la página y quién se APUNTA, y entre
+     esas dos cifras no había nada. Con 26 llegadas y cero registros eso deja
+     tres explicaciones posibles, y las tres se arreglan de forma distinta:
+     no bajan hasta aquí, lo ven y no les convence, o lo empiezan y lo dejan.
+     Estos dos avisos dicen cuál de las tres es.
+
+     Van en `useRef` y no en `useState` porque sólo sirven para acordarse de
+     que ya se mandó el aviso. Si fueran estado, cada uno provocaría un
+     repintado del formulario entero mientras la persona escribe, que es
+     justo el momento en el que no conviene tocar nada. */
+  const caja = useRef<HTMLFormElement | null>(null);
+  const yaEmpezado = useRef(false);
+
+  /* Se cuenta cuando se ve de verdad, no cuando existe en la página. El
+     formulario está montado desde el primer momento aunque esté a dos
+     pantallas de distancia; contarlo ahí diría que todo el mundo lo ve y el
+     número no valdría para nada. La mitad a la vista es el umbral: menos es
+     asomar por el borde al pasar de largo. Y una sola vez: quien sube y baja
+     tres veces no es tres personas. */
+  useEffect(() => {
+    const el = caja.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    let contado = false;
+    const vigia = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          if (!contado && e.isIntersecting) {
+            contado = true;
+            medir('formularioVisto', { origen: 'masterclass' });
+            vigia.disconnect();
+          }
+        }
+      },
+      { threshold: 0.5 },
+    );
+    vigia.observe(el);
+    return () => vigia.disconnect();
+  }, []);
+
+  /* El primer carácter que escribe, en el campo que sea. A partir de aquí la
+     persona ya decidió apuntarse: si no acaba, el formulario le ha fallado a
+     ella, no al revés. */
+  const haEmpezado = () => {
+    if (yaEmpezado.current) return;
+    yaEmpezado.current = true;
+    medir('formularioEmpezado', { origen: 'masterclass' });
+  };
 
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,7 +280,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
   }
 
   return (
-    <form className="casa-registro" onSubmit={enviar} noValidate>
+    <form ref={caja} className="casa-registro" onSubmit={enviar} noValidate>
       <h2 className="casa-registro-h">Apúntate gratis</h2>
       {/* UNA LÍNEA Y NO TRES. Decía «déjame tu nombre y tu correo y te
           escribo en cuanto haya fecha, la masterclass es gratuita», y de ahí
@@ -260,7 +311,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
           type="text"
           autoComplete="given-name"
           value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          onChange={(e) => { haEmpezado(); setNombre(e.target.value); }}
           required
         />
       </label>
@@ -274,7 +325,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
           inputMode="email"
           autoComplete="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => { haEmpezado(); setEmail(e.target.value); }}
           required
         />
       </label>
@@ -303,7 +354,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
             inputMode="tel"
             autoComplete="tel"
             value={whatsapp}
-            onChange={(e) => setWhatsapp(e.target.value)}
+            onChange={(e) => { haEmpezado(); setWhatsapp(e.target.value); }}
             autoFocus
           />
         </label>
