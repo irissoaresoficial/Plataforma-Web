@@ -2002,6 +2002,50 @@ button:not(:disabled):active {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   LA INVERSIÓN PUBLICITARIA (components/metricas/Gasto.tsx)
+
+   Gerson, el 22 de octubre de 2026: «ese dashboard de métricas está horrible»,
+   con una referencia al lado. Lo que fallaba no eran los números: era que
+   estaban en fila india, uno debajo de otro, con un párrafo entre medias. Para
+   saber cómo iba la campaña había que bajar seis pantallas.
+
+   La rejilla lo arregla sin tocar un solo dato. Arriba, la cifra que manda
+   —lo que cuesta cada persona apuntada— ocupa su propia tarjeta oscura y a su
+   lado van las cuatro de apoyo en dos por dos. Debajo, los gráficos de dos en
+   dos. La campaña entera cabe ahora en dos pantallazos.
+
+   A 1000px se rompe a una columna, que es donde la tarjeta oscura y las
+   fichas dejan de caber lado a lado sin estrujar los números. */
+[data-gasto-cabeza] {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: var(--gap);
+  align-items: stretch;
+}
+[data-gasto-fichas] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+[data-gasto-par] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  [data-gasto-cabeza],
+  [data-gasto-par] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  [data-gasto-fichas] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* La biblioteca del alumno: lo suyo a la izquierda y lo que lleva a la
    derecha, como la referencia. En un móvil, una columna. */
 [data-biblioteca] {

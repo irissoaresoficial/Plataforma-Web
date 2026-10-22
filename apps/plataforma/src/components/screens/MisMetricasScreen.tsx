@@ -40,7 +40,7 @@ import { ultimosDias, type DiaCampana } from "@/lib/despacho/campana";
 const DIA = 24 * 3600 * 1000;
 
 export default function MisMetricasScreen() {
-  const { usuario } = useSesion();
+  const { usuario, puede } = useSesion();
   const uid = usuario ? usuario.uid : "";
   const [d, setD] = useState<{ cursos: Curso[]; ins: Inscripcion[]; avs: Avance[] } | null>(null);
   /* Lo que cuesta la publicidad. Va en su propio estado y no en el `Promise.all`
@@ -237,7 +237,14 @@ export default function MisMetricasScreen() {
           sin que le llegue ni un correo ajeno. Y es exactamente el mismo número
           que ve Iris, porque sale del mismo sitio: dos pantallas que dieran
           costes distintos para lo mismo valdrían menos que una sola. */}
-      {campana.length > 0 && (
+      {/* LA LLAVE `campana`, Y NO SÓLO «hay datos».
+          Gerson, el 22 de octubre: «lo de la campaña solo lo vea Marco y
+          admin». Que existan días escritos no autoriza a nadie a verlos: lo
+          que autoriza es la llave. Hoy la tienen Iris y el creador —que es
+          Marco, que lleva Desórdenes Amorosos con ella y pone dinero en esa
+          campaña—; el día que entre un creador que no comparta campaña, se
+          cambia en `roles.ts` y esta pantalla no se entera. */}
+      {puede("campana") && campana.length > 0 && (
         <>
           <h2 style={css("margin:var(--s4) 0 0;font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;")}>
             Inversión publicitaria

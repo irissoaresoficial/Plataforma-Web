@@ -53,6 +53,7 @@ import { fuenteDe } from "@/lib/despacho/fuentes";
 import Banda from "../Banda";
 import { listaUsuarios } from "@/lib/despacho/usuarios";
 import { rolesDe } from "@/lib/roles";
+import { useSesion } from "@/lib/sesion";
 import { cursos as repoCursos, todosLosAvances, totalLecciones, type Avance, type Curso } from "@/lib/escuela";
 import { porDia, todasLasVisitas } from "@/lib/escuela/trofeos";
 import { ultimosLeads, type Lead } from "@/lib/despacho/leads";
@@ -95,6 +96,7 @@ type Datos = {
 };
 
 export default function MetricasScreen() {
+  const { puede } = useSesion();
   const [d, setD] = useState<Datos | null>(null);
   const [roto, setRoto] = useState(false);
   const [tabla, setTabla] = useState(false);
@@ -273,8 +275,16 @@ export default function MetricasScreen() {
           {/* Va DESPUÉS del embudo a propósito: el embudo dice cuánta gente
               trae cada anuncio, y esto dice cuánto costó. En ese orden la
               división —euros entre personas— se hace sola al leer. */}
-          <h2 style={css(SECCION)}>Inversión publicitaria</h2>
-          <Gasto dias={d.campana} tarjeta={tarjeta} />
+          {/* Detrás de la misma llave que en la pantalla del creador, aunque
+              aquí la tenga siempre quien entra. Preguntar por la capacidad y
+              no dar por hecho el rol es lo que hace que el día que se parta
+              `admin` en dos no haya que acordarse de esta línea. */}
+          {puede("campana") && (
+            <>
+              <h2 style={css(SECCION)}>Inversión publicitaria</h2>
+              <Gasto dias={d.campana} tarjeta={tarjeta} />
+            </>
+          )}
         </>
       )}
 

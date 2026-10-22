@@ -72,6 +72,27 @@ export type Capacidad =
   | "estudio"
   /** Las métricas de la escuela. */
   | "metricas"
+  /**
+   * LO QUE CUESTA LA PUBLICIDAD. Y es una llave aparte de `metricas` a
+   * propósito.
+   *
+   * Gerson, el 22 de octubre de 2026: el panel «que se vea así en todos los
+   * roles (menos estudiante)», pero «lo de la campaña solo lo vea Marco y
+   * admin en sus métricas».
+   *
+   * Son dos cosas distintas y por eso son dos llaves. Cuántos alumnos hay o
+   * en qué lección se cae la gente es información de la escuela: quien monta
+   * un curso la necesita para hacerlo mejor. Lo que Iris se gasta en anuncios
+   * es información del bolsillo de Iris, y eso no lo abre cualquiera que haya
+   * entrado en la plataforma.
+   *
+   * Hoy la abre `creador` porque el único creador es Marco, que lleva
+   * Desórdenes Amorosos con Iris y pone dinero y cara en esa campaña. El día
+   * que entre un segundo creador que no comparta campaña habrá que partir el
+   * rol —`creador` y `socio`, por ejemplo— y cambiar esta línea. Está escrito
+   * aquí para que ese día se vea de una lectura y no haya que deducirlo.
+   */
+  | "campana"
   /** Crear y publicar cursos, y dar accesos. */
   | "gestion"
   /** Ver los cursos que uno ha comprado. */
@@ -104,7 +125,23 @@ export type Capacidad =
 const ABRE: Record<Capacidad, readonly Rol[]> = {
   despacho: ["admin"],
   estudio: ["admin"],
+  /*
+   * MÉTRICAS SIGUE SIENDO SOLO DE IRIS, Y NO ES UN DESCUIDO.
+   *
+   * Gerson, el 22 de octubre: el panel «que se vea así en todos los roles
+   * (menos estudiante)». Se leyó primero como «dale acceso a todos» y se
+   * dejó a medio hacer antes de darse cuenta del agujero: esta pantalla
+   * enseña los leads de Iris, lo que factura y sus clientas. Un `miembro`
+   * es alguien de la comunidad, o sea un cliente. Enseñarle a un cliente lo
+   * que factura Iris no es un fallo de diseño, es un fallo grave.
+   *
+   * Lo que pedía Gerson era lo otro, y es lo que se ha hecho: que el panel
+   * NUEVO de la campaña se vea igual en todas las pantallas donde aparece
+   * —la de Iris y la del creador— en vez de sólo en una. Eso sale solo,
+   * porque las dos pintan el mismo componente.
+   */
   metricas: ["admin"],
+  campana: ["admin", "creador"],
   gestion: ["admin"],
   cursos: ["admin", "alumno", "creador"],
   crear: ["admin", "creador"],
