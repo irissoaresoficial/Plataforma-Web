@@ -140,6 +140,36 @@ const base = getFirestore();
  * la persona a quien Iris delegue un curso— y esa gente no tiene por qué ver
  * la lista de personas. Un recuento no es un dato personal; una lista sí.
  */
+/*
+ * «DE PAGO» NO ES «VIENE ETIQUETADO». ESTO COSTÓ UN DATO FALSO EN EL PANEL.
+ *
+ * Antes aquí ponía `if (v.campana?.source)`: contaba como apuntado de la
+ * campaña a cualquiera que llegara con etiquetas en la dirección. Y el enlace
+ * de la biografía de Instagram también lleva etiquetas —`utm_source=ig`,
+ * `utm_medium=social`, `utm_content=link_in_bio`—, así que el 24 de octubre el
+ * panel dijo «1 apuntado de la campaña» cuando la campaña llevaba cero y esa
+ * persona había entrado por la bio. Un número inventado en el panel es peor
+ * que un hueco: con el hueco se pregunta, con el número se decide.
+ *
+ * Lo que distingue a uno de pago es lo que SÓLO ponen los anuncios, según la
+ * convención escrita en `apps/web/lib/campana.ts`:
+ *
+ *     utm_medium=cpc            (la bio pone `social`)
+ *     utm_campaign=masterclass-desordenes   (la bio lo deja vacío)
+ *
+ * Con que se cumpla una de las dos basta, porque un anuncio siempre lleva las
+ * dos y lo orgánico no lleva ninguna.
+ */
+const MEDIOS_DE_PAGO = new Set(['cpc', 'ppc', 'paid', 'paid_social', 'ads']);
+
+function esDePago(c) {
+  if (!c) return false;
+  const medio = String(c.medium || '').trim().toLowerCase();
+  if (MEDIOS_DE_PAGO.has(medio)) return true;
+  /* Una campaña con nombre sólo la pone un anuncio: la bio la deja vacía. */
+  return String(c.campaign || '').trim() !== '';
+}
+
 const desde = new Date(`${d.dia}T00:00:00.000Z`);
 const hasta = new Date(`${d.dia}T23:59:59.999Z`);
 let apuntados = 0;
@@ -153,7 +183,7 @@ try {
     const t = v.alta?.toDate ? v.alta.toDate() : v.alta ? new Date(v.alta) : null;
     if (!t || t < desde || t > hasta) continue;
     apuntados += 1;
-    if (v.campana?.source) dePago += 1;
+    if (esDePago(v.campana)) dePago += 1;
   }
 } catch (e) {
   /* Si no se puede contar, se dice y se escribe el resto. Un gasto apuntado
