@@ -255,7 +255,7 @@ export const CONTACTO = {
    * esta web. El otro es `GRUPO_WHATSAPP` en google-apps-script/reservas.gs.
    * Si se cambia aquí y allí no, la mitad de la gente se queda sin él.
    */
-  grupo: 'https://chat.whatsapp.com/D4TuFMeoJemGODdCzJyYkd',
+  grupo: 'https://chat.whatsapp.com/J5TfwWoQUUABnhmk3McbML',
 };
 
 /* ------------------------------------------------------------------ */

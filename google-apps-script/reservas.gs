@@ -159,7 +159,7 @@ var CONFIG = {
    * el boton de la pantalla de gracias y este es el del correo. Si se cambia
    * en uno y en el otro no, la mitad de la gente se queda sin el.
    */
-  GRUPO_WHATSAPP: 'https://chat.whatsapp.com/D4TuFMeoJemGODdCzJyYkd',
+  GRUPO_WHATSAPP: 'https://chat.whatsapp.com/J5TfwWoQUUABnhmk3McbML',
 
   // Huecos que se ofrecen cada día laborable, en hora española.
   HOURS: ['10:00', '12:30', '16:00', '18:30'],
