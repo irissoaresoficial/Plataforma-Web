@@ -136,31 +136,6 @@ var CONFIG = {
    */
   PAGO_URL: '',
 
-  /*
-   * EL GRUPO DE WHATSAPP DE LA MASTERCLASS.
-   *
-   * Gerson, el 18 de octubre: «debe de llegar un correo de registro de gracias
-   * y el link de WhatsApp».
-   *
-   * Aquí va el enlace de invitación, el que empieza por
-   * https://chat.whatsapp.com/ y se saca en WhatsApp con:
-   *   el grupo -> el nombre del grupo arriba -> Invitar con enlace -> Copiar.
-   *
-   * SI SE QUEDA VACIO, el correo de confirmacion sale igual pero sin hablar
-   * del grupo. Es lo mismo que hace PAGO_URL aqui arriba y por el mismo
-   * motivo: prometer un enlace que no llega es peor que no prometer nada.
-   *
-   * VA LIMPIO, SIN LA COLA. Al copiarlo desde la app, WhatsApp le engancha
-   * '?s=cl&p=i&mlu=4&ilr=4&iam=0', que no hace falta para nada y publica un
-   * dato del telefono de quien lo copio. Solo el codigo del grupo.
-   *
-   * OJO, SON DOS SITIOS. Este enlace tambien esta en la web, en
-   * apps/web/content/site.ts, dentro de CONTACTO, en el campo `grupo`: ese es
-   * el boton de la pantalla de gracias y este es el del correo. Si se cambia
-   * en uno y en el otro no, la mitad de la gente se queda sin el.
-   */
-  GRUPO_WHATSAPP: 'https://chat.whatsapp.com/J5TfwWoQUUABnhmk3McbML',
-
   // Huecos que se ofrecen cada día laborable, en hora española.
   HOURS: ['10:00', '12:30', '16:00', '18:30'],
 

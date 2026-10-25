@@ -1204,6 +1204,53 @@ html[data-portada='si'] #chat-launcher {
     gap: clamp(20px, 2.4vw, 28px);
   }
 }
+/* Y EN EL MÓVIL, LO MISMO, QUE ES DONDE ESTÁ EL DINERO.
+   La regla de arriba sólo entra en escritorio, y el 100 % del gasto de la
+   campaña llega desde un teléfono: 11,73 € de Android y 6,98 € de iPhone;
+   ordenador y tablet juntos, 3 céntimos. Así que la pantalla que había que
+   medir era la del móvil, y nadie la había medido.
+
+   Medido el 25 de octubre con un navegador de verdad, antes de tocar nada —el
+   botón «Quiero mi plaza», que es lo único que esta página tiene que
+   conseguir:
+
+     360 x 780   acababa en y=903. Fuera de la pantalla por 123 px.
+     360 x 800   acababa en y=906. Fuera por 106 px.
+     390 x 844   acababa en y=887. Fuera por 43 px.
+     430 x 932   acababa en y=855. Dentro, por 77 px.
+
+   O sea que en los dos móviles más comunes de Android el botón no existía
+   hasta que alguien decidiera bajar. Y alguien que viene de un anuncio no
+   baja: mira la pantalla que le sale, y si no hay nada que pulsar, se va.
+
+   SE RECORTA AIRE, NO CONTENIDO. Ni una palabra menos, ni una letra más
+   pequeña: sólo el hueco de arriba del rótulo —que en un móvil eran 112 px de
+   nada— y los huecos entre bloques. Probado que recortar el titular o el
+   párrafo da menos píxeles y cuesta más: lo que sobraba era el aire.
+
+   Después del recorte, medido igual:
+
+     360 x 780   y=815. Se ve la mayor parte del botón.
+     360 x 800   y=817. Se ve la mayor parte del botón.
+     390 x 844   y=770. Entero y con sitio de sobra.
+     430 x 932   y=755. Entero.
+
+   En 360 todavía se corta el último trozo, y se deja así a propósito: para
+   meterlo entero habría que bajar el titular de tamaño, y un titular pequeño
+   en la primera pantalla cuesta más gente que un botón al que le falta un
+   dedo de borde. */
+@media (max-width: 959px) {
+  .casa-mc-alto {
+    padding-top: clamp(56px, 8vh, 72px);
+  }
+  .casa-mc-dentro {
+    gap: 20px;
+  }
+}
+/* Los otros dos recortes —el hueco del bloque de texto y el aire de la
+   tarjeta— NO pueden ir aquí: `.casa-mc-texto` y `.casa-registro` se declaran
+   más abajo en este mismo archivo, y a igual especificidad gana la última. Se
+   escribieron aquí primero y no hacían nada. Van al final del archivo. */
 /* El vídeo y el formulario, uno al lado del otro y los dos arriba: el vídeo
    convence y el formulario recoge, sin que haya que bajar para apuntarse.
    Por debajo de 960 px se apilan —vídeo y luego formulario—, que en el móvil
@@ -2339,4 +2386,23 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
    A 400 sale exactamente como se dibujó. */
 .casa-pieza-arbol {
   max-width: 400px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* EL RESTO DEL RECORTE DEL MÓVIL (sigue al de `.casa-mc-alto`, más arriba). */
+/* Va al FINAL del archivo a propósito: estas dos piezas se declaran después
+   de aquella consulta de medios, y en CSS, a igual especificidad, gana la
+   que viene después. Puesto arriba no hacía nada — comprobado midiendo. */
+@media (max-width: 959px) {
+  .casa-mc-texto {
+    gap: 10px;
+  }
+  .casa-registro {
+    gap: 9px;
+    padding: 17px;
+  }
+  /* Los 4 px de debajo de la fecha sobran cuando el hueco ya es de 9. */
+  .casa-registro-p {
+    margin-bottom: 0;
+  }
 }

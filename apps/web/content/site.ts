@@ -251,9 +251,17 @@ export const CONTACTO = {
    * de todos un dato de su teléfono. El código del grupo es lo único que
    * importa y es lo único que se guarda.
    *
-   * OJO: ESTE ENLACE VA EN DOS SITIOS, porque el correo lo manda Google y no
-   * esta web. El otro es `GRUPO_WHATSAPP` en google-apps-script/reservas.gs.
-   * Si se cambia aquí y allí no, la mitad de la gente se queda sin él.
+   * ESTE ES EL ÚNICO SITIO DONDE VIVE EL ENLACE, y desde el 25 de octubre ya
+   * no hay que acordarse de ningún otro. El comentario de antes avisaba de una
+   * segunda copia en `GRUPO_WHATSAPP` (google-apps-script/reservas.gs) porque
+   * entonces el correo lo mandaba Google. Ya no: desde el 19 de octubre los
+   * correos son de Resend, el Apps Script no manda ninguno —no le queda ni un
+   * `MailApp.sendEmail`— y aquella constante había quedado declarada sin que
+   * nadie la leyera. Se ha borrado, para que no vuelva a parecer que hay que
+   * cambiar el enlace en dos sitios.
+   *
+   * Quien lo usa hoy: el botón de la pantalla de gracias (`casa/Registro.tsx`)
+   * y el correo de confirmación que manda Resend (`lib/correo.ts`).
    */
   grupo: 'https://chat.whatsapp.com/J5TfwWoQUUABnhmk3McbML',
 };
