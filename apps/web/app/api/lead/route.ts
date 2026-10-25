@@ -214,7 +214,10 @@ export async function POST(request: Request) {
 
   /* ---------------------------------------------------------------- 2 */
   /* LOS CORREOS. No lanza nunca: si Resend no está configurado o falla,
-     devuelve `enviado: false` y el Apps Script se encarga más abajo. */
+     devuelve `enviado: false` y NO HAY NADIE MÁS QUE LOS MANDE. El Apps Script
+     dejó de mandar correos el 19 de octubre, así que esto no es un aviso: es
+     una persona que se ha apuntado y no va a recibir nada. Se escribe en los
+     registros y lo canta `/api/diagnostico`. */
   const correo = await enviaCorreosDeLead(lead);
   if (!correo.enviado) {
     console.error('[lead] CORREO NO ENVIADO', lead.email, lead.origen, '·', correo.motivo);

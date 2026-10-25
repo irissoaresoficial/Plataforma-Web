@@ -21,11 +21,19 @@
  * `escueladesabiduria33.com`, con SPF y DKIM firmados (eso es lo que hace que
  * no caiga en «no deseado»), y deja un registro de cada envío.
  *
- * SI NO HAY CLAVE, ESTO NO ROMPE NADA. `RESEND_API_KEY` vacía significa que
- * todavía no está configurado: estas funciones devuelven `false` sin lanzar
- * ningún error, y la ruta del lead se da cuenta y deja que el Apps Script
- * mande los correos como hasta ahora. Es lo que permite desplegar el código
- * antes de tener la clave puesta en Vercel.
+ * SI NO HAY CLAVE, NO SE ROMPE NADA — PERO NO LLEGA NINGÚN CORREO.
+ * `RESEND_API_KEY` vacía significa que todavía no está configurado: estas
+ * funciones devuelven `false` sin lanzar ningún error, el lead se guarda igual
+ * y la persona ve su pantalla de gracias. Lo que no hay es correo.
+ *
+ * ESTO DECÍA ANTES que «el Apps Script manda los correos como hasta ahora», y
+ * era falso desde el 19 de octubre: ese mismo día se le quitó al script hasta
+ * el último `MailApp.sendEmail`. No hay red debajo. Si Resend no está puesto,
+ * quien se apunta no recibe ni la confirmación ni el enlace del grupo, y el
+ * único rastro es una línea en los registros de Vercel que nadie abre.
+ *
+ * Por eso `/api/diagnostico` comprueba Resend desde el 25 de octubre: es la
+ * única forma de enterarse sin tener que apuntarse uno mismo.
  */
 
 import { createHmac } from 'node:crypto';

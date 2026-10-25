@@ -59,6 +59,91 @@ async function compruebaFirebase(): Promise<Paso> {
 }
 
 /**
+ * ¿SALEN LOS CORREOS? Y NO «¿ESTÁ LA VARIABLE?».
+ *
+ * Esto faltaba, y faltaba en el sitio peor. Desde el 19 de octubre los correos
+ * los manda Resend, y al Apps Script no le queda ni un `MailApp.sendEmail`: o
+ * sea que si Resend no está configurado, quien se apunta NO RECIBE NADA. Y no
+ * se entera nadie, porque el fallo sólo se escribe en los registros de Vercel
+ * —que nadie abre— y la persona ve igualmente su pantalla de gracias.
+ *
+ * Los tres motivos por los que esto falla, por orden de frecuencia, y los tres
+ * dan el mismo resultado para quien se apunta (ningún correo):
+ *
+ *   1. `RESEND_API_KEY` no está puesta en Vercel.
+ *   2. Está puesta, pero el dominio no está verificado en Resend, así que
+ *      Resend se niega a mandar desde hola@escueladesabiduria33.com.
+ *   3. Está puesta y verificada, pero la clave es de otro proyecto o se
+ *      revocó.
+ *
+ * SE LE PREGUNTA A RESEND, NO SE ADIVINA. Se piden los dominios de la cuenta,
+ * que es la llamada más inofensiva que tiene la API: no manda ningún correo,
+ * no gasta cuota y contesta las tres cosas de arriba de una vez.
+ *
+ * NO DEVUELVE LA CLAVE NI UN TROZO DE ELLA. Esta página se abre en el
+ * navegador y cualquiera con la dirección la ve: dice si está puesta y cuántos
+ * caracteres tiene, como las otras dos, y nada más.
+ */
+async function compruebaResend(): Promise<Paso> {
+  const paso = 'Resend (quien manda los correos)';
+  const clave = process.env.RESEND_API_KEY || '';
+  const de = process.env.RESEND_FROM || 'Escuela de Sabiduría 33 <hola@escueladesabiduria33.com>';
+
+  if (!clave) {
+    return {
+      paso,
+      ok: false,
+      detalle:
+        'FALTA, y mientras falte NADIE recibe el correo de confirmación. En Vercel: Settings → Environment Variables → Add, nombre RESEND_API_KEY, valor la clave que sale en resend.com → API Keys → Create API Key. Después hay que volver a desplegar (Deployments → ··· → Redeploy).',
+    };
+  }
+
+  /* El dominio del remite, que es lo que Resend tiene que tener verificado. */
+  const dominio = (de.match(/<[^@]+@([^>]+)>/) || de.match(/@([^\s>]+)/) || [])[1] || '';
+
+  try {
+    const r = await fetch('https://api.resend.com/domains', {
+      headers: { authorization: `Bearer ${clave}` },
+      cache: 'no-store',
+    });
+
+    if (r.status === 401 || r.status === 403) {
+      return { paso, ok: false, detalle: `La clave está puesta (${clave.length} caracteres) pero Resend la rechaza. Es de otro proyecto o se revocó: haz una nueva en resend.com → API Keys.` };
+    }
+    if (!r.ok) {
+      return { paso, ok: false, detalle: `La clave está puesta, pero Resend contesta ${r.status}. Vuelve a probar en un minuto; si sigue, mira resend.com/status.` };
+    }
+
+    const d = (await r.json()) as { data?: Array<{ name?: string; status?: string }> };
+    const lista = Array.isArray(d.data) ? d.data : [];
+    const mio = lista.find((x) => x.name === dominio);
+
+    if (!mio) {
+      return {
+        paso,
+        ok: false,
+        detalle: `La clave vale, pero el dominio ${dominio} no está dado de alta en Resend, así que no puede mandar desde ahí. En resend.com → Domains → Add Domain, y después copiar los registros que te dé en el DNS del dominio.`,
+      };
+    }
+    if (mio.status !== 'verified') {
+      return {
+        paso,
+        ok: false,
+        detalle: `El dominio ${dominio} está dado de alta pero su estado es «${mio.status}», no «verified». Faltan los registros en el DNS (SPF y DKIM). Mientras no esté verificado, Resend rechaza cada envío y nadie recibe nada.`,
+      };
+    }
+
+    return {
+      paso,
+      ok: true,
+      detalle: `Clave válida (${clave.length} caracteres) y ${dominio} verificado. Los correos salen firmados desde ahí, que es lo que evita la carpeta de no deseado. Cada envío queda en resend.com → Emails.`,
+    };
+  } catch (err) {
+    return { paso, ok: false, detalle: `No se ha podido preguntar a Resend: ${String(err).slice(0, 160)}` };
+  }
+}
+
+/**
  * Comprobación de que la web, Firebase y el Apps Script se entienden.
  * Se abre en el navegador: <tu-web>/api/diagnostico
  *
@@ -76,6 +161,11 @@ export async function GET() {
      se guarda y después se avisa. Y porque es lo único de los dos que, si está
      bien, garantiza que no se pierde nada. */
   pasos.push(await compruebaFirebase());
+
+  /* Y Resend justo detrás, porque es el otro que, si falla, falla en silencio:
+     el lead queda guardado y la persona ve su pantalla de gracias igual, pero
+     no recibe nada y se queda sin el enlace del grupo. */
+  pasos.push(await compruebaResend());
 
   pasos.push({
     paso: 'Variable APPS_SCRIPT_URL',
