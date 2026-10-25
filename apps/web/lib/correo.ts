@@ -210,9 +210,14 @@ function pasos(lista: { que: string; detalle: string }[]): string {
  * y por eso no sostiene a nadie tres semanas.
  *
  * Así que: el titular confirma, el primer párrafo dice lo único que de verdad
- * no se sabe —que es gratuita, que es en directo y que la fecha todavía no
- * existe—, los dos pasos numerados dicen qué pasa ahora y quién lo hace, y el
- * botón es lo único que se le pide.
+ * no se sabe —que es en directo, a qué hora y en qué huso—, los dos pasos
+ * numerados dicen qué pasa ahora y quién lo hace, y el botón es lo único que
+ * se le pide.
+ *
+ * NI «GRATUITA» NI «GRATIS». Regla de marca de Gerson, del 22 de octubre: se
+ * dice «masterclass en directo». Se quitó ese día de la web y de los anuncios
+ * y este correo se quedó atrás — lo dijo hasta el 25 de octubre. Nadie lo vio
+ * porque un correo no se revisa: se manda.
  */
 function correoDeCurso(lead: Lead): { asunto: string; html: string } {
   const conGrupo = Boolean(GRUPO);
@@ -252,7 +257,7 @@ function correoDeCurso(lead: Lead): { asunto: string; html: string } {
            que sí necesita saber es lo único que de verdad no sabe: que la
            fecha todavía no existe y que se la vamos a mandar nosotros. */
         `<p style="margin:0 0 14px">Hola ${primerNombre(lead.nombre)}, gracias por apuntarte a <b>${MASTERCLASS.titulo}</b>.</p>
-         <p style="margin:0 0 14px">Es <b>${MASTERCLASS.cuando}</b> (${MASTERCLASS.zona}). Es <b>gratuita</b> y se da <b>en directo</b>.</p>
+         <p style="margin:0 0 14px">Es <b>${MASTERCLASS.cuando}</b>, ${MASTERCLASS.zona}. Es una <b>masterclass en directo</b>.</p>
          <p style="margin:0;font-size:15px;color:#55504f">Apúntatelo ahora en el calendario: es lo único que de verdad evita que se te pase.</p>
          ${lospasos}
          ${conGrupo ? boton(GRUPO, 'Entrar al grupo de WhatsApp') : ''}
