@@ -367,6 +367,41 @@ function plantillaDe(lead: Lead): { asunto: string; html: string } | null {
  * Un correo roto no se puede arreglar después de mandarlo, y es la única
  * pieza de esta web que no se puede volver a desplegar.
  */
+/**
+ * EL ENLACE DEL GRUPO, SUELTO.
+ *
+ * Para cuando hay que mandarle el grupo a alguien que ya se apuntó: porque el
+ * enlace cambió —pasó el 25 de octubre— o porque no llegó a entrar.
+ *
+ * CORTO A PROPÓSITO, Y ESO ES LO DIFÍCIL. Esta persona ya dijo que sí: no hay
+ * que convencerla de nada, no hay que recordarle de qué va la clase y no hay
+ * que explicarle quién es Iris. Sólo tiene que pulsar un botón. Cada frase de
+ * más es una oportunidad de cerrar el correo antes de llegar a él.
+ *
+ * NO PIDE PERDÓN NI HABLA DE NINGÚN ENLACE ANTERIOR. A lo mejor el viejo le
+ * funcionaba. Decirle «el que te mandé estaba mal» siembra una duda sobre si
+ * esto está bien montado, justo en la gente que ya confió.
+ *
+ * LA HORA DE PORTUGAL VA ESCRITA. De las tres primeras personas apuntadas, dos
+ * son portuguesas. Una clase a las 21:00 «hora de España» es a las 20:00 en
+ * Oporto, y quien no lo sepa se la pierde por una línea que no escribimos.
+ */
+export function correoGrupoWhatsapp(nombre: string): { asunto: string; html: string } {
+  return {
+    asunto: `Tu grupo de ${MASTERCLASS.titulo}`,
+    html: marco({
+      previo: 'El enlace del grupo de WhatsApp, por si no estás dentro todavía.',
+      titular: 'Tu grupo de WhatsApp',
+      email: '',
+      cuerpo: `<p style="margin:0 0 14px">Hola ${primerNombre(nombre)}, te dejo el enlace del grupo de <b>${MASTERCLASS.titulo}</b>, por si todavía no estás dentro.</p>
+         ${boton(GRUPO, 'Entrar al grupo')}
+         <p style="margin:22px 0 0">Ahí aviso de todo y contesto dudas antes de la clase.</p>
+         <p style="margin:14px 0 0">Es el <b>jueves 26 de noviembre a las 21:00</b>, hora de España. Si me lees desde Portugal, para ti son las 20:00.</p>
+         <p style="margin:14px 0 0">Nos vemos.</p>`,
+    }),
+  };
+}
+
 export function vistaPreviaDeLead(lead: Lead): { asunto: string; html: string } | null {
   return plantillaDe(lead);
 }
