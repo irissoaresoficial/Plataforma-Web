@@ -84,7 +84,7 @@ async function compruebaFirebase(): Promise<Paso> {
  * navegador y cualquiera con la dirección la ve: dice si está puesta y cuántos
  * caracteres tiene, como las otras dos, y nada más.
  */
-async function compruebaResend(): Promise<Paso> {
+async function compruebaResend(prueba: boolean): Promise<Paso> {
   const paso = 'Resend (quien manda los correos)';
   const clave = process.env.RESEND_API_KEY || '';
   const de = process.env.RESEND_FROM || 'Escuela de Sabiduría 33 <hola@escueladesabiduria33.com>';
@@ -98,9 +98,49 @@ async function compruebaResend(): Promise<Paso> {
     };
   }
 
-  /* El dominio del remite, que es lo que Resend tiene que tener verificado. */
-  const dominio = (de.match(/<[^@]+@([^>]+)>/) || de.match(/@([^\s>]+)/) || [])[1] || '';
+  /* LA PRUEBA DE VERDAD: MANDAR. Sólo con ?correo=1.
+     `delivered@resend.dev` es la dirección de pruebas del propio Resend: acepta
+     el envío, contesta como un envío normal y no llega a ninguna persona. Es lo
+     único que demuestra lo que hay que demostrar —que esta web puede mandar un
+     correo— sin molestar a nadie.
+     No va por defecto porque esta página se abre en el navegador y cada visita
+     gastaría un envío de la cuota. */
+  if (prueba) {
+    try {
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { authorization: `Bearer ${clave}`, 'content-type': 'application/json' },
+        body: JSON.stringify({
+          from: de,
+          to: 'delivered@resend.dev',
+          subject: 'Prueba de /api/diagnostico',
+          text: 'Si esto se ha mandado, la web puede mandar correos.',
+        }),
+        cache: 'no-store',
+      });
+      const d = (await r.json()) as { id?: string; message?: string; name?: string };
+      if (r.ok && d.id) {
+        return { paso, ok: true, detalle: `MANDA CORREOS. Prueba enviada con éxito desde ${de}. Queda registrada en resend.com → Emails.` };
+      }
+      const m = d.message || d.name || `error ${r.status}`;
+      if (/domain is not verified|not verified/i.test(m)) {
+        return { paso, ok: false, detalle: `La clave vale, pero Resend no deja mandar desde ${de}: el dominio no está verificado en resend.com → Domains. Detalle: ${m}` };
+      }
+      if (r.status === 401 || r.status === 403) {
+        return { paso, ok: false, detalle: `Resend rechaza la clave al mandar (${clave.length} caracteres). Es de otro proyecto o se revocó: haz una nueva en resend.com → API Keys. Detalle: ${m}` };
+      }
+      return { paso, ok: false, detalle: `Resend no lo ha mandado: ${m}` };
+    } catch (err) {
+      return { paso, ok: false, detalle: `No se ha podido llamar a Resend: ${String(err).slice(0, 160)}` };
+    }
+  }
 
+  /* SIN ?correo=1, LA COMPROBACIÓN BARATA — Y LO QUE NO PUEDE DEMOSTRAR.
+     Se le piden los dominios, que no gasta cuota. Pero una clave de tipo
+     «Sending access» MANDA CORREOS PERFECTAMENTE y sin embargo Resend la
+     rechaza en esta llamada, porque no tiene permiso de lectura. O sea que un
+     fallo aquí NO demuestra que los correos no salgan: por eso lo dice, en vez
+     de mandar a nadie a cambiar una clave que a lo mejor funciona. */
   try {
     const r = await fetch('https://api.resend.com/domains', {
       headers: { authorization: `Bearer ${clave}` },
@@ -108,35 +148,32 @@ async function compruebaResend(): Promise<Paso> {
     });
 
     if (r.status === 401 || r.status === 403) {
-      return { paso, ok: false, detalle: `La clave está puesta (${clave.length} caracteres) pero Resend la rechaza. Es de otro proyecto o se revocó: haz una nueva en resend.com → API Keys.` };
+      return {
+        paso,
+        ok: false,
+        detalle: `Puesta (${clave.length} caracteres), pero Resend no deja consultarla. OJO: esto NO quiere decir que los correos no salgan — una clave de tipo «Sending access» manda bien y aun así da este error, porque no tiene permiso de lectura. Para salir de dudas abre /api/diagnostico?correo=1, que manda un correo de prueba de verdad a la dirección de pruebas de Resend.`,
+      };
     }
     if (!r.ok) {
-      return { paso, ok: false, detalle: `La clave está puesta, pero Resend contesta ${r.status}. Vuelve a probar en un minuto; si sigue, mira resend.com/status.` };
+      return { paso, ok: false, detalle: `Puesta, pero Resend contesta ${r.status}. Prueba /api/diagnostico?correo=1; si falla también, mira resend.com/status.` };
     }
 
+    const dominio = (de.match(/<[^@]+@([^>]+)>/) || de.match(/@([^\s>]+)/) || [])[1] || '';
     const d = (await r.json()) as { data?: Array<{ name?: string; status?: string }> };
     const lista = Array.isArray(d.data) ? d.data : [];
     const mio = lista.find((x) => x.name === dominio);
 
     if (!mio) {
-      return {
-        paso,
-        ok: false,
-        detalle: `La clave vale, pero el dominio ${dominio} no está dado de alta en Resend, así que no puede mandar desde ahí. En resend.com → Domains → Add Domain, y después copiar los registros que te dé en el DNS del dominio.`,
-      };
+      return { paso, ok: false, detalle: `La clave vale, pero el dominio ${dominio} no está dado de alta en Resend. En resend.com → Domains → Add Domain.` };
     }
     if (mio.status !== 'verified') {
-      return {
-        paso,
-        ok: false,
-        detalle: `El dominio ${dominio} está dado de alta pero su estado es «${mio.status}», no «verified». Faltan los registros en el DNS (SPF y DKIM). Mientras no esté verificado, Resend rechaza cada envío y nadie recibe nada.`,
-      };
+      return { paso, ok: false, detalle: `El dominio ${dominio} está dado de alta pero su estado es «${mio.status}», no «verified». Faltan los registros SPF y DKIM en el DNS.` };
     }
 
     return {
       paso,
       ok: true,
-      detalle: `Clave válida (${clave.length} caracteres) y ${dominio} verificado. Los correos salen firmados desde ahí, que es lo que evita la carpeta de no deseado. Cada envío queda en resend.com → Emails.`,
+      detalle: `Clave válida (${clave.length} caracteres) y ${dominio} verificado. Para comprobar además que un envío sale de verdad: /api/diagnostico?correo=1`,
     };
   } catch (err) {
     return { paso, ok: false, detalle: `No se ha podido preguntar a Resend: ${String(err).slice(0, 160)}` };
@@ -151,7 +188,9 @@ async function compruebaResend(): Promise<Paso> {
  * la contraseña del script, ni ninguna clave: solo si están puestas y qué han
  * contestado Google y Firebase.
  */
-export async function GET() {
+export async function GET(peticion: Request) {
+  /* `?correo=1` cambia la comprobación de Resend por un envío de prueba. */
+  const prueba = new URL(peticion.url).searchParams.get('correo') === '1';
   const url = process.env.APPS_SCRIPT_URL;
   const secret = process.env.APPS_SCRIPT_SECRET;
 
@@ -165,7 +204,7 @@ export async function GET() {
   /* Y Resend justo detrás, porque es el otro que, si falla, falla en silencio:
      el lead queda guardado y la persona ve su pantalla de gracias igual, pero
      no recibe nada y se queda sin el enlace del grupo. */
-  pasos.push(await compruebaResend());
+  pasos.push(await compruebaResend(prueba));
 
   pasos.push({
     paso: 'Variable APPS_SCRIPT_URL',
