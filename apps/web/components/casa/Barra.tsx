@@ -161,10 +161,14 @@ export default function Barra({ fija = false }: { fija?: boolean }) {
           {/* El sello de la escuela, que es lo que pidió Gerson que se viera.
               Va el de color: la pastilla es blanca. */}
           <Image src={LOGO_COLOR} alt="" width={26} height={26} className="casa-marca-sello" />
-          <span>
-            Iris Soares
-            <small>Escuela de Sabiduría 33</small>
-          </span>
+          {/* SÓLO LA ESCUELA. Gerson, el 27 de octubre: «quita el nombre de
+              Iris y sólo deja el de la escuela». Antes eran dos líneas —su
+              nombre grande y la escuela debajo en pequeño— y ahora la marca
+              que se ve en la barra es la de la casa. Iris sigue estando donde
+              toca: dando la clase, firmando los correos y en «quién la da».
+              El `small` de debajo se queda vacío, así que se quita entero en
+              vez de dejarlo sin texto. */}
+          <span className="casa-marca-nombre">Escuela de Sabiduría 33</span>
         </Link>
 
         <button

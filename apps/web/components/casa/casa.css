@@ -2628,3 +2628,18 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
     padding-top: 100px;
   }
 }
+
+/* La barra lleva sólo el nombre de la escuela desde el 27 de octubre, en una
+   línea en vez de dos. Sin el `small` debajo, la columna de dos filas sobra y
+   la letra de 17 px se queda grande para un nombre tan largo en un móvil: se
+   baja un punto y se deja respirar el espaciado, que es lo que hace legible
+   una línea en mayúscula y minúscula a ese tamaño. */
+.casa-marca-nombre {
+  display: block;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  white-space: nowrap;
+}
