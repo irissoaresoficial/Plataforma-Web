@@ -38,6 +38,7 @@
 
 import Link from 'next/link';
 import { useEffect, useId, useRef, useState } from 'react';
+import { marcaPaso } from '@/lib/paso';
 import { sendLead } from '@/lib/sendLead';
 import { medir } from '@/lib/medir';
 import { CONTACTO, MASTERCLASS } from '@/content/site';
@@ -92,6 +93,14 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
      número no valdría para nada. La mitad a la vista es el umbral: menos es
      asomar por el borde al pasar de largo. Y una sola vez: quien sube y baja
      tres veces no es tres personas. */
+  /* LLEGÓ. El contador propio del embudo, el que no depende del cartel de
+     cookies: `lib/paso.ts` explica por qué puede contar sin pedir permiso.
+     Va junto a las medidas de Meta y no en su lugar — Meta sólo ve a quien
+     acepta, y esto los ve a todos, que es justo lo que faltaba. */
+  useEffect(() => {
+    marcaPaso('llega');
+  }, []);
+
   useEffect(() => {
     const el = caja.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
@@ -102,6 +111,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
           if (!contado && e.isIntersecting) {
             contado = true;
             medir('formularioVisto', { origen: 'masterclass' });
+            marcaPaso('ve-formulario');
             vigia.disconnect();
           }
         }
@@ -119,6 +129,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
     if (yaEmpezado.current) return;
     yaEmpezado.current = true;
     medir('formularioEmpezado', { origen: 'masterclass' });
+    marcaPaso('escribe');
   };
 
   const enviar = async (e: React.FormEvent) => {

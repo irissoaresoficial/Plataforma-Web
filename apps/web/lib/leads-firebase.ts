@@ -40,48 +40,45 @@ export async function guardaLead(lead: Lead, extra?: Record<string, unknown>): P
   if (!base) return { guardado: false, motivo: 'sin_configurar' };
 
   try {
-    await base
-      .collection('leads')
-      .doc(idDe(lead.email, lead.origen))
-      .set(
-        {
-          ...lead,
-          ...extra,
-          /*
-           * Dos fechas, y las dos hacen falta. `alta` es cuándo apareció esta
-           * persona por primera vez y NO se toca nunca más — por eso va con
-           * `serverTimestamp` sólo si el documento es nuevo, cosa que
-           * `merge:true` respeta porque el campo ya existiría. `visto` es la
-           * última vez que ha vuelto, y ésa sí se pisa: saber que alguien ha
-           * pedido dos cosas en una semana es una señal de venta.
-           */
-          alta: FieldValue.serverTimestamp(),
-          visto: FieldValue.serverTimestamp(),
-          /* Cuántas veces ha entrado por este mismo sitio. */
-          veces: FieldValue.increment(1),
-          /*
-           * Todo lo que entra por la web empieza aquí. Es el estado que va a
-           * mover Iris en el panel: nuevo → contactado → cliente.
-           *
-           * Va con `merge` y sin condición a propósito NO: si ya estaba en
-           * «contactado» y vuelve a pedir algo, no queremos devolverlo a
-           * «nuevo» y perder el trabajo de Iris. Por eso el estado se escribe
-           * sólo al crear, más abajo.
-           */
-        },
-        { merge: true },
-      );
+    const ref = base.collection('leads').doc(idDe(lead.email, lead.origen));
 
     /*
-     * El estado, sólo si el documento no lo tenía. `merge` no sabe hacer
-     * «escribe esto únicamente si falta», así que se mira antes. Son dos
-     * lecturas en vez de una, y a este volumen —decenas de leads al mes— eso no
-     * es nada al lado de borrarle a Iris el trabajo de haber contactado a
-     * alguien porque esa persona volvió a rellenar un formulario.
+     * SE LEE ANTES DE ESCRIBIR, Y HAY DOS COSAS QUE DEPENDEN DE ESA LECTURA.
+     *
+     * `merge: true` NO quiere decir «escribe sólo lo que falta». Quiere decir
+     * «no borres los campos que no te mando»: todo lo que sí mandas se pisa.
+     * El comentario que había aquí decía lo contrario y por eso `alta` llevaba
+     * días estropeándose.
+     *
+     * LO QUE PASÓ, para que no vuelva a pasar: María se apuntó el 24 de
+     * octubre a las 20:11. El 26 volvió a entrar y a rellenar el formulario, y
+     * su `alta` pasó a ser el 26. El día que de verdad llegó desapareció, y
+     * con él el recuento del día 24 en el panel de la campaña, que cuenta
+     * apuntados por `alta`. Un dato que se pisa solo es peor que uno que
+     * falta: nadie lo echa de menos.
      */
-    const ref = base.collection('leads').doc(idDe(lead.email, lead.origen));
-    const doc = await ref.get();
-    if (!doc.get('estado')) await ref.set({ estado: 'nuevo' }, { merge: true });
+    const antes = await ref.get();
+    const esNueva = !antes.exists;
+
+    await ref.set(
+      {
+        ...lead,
+        ...extra,
+        /* `alta` SÓLO al crear. Es cuándo apareció esta persona por primera
+           vez, y eso no cambia porque vuelva. */
+        ...(esNueva ? { alta: FieldValue.serverTimestamp() } : {}),
+        /* `visto` sí se pisa: es la última vez que ha vuelto, y saber que
+           alguien ha pedido dos cosas en una semana es una señal de venta. */
+        visto: FieldValue.serverTimestamp(),
+        /* Cuántas veces ha entrado por este mismo sitio. */
+        veces: FieldValue.increment(1),
+        /* El estado, también sólo al crear: si Iris ya la había pasado a
+           «contactado» y esta persona vuelve a rellenar algo, devolverla a
+           «nuevo» le borraría el trabajo. */
+        ...(esNueva ? { estado: 'nuevo' } : {}),
+      },
+      { merge: true },
+    );
 
     return { guardado: true };
   } catch (err) {
