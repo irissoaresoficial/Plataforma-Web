@@ -38,15 +38,21 @@ export const metadata: Metadata = {
    * «numerología transgeneracional», y el nombre de ella.
    */
   title: 'Numerología transgeneracional · Iris Soares',
+  /* NI «LEE TU FECHA Y TU NOMBRE» NI NADA QUE EXPLIQUE EL MÉTODO.
+     Gerson, el 27 de octubre: «eso no puede decir nada de eso, está mal».
+     Decía «Iris Soares lee tu fecha y tu nombre para enseñarte el patrón que
+     heredaste», y esa frase es lo primero que ve alguien en Google: a quien
+     no conoce la casa le suena a adivinación y no entra. Lo que trae gente no
+     es cómo se hace, es qué se entiende — por qué se repite lo mismo. */
   description:
-    'Lo que se repite en tu vida no empieza en ti. Iris Soares lee tu fecha y tu nombre para enseñarte el patrón que heredaste, y por dónde se sale. Talleres y escuela online.',
+    'Lo que se repite en tu vida no empieza en ti. Entiende de dónde viene el patrón que heredaste, y por dónde se sale. Talleres en directo y escuela online.',
   alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     url: CASA,
     title: 'Numerología transgeneracional · Iris Soares',
     description:
-      'Lo que se repite en tu vida no empieza en ti. Te enseño a leer el patrón que heredaste, para que dejes de repetirlo.',
+      'Lo que se repite en tu vida no empieza en ti. Entiende el patrón que heredaste, para que dejes de repetirlo.',
     siteName: 'Escuela de Sabiduría 33',
     locale: 'es_ES',
   },
