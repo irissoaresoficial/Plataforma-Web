@@ -50,39 +50,30 @@ import './casa.css';
 import VideoMedido from './VideoMedido';
 
 /*
- * LAS TRES FRASES, CORREGIDAS POR IRIS (nota de voz del 19 de octubre).
- * Las tres correcciones van en la misma dirección y conviene verlo junto,
- * porque es la lección: yo escribía para que sonara bien y ella escribe para
- * que se entienda a la primera.
+ * «ESTO ES PARA TI SI…» SE FUE EL 27 DE OCTUBRE, Y AQUÍ QUEDA POR QUÉ.
  *
- *   · «la misma conversación a los seis meses» → «…con diferentes
- *     personajes». Sin eso, «otra persona» y «la misma conversación» se
- *     contradicen a ojos de quien lee: ella lo dijo tal cual, «ahí no se va a
- *     entender».
+ * Eran tres cartelitos, y Gerson los tumbó señalando el tercero: «estamos
+ * hablando de patrones repetitivos, entender el porqué de las cosas (en el
+ * ámbito del amor); no digas que leemos o que hacemos. No, esto está mal».
  *
- *   · «Lo que no se cerró sigue bajando» → «se sigue repitiendo en las
- *     siguientes generaciones». «Bajar» es jerga de la casa: dentro se
- *     entiende y fuera no. Y es la frase que sostiene la página entera.
+ * El tercero decía «Analizamos tu fecha y tu nombre, y se ve de dónde viene y
+ * a quién pertenece lo que repites». Eso explica EL MÉTODO, y explicar el
+ * método en una página de captación hace justo lo contrario de lo que se
+ * busca: a quien no conoce la casa le suena a que le van a adivinar algo, y
+ * deja de leer antes de llegar al formulario. Lo que vende esta clase no es
+ * cómo se hace, es qué se entiende — por qué se repite lo mismo en el amor.
  *
- *   · «Se hace una cuenta» → «Analizamos tu fecha y tu nombre», y se añade
- *     «a quién pertenece». Dos cambios en una línea: la cuenta la hace
- *     alguien —se dice quién— y lo que se repite no sólo viene de algún
- *     sitio, es DE alguien. Eso último es el centro del método.
+ * Y la sección entera sobraba además por otra razón: ese mismo día se puso
+ * arriba «Esta clase es para ti · Aunque…», que hace exactamente el mismo
+ * trabajo —que quien lee se reconozca— y lo hace mejor, porque en vez de
+ * describir a la persona nombra las razones por las que cree que esto no es
+ * para ella. Dos secciones para lo mismo, seguidas, se leen como relleno.
+ *
+ * Lo que decían los dos primeros cartelitos no se ha perdido: «siempre acaba
+ * igual» está en el primer «Aunque» y en el párrafo del titular, y lo de la
+ * casa está en el titular mismo — «no empezó contigo: estaba en casa antes de
+ * que llegaras».
  */
-const PARA_QUIEN = [
-  {
-    t: 'Si siempre acabas igual',
-    d: 'Otra persona, otra ciudad, otro trabajo — y la misma conversación a los seis meses, con diferentes personajes.',
-  },
-  {
-    t: 'Si en tu casa pasó algo de lo que no se habla',
-    d: 'Una separación, una ausencia, alguien que se fue. Lo que no se cerró se sigue repitiendo en las siguientes generaciones.',
-  },
-  {
-    t: 'Si quieres entenderlo, no que te lo adivinen',
-    d: 'Analizamos tu fecha y tu nombre, y se ve de dónde viene y a quién pertenece lo que repites.',
-  },
-];
 
 /*
  * LAS OBJECIONES, DICHAS ANTES DE QUE LAS PIENSE.
@@ -293,21 +284,6 @@ export default function Masterclass() {
           <a href="#apuntarse" className="casa-mc-cta casa-brillo">
             Reservar mi plaza
           </a>
-        </section>
-
-        {/* ── 2. PARA QUIÉN ES ─────────────────────────────── */}
-        <section className="casa-mc-quien" aria-labelledby="quien-h">
-          <h2 className="casa-mc-quien-h" id="quien-h">
-            Esto es para ti si…
-          </h2>
-          <ul className="casa-mc-lista">
-            {PARA_QUIEN.map((x) => (
-              <li key={x.t}>
-                <h3>{x.t}</h3>
-                <p>{x.d}</p>
-              </li>
-            ))}
-          </ul>
         </section>
 
         {/* ── 3. EL CIERRE ─────────────────────────────────
