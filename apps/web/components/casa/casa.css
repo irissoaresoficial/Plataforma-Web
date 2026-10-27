@@ -82,7 +82,13 @@
    antes, no el `fixed`. */
 .casa-barra-fija {
   position: fixed;
-  top: 18px;
+  /* `--barra-arriba` existe para una sola cosa: la página de la masterclass
+     lleva desde el 27 de octubre una cuenta atrás arriba del todo, y la
+     pastilla del menú, fija a 18 px, le caía encima — se veía media pastilla
+     asomando por debajo de la barra granate, como un error de pintura. La
+     página que ponga una cuenta atrás declara cuánto mide y la pastilla se
+     coloca debajo; las demás no declaran nada y todo sigue igual. */
+  top: calc(var(--barra-arriba, 0px) + 18px);
 }
 /* Se aparta hacia arriba al bajar y vuelve al subir. El `transform` va en la
    pastilla y no en la caja de fuera: la caja es la que contiene el panel de
@@ -2404,5 +2410,221 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
   /* Los 4 px de debajo de la fecha sobran cuando el hueco ya es de 9. */
   .casa-registro-p {
     margin-bottom: 0;
+  }
+}
+
+/* ======================================================================== */
+/* LA LANDING DE EVENTO · 27 de octubre                                      */
+/* ======================================================================== */
+/* Gerson pasó una landing de otro evento: «mira esta frase impacta mucho,
+   quiero algo así en la cuestión de comunicación». Lo que se copia de ella es
+   la ESTRUCTURA, que es lo que convierte —cuenta atrás, promesa concreta, un
+   solo botón, y las objeciones dichas antes de que las piense—; lo que no se
+   copia es su piel: ni el degradado azul, ni la cursiva, ni la palabra
+   «gratuita». Aquí manda MARCA.md. */
+
+/* ───────────────────────────────────────────── la cuenta atrás, arriba */
+/* Va en el flujo y no flotando. Flotando taparía algo —ya pasó con el cartel
+   de cookies y costó una campaña— y además empujaría todo hacia abajo en cada
+   scroll. Aquí ocupa su sitio una vez, arriba del todo, y se queda ahí. */
+.casa-cuenta {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+  padding: 9px 16px;
+  background: var(--vino, #451a25);
+  color: var(--papel, #fff);
+  font-family: var(--sans);
+  text-align: center;
+}
+.casa-cuenta-fecha {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--oro-luz, #e2cda2);
+}
+.casa-cuenta-reloj {
+  display: flex;
+  gap: 6px;
+}
+.casa-cuenta-caja {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  min-width: 46px;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+}
+/* `b` e `i` son etiquetas, no estilos: aquí la `i` NO va en cursiva. Se usa
+   por lo que significa —la unidad, que se lee más floja que el número— y el
+   estilo lo pone esta regla. Cursiva en ningún sitio (19 de octubre). */
+.casa-cuenta-caja b {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.casa-cuenta-caja i {
+  font-style: normal;
+  font-size: 11px;
+  opacity: 0.72;
+}
+.casa-cuenta-vacia {
+  min-width: 190px;
+  height: 25px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* ─────────────────────────────────────── el resalte del titular, en oro */
+/* La referencia resalta en cursiva. Aquí en color: separa igual de bien y no
+   rompe la regla de la casa. El oro sobre el velo oscuro del fondo da 8,1:1,
+   muy por encima del mínimo. */
+.casa-mc-h1 b {
+  font-weight: inherit;
+  color: var(--oro-luz, #e2cda2);
+}
+
+/* ────────────────────────────────────────────────── el botón de la llamada */
+/* UNO Y GRANDE. En la primera pantalla sólo puede haber una cosa que parezca
+   el botón (MARCA.md §5): si hay dos, hay una duda, y una duda delante de una
+   landing fría es alguien que se va. */
+.casa-mc-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 22px;
+  padding: 17px 28px;
+  border-radius: var(--radio-pildora, 100px);
+  background: var(--papel, #fff);
+  color: var(--vino, #451a25);
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.55);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.casa-mc-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 50px -18px rgba(0, 0, 0, 0.6);
+}
+/* El de la sección de objeciones va sobre papel, así que se invierte. */
+.casa-mc-aunque .casa-mc-cta {
+  margin: 30px auto 0;
+  background: var(--vino, #451a25);
+  color: var(--papel, #fff);
+}
+
+/* ───────────────────────────────────────── el coste de no hacer nada */
+.casa-mc-coste {
+  max-width: 420px;
+  margin: 12px 0 0;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  /* Más flojo que el botón y legible igual: 4,8:1 sobre el velo. Es una voz
+     baja, no un susurro que no se lee. */
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ─────────────────────────────────────────────── las objeciones «Aunque» */
+.casa-mc-aunque {
+  padding: clamp(54px, 7vw, 86px) var(--hueco);
+  background: var(--arena, #f1ede4);
+  text-align: center;
+}
+.casa-mc-aunque-h {
+  margin: 0 0 clamp(26px, 3.4vw, 40px);
+  font-family: var(--serif);
+  font-size: var(--t-h2);
+  font-weight: var(--peso-fino);
+  letter-spacing: -0.02em;
+  color: var(--tinta, #221d1f);
+}
+.casa-mc-aunque-lista {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  /* El hueco entre las tres es grande a propósito: cada una tiene que leerse
+     sola antes de que la siguiente empiece igual. Pegadas se leen como un
+     párrafo y la figura se pierde. */
+  gap: clamp(22px, 3vw, 34px);
+}
+.casa-mc-aunque-lista li {
+  position: relative;
+  font-family: var(--sans);
+  font-size: clamp(19px, 2.4vw, 25px);
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+  color: var(--tinta, #221d1f);
+}
+/* La rayita entre frases, como en la referencia: separa sin meter una línea
+   que cruce la página entera. */
+.casa-mc-aunque-lista li + li::before {
+  content: '';
+  position: absolute;
+  top: calc(clamp(22px, 3vw, 34px) / -2);
+  left: 50%;
+  width: 1px;
+  height: clamp(14px, 1.8vw, 20px);
+  transform: translate(-50%, -50%);
+  background: rgba(34, 29, 31, 0.22);
+}
+.casa-mc-aunque-lista b {
+  font-weight: 600;
+  color: var(--oro-tinta, #7d5f1e);
+}
+
+/* En el móvil, la cuenta atrás se aprieta y la fecha se parte en su línea. */
+@media (max-width: 560px) {
+  .casa-cuenta {
+    gap: 6px;
+    padding: 8px 12px;
+  }
+  .casa-cuenta-fecha {
+    width: 100%;
+    font-size: 12px;
+  }
+  .casa-cuenta-caja {
+    min-width: 42px;
+    padding: 3px 7px;
+  }
+}
+
+
+/* La portada de la masterclass lleva cuenta atrás, así que la pastilla del
+   menú baja lo que mida. Dos valores porque el cartel se aprieta en el móvil
+   —la fecha se va a su propia línea— y mide distinto que en el ordenador. */
+.casa-mc-cuenta-hueco {
+  --barra-arriba: 48px;
+}
+@media (max-width: 560px) {
+  .casa-mc-cuenta-hueco {
+    --barra-arriba: 68px;
+  }
+}
+
+/* La portada necesita hueco para DOS cosas fijas, no una: la cuenta atrás
+   —que ocupa su sitio en el flujo— y la pastilla del menú, que flota 18 px por
+   debajo de ella. Medido a 390 x 844: la pastilla acaba en y=156 y el rótulo
+   arrancaba en y=136, así que le pasaba por encima.
+   Se sube sólo en el móvil y sólo en esta página. El botón «Reservar mi plaza»
+   acababa en y=575 de 844, o sea que sobraban 269 px: estos 32 de más caben de
+   largo y el botón sigue en la primera pantalla. */
+@media (max-width: 959px) {
+  .casa-mc-cuenta-hueco .casa-mc-alto {
+    padding-top: 100px;
   }
 }

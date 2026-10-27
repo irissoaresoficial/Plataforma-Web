@@ -5776,34 +5776,50 @@ body.cartel-abierto {
  * En el ordenador se queda abajo a la izquierda: allí sobra sitio y no se cruza
  * con nada.
  */
+/*
+ * 27 DE OCTUBRE: EL CARTEL VUELVE ABAJO EN EL MÓVIL, Y NO ES VOLVER ATRÁS.
+ *
+ * Subió aquí el 21 de octubre por una razón concreta y buena: abajo caía justo
+ * encima del botón «Quiero mi plaza», porque el formulario era lo primero que
+ * se veía en la primera pantalla del móvil. Esa razón ya no existe.
+ *
+ * Hoy la portada de la masterclass es una landing de evento: cuenta atrás,
+ * titular, UN botón que baja al formulario, y el formulario un dedo más abajo.
+ * Medido a 390 x 844: el botón acaba en y=575 y la línea de debajo en y=639,
+ * mientras que el cartel abajo ocupa de y≈672 para abajo. No se tocan.
+ *
+ * Y arriba sí estorbaba, ahora: tapaba la cuenta atrás ENTERA —de y=68 a
+ * y=135, justo donde cae el cartel— que es lo primero que tiene que ver quien
+ * llega de un anuncio. Un aviso de cookies que tapa el motivo por el que
+ * alguien se queda en la página cuesta más que el aviso.
+ *
+ * El hueco de abajo (`body.cartel-abierto`) vuelve a hacer falta por lo mismo
+ * de siempre: el cartel flota, así que sin hueco lo que quede debajo del todo
+ * no se puede alcanzar.
+ */
 @media (max-width: 959px) {
   .cookies {
-    top: calc(clamp(10px, 2vw, 24px) + env(safe-area-inset-top));
-    bottom: auto;
-    /* Centrado, que arriba es donde se mira. */
+    bottom: calc(clamp(10px, 2vw, 24px) + env(safe-area-inset-bottom));
+    top: auto;
+    /* Centrado: en un móvil, pegado a una esquina parece un error. */
     left: 50%;
     width: min(calc(100vw - 24px), 420px);
-    /* Entra cayendo, no subiendo: ahora viene de arriba. Lleva nombre propio
-       en vez de redefinir el de abajo dentro de la consulta de medios, que es
-       de las cosas que funcionan hasta que un navegador decide que no. */
-    animation-name: cookies-entra-arriba;
+    /* Entra subiendo, que es de donde viene. Y lleva nombre propio en vez de
+       redefinir la de escritorio dentro de la consulta de medios: ésta tiene
+       que arrastrar el `translateX(-50%)` del centrado en los dos fotogramas,
+       porque una animación con `transform` pisa el centrado si no lo repite. */
+    animation-name: cookies-entra-abajo-centro;
   }
-  /*
-   * Y AQUÍ NO SE AÑADE NINGÚN HUECO, a propósito.
-   *
-   * Abajo el hueco hacía falta porque el cartel tapaba el final de la página y
-   * no había forma de bajar más. Arriba no: lo único que el cartel tapa es la
-   * franja de arriba de la pantalla, y lo que caiga ahí se saca de debajo
-   * subiendo un dedo. Meter hueco arriba sería peor que no hacer nada —
-   * empujaría el formulario 180 px hacia abajo y lo sacaría de la primera
-   * pantalla, que es justo lo que llevamos dos días arreglando.
-   */
+  /* El hueco de abajo, del alto que mida el cartel. El cartel flota, así que
+     sin hueco lo que caiga al final de la página queda inalcanzable. Lo mide
+     `Medicion.tsx` con el cartel ya pintado, porque el alto cambia según el
+     ancho del móvil y la barra de abajo del iPhone. */
   body.cartel-abierto {
-    padding-bottom: 0;
+    padding-bottom: var(--cartel-alto, 180px);
   }
 }
-@keyframes cookies-entra-arriba {
-  from { opacity: 0; transform: translate(-50%, -14px); }
+@keyframes cookies-entra-abajo-centro {
+  from { opacity: 0; transform: translate(-50%, 14px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
 }
 .cookies-txt {

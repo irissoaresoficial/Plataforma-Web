@@ -42,6 +42,7 @@
 import Image from 'next/image';
 import Barra from './Barra';
 import Pie from './Pie';
+import CuentaAtras from './CuentaAtras';
 import Registro from './Registro';
 import Sello from './Sello';
 import { PRESENTAN, MASTERCLASS } from '@/content/site';
@@ -83,16 +84,51 @@ const PARA_QUIEN = [
   },
 ];
 
+/*
+ * LAS OBJECIONES, DICHAS ANTES DE QUE LAS PIENSE.
+ *
+ * Gerson, el 27 de octubre, con una landing de otro evento delante: «mira esta
+ * frase impacta mucho, quiero algo así en la cuestión de comunicación».
+ *
+ * Lo que impacta de esa referencia no es la frase: es la figura. Tres líneas
+ * que empiezan igual —«Aunque…»— y que van nombrando, una por una, las razones
+ * por las que quien lee cree que esto no es para ella. Dichas por la casa y no
+ * por ella, dejan de ser un muro y pasan a ser una señal de que aquí la
+ * entienden.
+ *
+ * SE ELIGEN LAS TRES QUE DE VERDAD FRENAN, y son de esta clase y no de otra:
+ * la que ya ha cambiado de pareja y no de final, la que entiende perfectamente
+ * lo que le pasa y vuelve a caer igual, y la que ya no sabe a quién echarle la
+ * culpa. Las tres salen de lo que Iris cuenta en el vídeo.
+ *
+ * NI UNA PROMESA QUE NO SE PUEDA CUMPLIR. No dice que se arregle en una hora
+ * ni que esto sustituya a una terapia: dice que en esa hora se ve de dónde
+ * viene. Lo primero sería mentira y lo segundo es lo que pasa (MARCA.md §7).
+ */
+const AUNQUE = [
+  'Aunque hayas cambiado de persona y la discusión sea exactamente la misma.',
+  'Aunque te lo sepas de memoria y aun así vuelvas a caer en lo mismo.',
+  'Aunque ya no sepas si el problema es la otra persona o eres tú.',
+];
+
 export default function Masterclass() {
   return (
-    <div id="app" className="claro casa" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
+    <div id="app" className="claro casa casa-mc-cuenta-hueco" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       {/* ── 1. EL VÍDEO Y EL FORMULARIO ────────────────────── */}
+      {/* ARRIBA DEL TODO Y FUERA DE LA SECCIÓN: dentro caía en el relleno
+          superior de la portada y quedaba a 68 px del borde, debajo de la barra
+          del menú. Lo primero que tiene que ver quien llega es cuánto falta. */}
+      <CuentaAtras />
+
       <section className="casa-mc-alto">
         <Image className="casa-mc-fondo" src="/images/camino-escuela.jpg" alt="" fill priority sizes="100vw" />
         <div className="casa-mc-velo" aria-hidden="true" />
 
+
         <header>
+
           <Barra fija />
+
         </header>
 
         <div className="casa-mc-dentro">
@@ -118,15 +154,62 @@ export default function Masterclass() {
               que es donde funciona, una vez que la persona ya ha decidido
               quedarse a leer.
             */}
+            {/*
+              EL TITULAR, 27 DE OCTUBRE. El anterior era «¿Por qué siempre
+              acaba igual?», y era bueno: una pregunta que esta mujer se ha
+              hecho en voz baja más de una vez. Se cambia porque 245 personas
+              llegaron desde los anuncios con ese titular delante y no se
+              apuntó ninguna.
+
+              Lo que le faltaba: una pregunta engancha, pero no promete nada.
+              Quien llega de un anuncio y se reconoce en la pregunta todavía
+              no sabe QUÉ se lleva si deja su correo, así que no lo deja.
+
+              Ahora el titular dice las tres cosas que hacen que alguien
+              reserve: qué se va a llevar (ver el patrón y de dónde viene),
+              en cuánto tiempo (una hora) y que hay alguien dándolo en
+              directo. La pregunta de antes no se ha perdido: ha bajado a la
+              frase de debajo, que es su sitio.
+
+              EL RESALTE VA EN COLOR Y NO EN CURSIVA. La referencia que pasó
+              Gerson resalta en cursiva; aquí no, porque no quiere cursiva en
+              nada (19 de octubre). El oro de la casa separa igual de bien.
+            */}
             <h1 className="casa-mc-h1">
-              ¿Por qué siempre
-              <br />
-              acaba igual?
+              Descubre en una hora por qué repites la misma historia
+              <b> y dónde empezó</b>
             </h1>
             <p className="casa-mc-p">
               Cambias de persona y vuelve la misma discusión, el mismo final.
-              Desórdenes Amorosos: lo que se repite en tu forma de querer no
-              empezó contigo, estaba en casa antes de que llegaras.
+              Lo que se repite en tu forma de querer no empezó contigo: estaba
+              en casa antes de que llegaras. En esta clase se ve cuál es el
+              patrón, de quién lo heredaste y qué hacer con él.
+            </p>
+
+            {/* LA LLAMADA, ARRIBA Y GRANDE.
+                Hasta hoy la primera pantalla del móvil enseñaba el formulario
+                entero: nombre, correo, casilla y botón. A alguien que no
+                conoce a Iris eso le pide el correo antes de haberle contado
+                nada, y 245 personas contestaron que no.
+
+                Así que la primera pantalla vuelve a hacer lo que hace una
+                landing de evento: prometer algo concreto y ofrecer UN botón.
+                El formulario sigue donde estaba —un toque más abajo— y ahora
+                lo ve quien ya ha decidido que le interesa. Menos gente va a
+                llegar hasta él, y eso es exactamente lo que se busca: la que
+                llegue va con la decisión tomada. */}
+            <a href="#apuntarse" className="casa-mc-cta casa-brillo">
+              Reservar mi plaza
+            </a>
+            {/* EL COSTE DE NO HACER NADA, en una línea y sin crueldad.
+                La referencia pone «o cierra esta pestaña y sigue viendo cómo
+                otros se llevan lo que es tuyo». La figura es buena y el tono
+                no: eso humilla a quien lee. Aquí dice lo que de verdad pasa
+                si cierra, que en esta clase es mucho más concreto — y más
+                duro — que cualquier frase de motivación. */}
+            <p className="casa-mc-coste">
+              O cierras esta página y vuelves a empezar la misma historia con
+              la siguiente persona.
             </p>
           </div>
 
@@ -191,6 +274,27 @@ export default function Masterclass() {
       </section>
 
       <main>
+        {/* ── LAS OBJECIONES, ANTES DE QUE LAS PIENSE ──────── */}
+        <section className="casa-mc-aunque" aria-labelledby="aunque-h">
+          <h2 className="casa-mc-aunque-h" id="aunque-h">
+            Esta clase es para ti
+          </h2>
+          <ul className="casa-mc-aunque-lista">
+            {AUNQUE.map((frase) => (
+              <li key={frase}>
+                {/* La palabra que repite va en oro y en negrita, no en
+                    cursiva: es lo que hace que las tres se lean como una
+                    sola idea en vez de como tres frases sueltas. */}
+                <b>Aunque</b>
+                {frase.replace('Aunque', '')}
+              </li>
+            ))}
+          </ul>
+          <a href="#apuntarse" className="casa-mc-cta casa-brillo">
+            Reservar mi plaza
+          </a>
+        </section>
+
         {/* ── 2. PARA QUIÉN ES ─────────────────────────────── */}
         <section className="casa-mc-quien" aria-labelledby="quien-h">
           <h2 className="casa-mc-quien-h" id="quien-h">
