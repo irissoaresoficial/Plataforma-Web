@@ -59,6 +59,58 @@ async function compruebaFirebase(): Promise<Paso> {
 }
 
 /**
+ * ¿ESTÁ CONTANDO EL EMBUDO?
+ *
+ * El contador de `/api/paso` pasó el 27 de octubre entero en la web sin
+ * registrar ni una visita, y no había forma de saberlo sin abrir Firestore:
+ * fallaba con un 403 que nadie veía y, aunque hubiera entrado, el error de
+ * escritura se lo tragaba un `catch` vacío.
+ *
+ * Así que el diagnóstico lee lo que hay contado hoy y ayer. Si hoy pone cero
+ * y la campaña está gastando, está roto otra vez — y se ve en un clic en vez
+ * de en un día perdido.
+ *
+ * NO LEE NADA DE NADIE. `embudo` son tres números por día y no hay más: esta
+ * comprobación no toca `leads` ni puede tocarla.
+ */
+async function compruebaEmbudo(): Promise<Paso> {
+  const paso = 'Contador del embudo (llegadas → formulario → escriben)';
+  const base = db();
+  if (!base) return { paso, ok: false, detalle: 'Sin Firebase no hay contador. Mira el paso de arriba.' };
+
+  const dia = (d: Date) => d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' });
+  const hoy = dia(new Date());
+  const ayer = dia(new Date(Date.now() - 86400000));
+
+  try {
+    const [a, b] = await Promise.all([
+      base.collection('embudo').doc(hoy).get(),
+      base.collection('embudo').doc(ayer).get(),
+    ]);
+    const lee = (d: FirebaseFirestore.DocumentSnapshot) => {
+      const v = (d.data() || {}) as Record<string, number>;
+      return { llega: v.llega || 0, ve: v['ve-formulario'] || 0, escribe: v.escribe || 0 };
+    };
+    const h = lee(a);
+    const y = lee(b);
+    const txt = (n: { llega: number; ve: number; escribe: number }) =>
+      `${n.llega} llegaron, ${n.ve} vieron el formulario, ${n.escribe} empezaron a escribir`;
+
+    if (h.llega === 0 && y.llega === 0) {
+      return {
+        paso,
+        ok: false,
+        detalle:
+          'NO HA CONTADO NADA ni hoy ni ayer. Si la campaña está gastando, el contador está roto: mira los registros de Vercel buscando «[paso]».',
+      };
+    }
+    return { paso, ok: true, detalle: `Hoy: ${txt(h)}. Ayer: ${txt(y)}.` };
+  } catch (err) {
+    return { paso, ok: false, detalle: `No se ha podido leer el contador: ${String(err).slice(0, 160)}` };
+  }
+}
+
+/**
  * ¿SALEN LOS CORREOS? Y NO «¿ESTÁ LA VARIABLE?».
  *
  * Esto faltaba, y faltaba en el sitio peor. Desde el 19 de octubre los correos
@@ -205,6 +257,10 @@ export async function GET(peticion: Request) {
      el lead queda guardado y la persona ve su pantalla de gracias igual, pero
      no recibe nada y se queda sin el enlace del grupo. */
   pasos.push(await compruebaResend(prueba));
+
+  /* Y el contador del embudo, que es con lo que se decide si la página
+     funciona o no. */
+  pasos.push(await compruebaEmbudo());
 
   pasos.push({
     paso: 'Variable APPS_SCRIPT_URL',
