@@ -86,14 +86,20 @@ const ORO = '#e2cda2';
  * válido», así que esto hay que tocarlo con cuidado.
  */
 function enlaceDeBaja(email: string): string {
-  const url = process.env.APPS_SCRIPT_URL || '';
   const secreto = process.env.APPS_SCRIPT_SECRET || '';
-  if (!url || !secreto) return `mailto:${CONTESTAR_A}?subject=Quiero%20darme%20de%20baja`;
+  if (!secreto) return `mailto:${CONTESTAR_A}?subject=Quiero%20darme%20de%20baja`;
   const firma = createHmac('sha256', secreto)
     .update(email.toLowerCase())
     .digest('base64url')
     .slice(0, 16);
-  return `${url}?action=baja&e=${encodeURIComponent(email)}&t=${encodeURIComponent(firma)}`;
+  /* APUNTA A NUESTRA WEB, NO AL APPS SCRIPT, desde el 28 de octubre.
+     Antes iba directo al script, que marca la casilla en la hoja de Iris. Eso
+     valía mientras los correos salieran de esa hoja; los recordatorios de la
+     masterclass salen de aquí y leen Firestore, que no se enteraba de
+     ninguna baja — alguien podía darse de baja, leer «listo, no recibirás más
+     correos» y seguir recibiéndolos. `/baja` marca las dos listas de un clic,
+     y el porqué entero está escrito en esa página. */
+  return `${WEB}/baja?e=${encodeURIComponent(email)}&t=${encodeURIComponent(firma)}`;
 }
 
 /** Lo mínimo para que un `<`, un `&` o unas comillas en un nombre no rompan el
@@ -400,6 +406,79 @@ export function correoGrupoWhatsapp(nombre: string): { asunto: string; html: str
          <p style="margin:14px 0 0">Nos vemos.</p>`,
     }),
   };
+}
+
+/**
+ * ============================================================================
+ * LOS RECORDATORIOS DE LA MASTERCLASS
+ * ============================================================================
+ *
+ * EL PROBLEMA QUE RESUELVEN, con número delante: el 28 de octubre había cinco
+ * personas apuntadas a una clase que era dentro de 29 días, y ni un solo
+ * correo entre medias. Quien se apunta a un mes vista se olvida —no es culpa
+ * suya, es lo normal— y el día 26 se habrían conectado dos. De nada sirve
+ * gastar en anuncios para llenar una lista que luego no aparece.
+ *
+ * SON TRES Y NO MÁS, y cada uno hace un trabajo distinto:
+ *
+ *   semana  (–7 días) · Volver a existir. Ha pasado un mes desde que se
+ *           apuntó y probablemente no se acuerda del nombre de la clase. Se
+ *           le recuerda qué es y se le pide lo único accionable: el grupo.
+ *   manana  (–1 día)  · Que lo meta en el calendario de verdad. Es el correo
+ *           que más asistencia salva, y por eso lleva la hora en grande.
+ *   hoy     ( 0 días) · Por la mañana. «Es hoy» y dónde va a llegar el
+ *           enlace. No lleva el enlace de la clase porque a las 10 de la
+ *           mañana todavía no existe: lo manda Iris por el grupo.
+ *
+ * Tres son los que caben sin molestar. Cuatro ya es una lista de la que la
+ * gente se da de baja, y una baja antes de la clase es una persona perdida
+ * para siempre, no sólo para el día 26.
+ *
+ * LA HORA PORTUGUESA VA EN LOS TRES. De las cinco primeras apuntadas, tres
+ * son de Portugal. Una clase «a las 21:00 hora de España» es a las 20:00 en
+ * Oporto, y quien no lo sepa llega una hora tarde a una clase de una hora.
+ */
+export type Recordatorio = 'semana' | 'manana' | 'hoy';
+
+export function correoRecordatorio(
+  tipo: Recordatorio,
+  nombre: string,
+  email: string,
+): { asunto: string; html: string } {
+  const conGrupo = Boolean(GRUPO);
+  const hora = '<b>21:00</b>, hora de España — las <b>20:00</b> en Portugal';
+
+  const textos: Record<Recordatorio, { asunto: string; previo: string; titular: string; cuerpo: string }> = {
+    semana: {
+      asunto: `Falta una semana · ${MASTERCLASS.titulo}`,
+      previo: 'Queda una semana para la masterclass. Te recuerdo de qué va.',
+      titular: 'Falta una semana',
+      cuerpo: `<p style="margin:0 0 14px">Hola ${primerNombre(nombre)}, el <b>jueves 26 de noviembre</b> damos <b>${MASTERCLASS.titulo}</b>, la masterclass a la que te apuntaste.</p>
+         <p style="margin:0 0 14px">Va de por qué se repite la misma historia en tu forma de querer, de dónde viene ese patrón y qué hacer con él. A las ${hora}.</p>
+         ${conGrupo ? `<p style="margin:0 0 4px">Si todavía no estás en el grupo, entra: ahí aviso de todo y el día de la clase mando el enlace.</p>${boton(GRUPO, 'Entrar al grupo')}` : ''}`,
+    },
+    manana: {
+      asunto: `Mañana · ${MASTERCLASS.titulo}`,
+      previo: 'Mañana a las 21:00 (20:00 en Portugal). Apúntatelo ahora.',
+      titular: 'Es mañana',
+      cuerpo: `<p style="margin:0 0 14px">Hola ${primerNombre(nombre)}, mañana <b>jueves</b> es <b>${MASTERCLASS.titulo}</b>.</p>
+         <p style="margin:0 0 14px">A las ${hora}. Dura una hora.</p>
+         <p style="margin:0 0 14px"><b>Ponte un aviso en el móvil ahora</b>, mientras lo lees. Es lo único que de verdad evita que se te pase.</p>
+         ${conGrupo ? `${boton(GRUPO, 'Entrar al grupo')}<p style="margin:18px 0 0;font-size:15px;color:#55504f">Mañana mando el enlace por el grupo y por correo.</p>` : ''}`,
+    },
+    hoy: {
+      asunto: `Hoy a las 21:00 · ${MASTERCLASS.titulo}`,
+      previo: 'Es hoy. A las 21:00, 20:00 en Portugal.',
+      titular: 'Es hoy',
+      cuerpo: `<p style="margin:0 0 14px">Hola ${primerNombre(nombre)}, hoy es <b>${MASTERCLASS.titulo}</b>.</p>
+         <p style="margin:0 0 14px">Empezamos a las ${hora}.</p>
+         <p style="margin:0 0 14px">${conGrupo ? 'Un rato antes mando el enlace para entrar <b>por el grupo de WhatsApp y por aquí</b>.' : 'Un rato antes te mando el enlace para entrar <b>a este mismo correo</b>.'}</p>
+         ${conGrupo ? boton(GRUPO, 'Entrar al grupo') : ''}`,
+    },
+  };
+
+  const t = textos[tipo];
+  return { asunto: t.asunto, html: marco({ previo: t.previo, titular: t.titular, email, cuerpo: t.cuerpo }) };
 }
 
 export function vistaPreviaDeLead(lead: Lead): { asunto: string; html: string } | null {
