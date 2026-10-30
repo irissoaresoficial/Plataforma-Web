@@ -25,10 +25,22 @@
  * puede demostrar es como no tenerlo (art. 7.1).
  *
  * LA TRAMPA PARA ROBOTS.
- * Un campo escondido que una persona nunca ve y un robot rellena siempre. Si
- * viene con algo, se finge que todo ha ido bien y no se manda nada. No lleva
- * `display:none` sino un recorte, para que un lector de pantalla tampoco lo
- * anuncie, y va con `tabIndex={-1}` y `autoComplete="off"`.
+ * Un campo escondido que una persona nunca ve y un robot rellena siempre. No
+ * lleva `display:none` sino un recorte, para que un lector de pantalla tampoco
+ * lo anuncie, y va con `tabIndex={-1}` y `autoComplete="off"`.
+ *
+ * HASTA EL 30 DE OCTUBRE SE LLAMABA `apellidos`, Y SE COMÍA A LA GENTE.
+ * El autocompletar del móvil (Chrome y Safari) rellena por el NOMBRE del
+ * campo, no por si se ve: «apellidos» es justo lo que busca para el apellido,
+ * y `autoComplete="off"` no lo para en los campos de contacto. Quien tocaba
+ * «Tu nombre» y aceptaba la sugerencia rellenaba también la trampa sin
+ * saberlo, veía «plaza confirmada» y no se guardaba nada. Con 1.031 visitas
+ * desde los anuncios y ninguna inscripción, es lo primero que había que
+ * quitar.
+ * Por eso ahora el nombre no se parece a nada que un navegador quiera
+ * rellenar, y si la trampa viene llena el lead SE MANDA IGUAL, marcado para
+ * revisar. Un robot de más en la lista se borra en un segundo; una persona
+ * que se cree apuntada y no lo está no vuelve.
  *
  * LA SEÑAL PARA META.
  * Al entrar el lead se dispara `medir('lead')`, que es lo que ve la campaña
@@ -139,12 +151,11 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
     if (!aceptado) return setError('Hace falta que aceptes para poder avisarte.');
     setError('');
 
-    /* El robot se va por aquí creyendo que ha funcionado. */
-    if (trampa) return setHecho(true);
-
     setEnviando(true);
     const prueba = [
       `Masterclass: ${curso}`,
+      /* La trampa llena ya no tira el lead: lo marca. El porqué, arriba. */
+      trampa ? 'REVISAR: campo oculto relleno (¿robot?)' : '',
       whatsapp.trim() ? `WhatsApp: ${whatsapp.trim()}` : '',
       `Consentimiento: ${new Date().toISOString()} — «${TEXTO_CONSENTIMIENTO}»`,
     ]
@@ -381,7 +392,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
         <label htmlFor={`${id}-t`}>No rellenes esto</label>
         <input
           id={`${id}-t`}
-          name="apellidos"
+          name="mc_b7x"
           type="text"
           tabIndex={-1}
           autoComplete="off"
