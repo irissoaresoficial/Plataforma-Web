@@ -1,0 +1,578 @@
+/*
+ * ============================================================================
+ * LA PRESENTACIÓN: UN LIENZO DE 1920 × 1080
+ * ============================================================================
+ *
+ * Cada diapositiva se dibuja sobre un lienzo fijo de 1920 × 1080 y luego se
+ * escala entero a la pantalla que toque: el portátil de Iris, el proyector o
+ * la ventana compartida en Zoom. Así se ve EXACTAMENTE igual en todas, que es
+ * lo que se le pide a una presentación y no a una página web.
+ *
+ * Por eso los tamaños de letra van en píxeles del lienzo y no en la escala de
+ * la web (MARCA.md §2): aquí 120 px no son 120 px de pantalla, son 120 de
+ * 1920. Están todos en las variables de abajo; no hay ninguno suelto.
+ *
+ * Todo cuelga de `.pres`, para que nada de aquí se cuele en el resto de la web.
+ */
+
+/* Las medidas valen también en la ventana de quien presenta, que dibuja las
+   mismas diapositivas en pequeño. */
+.pres,
+.pres-presentador {
+  /* La escala, en píxeles del lienzo. */
+  --p-gigante: 150px;
+  --p-h1: 118px;
+  --p-h2: 74px;
+  --p-h3: 44px;
+  --p-texto: 34px;
+  --p-rotulo: 24px;
+  /* Los cantos: los mismos blandos de la portada (.casa), multiplicados por la
+     escala del lienzo. */
+  --p-radio: calc(var(--radio-suave) * 1.2);
+  --p-radio-chico: calc(var(--radio-medio) * 1.6);
+  --p-pendiente: #b3261e;
+}
+
+.pres {
+  position: fixed;
+  inset: 0;
+  background: var(--tinta);
+  color: var(--tinta);
+  font-family: var(--sans);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pres em,
+.pres i {
+  font-style: normal;
+}
+
+/* ---------------------------------------------------------- EL ESCENARIO */
+.pres-escenario {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+.pres-diapo {
+  position: absolute;
+  inset: 0;
+  padding: 128px 132px 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  background: var(--arena);
+  color: var(--tinta);
+}
+.pres-diapo.oscura {
+  background: var(--vino);
+  color: #fbf6ee;
+}
+.pres-diapo.acento {
+  background: var(--oro-luz);
+  color: var(--vino);
+}
+.pres-diapo.centrada {
+  justify-content: center;
+}
+
+/* El degradado que se mueve despacio en las diapositivas oscuras. */
+.pres-diapo.oscura::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(40% 40% at 80% 10%, rgba(226, 205, 162, 0.2), transparent 70%),
+    radial-gradient(35% 35% at 10% 95%, rgba(226, 205, 162, 0.12), transparent 70%),
+    radial-gradient(30% 30% at 55% 55%, rgba(93, 39, 52, 0.9), transparent 70%);
+  animation: pres-deriva 22s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.pres-diapo.oscura > * {
+  position: relative;
+}
+@keyframes pres-deriva {
+  from {
+    transform: translate3d(-3%, -2%, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(3%, 2%, 0) rotate(8deg);
+  }
+}
+
+/* ------------------------------------------------------------- LETRAS */
+.pres-rotulo {
+  margin: 0;
+  font-size: var(--p-rotulo);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--oro-tinta);
+}
+.oscura .pres-rotulo {
+  color: var(--oro-luz);
+}
+.acento .pres-rotulo {
+  color: var(--vino);
+}
+.pres-h1 {
+  margin: 0;
+  font-size: var(--p-h1);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  max-width: 1500px;
+}
+.pres-h2 {
+  margin: 0;
+  font-size: var(--p-h2);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  max-width: 1550px;
+}
+.pres-h3 {
+  margin: 0;
+  font-size: var(--p-h3);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.pres-texto {
+  margin: 0;
+  font-size: var(--p-texto);
+  line-height: 1.42;
+  color: var(--tx-2, #5b5154);
+  max-width: 1450px;
+}
+.oscura .pres-texto {
+  color: rgba(251, 246, 238, 0.82);
+}
+.acento .pres-texto {
+  color: #5c2a36;
+}
+.pres-resalte {
+  color: var(--oro-tinta);
+}
+.oscura .pres-resalte,
+.pres-tarjeta.oscura .pres-resalte {
+  color: var(--oro-luz);
+}
+.pres-pendiente {
+  color: var(--p-pendiente);
+  background: rgba(179, 38, 30, 0.08);
+  border-radius: 8px;
+  padding: 0 0.18em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.oscura .pres-pendiente,
+.pres-tarjeta.oscura .pres-pendiente {
+  color: #f6b8b0;
+  background: rgba(246, 184, 176, 0.12);
+}
+.pres-pie {
+  position: absolute;
+  left: 132px;
+  right: 132px;
+  bottom: 60px;
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--p-rotulo);
+  color: #6f6560;
+}
+.oscura .pres-pie {
+  color: rgba(251, 246, 238, 0.6);
+}
+
+/* ------------------------------------------------------------ PIEZAS */
+.pres-fila-tarjetas {
+  display: flex;
+  gap: 32px;
+  flex: 1;
+  min-height: 0;
+}
+.pres-tarjeta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 52px;
+  border-radius: var(--p-radio);
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 24px 60px -24px rgba(69, 26, 37, 0.22);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+}
+/* Lo de arriba arriba y lo de abajo abajo: la tarjeta se llena sin dejar un
+   hueco muerto debajo del texto. */
+.pres-tarjeta.reparte {
+  justify-content: space-between;
+}
+.pres-tarjeta.reparte .pres-h3:last-child {
+  font-size: 54px;
+  font-weight: 400;
+  line-height: 1.12;
+}
+.pres-tarjeta.grande {
+  flex: 1.5;
+  justify-content: center;
+}
+.pres-tarjeta.oscura {
+  background: var(--vino);
+  border-color: transparent;
+  color: #fbf6ee;
+  box-shadow: 0 28px 70px -28px rgba(69, 26, 37, 0.6);
+}
+.pres-tarjeta.oscura .pres-rotulo {
+  color: var(--oro-luz);
+}
+.pres-tarjeta.oscura .pres-texto {
+  color: rgba(251, 246, 238, 0.82);
+}
+.pres-tarjeta.grande .pres-h3 {
+  font-size: 58px;
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.pres-filas {
+  display: flex;
+  flex-direction: column;
+}
+.pres-filafila {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 560px) minmax(0, 1fr);
+  align-items: center;
+  gap: 40px;
+  padding: 30px 0;
+  border-top: 1px solid rgba(34, 29, 31, 0.14);
+}
+.pres-filafila:last-child {
+  border-bottom: 1px solid rgba(34, 29, 31, 0.14);
+}
+.pres-filafila.sin-texto {
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+.pres-num {
+  font-size: 76px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--oro);
+  font-variant-numeric: tabular-nums;
+}
+.pres-filafila.oculta {
+  opacity: 0;
+}
+
+.pres-imagen {
+  position: relative;
+  flex: none;
+  width: 640px;
+  border-radius: calc(var(--p-radio) * 1.2);
+  overflow: hidden;
+  box-shadow: 0 30px 70px -30px rgba(34, 29, 31, 0.5);
+}
+
+.pres-pastilla {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 30px;
+  border-radius: var(--radio-pildora);
+  font-size: 28px;
+  font-weight: 500;
+  background: rgba(251, 246, 238, 0.12);
+  border: 1px solid rgba(251, 246, 238, 0.26);
+  color: #fbf6ee;
+}
+.acento .pres-pastilla {
+  background: var(--arena);
+  border-color: transparent;
+  color: var(--vino);
+}
+.pres-punto {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--oro-luz);
+}
+
+/* --------------------------------------------- LO QUE NO ES DIAPOSITIVA */
+.pres-mando {
+  position: absolute;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px;
+  border-radius: var(--radio-pildora);
+  background: rgba(34, 29, 31, 0.55);
+  border: 1px solid rgba(251, 246, 238, 0.14);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  color: #fbf6ee;
+  font-family: var(--sans);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+  z-index: 10;
+}
+.pres-mando.quieto {
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  pointer-events: none;
+}
+.pres-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  min-width: 42px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: inherit;
+  font: 500 15px/1 var(--sans);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.pres-boton:hover,
+.pres-boton[aria-pressed='true'] {
+  background: rgba(251, 246, 238, 0.14);
+}
+.pres-boton:focus-visible {
+  outline: 2px solid var(--oro-luz);
+  outline-offset: 2px;
+}
+.pres-boton.solido {
+  background: var(--oro-luz);
+  color: var(--vino);
+}
+.pres-cuenta {
+  min-width: 70px;
+  text-align: center;
+  font: 500 15px/1 var(--sans);
+  font-variant-numeric: tabular-nums;
+  color: rgba(251, 246, 238, 0.8);
+}
+.pres-progreso {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--oro-luz);
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 11;
+}
+
+/* Las notas, debajo, para quien presenta con una sola pantalla. */
+.pres-notas {
+  position: absolute;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  width: min(920px, calc(100vw - 32px));
+  max-height: 34vh;
+  overflow: auto;
+  padding: 22px 26px;
+  border-radius: 22px;
+  background: rgba(251, 246, 238, 0.94);
+  color: var(--tinta);
+  font: 400 18px/1.55 var(--sans);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  z-index: 9;
+  user-select: text;
+}
+.pres-notas strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--oro-tinta);
+}
+
+/* El índice: todas las diapositivas de un vistazo. */
+.pres-indice {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  overflow: auto;
+  padding: max(28px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 120px max(16px, env(safe-area-inset-left));
+  background: rgba(20, 16, 18, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.pres-indice-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+.pres-mini {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  background: var(--arena);
+  container-type: inline-size;
+}
+.pres-mini[aria-current='true'] {
+  border-color: var(--oro-luz);
+}
+.pres-mini-lienzo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.pres-mini-num {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 2;
+  padding: 3px 9px;
+  border-radius: 100px;
+  background: rgba(34, 29, 31, 0.72);
+  color: #fbf6ee;
+  font: 500 12px/1.3 var(--sans);
+}
+
+/* La pausa: pantalla granate con el sello, para cuando se habla sin
+   diapositivas. */
+.pres-pausa {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: grid;
+  place-items: center;
+  background: var(--vino);
+}
+
+/* ------------------------------------------------- LA VISTA DE QUIEN PRESENTA */
+.pres-presentador {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 18px;
+  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 18px max(18px, env(safe-area-inset-left));
+  background: #181314;
+  color: #fbf6ee;
+  font-family: var(--sans);
+  user-select: text;
+}
+.pres-presentador-barra {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pres-reloj {
+  font: 400 42px/1 var(--sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.pres-ventana {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--arena);
+  container-type: inline-size;
+}
+.pres-lado {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  min-width: 0;
+}
+.pres-proximas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: auto;
+}
+.pres-proximas button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: rgba(251, 246, 238, 0.05);
+  color: rgba(251, 246, 238, 0.78);
+  font: 400 15px/1.35 var(--sans);
+  cursor: pointer;
+}
+.pres-proximas button:hover {
+  background: rgba(251, 246, 238, 0.12);
+}
+.pres-lado-notas {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: rgba(251, 246, 238, 0.06);
+  font: 400 22px/1.55 var(--sans);
+}
+
+@media (max-width: 760px) {
+  .pres-presentador {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    overflow: auto;
+  }
+  .pres-mando .pres-solo-ancho {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pres-diapo.oscura::before {
+    animation: none;
+  }
+  .pres-progreso,
+  .pres-mando {
+    transition: none;
+  }
+}
+
+/* La presentación no lleva el cartel de cookies: tapa la diapositiva en
+   directo y aquí no hay nada que medir. */
+body[data-presentacion] .cookies {
+  display: none !important;
+}

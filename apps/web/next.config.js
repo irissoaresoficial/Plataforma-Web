@@ -2,6 +2,26 @@
 const nextConfig = {
   reactStrictMode: true,
 
+  /*
+   * LA PRESENTACIÓN, EN SU SUBDOMINIO.
+   *
+   * presentacion.escueladesabiduria33.com enseña la página /presentacion sin
+   * cambiar la dirección. Es el mismo proyecto de Vercel: basta con añadir el
+   * dominio en Vercel (Settings → Domains) y esta regla hace el resto. Las
+   * imágenes y lo demás siguen sirviéndose igual desde cualquier dominio.
+   */
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/',
+          has: [{ type: 'host', value: 'presentacion.escueladesabiduria33.com' }],
+          destination: '/presentacion',
+        },
+      ],
+    };
+  },
+
   async redirects() {
     return [
       /* El portal vivía suelto en /portal.html mientras se decidía si entraba.
