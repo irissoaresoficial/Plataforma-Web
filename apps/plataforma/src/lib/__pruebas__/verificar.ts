@@ -41,6 +41,7 @@ const PRUEBAS: Array<[string, string]> = [
   ["El enlace del vídeo", "video.ts"],
   ["La racha y las medallas", "trofeos.ts"],
   ["Fundir los estudios con los de la nube", "estudios.ts"],
+  ["El Feng Shui, contra las cartas publicadas", "fengshui.ts"],
 ];
 
 let mal = 0;

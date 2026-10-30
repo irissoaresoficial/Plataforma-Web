@@ -3,7 +3,7 @@ import AcercaDe from "./AcercaDe";
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { useApp, type Base, type Seccion, type Disciplina, type View } from "@/lib/app-context";
+import { useApp, type Base, type ParteFengShui, type Seccion, type Disciplina, type View } from "@/lib/app-context";
 import { useSesion } from "@/lib/sesion";
 import type { Capacidad } from "@/lib/roles";
 import {
@@ -30,6 +30,11 @@ import {
   IcoPlegar,
   IcoResumen,
   IcoTablero,
+  IcoFengShui,
+  IcoVivienda,
+  IcoBrujula,
+  IcoPlano,
+  IcoEstrellas,
 } from "./Iconos";
 
 type Ico = (p: { size?: number }) => React.JSX.Element;
@@ -61,10 +66,31 @@ const BASES: Array<{ k: Base; label: string; Ico: Ico }> = [
 ];
 
 /** Las disciplinas de la escuela, en el orden en que se estudian. Feng Shui
- *  estaba aquí en tercer lugar y se ha retirado: no había nada detrás. */
+ *  va debajo, aparte: no lee una carta sino una vivienda (ver `PARTES_FS`). */
 export const DISCIPLINAS: Array<{ k: Disciplina; label: string; Ico: Ico }> = [
   { k: "kabala", label: "Kábala", Ico: IcoArbol },
   { k: "numerologia", label: "Numerología", Ico: IcoNumerologia },
+];
+
+/**
+ * FENG SHUI, DEBAJO DE NUMEROLOGÍA.
+ *
+ * Estuvo aquí una vez como un nombre sin nada detrás y se quitó. Vuelve el 30
+ * de octubre de 2026 con su estudio entero, y en el sitio que pidió Gerson:
+ * «debe estar abajo de numerología».
+ *
+ * No cuelga de `DISCIPLINAS` porque no funciona como ellas. Kábala y
+ * Numerología leen la carta de la persona abierta en la consulta, y sin ella
+ * se apagan. Feng Shui estudia una vivienda: se abre siempre, con o sin
+ * estudio, y sus partes son los pasos de ese estudio, en el orden en que se
+ * hacen.
+ */
+const PARTES_FS: Array<{ k: ParteFengShui; label: string; Ico: Ico }> = [
+  { k: "datos", label: "Vivienda", Ico: IcoVivienda },
+  { k: "plano", label: "Plano", Ico: IcoPlano },
+  { k: "brujula", label: "Luopan", Ico: IcoBrujula },
+  { k: "estrellas", label: "Estrellas", Ico: IcoEstrellas },
+  { k: "informe", label: "Informe", Ico: IcoDocumento },
 ];
 
 /** El despacho: lo que no es leer una carta. Nunca se bloquea — una factura no
@@ -141,7 +167,7 @@ const DIRECCION: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> =
  * discrepar. `alCambiar` lo usa el cajón para cerrarse al elegir.
  */
 export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void; compacta?: boolean }) {
-  const { r, re, view, setView, seccion, setSeccion, disciplina, setDisciplina, base, setBase } = useApp();
+  const { r, re, view, setView, seccion, setSeccion, disciplina, setDisciplina, base, setBase, parteFs, setParteFs } = useApp();
   const { puede } = useSesion();
   const quieto = useReducedMotion();
   /*
@@ -185,6 +211,11 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
    */
   const [tocadas, setTocadas] = useState<Partial<Record<Disciplina, boolean>>>({});
   const estaAbierta = (d: Disciplina) => tocadas[d] ?? (enElPanel && disciplina === d);
+  /* Feng Shui sigue la misma regla: abierto cuando se está dentro, y si Iris
+     lo pliega a mano, plegado se queda. */
+  const enFengShui = view === "fengshui";
+  const [fsTocado, setFsTocado] = useState<boolean | null>(null);
+  const fsAbierto = compacta || (fsTocado ?? enFengShui);
 
   const hayEstudio = Boolean(r || re);
   // El estudio de empresa cabe entero en una pantalla: no hay siete partes
@@ -483,6 +514,48 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
             </div>
           );
         })}
+
+        {/* ------------------------------------------------ FENG SHUI */}
+        <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+          {fila(
+            enFengShui && !fsAbierto,
+            IcoFengShui,
+            "Feng Shui",
+            () => {
+              const estaba = fsAbierto;
+              setView("fengshui");
+              setFsTocado(!estaba);
+            },
+            { grande: true, abierta: fsAbierto }
+          )}
+          <AnimatePresence initial={false}>
+            {fsAbierto && (
+              <motion.div
+                key="partes-fs"
+                initial={quieto ? false : { height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={quieto ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                transition={{ height: { duration: 0.34, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.22 } }}
+                style={css("overflow:hidden;")}
+              >
+                {PARTES_FS.map(({ k, label, Ico }, i) => (
+                  <motion.div
+                    key={k}
+                    initial={quieto ? false : { opacity: 0, x: -6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.035, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {fila(enFengShui && parteFs === k, Ico, label, () => {
+                      setView("fengshui");
+                      setParteFs(k);
+                      alCambiar?.();
+                    })}
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/*
           * LO QUE SE ENTREGA VA AQUÍ DENTRO, NO EN UN GRUPO APARTE.

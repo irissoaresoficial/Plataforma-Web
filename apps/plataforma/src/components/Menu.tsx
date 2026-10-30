@@ -69,7 +69,7 @@ export default function Menu({ abierto, cerrar }: { abierto: boolean; cerrar: ()
               />
               <div style={css("min-width:0;")}>
                 <div style={css("font-family:var(--font-display);font-weight:500;font-size:var(--t-body);color:var(--text);line-height:1.15;")}>Escuela de Sabiduría 33</div>
-                <div style={css("font-size:var(--t-micro);color:var(--text-4);")}>Kábala · Numerología</div>
+                <div style={css("font-size:var(--t-micro);color:var(--text-4);")}>Kábala · Numerología · Feng Shui</div>
               </div>
               <button
                 onClick={cerrar}

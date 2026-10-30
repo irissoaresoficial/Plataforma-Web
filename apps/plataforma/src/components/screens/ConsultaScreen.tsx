@@ -94,7 +94,7 @@ export default function ConsultaScreen() {
             />
             <div style={css("text-align:left;")}>
               <div style={css("font-family:var(--font-display);font-weight:500;font-size:var(--t-read);letter-spacing:-.008em;color:var(--text);line-height:1.15;")}>Escuela de Sabiduría 33</div>
-              <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-top:1px;")}>Kábala · Numerología</div>
+              <div style={css("font-size:var(--t-mini);color:var(--text-4);margin-top:1px;")}>Kábala · Numerología · Feng Shui</div>
             </div>
           </div>
           <h1 style={css("font-size:clamp(28px,3.8vw,40px);line-height:1.08;letter-spacing:-.018em;color:var(--text);margin:0 0 var(--s3);")}>

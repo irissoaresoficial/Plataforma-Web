@@ -49,6 +49,8 @@ export type View =
   | "panel"
   | "estudio"
   | "pareja"
+  /** El estudio de Feng Shui: la vivienda, el luopan y su informe. */
+  | "fengshui"
   | "agenda"
   | "personas"
   | "facturas"
@@ -87,6 +89,7 @@ const RUTA: Record<View, string> = {
   panel: "/panel",
   estudio: "/estudio",
   pareja: "/pareja",
+  fengshui: "/fengshui",
   agenda: "/agenda",
   personas: "/personas",
   facturas: "/facturas",
@@ -105,6 +108,7 @@ const VISTA: Record<string, View> = {
   "/panel": "panel",
   "/estudio": "estudio",
   "/pareja": "pareja",
+  "/fengshui": "fengshui",
   "/agenda": "agenda",
   "/personas": "personas",
   "/facturas": "facturas",
@@ -136,6 +140,9 @@ const LLAVE: Record<View, Capacidad> = {
   panel: "estudio",
   estudio: "estudio",
   pareja: "estudio",
+  /* El Feng Shui es una lectura más del estudio: sólo de Iris. NO cuelga de
+     un estudio abierto, porque se estudia una vivienda, no una carta. */
+  fengshui: "estudio",
   /* El despacho */
   agenda: "despacho",
   personas: "despacho",
@@ -205,6 +212,17 @@ export type Disciplina = "kabala" | "numerologia";
  * que la otra existe.
  */
 export type Base = "b22" | "b9";
+
+/**
+ * LAS PARTES DEL ESTUDIO DE FENG SHUI, en el orden en que se hace:
+ * los datos de la vivienda y de quien vive en ella, el plano —del que sale
+ * casi todo—, la comprobación con el luopan, la carta de estrellas y el
+ * informe que se entrega.
+ *
+ * Van en el contexto por lo mismo que `base`: la columna de la izquierda
+ * tiene que poder saltar de una a otra.
+ */
+export type ParteFengShui = "datos" | "brujula" | "plano" | "estrellas" | "informe";
 /** Un estudio se hace de una persona o de una empresa. La empresa no tiene
  *  apellidos, ni género, ni fecha: se lee entera de su nombre. */
 export type Tipo = "persona" | "empresa";
@@ -301,6 +319,8 @@ type Ctx = {
   setSeccion: (s: Seccion) => void;
   base: Base;
   setBase: (b: Base) => void;
+  parteFs: ParteFengShui;
+  setParteFs: (p: ParteFengShui) => void;
   /**
    * A quién se está mirando en Clientes.
    *
@@ -389,6 +409,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [seccion, setSeccion] = useState<Seccion>("resumen");
   const [disciplina, setDisciplina] = useState<Disciplina>("kabala");
   const [base, setBase] = useState<Base>("b22");
+  const [parteFs, setParteFs] = useState<ParteFengShui>("datos");
   const [clienteAbierto, setClienteAbierto] = useState<string | null>(null);
   const [focoFicha, setFocoFicha] = useState<"nota" | null>(null);
   const [facturaAbierta, setFacturaAbierta] = useState<string | null>(null);
@@ -672,6 +693,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setDisciplina,
       base,
       setBase,
+      parteFs,
+      setParteFs,
       lateral,
       setLateral,
       setSeccion,
@@ -712,7 +735,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       marca: MARCA,
       anioUniversal,
     }),
-    [view, setView, seccion, disciplina, base, lateral, clienteAbierto, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
+    [view, setView, seccion, disciplina, base, parteFs, lateral, clienteAbierto, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
   );
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;

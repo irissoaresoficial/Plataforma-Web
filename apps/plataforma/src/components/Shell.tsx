@@ -7,6 +7,7 @@ import ConsultaScreen from "./screens/ConsultaScreen";
 import PanelScreen from "./screens/PanelScreen";
 import EstudioScreen from "./screens/EstudioScreen";
 import ParejaScreen from "./screens/ParejaScreen";
+import FengShuiScreen from "./screens/FengShuiScreen";
 import AgendaScreen from "./screens/AgendaScreen";
 import PersonasScreen from "./screens/PersonasScreen";
 import FacturasScreen from "./screens/FacturasScreen";
@@ -192,7 +193,7 @@ export default function Shell() {
                 justo debajo del nombre de la casa. No era una fuga de datos,
                 pero sí la promesa de una puerta que para él no existe. */}
             {puede("estudio") && (
-              <div data-marca-disciplinas="" style={css("font-size:var(--t-mini);color:var(--text-4);letter-spacing:-.01em;")}>Kábala · Numerología</div>
+              <div data-marca-disciplinas="" style={css("font-size:var(--t-mini);color:var(--text-4);letter-spacing:-.01em;")}>Kábala · Numerología · Feng Shui</div>
             )}
             {/*
                 DÓNDE ESTOY, CUANDO LAS PESTAÑAS NO SE VEN.
@@ -213,7 +214,7 @@ export default function Shell() {
               data-marca-vista=""
               style={css("font-size:var(--t-mini);font-weight:600;color:var(--accion);letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}
             >
-              {PESTANAS.find((t) => t.k === vista)?.label ?? (vista === "pareja" ? "Comparativa" : "")}
+              {PESTANAS.find((t) => t.k === vista)?.label ?? (vista === "pareja" ? "Comparativa" : vista === "fengshui" ? "Feng Shui" : "")}
             </div>
           </div>
         </div>
@@ -283,6 +284,7 @@ export default function Shell() {
           {vista === "panel" && !faltaEstudio && <PanelScreen />}
           {vista === "estudio" && !faltaEstudio && <EstudioScreen />}
           {vista === "pareja" && !faltaEstudio && <ParejaScreen />}
+          {vista === "fengshui" && <FengShuiScreen />}
           {vista === "agenda" && <AgendaScreen />}
           {vista === "personas" && <PersonasScreen />}
           {vista === "facturas" && <FacturasScreen />}

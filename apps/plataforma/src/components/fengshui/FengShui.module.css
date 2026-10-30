@@ -1,0 +1,276 @@
+/*
+ * EL INFORME DE FENG SHUI EN PAPEL.
+ *
+ * Copia la maqueta del estudio de Kábala (Estudio.module.css) a propósito: el
+ * mismo papel crema, las mismas tres letras del documento y los mismos
+ * márgenes. Una clienta que tiene los dos informes tiene que ver que vienen
+ * de la misma casa.
+ */
+.mesa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 0 40px;
+}
+.hoja {
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  background: #fbf8f1;
+  color: #282430;
+  box-shadow: 0 2px 10px rgba(20, 20, 19, 0.12);
+  border-radius: var(--r-xs);
+  box-sizing: border-box;
+  padding: 18mm 17mm 16mm;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-family: var(--f-lectura), Georgia, serif;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.portada {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 18px;
+}
+.logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+.sobretitulo {
+  font-family: var(--f-rotulo), sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #7d5f1e;
+}
+.titulo {
+  font-family: var(--f-cifra), serif;
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: #451a25;
+  margin: 0;
+}
+.cliente {
+  font-size: 24px;
+  margin: 0;
+}
+.filete {
+  width: 64px;
+  height: 1px;
+  background: #a9884f;
+}
+.cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(169, 136, 79, 0.45);
+  padding-bottom: 7px;
+  font-family: var(--f-rotulo), sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #9b8f86;
+}
+.h2 {
+  font-family: var(--f-cifra), serif;
+  font-weight: 400;
+  font-size: 21px;
+  letter-spacing: 0.04em;
+  color: #451a25;
+  margin: 4px 0 0;
+}
+.h3 {
+  font-family: var(--f-rotulo), sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #7d5f1e;
+  margin: 6px 0 0;
+}
+.p {
+  margin: 0;
+}
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.tabla th {
+  text-align: left;
+  font-family: var(--f-rotulo), sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7d5f1e;
+  font-weight: 700;
+  padding: 5px 6px;
+  border-bottom: 1px solid rgba(169, 136, 79, 0.45);
+}
+.tabla td {
+  padding: 5px 6px;
+  border-bottom: 0.5px solid #e4dccb;
+  vertical-align: top;
+}
+.dato {
+  font-family: var(--f-rotulo), sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9b8f86;
+  width: 34%;
+}
+.cifra {
+  font-family: var(--f-cifra), serif;
+  color: #451a25;
+}
+.recuadro {
+  border: 0.75px solid rgba(169, 136, 79, 0.55);
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: #fffdf8;
+}
+.zonas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.zona {
+  border: 0.75px solid #e0d6c2;
+  border-radius: 6px;
+  padding: 9px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  break-inside: avoid;
+  background: #fffdf8;
+}
+.zonaTitulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--f-rotulo), sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #451a25;
+}
+.estrellas {
+  font-family: var(--f-cifra), serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: #7d5f1e;
+}
+.lista {
+  margin: 0;
+  padding-left: 16px;
+}
+.lista li + li {
+  margin-top: 2px;
+}
+.nota {
+  border-left: 2px solid #a9884f;
+  padding-left: 9px;
+  color: #3a3340;
+}
+.carta {
+  width: 120mm;
+  max-width: 100%;
+  aspect-ratio: 1;
+  align-self: center;
+}
+.anuales {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.mini {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 0.75px solid #c9bfa9;
+  width: 46mm;
+  aspect-ratio: 1;
+}
+.mini span {
+  display: grid;
+  place-items: center;
+  border: 0.5px solid #e0d6c2;
+  font-family: var(--f-cifra), serif;
+  font-size: 15px;
+  color: #451a25;
+  position: relative;
+}
+.mini small {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-family: var(--f-rotulo), sans-serif;
+  font-size: 6.5px;
+  letter-spacing: 0.06em;
+  color: #9b8f86;
+}
+.pie {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(169, 136, 79, 0.3);
+  font-family: var(--f-rotulo), sans-serif;
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #9b93a8;
+  display: flex;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 820px) {
+  .hoja {
+    min-height: 0;
+    padding: 22px 18px;
+  }
+  .zonas,
+  .anuales {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .mesa {
+    padding: 0;
+    gap: 0;
+    display: block;
+  }
+  @page {
+    margin: 14mm 15mm;
+  }
+  .hoja {
+    width: auto;
+    min-height: 0;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+  }
+  .hoja,
+  .hoja * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .hoja + .hoja {
+    break-before: page;
+  }
+  .portada {
+    min-height: 255mm;
+  }
+  .h2,
+  .h3 {
+    break-after: avoid;
+  }
+}

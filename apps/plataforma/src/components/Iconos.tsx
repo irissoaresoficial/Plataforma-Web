@@ -352,3 +352,47 @@ export const IcoDespacho = (p: P) => (
     <path d="M3.4 11.9h17.2" opacity=".5" />
   </Caja>
 );
+
+/* ------------------------------------------------------------ FENG SHUI */
+
+/** El luopan: el plato redondo, sus anillos y el hilo rojo que lo cruza. */
+export const IcoFengShui = (p: P) => (
+  <Caja {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <circle cx="12" cy="12" r="5" />
+    <circle cx="12" cy="12" r="1.6" />
+    <path d="M12 2v3.5M12 18.5V22M2 12h3.5M18.5 12H22" />
+  </Caja>
+);
+
+/** Los datos: la casa y quien vive en ella. */
+export const IcoVivienda = (p: P) => (
+  <Caja {...p}>
+    <path d="M4 11 12 4.5 20 11" />
+    <path d="M6 9.5V19.5h12V9.5" />
+    <path d="M10 19.5v-5h4v5" />
+  </Caja>
+);
+
+/** La brújula: la aguja en su plato. */
+export const IcoBrujula = (p: P) => (
+  <Caja {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="m12 6.5 2.2 5.5L12 17.5 9.8 12z" />
+  </Caja>
+);
+
+/** El plano partido en sus nueve casillas. */
+export const IcoPlano = (p: P) => (
+  <Caja {...p}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="2.5" />
+    <path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17" />
+  </Caja>
+);
+
+/** La carta de estrellas: tres números por casilla, aquí tres puntos. */
+export const IcoEstrellas = (p: P) => (
+  <Caja {...p}>
+    <path d="m12 3.8 2.3 4.9 5.2.6-3.9 3.6 1 5.2L12 15.5l-4.6 2.6 1-5.2-3.9-3.6 5.2-.6z" />
+  </Caja>
+);
