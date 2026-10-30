@@ -173,7 +173,7 @@ export default function Diapositiva({ d, paso = Infinity, quieta = false }: { d:
             <B style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               <span className="pres-pastilla">
                 <span className="pres-punto" aria-hidden />
-                {MASTERCLASS.corto} ({MASTERCLASS.zona})
+                {MASTERCLASS.corto} · {MASTERCLASS.zona}
               </span>
               <span className="pres-pastilla">{PRESENTAN.map((p) => p.nombre).join(' · ')}</span>
             </B>
