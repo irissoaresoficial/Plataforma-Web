@@ -124,7 +124,7 @@ export default function Masterclass() {
 
         <div className="casa-mc-dentro">
           <div className="casa-mc-texto">
-            <span className="casa-mc-rotulo">Masterclass en directo · Escuela de Sabiduría 33</span>
+            <span className="casa-mc-rotulo">Masterclass gratuita en directo · Escuela de Sabiduría 33</span>
             {/*
               EL TITULAR ERA «Hay una forma de amar que no elegiste», y es más
               bonito que éste. Se ha cambiado igual, y conviene saber por qué.
@@ -190,7 +190,7 @@ export default function Masterclass() {
                 llegar hasta él, y eso es exactamente lo que se busca: la que
                 llegue va con la decisión tomada. */}
             <a href="#apuntarse" className="casa-mc-cta casa-brillo">
-              Reservar mi plaza
+              Reservar mi plaza gratis
             </a>
             {/* EL COSTE DE NO HACER NADA, en una línea y sin crueldad.
                 La referencia pone «o cierra esta pestaña y sigue viendo cómo
@@ -282,7 +282,7 @@ export default function Masterclass() {
             ))}
           </ul>
           <a href="#apuntarse" className="casa-mc-cta casa-brillo">
-            Reservar mi plaza
+            Reservar mi plaza gratis
           </a>
         </section>
 
@@ -348,11 +348,11 @@ export default function Masterclass() {
               Si te has reconocido en algo de esto
             </h2>
             <p className="casa-mc-cierre-p">
-              Es {MASTERCLASS.cuando}, en directo. Déjame tu nombre y tu correo y te
+              Es gratis y en directo, {MASTERCLASS.cuando}. Déjame tu nombre y tu correo y te
               mando el enlace.
             </p>
             <a href="#apuntarse" className="casa-mc-da-boton casa-brillo">
-              Quiero mi plaza
+              Quiero mi plaza gratis
             </a>
           </div>
         </section>

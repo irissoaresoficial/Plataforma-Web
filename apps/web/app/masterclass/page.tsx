@@ -28,7 +28,7 @@ export const metadata: Metadata = {
        QUIÉN LA DA sigue sin ir aquí: lo que firma es la escuela. Esto se ve al
        compartir el enlace por WhatsApp, donde más se nota una promesa floja.
        La fecha se escribe sola desde `content/site.ts`: un solo sitio. */
-    `Masterclass de numerología transgeneracional, ${MASTERCLASS.cuando}, en directo. Lo que se repite en tu forma de querer no empezó contigo. Escuela de Sabiduría 33.`,
+    `Masterclass gratuita de numerología transgeneracional, ${MASTERCLASS.cuando}, en directo. Lo que se repite en tu forma de querer no empezó contigo. Escuela de Sabiduría 33.`,
   alternates: { canonical: '/masterclass' },
   openGraph: {
     type: 'website',
