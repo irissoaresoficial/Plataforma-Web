@@ -174,15 +174,14 @@ export const PRESENTAN: Presenta[] = [
  *
  * Nombre y dirección, el 21 de octubre de 2026: los que constan como titular
  * del dominio (Iris Soares, Vigo). Gerson: «esto fatal, estamos en plena
- * publicidad». El NIF sigue sin dárnoslo nadie y NO se inventa: mientras falte,
- * el aviso legal no enseña esa línea en rojo ante la gente que llega de los
- * anuncios. Hay que ponerlo cuanto antes: la Ley 34/2002 (art. 10) lo pide.
+ * publicidad». El NIF lo dio Gerson el 7 de noviembre de 2026; la Ley 34/2002
+ * (art. 10) lo pide en el aviso legal.
  */
 export const TITULAR = {
   /** Nombre y apellidos, o la razón social si factura una sociedad. */
   nombre: 'Iris Soares',
   /** NIF o CIF. */
-  nif: PENDIENTE,
+  nif: '36177246V',
   /** Domicilio fiscal completo. */
   direccion: 'Rúa de Urzáiz, 158, 3, 36205 Vigo (Pontevedra), España',
 };
