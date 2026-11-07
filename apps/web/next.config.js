@@ -18,6 +18,13 @@ const nextConfig = {
           has: [{ type: 'host', value: 'presentacion.escueladesabiduria33.com' }],
           destination: '/presentacion',
         },
+        /* La presentación del evento, igual: kangen.escueladesabiduria33.com
+           enseña /kangen. Falta añadir ese dominio en Vercel. */
+        {
+          source: '/',
+          has: [{ type: 'host', value: 'kangen.escueladesabiduria33.com' }],
+          destination: '/kangen',
+        },
       ],
     };
   },

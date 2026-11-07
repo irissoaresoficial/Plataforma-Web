@@ -1,0 +1,663 @@
+/*
+ * ============================================================================
+ * LA PRESENTACIÓN DEL EVENTO: AGUA
+ * ============================================================================
+ *
+ * Gerson, el 7 de noviembre de 2026: «con colores, como estamos hablando de
+ * agua Kangen, con colores predeterminados de esto (…) súper animado, súper
+ * interactivo, pero de manera bastante profesional, súper llamativa, estilo
+ * Apple, moderno, que se entienda y que genere buen contraste todo».
+ *
+ * Por eso esta presentación NO lleva el granate y el oro de la escuela: lleva
+ * azules de agua. Es la única pieza de la web que se sale de MARCA.md en el
+ * color, y es a propósito: es el material del evento, no la escuela. Lo que sí
+ * se queda es la regla de la letra: UNA familia (la sans de la web, por
+ * `--sans`), sin cursiva, y la jerarquía con peso y tamaño.
+ *
+ * Lienzo fijo de 1920 × 1080 escalado a la pantalla, como la de la
+ * masterclass: en el proyector se ve exactamente igual que en el portátil.
+ * Los tamaños van en píxeles DEL LIENZO, todos en las variables de abajo.
+ *
+ * CONTRASTE, MEDIDO (WCAG): blanco sobre --k-noche 18,6:1; --k-agua sobre
+ * --k-noche 9,3:1; --k-tinta sobre --k-hielo 16,4:1; --k-azul sobre --k-hielo
+ * 5,3:1; --k-pizarra sobre --k-hielo 7,3:1; blanco sobre --k-azul 5,8:1. El
+ * rojo de lo pendiente va en un tono para cada fondo (ver .kg-pendiente).
+ *
+ * Todo cuelga de `.kg`, para que nada se cuele en el resto de la web.
+ */
+
+.kg {
+  /* EL AGUA. */
+  --k-noche: #03132a;
+  --k-abismo: #062a52;
+  --k-marino: #0b4a8f;
+  --k-azul: #0a63c9;
+  --k-agua: #36c6f4;
+  --k-turquesa: #5ee6dc;
+  --k-hielo: #eef7fc;
+  --k-espuma: #ffffff;
+  --k-tinta: #06182e;
+  --k-pizarra: #3e536b;
+  --k-niebla: rgba(226, 240, 255, 0.78);
+  --k-cristal: rgba(255, 255, 255, 0.07);
+  --k-cristal-borde: rgba(255, 255, 255, 0.14);
+  --k-pendiente: #c62f21;
+  --k-pendiente-claro: #ff8577;
+
+  /* LA LETRA, en píxeles del lienzo. */
+  --k-gigante: 260px;
+  --k-h1: 132px;
+  --k-h2: 88px;
+  --k-h3: 50px;
+  --k-texto: 38px;
+  --k-pie: 28px;
+  --k-rotulo: 24px;
+
+  /* LOS CANTOS. */
+  --k-radio: 44px;
+  --k-radio-chico: 26px;
+
+  --k-curva: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  color: var(--k-espuma);
+  font-family: var(--sans);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+.kg em,
+.kg i {
+  font-style: normal;
+}
+
+/* ---------------------------------------------------------- EL ESCENARIO */
+.kg-escenario {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--k-noche);
+  box-shadow: 0 30px 120px rgba(0, 0, 0, 0.6);
+}
+
+.kg-diapo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 120px 150px;
+  box-sizing: border-box;
+}
+.kg-oscuro {
+  background: var(--k-noche);
+  color: var(--k-espuma);
+}
+.kg-claro {
+  background: var(--k-hielo);
+  color: var(--k-tinta);
+}
+
+/* ---------------------------------------------------------- EL AGUA VIVA */
+/* Tres manchas de luz que se mueven despacio, como la luz en el fondo de una
+   piscina. Van detrás de todo y no llevan nada que leer. */
+.kg-fondo {
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  z-index: 0;
+}
+.kg-fondo span {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  will-change: transform;
+}
+.kg-oscuro .kg-fondo span:nth-child(1) {
+  width: 1100px;
+  height: 1100px;
+  left: -8%;
+  top: 30%;
+  background: radial-gradient(circle, rgba(10, 99, 201, 0.75), transparent 65%);
+  animation: kg-deriva-a 22s ease-in-out infinite alternate;
+}
+.kg-oscuro .kg-fondo span:nth-child(2) {
+  width: 900px;
+  height: 900px;
+  right: -6%;
+  top: -12%;
+  background: radial-gradient(circle, rgba(54, 198, 244, 0.5), transparent 65%);
+  animation: kg-deriva-b 26s ease-in-out infinite alternate;
+}
+.kg-oscuro .kg-fondo span:nth-child(3) {
+  width: 700px;
+  height: 700px;
+  right: 18%;
+  bottom: -18%;
+  background: radial-gradient(circle, rgba(94, 230, 220, 0.32), transparent 65%);
+  animation: kg-deriva-a 30s ease-in-out infinite alternate-reverse;
+}
+.kg-claro .kg-fondo span:nth-child(1) {
+  width: 1000px;
+  height: 1000px;
+  right: -12%;
+  top: -30%;
+  background: radial-gradient(circle, rgba(54, 198, 244, 0.32), transparent 65%);
+  animation: kg-deriva-b 24s ease-in-out infinite alternate;
+}
+.kg-claro .kg-fondo span:nth-child(2) {
+  width: 800px;
+  height: 800px;
+  left: -14%;
+  bottom: -32%;
+  background: radial-gradient(circle, rgba(10, 99, 201, 0.16), transparent 65%);
+  animation: kg-deriva-a 28s ease-in-out infinite alternate;
+}
+.kg-claro .kg-fondo span:nth-child(3) {
+  display: none;
+}
+@keyframes kg-deriva-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(180px, -120px, 0) scale(1.15);
+  }
+}
+@keyframes kg-deriva-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-160px, 140px, 0) scale(0.92);
+  }
+}
+
+/* La línea de agua del pie, que ondula. */
+.kg-ola {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 180px;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.kg-ola svg {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 100%;
+  animation: kg-ola 16s linear infinite;
+}
+.kg-ola svg + svg {
+  animation-duration: 24s;
+  animation-direction: reverse;
+  opacity: 0.6;
+}
+@keyframes kg-ola {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Burbujas que suben, sólo en la portada y el cierre. */
+.kg-burbujas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.kg-burbujas i {
+  position: absolute;
+  bottom: -40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 60%);
+  animation: kg-sube linear infinite;
+}
+@keyframes kg-sube {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(40px, -1180px, 0);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------- LA LETRA */
+.kg-capa {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+.kg-rotulo {
+  font-size: var(--k-rotulo);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--k-agua);
+  margin: 0 0 28px;
+}
+.kg-claro .kg-rotulo {
+  color: var(--k-azul);
+}
+.kg-h1 {
+  font-size: var(--k-h1);
+  line-height: 1.02;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  margin: 0;
+  text-wrap: balance;
+}
+.kg-h2 {
+  font-size: var(--k-h2);
+  line-height: 1.06;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin: 0;
+  text-wrap: balance;
+}
+.kg-h3 {
+  font-size: var(--k-h3);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.kg-texto {
+  font-size: var(--k-texto);
+  line-height: 1.42;
+  font-weight: 400;
+  color: var(--k-niebla);
+  margin: 0;
+  text-wrap: pretty;
+}
+.kg-claro .kg-texto {
+  color: var(--k-pizarra);
+}
+.kg-pie {
+  font-size: var(--k-pie);
+  line-height: 1.4;
+  color: var(--k-niebla);
+  margin: 0;
+}
+.kg-claro .kg-pie {
+  color: var(--k-pizarra);
+}
+/* *palabra* sale en el color del agua: lo que hay que recordar. */
+.kg-resalta {
+  color: var(--k-agua);
+}
+.kg-claro .kg-resalta {
+  color: var(--k-azul);
+}
+/* Lo que todavía no está: en rojo, nunca inventado. */
+.kg-pendiente {
+  color: var(--k-pendiente);
+  font-weight: 600;
+}
+.kg-oscuro .kg-pendiente {
+  color: var(--k-pendiente-claro);
+}
+
+/* El número gigante, con el degradado del agua. */
+.kg-cifra {
+  font-size: var(--k-gigante);
+  line-height: 0.9;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #ffffff 10%, var(--k-agua) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.kg-claro .kg-cifra {
+  background: linear-gradient(180deg, var(--k-marino) 0%, var(--k-azul) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ---------------------------------------------------------- LAS PIEZAS */
+.kg-cristal {
+  background: var(--k-cristal);
+  border: 1px solid var(--k-cristal-borde);
+  border-radius: var(--k-radio);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 30px 80px rgba(0, 0, 0, 0.35);
+}
+.kg-claro .kg-cristal {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(10, 74, 143, 0.1);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 30px 70px rgba(10, 74, 143, 0.12);
+}
+
+.kg-numero {
+  display: inline-grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: 600;
+  background: linear-gradient(160deg, var(--k-agua), var(--k-azul));
+  color: var(--k-espuma);
+  box-shadow: 0 10px 30px rgba(10, 99, 201, 0.4);
+}
+
+/* El marco de una imagen de la formación original. */
+.kg-marco {
+  position: relative;
+  border-radius: var(--k-radio-chico);
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.45);
+  cursor: zoom-in;
+  background: #000;
+}
+.kg-claro .kg-marco {
+  box-shadow: 0 40px 90px rgba(6, 24, 46, 0.22);
+}
+.kg-marco img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ---------------------------------------------------------- EL VÍDEO */
+.kg-video {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  border-radius: var(--k-radio);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 120% at 20% 10%, rgba(54, 198, 244, 0.45), transparent 55%),
+    radial-gradient(120% 120% at 90% 90%, rgba(10, 99, 201, 0.6), transparent 55%),
+    var(--k-abismo);
+  box-shadow:
+    0 50px 140px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.kg-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.kg-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--k-espuma);
+  cursor: pointer;
+  font-family: inherit;
+}
+.kg-play-disco {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 400ms var(--k-curva),
+    background 400ms var(--k-curva);
+}
+.kg-play:hover .kg-play-disco {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.24);
+}
+.kg-play-disco::after {
+  content: '';
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  animation: kg-latido 2.4s var(--k-curva) infinite;
+}
+@keyframes kg-latido {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+.kg-enlace {
+  color: var(--k-agua);
+  text-decoration: none;
+  border-bottom: 2px solid rgba(54, 198, 244, 0.45);
+  pointer-events: auto;
+}
+
+/* ---------------------------------------------------------- LA PRESENTACIÓN */
+.kg-hud {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(10, 20, 36, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 13px;
+  z-index: 5;
+  transition:
+    opacity 400ms ease,
+    transform 400ms ease;
+}
+.kg-hud[data-oculto='1'] {
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  pointer-events: none;
+}
+.kg-hud button {
+  height: 36px;
+  min-width: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.kg-hud button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.kg-hud-cuenta {
+  padding: 0 10px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* La barra de progreso, partida por capítulos, arriba del todo. */
+.kg-progreso {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+  padding: 0 4px;
+}
+.kg-progreso span {
+  flex: 1;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+.kg-progreso b {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--k-azul), var(--k-agua));
+  transition: width 500ms var(--k-curva);
+}
+
+/* El índice: todas las diapositivas por capítulos, para saltar. */
+.kg-indice {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  overflow-y: auto;
+  padding: 72px max(24px, 6vw) 120px;
+  background: rgba(3, 19, 42, 0.86);
+  backdrop-filter: blur(30px) saturate(1.4);
+  -webkit-backdrop-filter: blur(30px) saturate(1.4);
+  font-family: var(--sans);
+  color: #fff;
+}
+.kg-indice h2 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #36c6f4;
+  margin: 28px 0 12px;
+}
+.kg-indice-filas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+.kg-indice button {
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.35;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+.kg-indice button:hover,
+.kg-indice button[aria-current='true'] {
+  background: rgba(54, 198, 244, 0.16);
+  border-color: rgba(54, 198, 244, 0.5);
+}
+.kg-indice button small {
+  font-size: 12px;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* La imagen ampliada. */
+.kg-lupa {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-items: center;
+  padding: 3vh 3vw;
+  background: rgba(0, 0, 0, 0.86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: zoom-out;
+}
+.kg-lupa img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 12px;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.6);
+}
+
+/* La ayuda de las teclas, la primera vez. */
+.kg-ayuda {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 5;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(10, 20, 36, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  transition: opacity 600ms ease;
+}
+.kg-ayuda kbd {
+  font-family: inherit;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* La presentación no lleva el cartel de cookies: tapa la diapositiva en
+   directo y aquí no hay nada que medir. */
+body[data-kangen] .cookies {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kg-fondo span,
+  .kg-ola svg,
+  .kg-burbujas i,
+  .kg-play-disco::after {
+    animation: none !important;
+  }
+}
