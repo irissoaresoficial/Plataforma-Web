@@ -90,7 +90,7 @@ import {
 } from "@/lib/fengshui/estudio";
 import { ESPECIAL, ESTANCIAS, ESTRELLA, FORMACION, MANSION, propuestaEstancia, propuestaZona } from "@/lib/fengshui/textos";
 import Luopan from "../fengshui/Luopan";
-import Cuadricula from "../fengshui/Cuadricula";
+import Cuadricula, { Recorrido } from "../fengshui/Cuadricula";
 import Plano from "../fengshui/Plano";
 import Informe from "../fengshui/Informe";
 
@@ -143,6 +143,47 @@ function Opciones<T extends string>({ valor, opciones, alCambiar, etiqueta }: { 
   );
 }
 
+/**
+ * EL AÑO QUE SE MIRA. Antes había dos botones, este año y el siguiente, y no
+ * se podía ir más allá. Iris pidió poder ver cómo cambian las estrellas año a
+ * año: aquí se avanza y se retrocede sin tope, y «Hoy» vuelve al año en curso.
+ */
+function SelectorAnio({ anio, actual, visible, alCambiar, alVer }: { anio: number; actual: number; visible: boolean; alCambiar: (a: number | null) => void; alVer: (v: boolean) => void }) {
+  const flecha = (d: number, etiqueta: string) => (
+    <button
+      type="button"
+      aria-label={etiqueta}
+      onClick={() => {
+        const n = anio + d;
+        alCambiar(n === actual ? null : n);
+        alVer(true);
+      }}
+      style={css("width:34px;height:34px;border:none;border-radius:50%;background:transparent;color:var(--text-2);cursor:pointer;display:grid;place-items:center;font-size:18px;line-height:1;")}
+    >
+      {d < 0 ? "‹" : "›"}
+    </button>
+  );
+  return (
+    <div style={css("display:flex;align-items:center;gap:6px;flex-wrap:wrap;")}>
+      <div role="group" aria-label="Año de las estrellas" style={css(PASTILLA + "display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:var(--r-pill);" + (visible ? "" : "opacity:.55;"))}>
+        {flecha(-1, "Año anterior")}
+        <span aria-live="polite" style={css("min-width:52px;text-align:center;font-size:var(--t-body);font-weight:650;color:var(--text);font-variant-numeric:tabular-nums;")}>
+          {anio}
+        </span>
+        {flecha(1, "Año siguiente")}
+      </div>
+      {anio !== actual && (
+        <button type="button" onClick={() => alCambiar(null)} style={css(BOTON_PLANO + "padding:7px 12px;font-size:var(--t-mini);")}>
+          Hoy
+        </button>
+      )}
+      <button type="button" aria-pressed={!visible} onClick={() => alVer(!visible)} style={css(BOTON_PLANO + "padding:7px 12px;font-size:var(--t-mini);")}>
+        {visible ? "Ocultar" : "Ver"}
+      </button>
+    </div>
+  );
+}
+
 export default function FengShuiScreen() {
   const { parteFs, setParteFs, f: consulta } = useApp();
   const quieto = useReducedMotion();
@@ -154,7 +195,11 @@ export default function FengShuiScreen() {
   const [listo, setListo] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
   const [zona, setZona] = useState<Casilla | null>(null);
-  const [verAnio, setVerAnio] = useState<"actual" | "siguiente" | "no">("actual");
+  /* El año que se mira. null = el año en curso, que cambia solo el 4 de
+     febrero. Cualquier otro se elige con las flechas. */
+  const [anioElegido, setAnioElegido] = useState<number | null>(null);
+  const [conAnual, setConAnual] = useState(true);
+  const [recorrido, setRecorrido] = useState(false);
   const [persona, setPersona] = useState<string>("");
   const [conLuopan, setConLuopan] = useState(true);
   const [vivo, setVivo] = useState(180);
@@ -226,8 +271,17 @@ export default function FengShuiScreen() {
   const periodo = periodoDeEstudio(e);
   const hoy = useMemo(() => new Date(), []);
   const anioActual = useMemo(() => anioSolar(hoy.getDate(), hoy.getMonth() + 1, hoy.getFullYear()).anio, [hoy]);
-  const anios = useMemo(() => [anioFengShui(anioActual), anioFengShui(anioActual + 1)], [anioActual]);
-  const anioVisto = verAnio === "no" ? null : anios[verAnio === "actual" ? 0 : 1];
+  /*
+   * TODO SIGUE AL AÑO ELEGIDO: los círculos de cada zona, la ficha que se abre
+   * al pulsarla, lo que no se toca y el informe. Antes los círculos cambiaban
+   * de año y la ficha se quedaba en el año en curso, con sus consejos: Iris lo
+   * vio en clase y tenía razón.
+   */
+  const anio = anioElegido ?? anioActual;
+  const anios = useMemo(() => [anioFengShui(anio), anioFengShui(anio + 1)], [anio]);
+  const anioVisto = conAnual ? anios[0] : null;
+  const marcasAnio = anioVisto ? { taiSui: anioVisto.taiSui.dir, suiPo: anioVisto.suiPo.dir, sanSha: anioVisto.sanSha, anio: anioVisto.anio } : null;
+  const selectorAnio = <SelectorAnio anio={anio} actual={anioActual} visible={conAnual} alCambiar={setAnioElegido} alVer={setConAnual} />;
   const ocupante = e.ocupantes.find((o) => o.id === persona);
   const kuaPersona = ocupante ? kuaDe(ocupante) : null;
   const mansiones = kuaPersona ? mansionesPorDir(kuaPersona.kua) : null;
@@ -856,18 +910,7 @@ export default function FengShuiScreen() {
                     }}
                   />
                 </Campo>
-                <Campo label="Estrellas del año">
-                  <Opciones
-                    etiqueta="Estrellas del año"
-                    valor={verAnio}
-                    opciones={[
-                      ["actual", String(anios[0].anio)],
-                      ["siguiente", String(anios[1].anio)],
-                      ["no", "Ocultar"],
-                    ]}
-                    alCambiar={setVerAnio}
-                  />
-                </Campo>
+                <Campo label="Estrellas del año">{selectorAnio}</Campo>
                 <Campo label="Luopan">
                   <Opciones
                     etiqueta="Luopan sobre el plano"
@@ -892,7 +935,7 @@ export default function FengShuiScreen() {
                     lado={e.lado}
                     carta={carta}
                     anual={anioVisto?.carta ?? null}
-                    marcas={anioVisto ? { taiSui: anioVisto.taiSui.dir, suiPo: anioVisto.suiPo.dir, sanSha: anioVisto.sanSha, anio: anioVisto.anio } : null}
+                    marcas={marcasAnio}
                     mansiones={mansiones}
                     conLuopan={conLuopan}
                     seleccion={zona}
@@ -956,16 +999,7 @@ export default function FengShuiScreen() {
                   <section style={css(CRISTAL + "padding:clamp(12px,2vw,22px);display:flex;flex-direction:column;gap:var(--s3);")}>
                     <div style={css("display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
                       <span style={css(TITULO)}>La carta de la vivienda</span>
-                      <Opciones
-                        etiqueta="Estrellas del año"
-                        valor={verAnio}
-                        opciones={[
-                          ["actual", String(anios[0].anio)],
-                          ["siguiente", String(anios[1].anio)],
-                          ["no", "Sin año"],
-                        ]}
-                        alCambiar={setVerAnio}
-                      />
+                      {selectorAnio}
                     </div>
                     <div style={css("aspect-ratio:1;width:100%;")}>
                       <Cuadricula
@@ -973,13 +1007,31 @@ export default function FengShuiScreen() {
                         fachada={e.fachada}
                         lado={e.lado}
                         anual={anioVisto?.carta ?? null}
-                        marcas={anioVisto ? { taiSui: anioVisto.taiSui.dir, suiPo: anioVisto.suiPo.dir, sanSha: anioVisto.sanSha, anio: anioVisto.anio } : null}
+                        marcas={marcasAnio}
                         mansiones={mansiones}
                         seleccion={zona}
                         alElegir={setZona}
                       />
                     </div>
-                    <span style={css(NOTA)}>Orientada como el plano: la fachada, {e.lado}.</span>
+                    <div style={css("display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3);")}>
+                      <span style={css(NOTA)}>Orientada como el plano: la fachada, {e.lado}.</span>
+                      <button type="button" aria-pressed={recorrido} onClick={() => setRecorrido((v) => !v)} style={css((recorrido ? PASTILLA_ELEGIDA : PASTILLA) + "padding:7px 13px;border-radius:var(--r-pill);font-size:var(--t-mini);font-weight:590;cursor:pointer;color:" + (recorrido ? "var(--accion)" : "var(--text-3)") + ";")}>
+                        {recorrido ? "Quitar el recorrido" : "Ver el recorrido"}
+                      </button>
+                    </div>
+                    {recorrido && (
+                      <div style={css(PASTILLA + "padding:var(--s4);border-radius:var(--r-lg);display:flex;flex-wrap:wrap;gap:var(--s4);align-items:center;")}>
+                        <div style={css("flex:0 0 min(190px,100%);")}>
+                          <Recorrido fachada={e.fachada} lado={e.lado} carta={anioVisto?.carta ?? null} />
+                        </div>
+                        <div style={css("flex:1 1 200px;display:flex;flex-direction:column;gap:6px;")}>
+                          <span style={css("font-weight:650;color:var(--text);")}>Cómo se mueven en {anio}</span>
+                          <p style={css(APOYO + "margin:0;")}>
+                            Siempre por el mismo camino: centro, noroeste, oeste, noreste, sur, norte, suroeste, este y sureste. Cada año el número del centro baja uno —en {anio} es el {anios[0].carta.C}; en {anio + 1}, el {anios[1].carta.C}— y todos los demás bajan con él.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </section>
 
                   <div style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;")}>
@@ -1100,7 +1152,7 @@ export default function FengShuiScreen() {
                 </Campo>
                 {!carta && <span style={css(NOTA + "color:var(--red);")}>Sin la fachada y el año de obra, el informe sale sin carta ni zonas.</span>}
               </section>
-              <Informe e={e} carta={carta} plano={plano} hoy={hoy} anioActual={anioActual} />
+              <Informe e={e} carta={carta} plano={plano} hoy={hoy} anio={anio} />
             </div>
           )}
         </>

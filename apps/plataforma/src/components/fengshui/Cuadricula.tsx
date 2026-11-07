@@ -15,8 +15,9 @@
  * Sur arriba al estilo chino y un plano con la puerta abajo obligan a girar la
  * cabeza para cruzarlos, y ahí es donde se equivoca uno.
  */
+import { useId } from "react";
 import { css } from "@/lib/css";
-import { CELDAS, NOMBRE_DIR, casillaEnPlano, type Carta, type CartaNatal, type Casilla, type Dir, type Lado, type Mansion } from "@/lib/fengshui/calculo";
+import { CELDAS, NOMBRE_DIR, VUELO, casillaEnPlano, type Carta, type CartaNatal, type Casilla, type Dir, type Lado, type Mansion } from "@/lib/fengshui/calculo";
 import { ESTRELLA, MANSION } from "@/lib/fengshui/textos";
 import { MANSION_BUENA } from "@/lib/fengshui/calculo";
 
@@ -163,6 +164,74 @@ export default function Cuadricula({ carta, fachada, lado, anual, marcas, mansio
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * EL CAMINO DE LAS ESTRELLAS, CON FLECHAS.
+ *
+ * Es el dibujo que se hace en clase: el número entra por el centro y sale al
+ * noroeste, al oeste, al noreste, al sur, al norte, al suroeste, al este y al
+ * sureste. Va APARTE de la carta y en pequeño: encima de la carta las flechas
+ * tapaban los números, que es justo lo que hay que leer. Va orientado igual
+ * que la carta, así que en cada vivienda sale girado de una forma distinta.
+ */
+export function Recorrido({ fachada, lado, carta }: { fachada: number; lado: Lado; carta: Carta | null }) {
+  const id = "fs-flecha-" + useId().replace(/[^a-zA-Z0-9]/g, "");
+  const celda = (k: Casilla) => CELDAS.find((x) => casillaEnPlano(x.angulo, fachada, lado) === k)!;
+  const tramos = VUELO.slice(0, -1).map((k, i) => {
+    const a = celda(k);
+    const b = celda(VUELO[i + 1]);
+    const [x1, y1] = [a.col + 0.5, a.fila + 0.5];
+    const [x2, y2] = [b.col + 0.5, b.fila + 0.5];
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const largo = Math.hypot(dx, dy);
+    const ux = dx / largo;
+    const uy = dy / largo;
+    /* Se acorta por los dos lados para no tapar el número de la casilla, y se
+       curva para que las que cruzan el centro no se monten. */
+    const corte = 0.38;
+    const ax = x1 + ux * corte;
+    const ay = y1 + uy * corte;
+    const bx = x2 - ux * corte;
+    const by = y2 - uy * corte;
+    const curva = (i % 2 ? -1 : 1) * Math.min(0.34, 0.16 * largo);
+    const cx = (ax + bx) / 2 - uy * curva;
+    const cy = (ay + by) / 2 + ux * curva;
+    return `M${ax.toFixed(3)} ${ay.toFixed(3)}Q${cx.toFixed(3)} ${cy.toFixed(3)} ${bx.toFixed(3)} ${by.toFixed(3)}`;
+  });
+  return (
+    <div style={css("position:relative;width:100%;aspect-ratio:1;")}>
+      <div style={css("position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px;")}>
+        {CELDAS.map(({ fila, col, angulo }) => {
+          const k = casillaEnPlano(angulo, fachada, lado);
+          const paso = VUELO.indexOf(k) + 1;
+          return (
+            <div
+              key={`${fila}-${col}`}
+              style={css(
+                "display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-radius:var(--r-sm);" +
+                  (k === "C" ? "background:var(--accion-suave);border:1px solid var(--accion-borde);" : "background:var(--surface-2);border:1px solid var(--border);")
+              )}
+            >
+              <span style={css("font-size:var(--t-micro);font-weight:650;letter-spacing:.06em;color:var(--gold);")}>{k === "C" ? "CENTRO" : k}</span>
+              <span style={css("font-size:var(--t-body);font-weight:650;color:var(--text);font-variant-numeric:tabular-nums;line-height:1;")}>{carta ? carta[k] : paso}</span>
+            </div>
+          );
+        })}
+      </div>
+      <svg viewBox="0 0 3 3" preserveAspectRatio="none" aria-hidden style={css("position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;")}>
+        <defs>
+          <marker id={id} viewBox="0 0 10 10" refX="7" refY="5" markerUnits="userSpaceOnUse" markerWidth="0.16" markerHeight="0.16" orient="auto">
+            <path d="M0 0L10 5L0 10z" style={{ fill: "var(--accion)" }} />
+          </marker>
+        </defs>
+        {tramos.map((d, i) => (
+          <path key={i} d={d} markerEnd={`url(#${id})`} style={{ fill: "none", stroke: "var(--accion)", strokeWidth: 0.026, strokeLinecap: "round", opacity: 0.75 }} />
+        ))}
+      </svg>
     </div>
   );
 }

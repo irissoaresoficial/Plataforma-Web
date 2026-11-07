@@ -67,12 +67,14 @@ function Pie({ n }: { n: number }) {
   );
 }
 
-export default function Informe({ e, carta, plano, hoy, anioActual }: { e: EstudioFs; carta: CartaNatal | null; plano: string | null; hoy: Date; anioActual: number }) {
+export default function Informe({ e, carta, plano, hoy, anio }: { e: EstudioFs; carta: CartaNatal | null; plano: string | null; hoy: Date; anio: number }) {
   const periodo = periodoDeEstudio(e);
   const media = mediaLecturas(e);
   const disp = dispersion(e.lecturas.map((l) => l.grados));
   const enRaya = e.fachada !== null ? raya(e.fachada) : null;
-  const anios = [anioFengShui(anioActual), anioFengShui(anioActual + 1)];
+  /* El año que se haya elegido en la pantalla, no siempre el de hoy: un
+     estudio que se entrega en noviembre suele mirar ya al año siguiente. */
+  const anios = [anioFengShui(anio), anioFengShui(anio + 1)];
   const casaKua = e.fachada !== null ? kuaDeCasa(e.fachada) : null;
   const casaGrupo = casaKua ? grupoDe(casaKua) : null;
   const casaMansiones = casaKua ? mansionesPorDir(casaKua) : null;
@@ -215,7 +217,7 @@ export default function Informe({ e, carta, plano, hoy, anioActual }: { e: Estud
             )}
             <h3 className={s.h3}>Cómo se lee</h3>
             <p className={s.p}>
-              En cada zona, el número de arriba a la izquierda es la estrella de la <strong>montaña</strong> (las personas: salud y relaciones), el de arriba a la derecha es la del <strong>agua</strong> (el dinero y las oportunidades) y el pequeño de abajo es la del periodo. El círculo es la estrella del año {anioActual}.
+              En cada zona, el número de arriba a la izquierda es la estrella de la <strong>montaña</strong> (las personas: salud y relaciones), el de arriba a la derecha es la del <strong>agua</strong> (el dinero y las oportunidades) y el pequeño de abajo es la del periodo. El círculo es la estrella del año {anio}.
             </p>
           </>
         ) : (
@@ -282,7 +284,7 @@ export default function Informe({ e, carta, plano, hoy, anioActual }: { e: Estud
                     <strong>Agua {w}.</strong> {ESTRELLA[w].dice}
                   </p>
                   <p className={s.p}>
-                    <strong>En {anioActual}, el {a}.</strong> {ESTRELLA[a].estado}.
+                    <strong>En {anio}, el {a}.</strong> {ESTRELLA[a].estado}.
                   </p>
                   {casaMansiones && k !== "C" && (
                     <p className={s.p}>
@@ -371,7 +373,9 @@ export default function Informe({ e, carta, plano, hoy, anioActual }: { e: Estud
       {/* --------------------------------------------------------- EL AÑO */}
       <section className={s.hoja}>
         <Cabecera e={e} parte="El año" />
-        <h2 className={s.h2}>Este año y el siguiente</h2>
+        <h2 className={s.h2}>
+          {anio} y {anio + 1}
+        </h2>
         <p className={s.p}>
           Cada año las estrellas cambian de sitio. El año del Feng Shui no empieza el 1 de enero, sino en torno al 4 de febrero.
         </p>
