@@ -1,0 +1,230 @@
+/*
+ * LA MESA DEL PLANO: LO QUE NO SE PUEDE ESCRIBIR EN LÍNEA.
+ *
+ * Gerson, el 7 de noviembre de 2026, mirando la captura: «hay muchísimo
+ * espacio en toda la parte derecha y no está bien alineado (…) que si la gente
+ * hace scrolling, por lo menos tenga buena interacción».
+ *
+ * Por eso:
+ *   · La mesa mide lo que la pantalla, no lo que la foto. Un plano vertical ya
+ *     no se estira hacia abajo hasta obligar a bajar con la rueda para verlo
+ *     entero: se encaja dentro y, si hace falta, se acerca.
+ *   · El panel de la derecha se queda pegado mientras se baja, con su propia
+ *     barra si no cabe. Nunca más una columna con una tarjeta arriba y un
+ *     hueco vacío debajo.
+ *   · En un móvil, una columna: la mesa arriba y el panel debajo.
+ */
+
+.disposicion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 27vw, 400px);
+  gap: var(--gap);
+  align-items: start;
+}
+
+.escenario {
+  position: relative;
+  height: clamp(480px, calc(100dvh - 120px), 960px);
+  overflow: hidden;
+  border-radius: var(--r-tarjeta);
+  border: 1px solid var(--border);
+  box-shadow: var(--nm-alto);
+  background:
+    radial-gradient(120% 90% at 50% 0%, var(--surface) 0%, transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--text) 4%, transparent) 31px 32px),
+    repeating-linear-gradient(90deg, var(--surface-2) 0 31px, color-mix(in srgb, var(--text) 4%, transparent) 31px 32px);
+  /* Con un dedo, la página baja como siempre; con dos, se mueve el plano. */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  scroll-margin-top: 92px;
+}
+.escenario[data-arrastrando="1"] {
+  cursor: grabbing;
+}
+
+.panel {
+  position: sticky;
+  top: 84px;
+  max-height: calc(100dvh - 100px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  /* El hueco para que la sombra de las tarjetas no se corte en el borde. */
+  padding: 2px 4px 16px 2px;
+  margin: -2px -4px 0 -2px;
+}
+
+.cristal {
+  background: var(--vidrio-denso);
+  backdrop-filter: var(--vidrio-difuminado);
+  -webkit-backdrop-filter: var(--vidrio-difuminado);
+  border: 1px solid var(--vidrio-borde);
+  box-shadow: var(--shadow);
+}
+
+.barra {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  border-radius: var(--r-pill);
+  max-width: calc(100% - 24px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  cursor: default;
+}
+.barra::-webkit-scrollbar {
+  display: none;
+}
+
+.boton {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  min-width: 38px;
+  justify-content: center;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--t-mini);
+  font-weight: 590;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--t-normal),
+    color var(--t-normal);
+}
+.boton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+}
+.boton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.boton[aria-pressed="true"],
+.boton[aria-pressed="true"]:hover:not(:disabled) {
+  background: var(--accion);
+  color: var(--sobre-accion);
+}
+.boton svg {
+  flex: none;
+}
+.solo {
+  padding: 0;
+  width: 38px;
+}
+.raya {
+  flex: none;
+  width: 1px;
+  height: 22px;
+  margin: 0 4px;
+  background: var(--border);
+}
+
+.aviso {
+  position: absolute;
+  z-index: 8;
+  left: 14px;
+  top: 14px;
+  right: 96px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  width: fit-content;
+  max-width: calc(100% - 110px);
+  padding: 9px 9px 9px 16px;
+  border-radius: var(--r-lg);
+  font-size: var(--t-mini);
+  line-height: 1.45;
+  color: var(--text-2);
+  cursor: default;
+}
+
+/* Abajo, no arriba: arriba suele estar la flecha del norte del plano, que es
+   justo lo que hay que mirar mientras se gira la aguja. */
+.paso {
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  width: min(540px, calc(100% - 28px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: var(--r-lg);
+  cursor: default;
+}
+
+.rosa {
+  position: absolute;
+  z-index: 8;
+  top: 14px;
+  right: 14px;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+@media (max-width: 980px) {
+  .disposicion {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .panel {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+  }
+  .escenario {
+    height: min(72dvh, 620px);
+  }
+}
+
+@media (max-width: 560px) {
+  .barra {
+    bottom: 10px;
+    padding: 4px;
+  }
+  .boton {
+    height: 34px;
+    min-width: 34px;
+    padding: 0 8px;
+  }
+  .solo {
+    width: 34px;
+    padding: 0;
+  }
+  .raya {
+    margin: 0 2px;
+  }
+  .texto {
+    display: none;
+  }
+  .aviso {
+    right: 14px;
+    top: 92px;
+    max-width: calc(100% - 28px);
+  }
+}

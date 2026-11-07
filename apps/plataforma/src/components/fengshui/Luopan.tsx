@@ -74,10 +74,16 @@ export type LuopanProps = {
   mansiones?: Record<Dir, Mansion> | null;
   /** Encima de un plano: sin base cuadrada, más transparente. */
   sobrePlano?: boolean;
+  /**
+   * Una pastilla roja con la N por fuera del plato, en el Norte. Sobre el
+   * plano el luopan se mueve y se gira, y lo primero que hay que ver de un
+   * vistazo es dónde queda el Norte. Gerson: «que marque siempre el norte».
+   */
+  norteMarcado?: boolean;
   etiqueta?: string;
 };
 
-export default function Luopan({ grados, alGirar, haciaPantalla = 0, mansiones, sobrePlano, etiqueta }: LuopanProps) {
+export default function Luopan({ grados, alGirar, haciaPantalla = 0, mansiones, sobrePlano, norteMarcado, etiqueta }: LuopanProps) {
   const svg = useRef<SVGSVGElement>(null);
   const arrastre = useRef<{ desde: number; inicio: number } | null>(null);
   /* El plato gira para que el grado de la fachada quede bajo el hilo. */
@@ -111,7 +117,7 @@ export default function Luopan({ grados, alGirar, haciaPantalla = 0, mansiones, 
   return (
     <svg
       ref={svg}
-      viewBox="-520 -520 1040 1040"
+      viewBox={norteMarcado ? "-580 -580 1160 1160" : "-520 -520 1040 1040"}
       role="img"
       aria-label={etiqueta ?? `Luopan. La fachada mira a ${grados.toFixed(1)} grados.`}
       onPointerDown={empieza}
@@ -244,6 +250,16 @@ export default function Luopan({ grados, alGirar, haciaPantalla = 0, mansiones, 
         <path d="M0 -70 L11 0 L0 8 L-11 0 Z" style={{ fill: "var(--red)" }} />
         <path d="M0 70 L11 0 L0 -8 L-11 0 Z" style={{ fill: "var(--text)" }} />
         <circle r={7} style={{ fill: "var(--surface)", stroke: "var(--text)", strokeWidth: 2 }} />
+
+        {/* EL NORTE, por fuera del plato: se ve aunque el luopan sea pequeño. */}
+        {norteMarcado && (
+          <g transform="translate(0 -528)">
+            <circle r={44} style={{ fill: "var(--red)", stroke: "var(--surface)", strokeWidth: 8 }} />
+            <text x={0} y={2} textAnchor="middle" dominantBaseline="middle" style={{ fill: "var(--surface)", fontSize: 50, fontWeight: 700 }}>
+              N
+            </text>
+          </g>
+        )}
       </g>
 
       {/* LOS HILOS ROJOS, que no giran. El de arriba es la fachada. */}

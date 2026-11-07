@@ -57,6 +57,22 @@ export type EstudioFs = {
    * para comprobarla en la visita.
    */
   nortePlano: number | null;
+  /**
+   * LO QUE SE GIRA Y SE MUEVE EN LA MESA DEL PLANO (7 de noviembre de 2026).
+   *
+   * `giroRejilla`: cuánto se gira la cuadrícula sobre la imagen, en grados.
+   * Un plano fotografiado casi nunca sale recto, y las nueve zonas tienen que
+   * seguir las paredes, no los bordes de la foto. De −45° a 45°.
+   *
+   * `luopanPlano`: dónde está el luopan sobre el plano y de qué tamaño, en
+   * tantos por ciento de la imagen. null = centrado en la vivienda.
+   *
+   * `giroVista`: cuánto se ha girado el plano en pantalla para verlo, por
+   * ejemplo con el norte arriba. No cambia ningún cálculo.
+   */
+  giroRejilla: number;
+  luopanPlano: { x: number; y: number; d: number } | null;
+  giroVista: number;
   /** Qué estancias caen en cada zona del plano. */
   estancias: Partial<Record<string, string[]>>;
   ocupantes: Ocupante[];
@@ -85,6 +101,9 @@ export function estudioNuevo(): EstudioFs {
     lado: "abajo",
     rejilla: { x: 6, y: 6, w: 88, h: 88 },
     nortePlano: null,
+    giroRejilla: 0,
+    luopanPlano: null,
+    giroVista: 0,
     estancias: {},
     ocupantes: [],
     notas: {},
@@ -128,13 +147,15 @@ export function cartaDeEstudio(e: EstudioFs) {
 /**
  * LA ORIENTACIÓN QUE SALE DEL PLANO.
  *
- * Si la flecha del norte apunta en pantalla a `n` grados y la fachada está en
- * el lado que mira a `l` grados de pantalla, la fachada mira a l − n grados de
- * brújula. Un plano con el norte arriba y la fachada abajo da 180°: Sur.
+ * Si la flecha del norte apunta en la imagen a `n` grados y la fachada está en
+ * el lado de la cuadrícula que mira a `l` grados, la fachada mira a l − n
+ * grados de brújula. Un plano con el norte arriba y la fachada abajo da 180°:
+ * Sur. Si la cuadrícula está girada sobre la imagen para seguir unas paredes
+ * torcidas, ese giro se suma al lado.
  */
 export function fachadaDelPlano(e: EstudioFs): number | null {
   if (e.nortePlano === null) return null;
-  const lado = { arriba: 0, derecha: 90, abajo: 180, izquierda: 270 }[e.lado];
+  const lado = { arriba: 0, derecha: 90, abajo: 180, izquierda: 270 }[e.lado] + (e.giroRejilla ?? 0);
   return Math.round((((lado - e.nortePlano) % 360) + 360) % 360 * 10) / 10;
 }
 

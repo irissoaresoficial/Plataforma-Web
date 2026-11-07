@@ -91,7 +91,8 @@ import {
 import { ESPECIAL, ESTANCIAS, ESTRELLA, FORMACION, MANSION, propuestaEstancia, propuestaZona } from "@/lib/fengshui/textos";
 import Luopan from "../fengshui/Luopan";
 import Cuadricula, { Recorrido } from "../fengshui/Cuadricula";
-import Plano from "../fengshui/Plano";
+import MesaPlano, { type Paso } from "../fengshui/MesaPlano";
+import mesa from "../fengshui/Mesa.module.css";
 import Informe from "../fengshui/Informe";
 
 const PARTES: Array<{ k: ParteFengShui; label: string }> = [
@@ -106,6 +107,11 @@ const CRISTAL =
   "background:var(--vidrio);backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);border:1px solid var(--vidrio-borde);border-radius:var(--r-tarjeta);box-shadow:var(--nm-alto);";
 const BLOQUE = "background:var(--bloque);color:var(--sobre-bloque);border-radius:var(--r-tarjeta);box-shadow:var(--shadow-lg);";
 const coma = (n: number, d = 1) => n.toFixed(d).replace(".", ",");
+/** Cuántos grados separan dos orientaciones, por el lado corto. */
+const separacion = (a: number, b: number) => {
+  const d = Math.abs((((a - b) % 360) + 360) % 360);
+  return Math.min(d, 360 - d);
+};
 const DONDE = ["Puerta principal", "Centro de la fachada", "Lado izquierdo", "Lado derecho", "A 2 m de la puerta"];
 
 /** Un campo con su rótulo encima. */
@@ -115,6 +121,19 @@ function Campo({ label, children, ancho }: { label: string; children: React.Reac
       <span style={css(rotulo())}>{label}</span>
       {children}
     </label>
+  );
+}
+
+/** Una fila del panel: qué es, cuánto vale y qué se puede hacer. */
+function Fila({ titulo, valor, rojo, children }: { titulo: string; valor: string; rojo?: boolean; children?: React.ReactNode }) {
+  return (
+    <div style={css("display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding-top:var(--s3);border-top:1px solid var(--border);")}>
+      <div style={css("display:flex;flex-direction:column;gap:2px;min-width:0;")}>
+        <span style={css(rotulo())}>{titulo}</span>
+        <span style={css("font-size:var(--t-body);font-weight:600;font-variant-numeric:tabular-nums;color:" + (rojo ? "var(--red)" : "var(--text)") + ";")}>{valor}</span>
+      </div>
+      {children}
+    </div>
   );
 }
 
@@ -202,6 +221,8 @@ export default function FengShuiScreen() {
   const [recorrido, setRecorrido] = useState(false);
   const [persona, setPersona] = useState<string>("");
   const [conLuopan, setConLuopan] = useState(true);
+  /* Los dos pasos de después de subir un plano: el norte y la fachada. */
+  const [pasoPlano, setPasoPlano] = useState<Paso>(null);
   const [vivo, setVivo] = useState(180);
   const [donde, setDonde] = useState(DONDE[0]);
   const archivo = useRef<HTMLInputElement>(null);
@@ -307,6 +328,34 @@ export default function FengShuiScreen() {
     const g = fachadaDelPlano({ ...e, lado: l });
     cambia(manda && g !== null ? { lado: l, fachada: g } : { lado: l });
     if (manda && g !== null) setVivo(g);
+  };
+  /* Girar la cuadrícula sobre un plano torcido gira también el lado de la
+     fachada respecto al norte dibujado: la orientación se recalcula. */
+  const ponGiroRejilla = (g: number) => {
+    const f = fachadaDelPlano({ ...e, giroRejilla: g });
+    cambia(manda && f !== null ? { giroRejilla: g, fachada: f } : { giroRejilla: g });
+    if (manda && f !== null) setVivo(f);
+  };
+  const subePlano = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const a = ev.target.files?.[0];
+    ev.target.value = "";
+    if (!a) return;
+    try {
+      const datos = await achicaImagen(a);
+      if (!guardaPlano(e.id, datos)) {
+        setAviso("El plano no cabe en este navegador. Prueba con una imagen más pequeña o borra algún estudio antiguo.");
+        return;
+      }
+      setPlano(datos);
+      setAviso(null);
+      setZona(null);
+      cambia({ giroRejilla: 0, luopanPlano: null, giroVista: 0 });
+      await ajustaParedes(datos);
+      /* Siempre, al subir un plano: dónde está su norte y su fachada. */
+      setPasoPlano("norte");
+    } catch (err) {
+      setAviso(err instanceof Error ? err.message : "No se ha podido cargar el plano.");
+    }
   };
   const ajustaParedes = async (datos: string) => {
     const r = await detectaParedes(datos);
@@ -439,7 +488,7 @@ export default function FengShuiScreen() {
   const falta = !carta && (
     <div style={css(CRISTAL + "padding:var(--pad-card-sm);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3);")}>
       <span style={css(APOYO)}>
-        Para ver las estrellas faltan {e.fachada === null ? "la orientación: gira la flecha del norte del plano o mide con el luopan" : ""}
+        Para ver las estrellas faltan {e.fachada === null ? "la orientación: marca el norte del plano o mide con el luopan" : ""}
         {e.fachada === null && periodo === null ? ", y " : ""}
         {periodo === null ? "el año de obra de la vivienda" : ""}.
       </span>
@@ -828,164 +877,149 @@ export default function FengShuiScreen() {
           {/* ================================================ 3 · PLANO */}
           {parteFs === "plano" && (
             <div style={css("display:flex;flex-direction:column;gap:var(--gap);")}>
-              {falta}
-              <section style={css(CRISTAL + "padding:var(--pad-card-sm);display:flex;flex-wrap:wrap;gap:var(--s4);align-items:flex-end;")}>
-                <input
-                  ref={archivo}
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={async (ev) => {
-                    const a = ev.target.files?.[0];
-                    ev.target.value = "";
-                    if (!a) return;
-                    try {
-                      const datos = await achicaImagen(a);
-                      if (!guardaPlano(e.id, datos)) {
-                        setAviso("El plano no cabe en este navegador. Prueba con una imagen más pequeña o borra algún estudio antiguo.");
-                        return;
-                      }
-                      setPlano(datos);
-                      setAviso(null);
-                      if (!(await ajustaParedes(datos))) setAviso("No he encontrado las paredes de fuera en este plano. Arrastra los dos puntos granates hasta las esquinas de la vivienda.");
-                    } catch (err) {
-                      setAviso(err instanceof Error ? err.message : "No se ha podido cargar el plano.");
-                    }
-                  }}
+              <input ref={archivo} type="file" accept="image/*" hidden onChange={subePlano} />
+              <div className={mesa.disposicion}>
+                <MesaPlano
+                  key={e.id}
+                  imagen={plano}
+                  rejilla={e.rejilla}
+                  giroRejilla={e.giroRejilla}
+                  alCambiarRejilla={(r) => cambia({ rejilla: r })}
+                  alGirarRejilla={ponGiroRejilla}
+                  fachada={e.fachada}
+                  lado={e.lado}
+                  alCambiarLado={ponLado}
+                  norte={e.nortePlano}
+                  alCambiarNorte={ponNorte}
+                  carta={carta}
+                  anual={anioVisto?.carta ?? null}
+                  marcas={marcasAnio}
+                  mansiones={mansiones}
+                  conLuopan={conLuopan}
+                  luopan={e.luopanPlano}
+                  alMoverLuopan={(l) => cambia({ luopanPlano: l })}
+                  giroVista={e.giroVista}
+                  alGirarVista={(g) => cambia({ giroVista: g })}
+                  seleccion={zona}
+                  alElegir={carta ? setZona : undefined}
+                  estancias={e.estancias}
+                  paso={pasoPlano}
+                  alPaso={setPasoPlano}
+                  alSubir={() => archivo.current?.click()}
+                  alUsarNortePlano={
+                    delPlano !== null && e.fachada !== null && separacion(delPlano, e.fachada) > 10
+                      ? () => {
+                          cambia({ fachada: delPlano });
+                          setVivo(delPlano);
+                        }
+                      : undefined
+                  }
                 />
-                <button type="button" onClick={() => archivo.current?.click()} style={css(botonPrincipal())}>
-                  {plano ? "Cambiar el plano" : "Subir el plano"}
-                </button>
-                {plano && (
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      if (!(await ajustaParedes(plano))) setAviso("No he encontrado las paredes de fuera en este plano. Ajusta las esquinas a mano.");
-                    }}
-                    style={css(BOTON_NORMAL)}
-                  >
-                    Ajustar a las paredes
-                  </button>
-                )}
-                {plano && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      guardaPlano(e.id, null);
-                      setPlano(null);
-                    }}
-                    style={css(BOTON_PLANO)}
-                  >
-                    Quitar
-                  </button>
-                )}
-                <Campo label="La fachada está en el plano">
-                  <Opciones<Lado>
-                    etiqueta="Lado de la fachada en el plano"
-                    valor={e.lado}
-                    opciones={[
-                      ["abajo", "Abajo"],
-                      ["arriba", "Arriba"],
-                      ["izquierda", "Izquierda"],
-                      ["derecha", "Derecha"],
-                    ]}
-                    alCambiar={ponLado}
-                  />
-                </Campo>
-                <Campo label="El norte del plano apunta">
-                  <Opciones
-                    etiqueta="Hacia dónde apunta el norte en el plano"
-                    valor={e.nortePlano === null ? "no" : [0, 90, 180, 270].includes(e.nortePlano) ? String(e.nortePlano) : "otro"}
-                    opciones={[
-                      ["0", "Arriba"],
-                      ["90", "Derecha"],
-                      ["180", "Abajo"],
-                      ["270", "Izquierda"],
-                      ...(e.nortePlano !== null && ![0, 90, 180, 270].includes(e.nortePlano) ? ([["otro", `${coma(e.nortePlano)}°`]] as Array<[string, string]>) : []),
-                      ["no", "Sin flecha"],
-                    ]}
-                    alCambiar={(v) => {
-                      if (v === "otro") return;
-                      ponNorte(v === "no" ? null : Number(v));
-                    }}
-                  />
-                </Campo>
-                <Campo label="Estrellas del año">{selectorAnio}</Campo>
-                <Campo label="Luopan">
-                  <Opciones
-                    etiqueta="Luopan sobre el plano"
-                    valor={conLuopan ? "si" : "no"}
-                    opciones={[
-                      ["si", "Encima"],
-                      ["no", "Quitar"],
-                    ]}
-                    alCambiar={(v) => setConLuopan(v === "si")}
-                  />
-                </Campo>
-                {elegirPersona}
-              </section>
 
-              <div style={css("display:flex;flex-wrap:wrap;gap:var(--gap);align-items:flex-start;")}>
-                <div style={css("flex:2 1 520px;min-width:0;")}>
-                  <Plano
-                    imagen={plano}
-                    rejilla={e.rejilla}
-                    alCambiarRejilla={(r) => cambia({ rejilla: r })}
-                    fachada={e.fachada ?? vivo}
-                    lado={e.lado}
-                    carta={carta}
-                    anual={anioVisto?.carta ?? null}
-                    marcas={marcasAnio}
-                    mansiones={mansiones}
-                    conLuopan={conLuopan}
-                    seleccion={zona}
-                    alElegir={carta ? setZona : undefined}
-                    estancias={e.estancias}
-                    norte={e.nortePlano}
-                    alCambiarNorte={ponNorte}
-                  />
-                  <p style={css(NOTA + "margin:var(--s3) 0 0;line-height:1.5;")}>
-                    Las nueve zonas se colocan solas sobre las paredes de fuera; si no encajan, arrastra los dos puntos granates. Gira la flecha del norte de arriba a la derecha hasta que apunte como la del plano. Pulsa una zona para marcar qué hay en ella.
-                  </p>
-                </div>
-                <div style={css("flex:1 1 300px;display:flex;flex-direction:column;gap:var(--gap);min-width:0;")}>
+                {/* EL PANEL: pegado mientras se baja, con su propia barra. */}
+                <aside className={mesa.panel} aria-label="Datos del plano">
                   {zona && carta ? (
                     detalleZona(zona)
                   ) : (
-                    <div style={css(CRISTAL + "padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:var(--s3);")}>
-                      <div style={css(BLOQUE + "padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:6px;border-radius:var(--r-lg);")}>
-                        <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--sobre-bloque-2);")}>
-                          {delPlano !== null ? "Orientación sacada del plano" : "Orientación"}
-                        </span>
-                        {delPlano !== null ? (
+                    <>
+                      <div style={css(BLOQUE + "padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:6px;")}>
+                        <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--sobre-bloque-2);")}>{e.fachada !== null ? "La fachada mira al" : "Orientación"}</span>
+                        {e.fachada !== null ? (
                           <>
-                            <span style={css("font-size:var(--t-hero);font-weight:600;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;")}>{coma(delPlano)}°</span>
-                            <span style={css("font-size:var(--t-body);")}>
-                              {montanaDe(delPlano).codigo} · {montanaDe(delPlano).pinyin} {montanaDe(delPlano).hanzi} · la fachada mira al {NOMBRE_DIR[dirDe(delPlano)]}
+                            <span style={css("font-size:var(--t-hero);font-weight:600;letter-spacing:-.03em;line-height:1;")}>{NOMBRE_DIR[dirDe(e.fachada)]}</span>
+                            <span style={css("font-size:var(--t-body);font-variant-numeric:tabular-nums;")}>
+                              {coma(e.fachada)}° · {montanaDe(e.fachada).codigo} {montanaDe(e.fachada).pinyin} {montanaDe(e.fachada).hanzi}
                             </span>
-                            {!manda && e.fachada !== null && (
-                              <span style={css("font-size:var(--t-mini);color:var(--sobre-bloque-2);line-height:1.5;")}>
-                                Manda la medida del luopan: {coma(e.fachada)}°.
-                                {Math.min(Math.abs(norm(delPlano - e.fachada)), 360 - Math.abs(norm(delPlano - e.fachada))) > 10
-                                  ? " El plano y el luopan se separan más de 10°: revisa la flecha del plano o vuelve a medir."
-                                  : " Coincide con el plano."}
-                              </span>
-                            )}
+                            <span style={css("font-size:var(--t-mini);color:var(--sobre-bloque-2);line-height:1.5;")}>
+                              {delPlano === null
+                                ? "Puesta con el luopan: el plano no tiene el norte marcado."
+                                : separacion(delPlano, e.fachada) < 0.5
+                                  ? manda
+                                    ? "Sacada del norte del plano."
+                                    : "Manda la medida del luopan, y coincide con el plano."
+                                  : separacion(delPlano, e.fachada) > 10
+                                    ? `Puesta con el luopan. El norte del plano da ${coma(delPlano)}°: se separan más de 10°, revisa el norte del plano o vuelve a medir.`
+                                    : `Puesta con el luopan. El norte del plano da ${coma(delPlano)}°, muy cerca.`}
+                            </span>
                           </>
                         ) : (
-                          <span style={css("font-size:var(--t-body);line-height:1.5;")}>Gira la flecha del norte del plano, o mide en la visita con el luopan.</span>
+                          <span style={css("font-size:var(--t-body);line-height:1.5;")}>Marca el norte del plano, o mide en la visita con el luopan.</span>
                         )}
                       </div>
-                      <span style={css(TITULO)}>Cómo se lee</span>
-                      <p style={css(APOYO + "margin:0;")}>
-                        En cada zona, arriba a la izquierda la estrella de la <strong>montaña</strong> (las personas) y a la derecha la del <strong>agua</strong> (el dinero). En pequeño, la del periodo. El círculo es la estrella del año.
-                      </p>
-                      <p style={css(APOYO + "margin:0;")}>
-                        <span style={css("color:var(--green);font-weight:650;")}>Verde</span> favorable · <span style={css("color:var(--red);font-weight:650;")}>rojo</span> pide cuidado · <span style={css("color:#b8860b;font-weight:650;")}>5</span> la más difícil.
-                      </p>
-                    </div>
+
+                      <section style={css(TARJETA + "padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:var(--s3);")}>
+                        <div style={css("display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;")}>
+                          <h2 style={css(TITULO + "margin:0;")}>El plano</h2>
+                          <div style={css("display:flex;gap:6px;flex-wrap:wrap;")}>
+                            <button type="button" onClick={() => archivo.current?.click()} style={css(plano ? BOTON_NORMAL + "padding:7px 14px;font-size:var(--t-mini);" : botonPrincipal())}>
+                              {plano ? "Cambiar" : "Subir el plano"}
+                            </button>
+                            {plano && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  guardaPlano(e.id, null);
+                                  setPlano(null);
+                                }}
+                                style={css(BOTON_PLANO + "padding:7px 12px;font-size:var(--t-mini);")}
+                              >
+                                Quitar
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <Fila titulo="Norte del plano" valor={e.nortePlano === null ? "Sin marcar" : `${coma(e.nortePlano)}°`} rojo={e.nortePlano === null && e.fachada === null}>
+                          <button type="button" onClick={() => setPasoPlano("norte")} style={css(BOTON_PLANO + "padding:6px 12px;font-size:var(--t-mini);")}>
+                            {e.nortePlano === null ? "Marcar" : "Cambiar"}
+                          </button>
+                        </Fila>
+                        <Fila titulo="Fachada" valor={{ abajo: "Abajo", arriba: "Arriba", izquierda: "Izquierda", derecha: "Derecha" }[e.lado] + " del plano"}>
+                          <button type="button" onClick={() => setPasoPlano("fachada")} style={css(BOTON_PLANO + "padding:6px 12px;font-size:var(--t-mini);")}>
+                            Cambiar
+                          </button>
+                        </Fila>
+                        {plano && (
+                          <Fila titulo="Zonas" valor={e.giroRejilla ? `Giradas ${coma(e.giroRejilla)}°` : "Sobre las paredes"}>
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                cambia({ giroRejilla: 0 });
+                                if (!(await ajustaParedes(plano))) setAviso("No he encontrado las paredes de fuera en este plano. Ajústalas con «Paredes», abajo en el plano.");
+                              }}
+                              style={css(BOTON_PLANO + "padding:6px 12px;font-size:var(--t-mini);")}
+                            >
+                              Buscar solas
+                            </button>
+                          </Fila>
+                        )}
+                        <Campo label="Estrellas del año">{selectorAnio}</Campo>
+                        <Campo label="Luopan sobre el plano">
+                          <Opciones
+                            etiqueta="Luopan sobre el plano"
+                            valor={conLuopan ? "si" : "no"}
+                            opciones={[
+                              ["si", "Encima"],
+                              ["no", "Quitar"],
+                            ]}
+                            alCambiar={(v) => setConLuopan(v === "si")}
+                          />
+                        </Campo>
+                        {elegirPersona}
+                      </section>
+
+                      <section style={css(CRISTAL + "padding:var(--pad-card-sm);display:flex;flex-direction:column;gap:var(--s2);")}>
+                        <span style={css(TITULO)}>Cómo se lee</span>
+                        <p style={css(APOYO + "margin:0;")}>
+                          En cada zona, arriba a la izquierda la estrella de la <strong>montaña</strong> (las personas) y a la derecha la del <strong>agua</strong> (el dinero). En pequeño, la del periodo. El círculo es la estrella del año.
+                        </p>
+                        <p style={css(APOYO + "margin:0;")}>
+                          <span style={css("color:var(--green);font-weight:650;")}>Verde</span> favorable · <span style={css("color:var(--red);font-weight:650;")}>rojo</span> pide cuidado · <span style={css("color:var(--gold);font-weight:650;")}>5</span> la más difícil.
+                        </p>
+                        <p style={css(NOTA + "margin:0;line-height:1.5;")}>Arrastra para mover el plano; en el móvil, con dos dedos. Pulsa una zona para marcar qué hay en ella.</p>
+                      </section>
+                    </>
                   )}
-                </div>
+                </aside>
               </div>
             </div>
           )}

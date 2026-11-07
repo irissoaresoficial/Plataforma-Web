@@ -232,7 +232,7 @@ export default function Informe({ e, carta, plano, hoy, anio }: { e: EstudioFs; 
           <Cabecera e={e} parte="El plano y la carta" />
           <h2 className={s.h2}>{plano ? "El plano, en nueve zonas" : "La carta de estrellas"}</h2>
           {plano ? (
-            <Plano imagen={plano} rejilla={e.rejilla} fachada={e.fachada} lado={e.lado} carta={carta} anual={anios[0].carta} estancias={e.estancias} norte={e.nortePlano} conLuopan papel />
+            <Plano imagen={plano} rejilla={e.rejilla} fachada={e.fachada} lado={e.lado} carta={carta} anual={anios[0].carta} estancias={e.estancias} norte={e.nortePlano} giroRejilla={e.giroRejilla} conLuopan papel />
           ) : (
             <div className={s.carta}>
               <Cuadricula carta={carta} fachada={e.fachada} lado={e.lado} anual={anios[0].carta} estancias={e.estancias} modo="papel" />

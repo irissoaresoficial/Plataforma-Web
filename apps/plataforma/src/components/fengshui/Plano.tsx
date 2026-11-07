@@ -47,11 +47,13 @@ type Props = {
   norte?: number | null;
   alCambiarNorte?: (n: number) => void;
   papel?: boolean;
+  /** La cuadrícula girada sobre un plano torcido. Ver `MesaPlano`. */
+  giroRejilla?: number;
 };
 
 const limita = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 
-export default function Plano({ imagen, rejilla, alCambiarRejilla, fachada, lado, carta, anual, marcas, mansiones, conLuopan = true, seleccion, alElegir, estancias, norte = null, alCambiarNorte, papel }: Props) {
+export default function Plano({ imagen, rejilla, alCambiarRejilla, fachada, lado, carta, anual, marcas, mansiones, conLuopan = true, seleccion, alElegir, estancias, norte = null, alCambiarNorte, papel, giroRejilla = 0 }: Props) {
   const caja = useRef<HTMLDivElement>(null);
   const arrastre = useRef<{ esquina: "a" | "b"; id: number } | null>(null);
   const rosa = useRef<HTMLSpanElement>(null);
@@ -124,14 +126,14 @@ export default function Plano({ imagen, rejilla, alCambiarRejilla, fachada, lado
       {/* La vivienda: la cuadrícula y, centrado en ella, el luopan. */}
       <div
         style={css(
-          `position:absolute;left:${rejilla.x}%;top:${rejilla.y}%;width:${rejilla.w}%;height:${rejilla.h}%;` +
+          `position:absolute;left:${rejilla.x}%;top:${rejilla.y}%;width:${rejilla.w}%;height:${rejilla.h}%;transform:rotate(${giroRejilla}deg);` +
             (imagen ? "" : "border:2px solid var(--text-3);border-radius:4px;")
         )}
       >
         {conLuopan && (
           <div style={css("position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:1;container-type:size;")}>
             <div style={css("width:min(100cqw,100cqh);aspect-ratio:1;")}>
-              <Luopan grados={fachada} haciaPantalla={ANGULO_LADO[lado]} sobrePlano etiqueta="Luopan orientado sobre el plano" />
+              <Luopan grados={fachada} haciaPantalla={ANGULO_LADO[lado] + giroRejilla} sobrePlano etiqueta="Luopan orientado sobre el plano" />
             </div>
           </div>
         )}
