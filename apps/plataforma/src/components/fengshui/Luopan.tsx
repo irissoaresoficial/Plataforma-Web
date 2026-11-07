@@ -10,8 +10,7 @@
  * y se lee el anillo que queda bajo el hilo rojo.
  *
  * Aquí es igual. El hilo rojo de arriba es la FACHADA: lo que cae debajo es la
- * lectura. El plato gira con el dedo, con el ratón, con la brújula del móvil o
- * escribiendo los grados.
+ * lectura. El plato gira con el dedo, con el ratón o escribiendo los grados.
  *
  * LOS ANILLOS, DE DENTRO AFUERA (los de un luopan San Yuan, simplificado a lo
  * que usa el estudio):

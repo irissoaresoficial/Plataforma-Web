@@ -18,8 +18,11 @@
  *                las paredes de fuera y se colocan las nueve zonas; con la
  *                flecha del norte del plano sale la orientación; y se marca
  *                qué estancia hay en cada zona.
- *   LUOPAN     — la comprobación en la visita: la medida de verdad, con la
- *                brújula del móvil, girando con el dedo o escribiendo grados.
+ *   LUOPAN     — la comprobación en la visita: la medida del luopan de
+ *                verdad, girando el plato con el dedo o escribiendo grados.
+ *                (La brújula del móvil se quitó el 7 de noviembre de 2026,
+ *                a petición de Gerson: liaba más de lo que ayudaba. El
+ *                archivo `brujula.ts` se queda en el repositorio.)
  *   ESTRELLAS  — la carta de la vivienda, la del año y lo que no se toca.
  *   INFORME    — lo que se entrega, listo para guardar en PDF.
  *
@@ -85,7 +88,6 @@ import {
   type EstudioFs,
   type Ocupante,
 } from "@/lib/fengshui/estudio";
-import { useBrujulaMovil } from "@/lib/fengshui/brujula";
 import { ESPECIAL, ESTANCIAS, ESTRELLA, FORMACION, MANSION, propuestaEstancia, propuestaZona } from "@/lib/fengshui/textos";
 import Luopan from "../fengshui/Luopan";
 import Cuadricula from "../fengshui/Cuadricula";
@@ -230,8 +232,6 @@ export default function FengShuiScreen() {
   const kuaPersona = ocupante ? kuaDe(ocupante) : null;
   const mansiones = kuaPersona ? mansionesPorDir(kuaPersona.kua) : null;
   const casaKua = e.fachada !== null ? kuaDeCasa(e.fachada) : null;
-
-  const brujula = useBrujulaMovil(setVivo);
 
   /*
    * LA ORIENTACIÓN QUE SALE DEL PLANO.
@@ -647,11 +647,9 @@ export default function FengShuiScreen() {
             <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:var(--gap);align-items:start;")}>
               <section style={css(CRISTAL + "padding:clamp(14px,2.4vw,28px);display:flex;flex-direction:column;align-items:center;gap:var(--s3);position:sticky;top:84px;")}>
                 <div style={css("width:100%;max-width:560px;")}>
-                  <Luopan grados={vivo} alGirar={brujula.estado === "encendida" ? undefined : setVivo} mansiones={mansiones} />
+                  <Luopan grados={vivo} alGirar={setVivo} mansiones={mansiones} />
                 </div>
-                <span style={css(NOTA + "text-align:center;")}>
-                  {brujula.estado === "encendida" ? "Gira contigo: mantén el móvil plano, de espaldas a la casa." : "Arrastra el plato para girarlo. El hilo rojo de arriba es la fachada."}
-                </span>
+                <span style={css(NOTA + "text-align:center;")}>Arrastra el plato para girarlo. El hilo rojo de arriba es la fachada.</span>
               </section>
 
               <div style={css("display:flex;flex-direction:column;gap:var(--gap);")}>
@@ -706,21 +704,7 @@ export default function FengShuiScreen() {
                     >
                       Usar como fachada
                     </button>
-                    <button
-                      type="button"
-                      onClick={brujula.estado === "encendida" ? brujula.apagar : brujula.encender}
-                      style={css("border:1px solid var(--bloque-borde);border-radius:var(--r-pill);padding:11px 18px;background:transparent;color:var(--sobre-bloque);font-weight:590;font-size:var(--t-body);cursor:pointer;")}
-                    >
-                      {brujula.estado === "encendida" ? "Parar la brújula" : "Usar la brújula del móvil"}
-                    </button>
                   </div>
-                  {(brujula.estado === "sin-brujula" || brujula.estado === "denegada") && (
-                    <span style={css("font-size:var(--t-mini);color:var(--sobre-bloque-2);line-height:1.5;")}>
-                      {brujula.estado === "denegada"
-                        ? "El móvil no ha dado permiso para leer la brújula. Puedes darlo en los ajustes del navegador, o girar el plato a mano."
-                        : "Este aparato no tiene brújula o el navegador no deja leerla. Gira el plato o escribe los grados de tu luopan."}
-                    </span>
-                  )}
                   {e.fachada !== null && <span style={css("font-size:var(--t-mini);color:var(--sobre-bloque-2);")}>Fachada guardada: {coma(e.fachada)}°{delPlano !== null ? ` · según el plano: ${coma(delPlano)}°` : ""}</span>}
                 </section>
 
@@ -777,10 +761,10 @@ export default function FengShuiScreen() {
                   <ol style={css("margin:var(--s3) 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;" + APOYO)}>
                     <li>Decide primero cuál es la fachada: la cara principal, hacia la calle o hacia lo más abierto. En un piso, anota si mides la fachada del piso o la del edificio.</li>
                     <li>Ponte en la puerta o en el centro de esa fachada, de espaldas a la casa, mirando hacia fuera.</li>
-                    <li>Sujeta el luopan o el móvil plano, con el borde paralelo a la pared.</li>
+                    <li>Sujeta el luopan plano, con el borde paralelo a la pared.</li>
                     <li>Apártate uno o dos metros de coches, verjas, farolas y cuadros eléctricos. Quítate llaves y reloj.</li>
                     <li>Toma tres lecturas en sitios distintos y usa la media. Si se separan más de 5°, repite.</li>
-                    <li>Se mide contra el norte magnético, sin corregir. Si tienes un luopan de verdad, manda el luopan: la brújula del móvil puede desviarse unos grados.</li>
+                    <li>Se mide contra el norte magnético, sin corregir. Después, gira aquí el plato hasta los grados que marca tu luopan, o escríbelos.</li>
                   </ol>
                 </details>
               </div>
