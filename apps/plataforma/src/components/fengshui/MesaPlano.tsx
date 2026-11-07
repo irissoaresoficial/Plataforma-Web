@@ -75,6 +75,8 @@ type Props = {
 };
 
 const RAD = Math.PI / 180;
+/** El lado de enfrente: donde se sienta la casa si la fachada está en `l`. */
+const CONTRARIO: Record<Lado, Lado> = { arriba: "abajo", abajo: "arriba", izquierda: "derecha", derecha: "izquierda" };
 /** Lo que ocupa el plano encajado: un poco de aire a los lados. */
 const AIRE_W = 0.9;
 /** Arriba, un margen; abajo, el sitio de la barra o de la tarjeta del paso,
@@ -503,32 +505,43 @@ export default function MesaPlano(p: Props) {
               giroTexto={giro + beta}
             />
 
-            {/* La fachada, por fuera del lado en el que está. */}
-            {!enPaso && (
-              <span
-                aria-hidden
-                style={css(
-                  "position:absolute;z-index:3;padding:3px 10px;border-radius:var(--r-pill);background:var(--red);color:var(--surface);font-size:var(--t-micro);font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;pointer-events:none;" +
-                    /* Por FUERA del borde, no encima: encima tapaba los números
-                       de las zonas de ese lado. */
-                    (lado === "abajo"
-                      ? `left:50%;top:100%;transform:translate(-50%,-50%) translateY(${14 / vista.s}px) ${contraEscala};`
-                      : lado === "arriba"
-                        ? `left:50%;top:0;transform:translate(-50%,-50%) translateY(${-14 / vista.s}px) ${contraEscala};`
-                        : lado === "izquierda"
-                          ? `left:0;top:50%;transform:translate(-50%,-50%) translateX(${-14 / vista.s}px) rotate(-90deg) ${contraEscala};`
-                          : `left:100%;top:50%;transform:translate(-50%,-50%) translateX(${14 / vista.s}px) rotate(90deg) ${contraEscala};`)
-                )}
-              >
-                Fachada{fachada !== null ? ` · ${fachada.toFixed(1).replace(".", ",")}°` : ""}
-              </span>
-            )}
+            {/* LA FACHADA Y EL ASIENTO, cada uno por fuera de su lado. El
+                asiento es la espalda de la casa: siempre el lado contrario a
+                la fachada, así que no se coloca aparte, sale solo. Antes sólo
+                se leía en la pestaña Luopan, y en el plano no había dónde
+                verlo (Gerson, 7 de noviembre de 2026). */}
+            {!enPaso &&
+              ([
+                [lado, "Fachada", fachada, "var(--red)"],
+                [CONTRARIO[lado], "Asiento", fachada === null ? null : norm(fachada + 180), "var(--accion)"],
+              ] as Array<[Lado, string, number | null, string]>).map(([l, t, g, color]) => (
+                <span
+                  key={t}
+                  aria-hidden
+                  style={css(
+                    `position:absolute;z-index:3;padding:3px 10px;border-radius:var(--r-pill);background:${color};color:var(--surface);font-size:var(--t-micro);font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;pointer-events:none;box-shadow:0 2px 8px rgb(0 0 0 / .18);` +
+                      /* Por FUERA del borde, no encima: encima tapaba los
+                         números de las zonas de ese lado. */
+                      (l === "abajo"
+                        ? `left:50%;top:100%;transform:translate(-50%,-50%) translateY(${14 / vista.s}px) ${contraEscala};`
+                        : l === "arriba"
+                          ? `left:50%;top:0;transform:translate(-50%,-50%) translateY(${-14 / vista.s}px) ${contraEscala};`
+                          : l === "izquierda"
+                            ? `left:0;top:50%;transform:translate(-50%,-50%) translateX(${-14 / vista.s}px) rotate(-90deg) ${contraEscala};`
+                            : `left:100%;top:50%;transform:translate(-50%,-50%) translateX(${14 / vista.s}px) rotate(90deg) ${contraEscala};`)
+                  )}
+                >
+                  {t}
+                  {g !== null ? ` · ${g.toFixed(1).replace(".", ",")}°` : ""}
+                </span>
+              ))}
 
             {/* PASO 2: un botón en cada lado. */}
             {paso === "fachada" &&
               (["arriba", "derecha", "abajo", "izquierda"] as Lado[]).map((l) => {
                 const pos = { arriba: ["50%", "0"], derecha: ["100%", "50%"], abajo: ["50%", "100%"], izquierda: ["0", "50%"] }[l];
                 const elegido = l === lado;
+                const espalda = l === CONTRARIO[lado];
                 return (
                   <button
                     key={l}
@@ -539,10 +552,15 @@ export default function MesaPlano(p: Props) {
                     style={css(
                       `position:absolute;left:${pos[0]};top:${pos[1]};z-index:7;transform:translate(-50%,-50%) rotate(${-(giro + beta)}deg) ${contraEscala};` +
                         "padding:9px 16px;border-radius:var(--r-pill);font-size:var(--t-mini);font-weight:650;white-space:nowrap;cursor:pointer;box-shadow:var(--shadow-lg);" +
-                        (elegido ? "background:var(--red);color:var(--surface);border:2px solid var(--surface);" : "background:var(--vidrio-denso);color:var(--text);border:1px solid var(--border-strong);")
+                        (elegido
+                          ? "background:var(--red);color:var(--surface);border:2px solid var(--surface);"
+                          : espalda
+                            ? "background:var(--accion);color:var(--surface);border:2px solid var(--surface);"
+                            : "background:var(--vidrio-denso);color:var(--text);border:1px solid var(--border-strong);")
                     )}
+                    aria-label={elegido ? "Fachada" : espalda ? "Asiento: tócalo para poner aquí la fachada" : "Poner aquí la fachada"}
                   >
-                    {elegido ? "Fachada" : "Aquí"}
+                    {elegido ? "Fachada" : espalda ? "Asiento" : "Aquí"}
                   </button>
                 );
               })}
@@ -665,7 +683,7 @@ export default function MesaPlano(p: Props) {
         <div data-quieto="1" className={`${m.paso} ${m.cristal}`}>
           <span style={css("font-size:var(--t-micro);font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);")}>Paso 2 de 2 · La fachada</span>
           <span style={css("font-size:var(--t-body);line-height:1.5;color:var(--text-2);")}>
-            Toca el lado del plano por el que está la fachada: la cara principal de la casa, la que da a la calle o a lo más abierto.
+            Toca el lado del plano por el que está la fachada: la cara principal de la casa, la que da a la calle o a lo más abierto. El asiento, la espalda de la casa, se pone solo en el lado contrario.
           </span>
           <div style={css("display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;")}>
             <button type="button" onClick={() => p.alPaso("norte")} style={css(BOTON_PLANO + "font-size:var(--t-mini);")}>

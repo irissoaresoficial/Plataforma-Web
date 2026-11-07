@@ -930,6 +930,9 @@ export default function FengShuiScreen() {
                             <span style={css("font-size:var(--t-body);font-variant-numeric:tabular-nums;")}>
                               {coma(e.fachada)}° · {montanaDe(e.fachada).codigo} {montanaDe(e.fachada).pinyin} {montanaDe(e.fachada).hanzi}
                             </span>
+                            <span style={css("font-size:var(--t-body);font-variant-numeric:tabular-nums;padding-top:6px;margin-top:2px;border-top:1px solid var(--bloque-borde);")}>
+                              Se sienta al <strong>{NOMBRE_DIR[dirDe(e.fachada + 180)]}</strong> · {coma(norm(e.fachada + 180))}° · {montanaDe(e.fachada + 180).codigo} {montanaDe(e.fachada + 180).pinyin} {montanaDe(e.fachada + 180).hanzi}
+                            </span>
                             <span style={css("font-size:var(--t-mini);color:var(--sobre-bloque-2);line-height:1.5;")}>
                               {delPlano === null
                                 ? "Puesta con el luopan: el plano no tiene el norte marcado."
@@ -978,6 +981,16 @@ export default function FengShuiScreen() {
                             Cambiar
                           </button>
                         </Fila>
+                        {/* El asiento no se elige: es el lado contrario a la
+                            fachada. Cambiar la fachada lo mueve con ella. */}
+                        <Fila
+                          titulo="Asiento"
+                          valor={
+                            { abajo: "Arriba", arriba: "Abajo", izquierda: "Derecha", derecha: "Izquierda" }[e.lado] +
+                            " del plano" +
+                            (e.fachada !== null ? ` · ${NOMBRE_DIR[dirDe(e.fachada + 180)]}, ${coma(norm(e.fachada + 180))}°` : "")
+                          }
+                        />
                         {plano && (
                           <Fila titulo="Zonas" valor={e.giroRejilla ? `Giradas ${coma(e.giroRejilla)}°` : "Sobre las paredes"}>
                             <button

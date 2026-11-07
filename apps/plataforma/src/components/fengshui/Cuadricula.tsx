@@ -74,6 +74,8 @@ export default function Cuadricula({ carta, fachada, lado, anual, marcas, mansio
         const k = casillaEnPlano(angulo, fachada, lado);
         const elegida = seleccion === k;
         const esFachada = angulo !== null && angulo === { arriba: 0, derecha: 90, abajo: 180, izquierda: 270 }[lado];
+        /* El asiento: la casilla del centro del lado contrario. */
+        const esAsiento = angulo !== null && angulo === ({ arriba: 0, derecha: 90, abajo: 180, izquierda: 270 }[lado] + 180) % 360;
         const m = carta?.montana[k];
         const w = carta?.agua[k];
         const b = carta?.base[k];
@@ -128,7 +130,7 @@ export default function Cuadricula({ carta, fachada, lado, anual, marcas, mansio
               <span style={css("display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;")}>
                 <span style={css(`font-size:${papel ? "9px" : "var(--t-micro)"};font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:${papel ? "#7d5f1e" : "var(--gold)"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;`)}>
                   {k === "C" ? "Centro" : NOMBRE_DIR[k]}
-                  {esFachada ? " · fachada" : ""}
+                  {esFachada ? " · fachada" : esAsiento ? " · asiento" : ""}
                 </span>
                 <span title="Estrella del periodo" style={css(`font-size:${papel ? "11px" : "var(--t-mini)"};color:${papel ? "#6f6560" : "var(--text-4)"};font-variant-numeric:tabular-nums;`)}>
                   {b ?? ""}
