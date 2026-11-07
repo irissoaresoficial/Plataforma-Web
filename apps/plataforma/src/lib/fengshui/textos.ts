@@ -206,7 +206,9 @@ export function propuestaZona(z: {
  * el descanso) y en la entrada, el salón o el despacho manda la del AGUA (lo
  * que entra, el movimiento). Es la regla de base de las estrellas voladoras.
  */
-export const ESTANCIAS = ["Entrada", "Dormitorio principal", "Dormitorio", "Salón", "Comedor", "Cocina", "Baño", "Despacho", "Escalera", "Trastero"] as const;
+/* «Pasillo» y «Zonas comunes» entraron el 7 de noviembre de 2026: Iris no
+   tenía dónde marcarlos en el plano, y en un piso son media vivienda. */
+export const ESTANCIAS = ["Entrada", "Dormitorio principal", "Dormitorio", "Salón", "Comedor", "Cocina", "Baño", "Despacho", "Pasillo", "Escalera", "Zonas comunes", "Trastero"] as const;
 export type Estancia = (typeof ESTANCIAS)[number];
 
 const BUENAS = [9, 1, 8];
@@ -255,6 +257,19 @@ export function propuestaEstancia(est: string, z: { montana: number; agua: numbe
       if (BUENAS.includes(w)) return "La escalera mueve la buena estrella del agua: favorable.";
       if (DIFICILES.includes(w)) return "La escalera mueve una estrella difícil: mejor poco uso y metal en el arranque.";
       return null;
+    case "Pasillo":
+      /* Un pasillo no es sitio de estar: es por donde se mueve la casa. Lo
+         que hace es llevar la estrella del agua de su zona al resto. */
+      if (BUENAS.includes(w)) return `El pasillo lleva la buena estrella del agua ${w} al resto de la casa: despejado, con luz y sin muebles que corten el paso.`;
+      if (DIFICILES.includes(w)) return `El pasillo reparte el agua ${w}, una estrella difícil: que sea sólo de paso, sin muebles ni trastos, con un objeto de metal.`;
+      return "Pasillo en zona neutra: despejado y bien iluminado.";
+    case "Zonas comunes":
+      /* Rellano, portal, patio, ascensor: no son de la clienta y no se pueden
+         reformar. Lo que se propone es pequeño y en su lado de la puerta. */
+      if (DIFICILES.includes(w) || DIFICILES.includes(m) || DIFICILES.includes(a))
+        return "Zona común sobre una estrella difícil. No se puede reformar: basta con no acumular nada en vuestro lado y un objeto de metal junto a la puerta.";
+      if (BUENAS.includes(w)) return `Zona común sobre el agua ${w}, una estrella buena: si da a la puerta de casa, que esté despejada y con luz; es buena entrada.`;
+      return "Zona común: no depende de la vivienda. Que vuestro lado esté limpio y despejado.";
     case "Trastero":
       if (DIFICILES.includes(w) || DIFICILES.includes(m)) return "Un trastero sobre una estrella difícil es buen sitio: zona quieta.";
       if (BUENAS.includes(w)) return "Un trastero sobre una estrella buena la desaprovecha: si se puede, usar esta zona para estar.";
