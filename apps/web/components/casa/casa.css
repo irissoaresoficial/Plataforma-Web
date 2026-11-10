@@ -2749,3 +2749,28 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
     transition: none;
   }
 }
+
+/* Mientras el vídeo va en silencio, el botón del sonido llama la atención:
+   más grande, granate y con un latido suave (10 de noviembre de 2026). */
+.casa-vid-sonido.casa-vid-sonido-llama {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  background: var(--vino);
+  color: var(--papel);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .casa-vid-sonido.casa-vid-sonido-llama {
+    animation: casa-vid-late 2.2s ease-in-out infinite;
+  }
+}
+@keyframes casa-vid-late {
+  50% {
+    box-shadow: 0 0 0 10px rgba(226, 205, 162, 0);
+    transform: scale(1.04);
+  }
+}

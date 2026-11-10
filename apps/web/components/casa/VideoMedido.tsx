@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { medir } from '@/lib/medir';
 
 /**
@@ -77,17 +77,54 @@ export default function VideoMedido({
     for (const t of Array.from(v.textTracks)) t.mode = t.language === 'es' ? 'showing' : t.mode;
   };
 
+  /* ARRANQUE AUTOMÁTICO (10 de noviembre de 2026, lo pidió Gerson: «que
+     apenas se abra la landing, pum, se ponga el vídeo, con sonido»).
+     Ningún navegador deja sonar un vídeo sin que la persona haya tocado la
+     página: Chrome, Safari y el navegador de Instagram lo bloquean. Así que:
+     1) se intenta con sonido (si el navegador ya confía en la web, suena);
+     2) si no deja, arranca en silencio con subtítulos;
+     3) al primer toque, clic o tecla en CUALQUIER sitio de la página, se
+        enciende el sonido solo. */
+  useEffect(() => {
+    const v = video.current;
+    if (!v) return;
+    enciendeSubtitulos(v);
+    let quitado = false;
+    const encenderAlTocar = () => {
+      if (quitado) return;
+      quitado = true;
+      quitar();
+      v.muted = false;
+      setMudo(false);
+      if (v.paused) v.play().catch(() => {});
+    };
+    const eventos = ['pointerdown', 'keydown', 'touchend'] as const;
+    const quitar = () => eventos.forEach((ev) => window.removeEventListener(ev, encenderAlTocar, true));
+    v.muted = false;
+    v.play()
+      .then(() => {
+        setMudo(false);
+        setEmpezado(true);
+      })
+      .catch(() => {
+        v.muted = true;
+        setMudo(true);
+        v.play()
+          .then(() => setEmpezado(true))
+          .catch(() => {});
+        eventos.forEach((ev) => window.addEventListener(ev, encenderAlTocar, { capture: true, passive: true }));
+      });
+    return quitar;
+  }, []);
+
   const darPlay = () => {
     const v = video.current;
     if (!v) return;
-    v.muted = true;
-    setMudo(true);
+    v.muted = false;
+    setMudo(false);
     enciendeSubtitulos(v);
     setEmpezado(true);
-    v.play().catch(() => {
-      /* Si el navegador no deja, se quedan los controles nativos a la vista
-         y la persona lo arranca desde ahí. */
-    });
+    v.play().catch(() => {});
   };
 
   const alternarSonido = () => {
@@ -108,7 +145,8 @@ export default function VideoMedido({
         /* `metadata` y no `none`: pesa unos KB y permite que los subtítulos
            y la duración estén listos al pulsar. El vídeo en sí no se baja
            hasta que se le da al play. */
-        preload="metadata"
+        preload="auto"
+        autoPlay
         poster={poster}
         onLoadedMetadata={(e) => enciendeSubtitulos(e.currentTarget)}
         onPlay={() => {
@@ -141,8 +179,18 @@ export default function VideoMedido({
       )}
 
       {empezado && (
-        <button type="button" className="casa-vid-sonido" onClick={alternarSonido} aria-pressed={!mudo}>
-          {mudo ? 'Activar sonido' : 'Quitar sonido'}
+        <button type="button" className={`casa-vid-sonido${mudo ? ' casa-vid-sonido-llama' : ''}`} onClick={alternarSonido} aria-pressed={!mudo}>
+          {mudo ? (
+            <>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+                <path d="m22 9-6 6M16 9l6 6" />
+              </svg>
+              Toca para activar el sonido
+            </>
+          ) : (
+            'Quitar sonido'
+          )}
         </button>
       )}
     </div>
