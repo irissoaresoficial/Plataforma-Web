@@ -3,6 +3,7 @@
 import Script from 'next/script';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { recuerdaCampana } from '@/lib/campana';
 import { LLAVE_MEDICION, PIXEL_META } from '@/lib/pixel';
 
@@ -69,6 +70,27 @@ export default function Medicion() {
   const [decision, setDecision] = useState<'si' | 'no' | null>(null);
   const [leido, setLeido] = useState(false);
   const cartel = useRef<HTMLDivElement | null>(null);
+
+  /*
+   * UN PAGEVIEW POR PÁGINA, NO SÓLO POR CARGA (10 de noviembre de 2026).
+   * El script de abajo manda el PageView una vez, al cargar. Pero esta web
+   * cambia de página sin recargar —es Next—, así que quien entraba por la
+   * portada y pasaba a /masterclass contaba UNA visita en Meta, no dos. Aquí
+   * se manda el de cada cambio de ruta. El primero no, que ya lo manda el
+   * script: si no, la página de entrada contaría doble.
+   */
+  const ruta = usePathname();
+  const rutaAnterior = useRef<string | null>(null);
+  useEffect(() => {
+    if (rutaAnterior.current !== null && rutaAnterior.current !== ruta) {
+      try {
+        (window as Window & { fbq?: (...a: unknown[]) => void }).fbq?.('track', 'PageView');
+      } catch {
+        /* la medición nunca rompe la web */
+      }
+    }
+    rutaAnterior.current = ruta;
+  }, [ruta]);
 
   /*
    * ============================================================================
@@ -192,13 +214,20 @@ export default function Medicion() {
           medición. Un píxel nunca puede retrasar lo que la persona ha venido a
           hacer. */}
       {decision === 'si' && META && (
+        /* `autoConfig` APAGADO (10 de noviembre de 2026). Con él encendido,
+           Meta mira los botones y formularios de la página y manda eventos que
+           él mismo deduce —un envío de formulario lo puede contar como Lead—,
+           sin el identificador que comparten el navegador y el servidor. O sea,
+           un Lead de más que no se puede juntar con el bueno. Aquí los eventos
+           los manda sólo `medir()`: el Lead, una vez, cuando el servidor ha
+           confirmado la plaza, y con el mismo `eventID` que `lib/capi.ts`. */
         <Script id="meta-pixel" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','${META}');fbq('track','PageView');`}
+fbq('set','autoConfig',false,'${META}');fbq('init','${META}');fbq('track','PageView');`}
         </Script>
       )}
 

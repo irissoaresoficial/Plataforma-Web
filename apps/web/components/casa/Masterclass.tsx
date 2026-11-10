@@ -118,7 +118,12 @@ export default function Masterclass() {
 
         <header>
 
-          <Barra fija />
+          {/* SIN `fija` DESDE EL 10 DE NOVIEMBRE. Clavada a la ventana, al
+              bajar y volver a subir un poco se quedaba encima del cargo de
+              Iris y del principio del formulario (lo vio Gerson a 1.500 px).
+              Aquí la página es corta y el menú no es lo que se viene a hacer:
+              la barra se queda arriba y se va con el scroll. */}
+          <Barra />
 
         </header>
 
@@ -249,10 +254,14 @@ export default function Masterclass() {
                   permite montar en Meta un público de quien casi lo acaba.
                   Ver `VideoMedido.tsx`. */}
               <div className="casa-mc-video">
+                {/* «Los hilos» v3 desde el 10 de noviembre (antes,
+                    desordenes-aterrizaje.mp4, que se queda en public/video
+                    por si hay que volver). 7 MB en vez de 14. */}
                 <VideoMedido
-                  src="/video/desordenes-aterrizaje.mp4"
-                  poster="/images/desordenes-aterrizaje-cartel.jpg"
-                  nombre="masterclass-desordenes"
+                  src="/video/los-hilos.mp4"
+                  poster="/images/los-hilos-poster.jpg"
+                  subtitulos="/video/los-hilos.es.vtt"
+                  nombre="masterclass-los-hilos"
                 />
               </div>
             </div>

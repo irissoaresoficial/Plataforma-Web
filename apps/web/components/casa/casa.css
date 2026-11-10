@@ -1277,7 +1277,10 @@ html[data-portada='si'] #chat-launcher {
 }
 @media (min-width: 960px) {
   .casa-mc-rejilla {
-    grid-template-columns: 1.15fr 0.85fr;
+    /* `minmax(0, …)` y no `fr` a secas: un `fr` solo no baja del ancho
+       mínimo de su contenido, y una palabra larga o un campo podían empujar
+       la columna del formulario fuera del borde derecho. */
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
     gap: clamp(36px, 4vw, 56px);
   }
 }
@@ -1349,11 +1352,14 @@ html[data-portada='si'] #chat-launcher {
 }
 .casa-mc-presenta-datos small {
   font-family: var(--sans);
-  font-size: 12.5px;
-  line-height: 1.35;
-  /* 0.82 y no 0.6: es el título profesional, o sea la mitad de la confianza
-     de esta página. Texto pequeño pide 4,5:1 y aquí se pasa de largo. */
-  color: rgba(255, 255, 255, 0.82);
+  /* 14 px y casi blanco desde el 10 de noviembre: a 12,5 px y al 82 % el
+     cargo de Iris no se leía en escritorio (Gerson). Es la mitad de la
+     confianza de esta página, así que se lee sin acercarse. */
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
   text-wrap: pretty;
 }
 
@@ -2642,4 +2648,104 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
   letter-spacing: -0.015em;
   line-height: 1.15;
   white-space: nowrap;
+}
+
+
+/* ------------------------------------------------ el vídeo de la landing */
+/* Cartel con el gancho, un play propio y, al pulsarlo, arranca sin sonido y
+   con subtítulos. El play es grande y claro sobre el cartel oscuro: es lo
+   único que se puede hacer con el vídeo antes de empezar. */
+.casa-vid {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.casa-vid video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  background: #000;
+}
+.casa-vid video::cue {
+  font-family: var(--sans);
+  font-size: 1.05em;
+  line-height: 1.35;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.62);
+}
+.casa-vid-play {
+  position: absolute;
+  inset: 0;
+  /* Centrado: en el cartel el centro es el hueco oscuro entre el gancho
+     (izquierda) y la marioneta (derecha). Abajo a la izquierda se montaba
+     encima del gancho a 1.024 px. */
+  display: grid;
+  place-items: center;
+  /* 47 % y no 50 %: el gancho del cartel acaba en el 36 % y la marioneta
+     empieza en el 56 %; el disco cae en medio en cualquier ancho. */
+  padding: 0 6% 0 0;
+  border: 0;
+  background: transparent;
+  color: var(--papel);
+  cursor: pointer;
+  font-family: var(--sans);
+}
+.casa-vid-play-disco {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--papel);
+  color: var(--vino);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.casa-vid-play-disco svg {
+  margin-left: 3px;
+}
+/* El texto del botón lo lee el lector de pantalla; a la vista ya lo dicen el
+   cartel y el disco. */
+.casa-vid-play-texto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.casa-vid-play:hover .casa-vid-play-disco,
+.casa-vid-play:focus-visible .casa-vid-play-disco {
+  transform: scale(1.08);
+}
+.casa-vid-play:focus-visible {
+  outline: 2px solid var(--oro-luz);
+  outline-offset: -4px;
+}
+.casa-vid-sonido {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--vino);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+@media (max-width: 559px) {
+  .casa-vid-play-disco {
+    width: 44px;
+    height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .casa-vid-play-disco {
+    transition: none;
+  }
 }
