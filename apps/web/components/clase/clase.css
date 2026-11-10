@@ -130,7 +130,7 @@
 
 /* Lo que aparece con cada clic. Visible siempre en su sitio: sólo cambia la
    opacidad, así la diapositiva no salta. */
-.cl-aparece { opacity: 0.12; transform: translateY(14px); filter: blur(2px); transition: opacity 0.5s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s; }
+.cl-aparece { opacity: 0; transform: translateY(40px) scale(0.97); filter: blur(10px); transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s; }
 .cl-visto { opacity: 1; transform: none; filter: none; }
 
 .cl-lista { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 26px; counter-reset: cl; }
@@ -345,3 +345,68 @@
 }
 
 .cl-cifra .cl-pendiente { font-size: 30px; }
+
+/* ---- v2: cada clic hace pasar algo ---- */
+.cl-negro { background: radial-gradient(1400px 900px at 50% 40%, color-mix(in srgb, var(--vino) 45%, var(--tinta)) 0%, var(--tinta) 70%); color: var(--cl-sobre); }
+.cl-centro-h { align-items: center; text-align: center; }
+
+/* Entrada en cascada de lo que ya se ve al llegar a la diapositiva. */
+.cl-entra-1, .cl-entra-2, .cl-entra-3, .cl-entra-4, .cl-entra-5 { animation: cl-sube 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cl-entra-2 { animation-delay: 0.12s; } .cl-entra-3 { animation-delay: 0.26s; } .cl-entra-4 { animation-delay: 0.4s; } .cl-entra-5 { animation-delay: 0.55s; }
+@keyframes cl-sube { from { opacity: 0; transform: translateY(30px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+
+.cl-titular-vivo { font-size: 128px; max-width: 1500px; transition: font-size 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s; animation: cl-sube 1.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cl-titular-vivo.cl-arriba { font-size: 64px; }
+.cl-video-grande { width: 1500px; }
+
+.cl-carta { display: flex; min-height: 0; }
+.cl-tres .cl-aparece.cl-visto .cl-tarjeta-foto img { animation: cl-acerca 8s ease-out both; }
+
+.cl-pasos3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 16px; }
+.cl-paso3 { display: flex; flex-direction: column; gap: 22px; padding: 44px; border-radius: var(--radio-suave); background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.14); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.cl-paso3 h3 { margin: 0 0 10px; font-size: 44px; font-weight: 400; line-height: 1.15; }
+.cl-paso3 p { margin: 0; font-size: 30px; line-height: 1.45; color: var(--cl-sobre-2); }
+.cl-paso3-num { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; font-size: 36px; font-weight: 400; background: var(--oro-luz); color: var(--vino); }
+.cl-pasos3-claro .cl-paso3 { background: rgba(255, 255, 255, 0.72); border-color: rgba(255, 255, 255, 0.95); box-shadow: 0 24px 48px rgba(69, 26, 37, 0.08); }
+.cl-pasos3-claro .cl-paso3 p { color: var(--tinta); opacity: 0.8; }
+.cl-pasos3-claro .cl-paso3-num { background: var(--vino); color: var(--papel); }
+
+.cl-repite { display: flex; flex-direction: column; gap: 22px; margin-top: 12px; }
+.cl-repite-linea { display: flex; align-items: center; gap: 28px; }
+.cl-repite-linea span { flex: none; width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; border: 1px solid rgba(255, 255, 255, 0.4); color: var(--oro-luz); }
+.cl-repite-linea p { margin: 0; font-size: 42px; line-height: 1.25; }
+.cl-repite-linea b { font-weight: 500; color: var(--oro-luz); }
+
+.cl-chips { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 12px; }
+.cl-chip { font-size: 38px; padding: 22px 38px; border-radius: var(--radio-pildora); background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+
+.cl-nube { display: flex; flex-wrap: wrap; gap: 18px; align-content: flex-start; min-height: 360px; }
+.cl-burbuja { font-size: 36px; line-height: 1.3; padding: 20px 32px; border-radius: 40px; background: var(--papel); color: var(--vino); box-shadow: 0 18px 40px rgba(69, 26, 37, 0.14); transform: rotate(var(--g)); animation: cl-burbuja 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes cl-burbuja { from { opacity: 0; transform: translateY(40px) scale(0.6) rotate(var(--g)); } to { opacity: 1; transform: rotate(var(--g)); } }
+.cl-nueva-frase input { width: 100%; font-family: inherit; font-size: 28px; padding: 22px 30px; border-radius: var(--radio-pildora); border: 2px dashed rgba(69, 26, 37, 0.35); background: rgba(255, 255, 255, 0.4); color: var(--vino); }
+.cl-nueva-frase input:focus { outline: none; border-style: solid; background: rgba(255, 255, 255, 0.7); }
+
+.cl-puntos { margin: 0; padding: 0 0 0 1.1em; display: flex; flex-direction: column; gap: 14px; font-size: 32px; line-height: 1.4; }
+.cl-puntos li::marker { color: var(--oro); }
+.cl-media { min-height: 1.4em; }
+
+.cl-reloj-caja { flex: none; display: flex; flex-direction: column; align-items: center; gap: 30px; cursor: default; }
+.cl-reloj-circulo { position: relative; width: 520px; height: 520px; }
+.cl-anillo { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.cl-anillo-fondo { fill: rgba(255, 255, 255, 0.06); stroke: rgba(255, 255, 255, 0.14); stroke-width: 3; }
+.cl-anillo-arco { fill: none; stroke: var(--oro-luz); stroke-width: 3.4; stroke-linecap: round; stroke-dasharray: 339.3; transition: stroke-dashoffset 0.5s linear; }
+.cl-reloj-dentro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.cl-reloj-dentro .cl-reloj-cifra { font-size: 150px; font-weight: 300; line-height: 1; color: var(--cl-sobre); min-width: 0; font-variant-numeric: tabular-nums; }
+.cl-reloj-etq { font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--oro-luz); }
+.cl-reloj-botones { display: flex; gap: 16px; }
+.cl-vino .cl-boton, .cl-foto .cl-boton { background: var(--oro-luz); color: var(--vino); }
+.cl-vino .cl-boton-suave, .cl-foto .cl-boton-suave { background: rgba(255, 255, 255, 0.12); color: var(--cl-sobre); }
+
+.cl-campo { color: inherit; }
+.cl-campo-edita { font: inherit; font-size: 0.8em; min-width: 420px; padding: 6px 16px; border-radius: var(--radio-medio); border: 2px dashed var(--oro); background: rgba(255, 255, 255, 0.1); color: inherit; }
+
+.cl-puntitos { position: absolute; right: 128px; bottom: 60px; z-index: 1; display: flex; gap: 10px; }
+.cl-puntitos span { width: 12px; height: 12px; border-radius: 50%; background: currentColor; opacity: 0.2; transition: opacity 0.3s, transform 0.3s; }
+.cl-puntitos span.cl-on { opacity: 0.85; transform: scale(1.15); }
+
+.cl-precios { grid-template-columns: 1.3fr 1fr; }
