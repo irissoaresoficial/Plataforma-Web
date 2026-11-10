@@ -56,68 +56,74 @@ export type Envio = Textos & {
   aInscritas: boolean;
 };
 
+/*
+ * EN PORTUGUÉS DE PORTUGAL (10 de noviembre de 2026). Gerson: «las clientas
+ * de Marco, los correos deben ir en portugués». De usted («você» implícito,
+ * en tercera persona), que es como se le escribe a una paciente. La hora va
+ * primero en la de Portugal, que es la suya, y entre paréntesis la de España.
+ */
 export const ENVIOS: Envio[] = [
   {
     id: 'invitacion',
     dia: '2026-11-11',
-    asunto: '¿Por qué vuelve siempre la misma historia?',
-    previo: 'Una clase gratis con Iris Soares, el jueves 26 de noviembre a las 21:00.',
-    titular: '¿Por qué vuelve siempre la misma historia?',
-    boton: 'Reservar mi plaza gratis',
+    asunto: 'Porque é que a mesma história se repete sempre?',
+    previo: 'Uma aula gratuita com a Iris Soares, quinta-feira, 26 de novembro, às 20h00.',
+    titular: 'Porque é que a mesma história se repete sempre?',
+    boton: 'Reservar o meu lugar grátis',
     aInscritas: true,
-    cuerpo: `Hola,
+    cuerpo: `Olá,
 
-Te escribo porque en algún momento pasaste por mi consulta.
+Escrevo-lhe porque, em algum momento, passou pela minha consulta.
 
-Hay algo que veo una y otra vez: cambias de pareja, pero vuelve **la misma discusión, el mismo tipo de persona y el mismo final**.
+Há algo que vejo uma e outra vez: muda de parceiro, mas volta **a mesma discussão, o mesmo tipo de pessoa e o mesmo final**.
 
-Casi nunca es mala suerte. Muchas veces es un patrón que empezó en tu familia antes de que tú llegaras.
+Quase nunca é azar. Muitas vezes é um padrão que começou na sua família antes de ter nascido.
 
-El **jueves 26 de noviembre, a las 21:00** (hora de España), doy con Iris Soares una masterclass **gratuita y en directo** sobre esto: cómo se heredan los patrones en el amor y qué se puede hacer con ellos. Dura una hora y al final hay tiempo para preguntas.
+Na **quinta-feira, 26 de novembro, às 20h00** (hora de Portugal; 21h00 em Espanha), dou com a Iris Soares uma masterclass **gratuita e em direto** sobre isto: como se herdam os padrões no amor e o que se pode fazer com eles. Dura uma hora e, no fim, há tempo para perguntas.
 
 [botón]
 
-Si conoces a alguien a quien le pueda servir, reenvíale este correo.
+Se conhece alguém a quem isto possa ajudar, reencaminhe-lhe este e-mail.
 
-Un abrazo,`,
+Um abraço,`,
   },
   {
     id: 'recordatorio',
     dia: '2026-11-23',
-    asunto: 'Este jueves: la historia que repites sin saberlo',
-    previo: '¿A qué edad se emparejó tu madre? ¿Y tú?',
-    titular: 'La historia que repites sin saberlo',
-    boton: 'Reservar mi plaza gratis',
+    asunto: 'Esta quinta-feira: a história que repete sem saber',
+    previo: 'Com que idade a sua mãe se casou ou foi viver com alguém? E você?',
+    titular: 'A história que repete sem saber',
+    boton: 'Reservar o meu lugar grátis',
     aInscritas: false,
-    cuerpo: `Hola,
+    cuerpo: `Olá,
 
-Una pregunta: **¿a qué edad se emparejó tu madre? ¿Y tú?**
+Uma pergunta: **com que idade a sua mãe se casou ou foi viver com alguém? E você?**
 
-Haz la cuenta. Muchas veces sale la misma edad, o casi. En las familias se repiten las edades, el tipo de pareja y cómo acaba la historia. Verlo es el primer paso para dejar de repetirlo.
+Faça as contas. Muitas vezes dá a mesma idade, ou quase. Nas famílias repetem-se as idades, o tipo de parceiro e a forma como a história acaba. Ver isso é o primeiro passo para deixar de o repetir.
 
-De eso hablamos Iris y yo este **jueves 26 de noviembre, a las 21:00** (hora de España), en la masterclass gratuita **${MASTERCLASS.titulo}**.
+É disso que a Iris e eu falamos esta **quinta-feira, 26 de novembro, às 20h00** (hora de Portugal; 21h00 em Espanha), na masterclass gratuita **${MASTERCLASS.titulo}**.
 
 [botón]
 
-Un abrazo,`,
+Um abraço,`,
   },
   {
     id: 'es-hoy',
     dia: '2026-11-26',
-    asunto: `Hoy a las 21:00 · ${MASTERCLASS.titulo}`,
-    previo: 'Esta noche, gratis y en directo. Todavía puedes reservar tu plaza.',
-    titular: 'Es esta noche',
-    boton: 'Reservar mi plaza',
+    asunto: `Hoje às 20h00 · ${MASTERCLASS.titulo}`,
+    previo: 'Esta noite, gratuita e em direto. Ainda pode reservar o seu lugar.',
+    titular: 'É esta noite',
+    boton: 'Reservar o meu lugar',
     aInscritas: false,
-    cuerpo: `Hola,
+    cuerpo: `Olá,
 
-Esta noche, a las **21:00** (hora de España), Iris y yo damos la masterclass **${MASTERCLASS.titulo}**. Es gratis, en directo y dura una hora.
+Esta noite, às **20h00** (hora de Portugal; 21h00 em Espanha), a Iris e eu damos a masterclass **${MASTERCLASS.titulo}**. É gratuita, em direto e dura uma hora.
 
-Si alguna vez te has preguntado por qué vuelve la misma historia aunque cambie la persona, esta clase es para ti.
+Se alguma vez se perguntou porque é que a mesma história volta, mesmo quando a pessoa muda, esta aula é para si.
 
 [botón]
 
-Nos vemos esta noche,`,
+Até logo à noite,`,
   },
 ];
 
@@ -190,9 +196,14 @@ export function correoDifusion(e: Envio, email: string): { asunto: string; html:
       titular: limpio(e.titular),
       email,
       cuerpo: cuerpoHtml(e),
-      firma: { nombre: 'Marco Célio Sousa', cargo: 'Psicólogo y terapeuta psicosomático clínico' },
+      firma: { nombre: 'Marco Célio Sousa', cargo: 'Psicólogo e terapeuta psicossomático clínico' },
       motivo:
-        'Recibes este correo porque pasaste por la consulta de Marco Célio Sousa. Te lo envía, con su autorización, la Escuela de Sabiduría 33, donde da clase.',
+        'Recebe este e-mail porque passou pela consulta de Marco Célio Sousa. É enviado, com a autorização dele, pela Escuela de Sabiduría 33, onde dá aulas.',
+      pie: {
+        baja: 'Cancelar a subscrição',
+        aviso:
+          'Os estudos de gestão emocional e numerologia transgeracional não são um tratamento médico nem psicológico e não substituem nenhum.',
+      },
     }),
   };
 }

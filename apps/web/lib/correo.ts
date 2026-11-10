@@ -156,7 +156,14 @@ export function marco(opciones: {
   firma?: { nombre: string; cargo: string };
   /** Por qué le llega. Por defecto, porque dejó su correo en la web. */
   motivo?: string;
+  /** El texto del enlace de baja y el aviso legal, en otro idioma. */
+  pie?: { baja: string; aviso: string };
 }): string {
+  const pie = opciones.pie ?? {
+    baja: 'Darme de baja',
+    aviso:
+      'Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.',
+  };
   const firma = opciones.firma ?? { nombre: 'Iris', cargo: 'Escuela de Sabiduría 33' };
   const motivo =
     opciones.motivo ??
@@ -180,8 +187,8 @@ export function marco(opciones: {
     <div style="padding:0 30px 26px">
       <p style="margin:0;font-size:12px;line-height:1.65;color:#6b6564">
         ${motivo}
-        <a href="${enlaceDeBaja(opciones.email)}" style="color:#6b6564">Darme de baja</a>.<br>
-        Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
+        <a href="${enlaceDeBaja(opciones.email)}" style="color:#6b6564">${pie.baja}</a>.<br>
+        ${pie.aviso}
       </p>
     </div>
 
