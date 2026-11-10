@@ -3,9 +3,9 @@
 /**
  * LA PRESENTACIÓN DE LA MASTERCLASS «DESÓRDENES AMOROSOS» (v2, 10 nov 2026).
  *
- * Lienzo de 1920×1080 escalado a la pantalla. Cada clic hace pasar algo:
+ * Lienzo de 1920×1080 escalado a la pantalla. Dentro de cada diapositiva todo aparece solo:
  * aparece una frase, una tarjeta, un número, un vídeo. Se maneja con:
- *   → / espacio / clic        siguiente paso
+ *   → / espacio / clic        siguiente diapositiva
  *   ←                         paso anterior
  *   F pantalla completa · N notas y modo edición · G índice
  *
@@ -100,7 +100,7 @@ function Reloj({ id, c, etiqueta }: { id: string; c: Ctx; etiqueta: string }) {
           <span className="cl-reloj-etq">{queda === 0 ? 'Empezamos' : etiqueta}</span>
         </div>
       </div>
-      <div className="cl-reloj-botones">
+      {c.editar && <div className="cl-reloj-botones">
         <button
           type="button"
           className="cl-boton"
@@ -119,9 +119,24 @@ function Reloj({ id, c, etiqueta }: { id: string; c: Ctx; etiqueta: string }) {
         <button type="button" className="cl-boton cl-boton-suave" onClick={() => c.set((x) => ({ ...x, relojes: { ...x.relojes, [id]: { fin: null, queda: TOTAL } } }))}>
           Reiniciar
         </button>
-      </div>
+      </div>}
     </div>
   );
+}
+
+/* Un vídeo que se pone en marcha solo cuando aparece en pantalla. */
+function VideoSolo({ activo, ...p }: React.VideoHTMLAttributes<HTMLVideoElement> & { activo: boolean }) {
+  const v = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = v.current;
+    if (!el) return;
+    if (activo) {
+      const t = setTimeout(() => el.play().catch(() => { el.muted = true; el.play().catch(() => {}); }), 900);
+      return () => clearTimeout(t);
+    }
+    el.pause();
+  }, [activo]);
+  return <video ref={v} {...p} />;
 }
 
 const DIAPOS: Diapo[] = [
@@ -131,7 +146,7 @@ const DIAPOS: Diapo[] = [
     fondo: 'foto',
     foto: 'hilos-42.jpg',
     pasos: 0,
-    notas: 'Pantalla de espera. Ábrela 10 minutos antes. Pulsa «Empezar»: arrancan la cuenta atrás y la música. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha.',
+    notas: 'Pantalla de espera. Ábrela 10 minutos antes. La cuenta atrás arranca sola; la música suena en cuanto toques la pantalla o una tecla. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha.',
     pinta: (c) => (
       <div className="cl-fila cl-centro-v">
         <div className="cl-col" style={{ flex: 1 }}>
@@ -150,14 +165,14 @@ const DIAPOS: Diapo[] = [
     titulo: 'Gancho · Los hilos',
     fondo: 'negro',
     pasos: 1,
-    notas: 'Minuto 0 a 2 · Primero la pregunta. Clic: sube y aparece el vídeo; dale al play y no hables encima. Al acabar, Marco repite la frase despacio.',
+    notas: 'Minuto 0 a 2 · Primero la pregunta. La pregunta sube sola y el vídeo arranca solo; no hables encima. Al acabar, Marco repite la frase despacio.',
     pinta: (c) => (
       <div className="cl-col cl-centro-v cl-centro-h">
         <h2 className={`cl-h2 cl-titular-vivo${c.paso >= 1 ? ' cl-arriba' : ''}`}>¿Y si no estás eligiendo <b>a quién amas?</b></h2>
         <V en={1} c={c}>
-          <video className="cl-video" src="/video/los-hilos.mp4" poster="/images/los-hilos-poster.jpg" controls playsInline preload="metadata" onClick={(ev) => ev.stopPropagation()}>
+          <VideoSolo activo={c.paso >= 1} className="cl-video" src="/video/los-hilos.mp4" poster="/images/los-hilos-poster.jpg" controls playsInline preload="metadata" onClick={(ev) => ev.stopPropagation()}>
             <track kind="subtitles" src="/video/los-hilos.es.vtt" srcLang="es" label="Español" default />
-          </video>
+          </VideoSolo>
         </V>
       </div>
     ),
@@ -165,37 +180,29 @@ const DIAPOS: Diapo[] = [
   {
     id: 'escala',
     titulo: 'Chat · del 1 al 10',
-    fondo: 'oro',
-    pasos: 0,
-    notas: 'Minuto 3 a 4 · Iris. Pide un número del 1 al 10. Pulsa la barra de cada respuesta que llegue. Si alguien pone 9 o 10: «Hoy esta clase es para ti».',
-    pinta: (c) => {
-      const max = Math.max(1, ...c.e.escala);
-      const total = c.e.escala.reduce((a, b) => a + b, 0);
-      const media = total ? c.e.escala.reduce((a, v, i) => a + v * (i + 1), 0) / total : 0;
-      return (
-        <div className="cl-col">
-          <p className="cl-rotulo cl-entra-1">Momento chat · escribe tu número</p>
-          <h2 className="cl-h2 cl-oscuro cl-entra-2">Del 1 al 10: ¿cuánto se repite tu historia en el amor?</h2>
-          <div className="cl-barras cl-entra-3" onClick={(ev) => ev.stopPropagation()}>
-            {c.e.escala.map((v, i) => (
-              <button key={i} type="button" className="cl-barra" onClick={() => c.set((s) => ({ ...s, escala: s.escala.map((x, j) => (j === i ? x + 1 : x)) }))} aria-label={`Sumar un voto al ${i + 1}`}>
-                <span className="cl-barra-num">{v || ''}</span>
-                <span className="cl-barra-col" style={{ height: `${(v / max) * 100}%` }} />
-                <span className="cl-barra-etq">{i + 1}</span>
-              </button>
-            ))}
-          </div>
-          <p className="cl-nota cl-oscuro cl-media">{total ? <>Habéis respondido <b>{total}</b>. La media es <b>{media.toFixed(1)}</b>.</> : ''}</p>
-        </div>
-      );
-    },
+    fondo: 'foto',
+    foto: 'escaleras.jpg',
+    pasos: 1,
+    notas: 'Minuto 3 a 4 · Iris. Pide en el chat un número del 1 al 10 y lee algunos en voz alta. Si alguien pone 9 o 10: «Hoy esta clase es para ti». Solo: aparece la escala.',
+    pinta: (c) => (
+      <div className="cl-col cl-izq cl-centro-v">
+        <p className="cl-rotulo cl-entra-1">Momento chat</p>
+        <h2 className="cl-h2 cl-entra-2">Del 1 al 10, <b>¿cuánto se repite tu historia?</b></h2>
+        <V en={1} c={c} className="cl-escala-vis">
+          {Array.from({ length: 10 }).map((_, k) => (
+            <span key={k} style={{ ['--k' as string]: k }}>{k + 1}</span>
+          ))}
+        </V>
+        <p className="cl-lead cl-entra-3">Escríbelo en el chat.</p>
+      </div>
+    ),
   },
   {
     id: 'dolores',
     titulo: 'Tres historias',
     fondo: 'arena',
     pasos: 3,
-    notas: 'Minuto 4 a 6 · Iris. Cada clic descubre una historia. Pregunta: «¿Con cuál te reconoces?».',
+    notas: 'Minuto 4 a 6 · Iris. Van apareciendo solas una historia. Pregunta: «¿Con cuál te reconoces?».',
     pinta: (c) => (
       <div className="cl-col">
         <p className="cl-rotulo cl-entra-1">Lo que nos contáis · Iris</p>
@@ -222,7 +229,7 @@ const DIAPOS: Diapo[] = [
     titulo: 'Lo que te llevas',
     fondo: 'vino',
     pasos: 3,
-    notas: 'Minuto 6 a 7 · Iris. Una idea por clic, despacio.',
+    notas: 'Minuto 6 a 7 · Iris. Las ideas aparecen solas, despacio.',
     pinta: (c) => (
       <div className="cl-col">
         <p className="cl-rotulo cl-entra-1">Lo que te llevas hoy</p>
@@ -247,7 +254,7 @@ const DIAPOS: Diapo[] = [
     titulo: 'Quién da la clase',
     fondo: 'arena',
     pasos: 2,
-    notas: 'Minuto 7 a 10. Clic: Iris. Clic: Marco. Un minuto cada uno, como máximo: una historia personal corta vale más que un currículum.',
+    notas: 'Minuto 7 a 10. Solo: Iris. Solo: Marco. Un minuto cada uno, como máximo: una historia personal corta vale más que un currículum.',
     pinta: (c) => (
       <div className="cl-col cl-centro-v">
         <p className="cl-rotulo cl-entra-1">Quién da la clase</p>
@@ -279,7 +286,7 @@ const DIAPOS: Diapo[] = [
     fondo: 'foto',
     foto: 'coche.jpg',
     pasos: 3,
-    notas: 'Minuto 10 a 15 · Marco. Cada clic, una repetición. Un ejemplo de consulta sin datos que identifiquen a nadie.',
+    notas: 'Minuto 10 a 15 · Marco. Las repeticiones aparecen solas. Un ejemplo de consulta sin datos que identifiquen a nadie.',
     pinta: (c) => (
       <div className="cl-col cl-izq">
         <p className="cl-rotulo cl-entra-1">Clave 1 · Marco</p>
@@ -294,32 +301,17 @@ const DIAPOS: Diapo[] = [
   },
   {
     id: 'frases',
-    titulo: 'Chat · vuestras frases',
-    fondo: 'oro',
-    pasos: 0,
-    notas: 'Minuto 15 a 16. Escribe aquí abajo las frases que lleguen al chat (sin nombres) y pulsa Intro: aparecen en pantalla. Al final únelas: «Distintas personas, la misma frase».',
+    titulo: 'Chat · la frase que se repite',
+    fondo: 'foto',
+    foto: 'cena.jpg',
+    pasos: 2,
+    notas: 'Minuto 15 a 16. Pide en el chat la frase que se repite en sus relaciones. Lee tres o cuatro en voz alta, sin nombres, y únelas: «Distintas personas, la misma frase». Solas: aparecen las dos frases de cierre.',
     pinta: (c) => (
-      <div className="cl-col">
-        <p className="cl-rotulo cl-entra-1">Momento chat · escribe tu frase</p>
-        <h2 className="cl-h2 cl-oscuro cl-entra-2">¿Qué frase se repite en tus relaciones?</h2>
-        <div className="cl-nube">
-          {c.e.frases.map((f, i) => (
-            <span key={`${i}-${f}`} className="cl-burbuja" style={{ ['--g' as string]: `${((i * 37) % 7) - 3}deg` }}>«{f}»</span>
-          ))}
-        </div>
-        <form
-          className="cl-nueva-frase"
-          onClick={(ev) => ev.stopPropagation()}
-          onSubmit={(ev) => {
-            ev.preventDefault();
-            const inp = ev.currentTarget.elements.namedItem('frase') as HTMLInputElement;
-            const v = inp.value.trim();
-            if (v) c.set((s) => ({ ...s, frases: [...s.frases, v].slice(-10) }));
-            inp.value = '';
-          }}
-        >
-          <input id="frase" name="frase" placeholder="Escribe una frase del chat y pulsa Intro" autoComplete="off" onKeyDown={(ev) => ev.stopPropagation()} />
-        </form>
+      <div className="cl-col cl-izq cl-centro-v">
+        <p className="cl-rotulo cl-entra-1">Momento chat</p>
+        <h2 className="cl-h2 cl-entra-2">¿Qué frase <b>se repite</b> en tus relaciones?</h2>
+        <V en={1} c={c}><p className="cl-lead">Distintas personas.</p></V>
+        <V en={2} c={c}><p className="cl-lead"><b>La misma frase.</b></p></V>
       </div>
     ),
   },
@@ -329,7 +321,7 @@ const DIAPOS: Diapo[] = [
     fondo: 'foto',
     foto: 'tres-generaciones.jpg',
     pasos: 3,
-    notas: 'Minuto 16 a 21 · Iris. Un clic por generación. Son patrones, no culpables.',
+    notas: 'Minuto 16 a 21 · Iris. Las generaciones aparecen solas. Son patrones, no culpables.',
     pinta: (c) => (
       <div className="cl-col cl-izq">
         <p className="cl-rotulo cl-entra-1">Clave 2 · Iris</p>
@@ -345,55 +337,26 @@ const DIAPOS: Diapo[] = [
   {
     id: 'ejercicio',
     titulo: 'Ejercicio · tres generaciones',
-    fondo: 'arena',
-    pasos: 0,
-    notas: 'Minuto 21 a 27 · Iris. Pide a una persona del chat la edad a la que se emparejó su abuela, su madre y ella. Escríbelas: la línea enseña si se repite. Después Iris explica el cálculo con las fechas de nacimiento.',
-    pinta: (c) => {
-      const nums = c.e.edades.map((x) => parseInt(x, 10)).filter((n) => !Number.isNaN(n));
-      const repite = nums.length === 3 && Math.max(...nums) - Math.min(...nums) <= 3;
-      const quien = ['Su abuela', 'Su madre', 'Ella'];
-      return (
-        <div className="cl-fila cl-centro-v">
-          <div className="cl-col" style={{ flex: 1 }}>
-            <p className="cl-rotulo cl-entra-1">Ejercicio en directo</p>
-            <h2 className="cl-h3 cl-entra-2">¿A qué edad se emparejó cada una?</h2>
-            <div className="cl-edades cl-entra-3" onClick={(ev) => ev.stopPropagation()}>
-              {quien.map((q, i) => (
-                <label key={q} className="cl-edad">
-                  <span>{q}</span>
-                  <input
-                    id={`edad-${i}`}
-                    inputMode="numeric"
-                    maxLength={2}
-                    placeholder="—"
-                    value={c.e.edades[i]}
-                    onChange={(ev) => {
-                      const v = ev.target.value.replace(/\D/g, '').slice(0, 2);
-                      c.set((s) => { const ed = [...s.edades] as Estado['edades']; ed[i] = v; return { ...s, edades: ed }; });
-                    }}
-                    onKeyDown={(ev) => ev.stopPropagation()}
-                  />
-                </label>
-              ))}
-            </div>
-            <div className="cl-regla" aria-hidden="true">
-              {c.e.edades.map((x, i) => {
-                const n = parseInt(x, 10);
-                if (Number.isNaN(n)) return null;
-                const pos = Math.min(100, Math.max(0, ((n - 14) / (45 - 14)) * 100));
-                return <span key={i} className={`cl-punto cl-punto-${i}`} style={{ left: `${pos}%` }}>{quien[i]} · {n}</span>;
-              })}
-              <span className="cl-regla-ini">14 años</span>
-              <span className="cl-regla-fin">45 años</span>
-            </div>
-            <p className={`cl-veredicto${repite ? ' cl-si' : ''}`}>
-              {nums.length < 3 ? '' : repite ? 'Se repite: casi la misma edad en tres generaciones.' : 'Edades distintas. Miramos ahora el tipo de pareja y cómo acabó.'}
-            </p>
-          </div>
-          <img className="cl-foto-lado cl-entra-2" src={IMG + 'foto-madre.jpg'} alt="Una mujer mira la foto de boda de su madre" />
+    fondo: 'foto',
+    foto: 'tres-generaciones.jpg',
+    pasos: 4,
+    notas: 'Minuto 21 a 27 · Iris. Las generaciones aparecen solas: que cada persona apunte en papel la edad a la que se emparejó su abuela, su madre y ella. Último clic: la pregunta. Después Iris explica el cálculo con las fechas de nacimiento.',
+    pinta: (c) => (
+      <div className="cl-col cl-izq cl-centro-v">
+        <p className="cl-rotulo cl-entra-1">Ejercicio en directo · papel y boli</p>
+        <h2 className="cl-h3 cl-entra-2">Apunta a qué edad se emparejó…</h2>
+        <div className="cl-gen">
+          {['Tu abuela', 'Tu madre', 'Tú'].map((q, i) => (
+            <V key={q} en={i + 1} c={c} className="cl-gen-paso">
+              <span className="cl-gen-linea" />
+              <span className="cl-gen-punto" />
+              <p>{q}</p>
+            </V>
+          ))}
         </div>
-      );
-    },
+        <V en={4} c={c}><h2 className="cl-h2"><b>¿Se repite?</b></h2></V>
+      </div>
+    ),
   },
   {
     id: 'clave3',
@@ -433,38 +396,33 @@ const DIAPOS: Diapo[] = [
   {
     id: 'claves-voto',
     titulo: 'Chat · ¿en qué clave?',
-    fondo: 'oro',
-    pasos: 0,
-    notas: 'Minuto 33 a 34. Pulsa cada 1, 2 o 3 que llegue al chat. La más votada te dice qué parte del curso destacar.',
-    pinta: (c) => {
-      const ops = ['Es un patrón', 'Se hereda', 'No deja marchar'];
-      const total = c.e.claves.reduce((a, b) => a + b, 0);
-      return (
-        <div className="cl-col">
-          <p className="cl-rotulo cl-entra-1">Momento chat · escribe 1, 2 o 3</p>
-          <h2 className="cl-h2 cl-oscuro cl-entra-2">¿En qué clave te has reconocido?</h2>
-          <div className="cl-votos cl-entra-3" onClick={(ev) => ev.stopPropagation()}>
-            {ops.map((o, i) => {
-              const pct = total ? Math.round((c.e.claves[i] / total) * 100) : 0;
-              return (
-                <button key={o} type="button" className="cl-voto" onClick={() => c.set((s) => ({ ...s, claves: s.claves.map((x, j) => (j === i ? x + 1 : x)) }))}>
-                  <span className="cl-voto-relleno" style={{ width: `${pct}%` }} />
-                  <span className="cl-voto-txt"><b>{i + 1}</b> · {o}</span>
-                  <span className="cl-voto-pct">{total ? `${pct} %` : ''}</span>
-                </button>
-              );
-            })}
-          </div>
+    fondo: 'negro',
+    pasos: 3,
+    notas: 'Minuto 33 a 34. Las claves aparecen solas. Pide que escriban 1, 2 o 3 en el chat. La más repetida te dice qué parte del curso destacar.',
+    pinta: (c) => (
+      <div className="cl-col">
+        <p className="cl-rotulo cl-entra-1">Momento chat · escribe 1, 2 o 3</p>
+        <h2 className="cl-h3 cl-entra-2">¿En qué clave te has reconocido?</h2>
+        <div className="cl-tres">
+          {[['coche.jpg', 'Es un patrón'], ['tres-generaciones.jpg', 'Se hereda'], ['madre-hija.jpg', 'No deja marchar']].map(([f, t], i) => (
+            <V key={f} en={i + 1} c={c} className="cl-carta">
+              <figure className="cl-tarjeta-foto cl-tarjeta-num">
+                <img src={IMG + f} alt="" />
+                <span className="cl-num-grande">{i + 1}</span>
+                <figcaption><h3>{t}</h3></figcaption>
+              </figure>
+            </V>
+          ))}
         </div>
-      );
-    },
+      </div>
+    ),
   },
   {
     id: 'preguntas',
     titulo: 'Preguntas · 10 minutos',
     fondo: 'vino',
     pasos: 0,
-    notas: 'Minuto 34 a 44 · Pulsa «Empezar». 10 minutos de preguntas y de hablar con las personas del chat, por su nombre. Al acabar, flecha derecha: el vídeo.',
+    notas: 'Minuto 34 a 44 · La cuenta atrás arranca sola. 10 minutos de preguntas y de hablar con las personas del chat, por su nombre. Al acabar, flecha derecha: el vídeo.',
     pinta: (c) => (
       <div className="cl-fila cl-centro-v">
         <div className="cl-col" style={{ flex: 1 }}>
@@ -481,13 +439,13 @@ const DIAPOS: Diapo[] = [
     titulo: 'Vídeo antes del curso',
     fondo: 'negro',
     pasos: 0,
-    notas: 'Minuto 44 a 45 · El vídeo da paso a la venta: play y silencio. Mientras el vídeo nuevo no esté en la web, se ve «Los hilos».',
+    notas: 'Minuto 44 a 45 · El vídeo arranca solo y da paso a la venta: silencio. Mientras el vídeo nuevo no esté en la web, se ve «Los hilos».',
     pinta: () => (
       <div className="cl-col cl-centro-v cl-centro-h">
-        <video className="cl-video cl-video-grande cl-entra-1" controls playsInline preload="metadata" poster="/images/los-hilos-poster.jpg" onClick={(ev) => ev.stopPropagation()}>
+        <VideoSolo activo className="cl-video cl-video-grande cl-entra-1" controls playsInline preload="metadata" poster="/images/los-hilos-poster.jpg" onClick={(ev) => ev.stopPropagation()}>
           <source src="/video/puente-curso.mp4" type="video/mp4" />
           <source src="/video/los-hilos.mp4" type="video/mp4" />
-        </video>
+        </VideoSolo>
       </div>
     ),
   },
@@ -497,7 +455,7 @@ const DIAPOS: Diapo[] = [
     fondo: 'foto',
     foto: 'hilos-77.jpg',
     pasos: 1,
-    notas: 'Minuto 45 · Iris. Primero la frase. Clic: la segunda parte. Pide permiso: «¿Os cuento cómo seguimos trabajando esto?». Espera un sí en el chat.',
+    notas: 'Minuto 45 · Iris. Primero la frase; la segunda parte aparece sola. Pide permiso: «¿Os cuento cómo seguimos trabajando esto?». Espera un sí en el chat.',
     pinta: (c) => (
       <div className="cl-col cl-izq cl-centro-v">
         <p className="cl-rotulo cl-entra-1">Y ahora</p>
@@ -533,7 +491,7 @@ const DIAPOS: Diapo[] = [
     titulo: '¿Es para ti?',
     fondo: 'arena',
     pasos: 2,
-    notas: 'Minuto 48 a 49 · Marco. Clic: para quién es. Clic: para quién no. Sin presión.',
+    notas: 'Minuto 48 a 49 · Marco. Solo: para quién es. Solo: para quién no. Sin presión.',
     pinta: (c) => (
       <div className="cl-col">
         <p className="cl-rotulo cl-entra-1">Para que lo decidas con calma</p>
@@ -564,10 +522,10 @@ const DIAPOS: Diapo[] = [
     titulo: 'Precio',
     fondo: 'vino',
     pasos: 2,
-    notas: 'Minuto 49 a 52 · Iris presenta, Marco remata. Clic: el curso. Clic: la terapia grupal. Di cada precio una vez y calla dos segundos. Nada de cuentas atrás ni plazas inventadas.',
+    notas: 'Minuto 49 a 52 · Iris presenta, Marco remata. Solo: el curso. Solo: la terapia grupal. Di cada precio una vez y calla dos segundos. Nada de cuentas atrás ni plazas inventadas.',
     pinta: (c) => (
       <div className="cl-col">
-        <p className="cl-rotulo cl-entra-1">Tu siguiente paso</p>
+        <p className="cl-rotulo cl-entra-1">Tu siguiente diapositiva</p>
         <h2 className="cl-h3 cl-entra-2">Elige cómo seguir con nosotros</h2>
         <div className="cl-precios">
           <V en={1} c={c} className="cl-precio cl-precio-top">
@@ -695,8 +653,15 @@ export default function Clase() {
     if (!a) return;
     if (d.id === 'espera' && musica) {
       a.volume = 0.55;
-      a.play().catch(() => setMusica(false));
-      return;
+      const intenta = () => { a.play().catch(() => {}); };
+      a.play().catch(() => {
+        window.addEventListener('pointerdown', intenta, { once: true });
+        window.addEventListener('keydown', intenta, { once: true });
+      });
+      return () => {
+        window.removeEventListener('pointerdown', intenta);
+        window.removeEventListener('keydown', intenta);
+      };
     }
     let v = a.volume;
     const t = setInterval(() => {
@@ -719,8 +684,27 @@ export default function Clase() {
     setI(k);
     setPaso(alFinal ? DIAPOS[k].pasos : 0);
   }, []);
-  const siguiente = useCallback(() => (paso < d.pasos ? setPaso(paso + 1) : ir(i + 1)), [paso, d.pasos, i, ir]);
-  const anterior = useCallback(() => (paso > 0 ? setPaso(paso - 1) : ir(i - 1, true)), [paso, i, ir]);
+  /* Dentro de cada diapositiva todo aparece solo, en cascada: quien presenta
+     sólo pasa de diapositiva. Si pulsa antes de que termine, se completa. */
+  useEffect(() => {
+    if (paso >= d.pasos) return;
+    const t = setTimeout(() => setPaso((p) => p + 1), paso === 0 ? 1400 : 1700);
+    return () => clearTimeout(t);
+  }, [paso, d.pasos, i]);
+  const siguiente = useCallback(() => (paso < d.pasos ? setPaso(d.pasos) : ir(i + 1)), [paso, d.pasos, i, ir]);
+  const anterior = useCallback(() => ir(i - 1, true), [i, ir]);
+
+  /* Las cuentas atrás arrancan solas al llegar a su diapositiva. */
+  useEffect(() => {
+    if (d.id !== 'espera' && d.id !== 'preguntas') return;
+    setEstado((x) => {
+      const a = x.relojes[d.id];
+      if (a?.fin) return x;
+      const queda = a ? a.queda : TOTAL;
+      return { ...x, relojes: { ...x.relojes, [d.id]: { fin: Date.now() + queda * 1000, queda } } };
+    });
+    if (d.id === 'espera') setMusica(true);
+  }, [d.id]);
 
   const pantallaCompleta = useCallback(() => {
     try {
@@ -759,7 +743,7 @@ export default function Clase() {
           {d.foto && <img className="cl-fondo" src={IMG + d.foto} alt="" />}
           <div className="cl-contenido">{d.pinta(ctx)}</div>
           <p className="cl-pie">Desórdenes Amorosos · Escuela de Sabiduría 33</p>
-          {d.pasos > 0 && (
+          {false && (
             <div className="cl-puntitos" aria-hidden="true">
               {Array.from({ length: d.pasos + 1 }).map((_, k) => <span key={k} className={k <= paso ? 'cl-on' : ''} />)}
             </div>

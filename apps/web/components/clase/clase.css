@@ -410,3 +410,29 @@
 .cl-puntitos span.cl-on { opacity: 0.85; transform: scale(1.15); }
 
 .cl-precios { grid-template-columns: 1.3fr 1fr; }
+
+/* ---- v3: interactiva = visual ---- */
+/* Los fondos de color respiran: un degradado que se mueve muy despacio. */
+.cl-vino, .cl-oro, .cl-arena, .cl-negro { background-size: 160% 160%; animation: cl-respira 18s ease-in-out infinite alternate; }
+.cl-vino { background-image: radial-gradient(900px 700px at 15% 20%, color-mix(in srgb, var(--oro) 28%, transparent), transparent 60%), radial-gradient(1200px 900px at 90% 90%, color-mix(in srgb, var(--vino) 60%, var(--tinta)), var(--vino)); }
+.cl-arena { background-image: radial-gradient(900px 700px at 85% 10%, color-mix(in srgb, var(--oro) 22%, transparent), transparent 60%), linear-gradient(var(--arena), var(--arena)); }
+.cl-oro { background-image: radial-gradient(1000px 800px at 10% 90%, rgba(255, 255, 255, 0.45), transparent 60%), linear-gradient(var(--oro-luz), var(--oro-luz)); }
+@keyframes cl-respira { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+
+/* La foto de fondo se acerca despacio durante toda la diapositiva. */
+.cl-fondo { animation: cl-acerca-lento 22s ease-out both; }
+@keyframes cl-acerca-lento { from { transform: scale(1.12) translateX(1.5%); } to { transform: scale(1); } }
+
+.cl-escala-vis { display: flex; gap: 14px; margin-top: 8px; }
+.cl-escala-vis span { width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, calc(0.04 + var(--k) * 0.05)); color: var(--cl-sobre); }
+.cl-visto.cl-escala-vis span { animation: cl-burbuja 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both; animation-delay: calc(var(--k) * 70ms); }
+.cl-escala-vis span:nth-child(n+9) { background: var(--oro-luz); color: var(--vino); border-color: transparent; }
+
+.cl-gen { display: flex; gap: 0; margin: 20px 0 10px; }
+.cl-gen-paso { position: relative; width: 300px; padding-top: 40px; }
+.cl-gen-paso p { margin: 0; font-size: 44px; font-weight: 400; }
+.cl-gen-linea { position: absolute; left: 0; right: 0; top: 13px; height: 2px; background: var(--oro-luz); transform-origin: left; transform: scaleX(0); transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s; }
+.cl-visto .cl-gen-linea { transform: scaleX(1); }
+.cl-gen-punto { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--oro-luz); box-shadow: 0 0 0 10px rgba(226, 205, 162, 0.18); }
+
+.cl-tarjeta-num .cl-num-grande { position: absolute; top: 24px; left: 30px; font-size: 120px; font-weight: 300; line-height: 1; color: var(--cl-sobre); text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
