@@ -73,6 +73,11 @@ async function daDeBaja(email: string): Promise<boolean> {
     const r = await base.collection('leads').where('email', '==', email).get();
     const lote = base.batch();
     for (const d of r.docs) lote.update(d.ref, { baja: true, bajaEl: new Date().toISOString() });
+    /* Y en la lista de Marco (`lib/difusion.ts`), que guarda los correos en
+       minúsculas: quien se da de baja desde uno de sus correos no puede seguir
+       recibiendo los siguientes. */
+    const m = await base.collection('difusion').where('email', '==', email.trim().toLowerCase()).get();
+    for (const d of m.docs) lote.update(d.ref, { baja: true, bajaEl: new Date().toISOString() });
     await lote.commit();
     return true;
   } catch (err) {

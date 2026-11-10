@@ -55,7 +55,9 @@ export type View =
   | "personas"
   | "facturas"
   | "metricas"
-  | "gestion";
+  | "gestion"
+  /** Los correos automáticos: qué sale, a quién y cuándo. Sólo administración. */
+  | "correos";
 
 /** Las que sólo tienen sentido con un estudio abierto. Las demás se abren
  *  siempre: entrar a mirar la agenda no puede exigir calcular una carta. */
@@ -76,6 +78,7 @@ const RUTA: Record<View, string> = {
   mismetricas: "/mis-metricas",
   metricas: "/metricas",
   gestion: "/gestion",
+  correos: "/correos",
   /*
    * LA RAÍZ ES EL TABLERO DESDE EL 20 DE OCTUBRE DE 2026.
    *
@@ -103,6 +106,7 @@ const VISTA: Record<string, View> = {
   "/mis-metricas": "mismetricas",
   "/metricas": "metricas",
   "/gestion": "gestion",
+  "/correos": "correos",
   "/": "tablero",
   "/consulta": "inicio",
   "/panel": "panel",
@@ -149,6 +153,7 @@ const LLAVE: Record<View, Capacidad> = {
   facturas: "despacho",
   metricas: "metricas",
   gestion: "gestion",
+  correos: "gestion",
 };
 
 /** La llave que hace falta para abrir una pantalla. */

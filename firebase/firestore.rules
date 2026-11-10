@@ -202,6 +202,21 @@ service cloud.firestore {
     /*  Los leads que entran por la web                                  */
     /* ---------------------------------------------------------------- */
 
+    /**
+     * LA LISTA DE MARCO Y SU INTERRUPTOR (10 de noviembre de 2026).
+     *
+     * Son clientas de la consulta de Marco, no gente que se ha apuntado: sólo
+     * la administración las ve, las sube y enciende o apaga el envío desde la
+     * pantalla «Correos». Los correos los manda el servidor con la llave de
+     * administración, que no pasa por aquí. Ver apps/web/lib/difusion.ts.
+     */
+    match /difusion/{id} {
+      allow read, write: if esAdmin();
+    }
+    match /difusion-config/{id} {
+      allow read, write: if esAdmin();
+    }
+
     match /leads/{id} {
       /* Se leen desde la plataforma y se pueden mover de estado —nuevo,
          contactado, cliente— y anotar. */

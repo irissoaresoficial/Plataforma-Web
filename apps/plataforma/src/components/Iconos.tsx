@@ -335,6 +335,14 @@ export const IcoMetricas = (p: P) => (
   </Caja>
 );
 
+/** Los correos: el sobre. */
+export const IcoCorreo = (p: P) => (
+  <Caja {...p}>
+    <rect x="3.4" y="5.6" width="17.2" height="12.8" rx="2.4" />
+    <path d="m4.2 7 7.8 6 7.8-6" opacity=".6" />
+  </Caja>
+);
+
 /** La gestión: el llavero. Es literalmente lo que hace esa pantalla. */
 export const IcoGestion = (p: P) => (
   <Caja {...p}>

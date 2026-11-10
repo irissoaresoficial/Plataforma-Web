@@ -4,6 +4,7 @@ import { css } from "@/lib/css";
 import { useApp, PESTANAS, VISTAS_DE_ESTUDIO, llaveDe, dondeEmpieza } from "@/lib/app-context";
 import { useSesion } from "@/lib/sesion";
 import ConsultaScreen from "./screens/ConsultaScreen";
+import CorreosScreen from "./screens/CorreosScreen";
 import PanelScreen from "./screens/PanelScreen";
 import EstudioScreen from "./screens/EstudioScreen";
 import ParejaScreen from "./screens/ParejaScreen";
@@ -294,6 +295,7 @@ export default function Shell() {
           {vista === "perfil" && <PerfilScreen />}
           {vista === "metricas" && <MetricasScreen />}
           {vista === "gestion" && <GestionScreen />}
+          {vista === "correos" && <CorreosScreen />}
         </div>
       </div>
 

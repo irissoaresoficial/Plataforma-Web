@@ -19,6 +19,7 @@ import {
   IcoCursos,
   IcoEscuela,
   IcoGestion,
+  IcoCorreo,
   IcoMetricas,
   IcoCuentas,
   IcoDocumento,
@@ -134,6 +135,7 @@ const ESCUELA: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> = [
 const DIRECCION: Array<{ k: View; label: string; Ico: Ico; llave: Capacidad }> = [
   { k: "metricas", label: "Métricas", Ico: IcoMetricas, llave: "metricas" },
   { k: "gestion", label: "Altas y accesos", Ico: IcoGestion, llave: "gestion" },
+  { k: "correos", label: "Correos", Ico: IcoCorreo, llave: "gestion" },
 ];
 
 /**

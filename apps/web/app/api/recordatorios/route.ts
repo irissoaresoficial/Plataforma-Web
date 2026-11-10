@@ -44,6 +44,7 @@ import { Resend } from 'resend';
 import { db, FieldValue } from '@/lib/firebase';
 import { correoRecordatorio, type Recordatorio } from '@/lib/correo';
 import { MASTERCLASS } from '@/content/site';
+import { CONFIG, COLECCION, LISTA, TOPE_POR_DEFECTO, correoDifusion, envioDeHoy } from '@/lib/difusion';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -51,6 +52,8 @@ export const dynamic = 'force-dynamic';
    lento deje la tanda a medias. */
 export const maxDuration = 60;
 
+/* Los de la lista de Marco salen del mismo buzón, con su nombre delante. */
+const DE_MARCO = `Marco Célio Sousa <${(process.env.RESEND_FROM || 'hola@escueladesabiduria33.com').replace(/^.*<|>.*$/g, '')}>`;
 const DE = process.env.RESEND_FROM || 'Escuela de Sabiduría 33 <hola@escueladesabiduria33.com>';
 const CONTESTAR_A = process.env.RESEND_REPLY_TO || 'irissoaresoficial@gmail.com';
 
@@ -84,35 +87,34 @@ export async function GET(peticion: Request) {
 
   const dias = diasQueFaltan();
   const tipo = tocaHoy(dias);
-  if (!tipo) {
-    return NextResponse.json({ ok: true, dias, enviados: 0, nota: 'hoy no toca recordatorio' });
-  }
 
   const clave = process.env.RESEND_API_KEY;
   const base = db();
   if (!clave) return NextResponse.json({ ok: false, motivo: 'falta RESEND_API_KEY' }, { status: 500 });
   if (!base) return NextResponse.json({ ok: false, motivo: 'falta Firebase' }, { status: 500 });
-
-  const r = await base.collection('leads').where('origen', '==', 'curso').get();
   const resend = new Resend(clave);
+
+  /* Las inscritas, de una vez: se usan para los recordatorios y para no
+     mandarle a una inscrita el «aún puedes apuntarte» de la lista de Marco. */
+  const r = await base.collection('leads').where('origen', '==', 'curso').get();
 
   let enviados = 0;
   let saltados = 0;
   let fallados = 0;
 
-  for (const doc of r.docs) {
+  for (const doc of tipo ? r.docs : []) {
     const v = doc.data() as {
       email?: string;
       nombre?: string;
       baja?: boolean;
       recordatorios?: Record<string, boolean>;
     };
-    if (!v.email || v.baja || v.recordatorios?.[tipo]) {
+    if (!v.email || v.baja || v.recordatorios?.[tipo!]) {
       saltados += 1;
       continue;
     }
 
-    const { asunto, html } = correoRecordatorio(tipo, v.nombre || '', v.email);
+    const { asunto, html } = correoRecordatorio(tipo!, v.nombre || '', v.email);
     try {
       const envio = await resend.emails.send({
         from: DE,
@@ -125,7 +127,7 @@ export async function GET(peticion: Request) {
       /* Se marca DESPUÉS de que Resend lo acepte y nunca antes: marcar primero
          dejaría a alguien sin recordatorio y creyendo que lo tiene. */
       await doc.ref.set(
-        { recordatorios: { [tipo]: true }, ultimoRecordatorio: FieldValue.serverTimestamp() },
+        { recordatorios: { [tipo!]: true }, ultimoRecordatorio: FieldValue.serverTimestamp() },
         { merge: true },
       );
       enviados += 1;
@@ -137,5 +139,78 @@ export async function GET(peticion: Request) {
     }
   }
 
-  return NextResponse.json({ ok: fallados === 0, dias, tipo, enviados, saltados, fallados });
+  const inscritas = new Set(
+    r.docs.map((d) => String((d.data() as { email?: string }).email || '').trim().toLowerCase()).filter(Boolean),
+  );
+  const difusion = await enviaDifusion(base, resend, inscritas, enviados);
+
+  return NextResponse.json({
+    ok: fallados === 0 && difusion.fallados === 0,
+    dias,
+    tipo,
+    enviados,
+    saltados,
+    fallados,
+    difusion,
+  });
+}
+
+/**
+ * LA LISTA DE MARCO (ver `lib/difusion.ts`).
+ *
+ * Tres cosas la frenan, por este orden: el interruptor apagado, que hoy no
+ * toque ningún envío, y el tope diario. El tope cuenta también los
+ * recordatorios que acaban de salir, porque el límite de Resend es de la
+ * cuenta entera y no de cada lista. Quien no entra hoy, entra mañana.
+ */
+async function enviaDifusion(
+  base: NonNullable<ReturnType<typeof db>>,
+  resend: Resend,
+  inscritas: Set<string>,
+  yaSalidos: number,
+) {
+  const res = { envio: null as string | null, enviados: 0, pendientes: 0, fallados: 0, nota: '' };
+  const conf = (await base.collection(CONFIG).doc(LISTA).get()).data() as { activa?: boolean; tope?: number } | undefined;
+  if (!conf?.activa) return { ...res, nota: 'apagado desde la plataforma' };
+  const e = envioDeHoy();
+  if (!e) return { ...res, nota: 'hoy no toca ningún envío' };
+  res.envio = e.id;
+
+  const tope = Math.max(0, (Number(conf.tope) > 0 ? Number(conf.tope) : TOPE_POR_DEFECTO) - yaSalidos);
+  const lista = await base.collection(COLECCION).where('lista', '==', LISTA).get();
+  const toca = lista.docs.filter((d) => {
+    const v = d.data() as { email?: string; baja?: boolean; enviados?: Record<string, unknown> };
+    if (!v.email || v.baja || v.enviados?.[e.id]) return false;
+    if (!e.aInscritas && inscritas.has(v.email.trim().toLowerCase())) return false;
+    return true;
+  });
+  res.pendientes = toca.length;
+
+  /* De cincuenta en cincuenta con el envío por lotes de Resend: uno a uno,
+     noventa correos no caben en el minuto que Vercel le da a esta función. */
+  const hoy = toca.slice(0, tope);
+  for (let i = 0; i < hoy.length; i += 50) {
+    const tanda = hoy.slice(i, i + 50);
+    try {
+      const envio = await resend.batch.send(
+        tanda.map((d) => {
+          const email = String(d.get('email'));
+          const { asunto, html } = correoDifusion(e.id, email);
+          return { from: DE_MARCO, to: email, replyTo: CONTESTAR_A, subject: asunto, html };
+        }),
+      );
+      if (envio.error) throw new Error(String(envio.error.message || envio.error));
+      /* Se marca después de que Resend lo acepte: si algo falla, mañana se
+         reintenta en vez de quedar como enviado sin haber salido. */
+      const lote = base.batch();
+      for (const d of tanda) lote.set(d.ref, { enviados: { [e.id]: FieldValue.serverTimestamp() } }, { merge: true });
+      await lote.commit();
+      res.enviados += tanda.length;
+      res.pendientes -= tanda.length;
+    } catch (err) {
+      res.fallados += tanda.length;
+      console.error('[difusion] fallo al enviar una tanda', e.id, String(err).slice(0, 200));
+    }
+  }
+  return res;
 }

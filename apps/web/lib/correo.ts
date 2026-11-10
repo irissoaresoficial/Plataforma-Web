@@ -147,7 +147,20 @@ function sobre(texto: string): string {
  * correo que la mitad de la gente ve roto. Aquí el aspecto lo hace la
  * tipografía y el color, que llegan siempre.
  */
-function marco(opciones: { previo: string; titular: string; cuerpo: string; email: string }): string {
+export function marco(opciones: {
+  previo: string;
+  titular: string;
+  cuerpo: string;
+  email: string;
+  /** Quién firma. Por defecto Iris; los correos a la lista de Marco los firma él. */
+  firma?: { nombre: string; cargo: string };
+  /** Por qué le llega. Por defecto, porque dejó su correo en la web. */
+  motivo?: string;
+}): string {
+  const firma = opciones.firma ?? { nombre: 'Iris', cargo: 'Escuela de Sabiduría 33' };
+  const motivo =
+    opciones.motivo ??
+    `Recibes esto porque dejaste tu correo en <a href="${WEB}" style="color:#6b6564">${WEB.replace(/^https?:\/\//, '')}</a>.`;
   return `${sobre(opciones.previo)}<div style="margin:0;padding:28px 12px;background:#f1ede4">
   <div style="max-width:560px;margin:0 auto;background:${PAPEL};border-radius:16px;overflow:hidden;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">
 
@@ -159,14 +172,14 @@ function marco(opciones: { previo: string; titular: string; cuerpo: string; emai
       <h1 style="margin:0 0 20px;font-size:27px;line-height:1.2;font-weight:600;letter-spacing:-.02em;color:${TINTA}">${opciones.titular}</h1>
       <div style="font-size:16px;line-height:1.65;color:${TINTA}">${opciones.cuerpo}</div>
       <div style="margin:30px 0 0;padding-top:20px;border-top:1px solid #ece8e0">
-        <p style="margin:0;font-size:16px;line-height:1.6;color:${TINTA}">Iris</p>
-        <p style="margin:2px 0 0;font-size:13px;color:#6b6564">Escuela de Sabiduría 33</p>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:${TINTA}">${firma.nombre}</p>
+        <p style="margin:2px 0 0;font-size:13px;color:#6b6564">${firma.cargo}</p>
       </div>
     </div>
 
     <div style="padding:0 30px 26px">
       <p style="margin:0;font-size:12px;line-height:1.65;color:#6b6564">
-        Recibes esto porque dejaste tu correo en <a href="${WEB}" style="color:#6b6564">${WEB.replace(/^https?:\/\//, '')}</a>.
+        ${motivo}
         <a href="${enlaceDeBaja(opciones.email)}" style="color:#6b6564">Darme de baja</a>.<br>
         Los estudios de gestión emocional y numerología transgeneracional no son un tratamiento médico ni psicológico y no sustituyen a ninguno.
       </p>
@@ -178,7 +191,7 @@ function marco(opciones: { previo: string; titular: string; cuerpo: string; emai
 
 /** Un botón. Se dibuja con un `<a>` y relleno, no con un `<button>`: los
  *  botones de verdad no se pintan en la mitad de los clientes de correo. */
-function boton(href: string, texto: string): string {
+export function boton(href: string, texto: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 8px"><tr><td style="background:${VINO};border-radius:999px">
     <a href="${href}" style="display:inline-block;padding:15px 30px;color:${PAPEL};text-decoration:none;font-weight:600;font-size:16px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">${texto}</a>
   </td></tr></table>`;
