@@ -173,7 +173,7 @@ const DIAPOS: Diapo[] = [
         <h2 className="cl-h3">Dos miradas sobre el mismo patrón</h2>
         <div className="cl-dos">
           <div className="cl-persona">
-            <img src="/images/iris-retrato.jpg" alt="Iris Soares" />
+            <img src={IMG + 'iris.jpg'} alt="Iris Soares" />
             <div>
               <h3>Iris Soares</h3>
               <p className="cl-cargo">Terapeuta psicosomática clínica y numeróloga transgeneracional</p>
@@ -181,7 +181,7 @@ const DIAPOS: Diapo[] = [
             </div>
           </div>
           <div className="cl-persona">
-            <img src="/images/marco-retrato.jpg" alt="Marco Célio Sousa" />
+            <img src={IMG + 'marco.jpg'} alt="Marco Célio Sousa" />
             <div>
               <h3>Marco Célio Sousa</h3>
               <p className="cl-cargo">Psicólogo y terapeuta psicosomático clínico</p>
