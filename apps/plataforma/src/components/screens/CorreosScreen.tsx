@@ -28,7 +28,10 @@ import { css } from "@/lib/css";
 import { nube } from "@/lib/firebase";
 import { APOYO, BOTON_NORMAL, CABECERA, CAMPO, LECTURA, NOTA, PANTALLA, TARJETA, TITULO, botonPrincipal, punto, rotulo } from "@/lib/ui";
 
-const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com";
+/* CON «www», Y NO ES UN DETALLE: la dirección sin «www» redirige, y una
+   redirección no lleva el permiso para que otra web la lea. Sin esto la lista
+   de correos llegaba vacía y la pantalla no enseñaba ninguno. */
+const WEB = (process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com").replace("://escueladesabiduria33.com", "://www.escueladesabiduria33.com");
 const LISTA = "marco";
 const TOPE_POR_DEFECTO = 50;
 
