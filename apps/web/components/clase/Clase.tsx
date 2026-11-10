@@ -303,7 +303,7 @@ const DIAPOS: Diapo[] = [
     id: 'frases',
     titulo: 'Chat · la frase que se repite',
     fondo: 'foto',
-    foto: 'cena.jpg',
+    foto: 'sofa.jpg',
     pasos: 2,
     notas: 'Minuto 15 a 16. Pide en el chat la frase que se repite en sus relaciones. Lee tres o cuatro en voz alta, sin nombres, y únelas: «Distintas personas, la misma frase». Solas: aparecen las dos frases de cierre.',
     pinta: (c) => (
@@ -338,7 +338,7 @@ const DIAPOS: Diapo[] = [
     id: 'ejercicio',
     titulo: 'Ejercicio · tres generaciones',
     fondo: 'foto',
-    foto: 'tres-generaciones.jpg',
+    foto: 'generaciones-1923.jpg',
     pasos: 4,
     notas: 'Minuto 21 a 27 · Iris. Las generaciones aparecen solas: que cada persona apunte en papel la edad a la que se emparejó su abuela, su madre y ella. Último clic: la pregunta. Después Iris explica el cálculo con las fechas de nacimiento.',
     pinta: (c) => (
@@ -404,7 +404,7 @@ const DIAPOS: Diapo[] = [
         <p className="cl-rotulo cl-entra-1">Momento chat · escribe 1, 2 o 3</p>
         <h2 className="cl-h3 cl-entra-2">¿En qué clave te has reconocido?</h2>
         <div className="cl-tres">
-          {[['coche.jpg', 'Es un patrón'], ['tres-generaciones.jpg', 'Se hereda'], ['madre-hija.jpg', 'No deja marchar']].map(([f, t], i) => (
+          {[['manos.jpg', 'Es un patrón'], ['1956.jpg', 'Se hereda'], ['capucha.jpg', 'No deja marchar']].map(([f, t], i) => (
             <V key={f} en={i + 1} c={c} className="cl-carta">
               <figure className="cl-tarjeta-foto cl-tarjeta-num">
                 <img src={IMG + f} alt="" />
