@@ -176,7 +176,7 @@ async function enviaDifusion(
   if (!e) return { ...res, nota: 'hoy no toca ningún envío' };
   res.envio = e.id;
 
-  const tope = Math.max(0, (Number(conf.tope) > 0 ? Number(conf.tope) : TOPE_POR_DEFECTO) - yaSalidos);
+  const tope = Math.max(0, TOPE_POR_DEFECTO - yaSalidos);
   const lista = await base.collection(COLECCION).where('lista', '==', LISTA).get();
   const toca = lista.docs.filter((d) => {
     const v = d.data() as { email?: string; baja?: boolean; enviados?: Record<string, unknown> };

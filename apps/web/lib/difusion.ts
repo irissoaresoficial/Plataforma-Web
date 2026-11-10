@@ -72,8 +72,9 @@ export const ENVIOS: Envio[] = [
 export const LISTA = 'marco';
 export const COLECCION = 'difusion';
 export const CONFIG = 'difusion-config';
-/** Resend en su plan gratuito deja cien al día, contando los recordatorios. */
-export const TOPE_POR_DEFECTO = 95;
+/** Cincuenta al día, decidido por Gerson el 10 de noviembre: la lista se
+ *  reparte en mañanas seguidas. Cuenta también los recordatorios del día. */
+export const TOPE_POR_DEFECTO = 50;
 
 const enlace = (contenido: IdEnvio) =>
   `${WEB}/masterclass?utm_source=email&utm_medium=correo&utm_campaign=masterclass-desordenes&utm_content=marco-${contenido}`;

@@ -30,7 +30,7 @@ import { APOYO, BOTON_NORMAL, CABECERA, LECTURA, NOTA, PANTALLA, TARJETA, TITULO
 
 const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com";
 const LISTA = "marco";
-const TOPE_POR_DEFECTO = 95;
+const TOPE_POR_DEFECTO = 50;
 
 type Envio = { id: string; dia: string; asunto: string; previo: string; aInscritas: boolean };
 type Contacto = { email: string; baja: boolean; enviados: Record<string, unknown> };
@@ -78,7 +78,7 @@ export default function CorreosScreen() {
       setContactos(c.docs.map((d) => ({ email: d.get("email") ?? "", baja: !!d.get("baja"), enviados: d.get("enviados") ?? {} })));
       setInscritas(l.docs.map((d) => ({ email: d.get("email") ?? "", baja: !!d.get("baja"), recordatorios: d.get("recordatorios") ?? {} })));
       const x = k.data();
-      setConf({ activa: !!x?.activa, tope: Number(x?.tope) > 0 ? Number(x?.tope) : TOPE_POR_DEFECTO });
+      setConf({ activa: !!x?.activa, tope: TOPE_POR_DEFECTO });
     } catch (e) {
       setFallo("No se han podido leer los correos: " + String(e).slice(0, 140));
     }
@@ -266,18 +266,7 @@ export default function CorreosScreen() {
               }}
             />
           </label>
-          <label style={css(APOYO + "display:inline-flex;gap:8px;align-items:center;")}>
-            Máximo al día
-            <select
-              value={conf.tope}
-              disabled={ocupado}
-              onChange={(ev) => void guarda({ tope: Number(ev.target.value) })}
-              style={css("padding:8px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;")}
-            >
-              <option value={95}>95 (plan gratis de Resend)</option>
-              <option value={400}>400 (plan de pago)</option>
-            </select>
-          </label>
+          <span style={css(APOYO)}>Salen 50 al día, contando los recordatorios de las inscritas de ese día.</span>
         </div>
       </section>
 

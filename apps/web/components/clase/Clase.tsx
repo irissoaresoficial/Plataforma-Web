@@ -436,13 +436,13 @@ const DIAPOS: Diapo[] = [
   },
   {
     id: 'video-puente',
-    titulo: 'Vídeo antes del curso',
+    titulo: 'Vídeo · La espera',
     fondo: 'negro',
     pasos: 0,
-    notas: 'Minuto 44 a 45 · El vídeo arranca solo y da paso a la venta: silencio. Mientras el vídeo nuevo no esté en la web, se ve «Los hilos».',
+    notas: 'Minuto 44 a 45 · El vídeo arranca solo y da paso a la venta: silencio.',
     pinta: () => (
       <div className="cl-col cl-centro-v cl-centro-h">
-        <VideoSolo activo className="cl-video cl-video-grande cl-entra-1" controls playsInline preload="metadata" poster="/images/los-hilos-poster.jpg" onClick={(ev) => ev.stopPropagation()}>
+        <VideoSolo activo className="cl-video cl-video-grande cl-entra-1" controls playsInline preload="metadata" poster="/images/clase/la-espera-poster.jpg" onClick={(ev) => ev.stopPropagation()}>
           <source src="/video/puente-curso.mp4" type="video/mp4" />
           <source src="/video/los-hilos.mp4" type="video/mp4" />
         </VideoSolo>
