@@ -265,7 +265,7 @@ export async function GET(peticion: Request) {
 
   /* Las métricas de la plataforma: al abrir esta página se traen de Meta en
      el momento, así no hay que esperar al reloj de las 8:00 para ver si el
-     token funciona. Es idempotente: reescribe los mismos siete días. */
+     token funciona. Es idempotente: reescribe los mismos 28 días. */
   {
     const m = await sincronizaCampana();
     pasos.push({

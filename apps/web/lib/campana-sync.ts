@@ -14,7 +14,7 @@
  * permiso `ads_read`, que dura 60 días: de sobra hasta la masterclass) y
  * escribe con la llave de Firebase que la web ya tiene en Vercel.
  *
- * Reescribe los últimos 7 días, no sólo ayer: Meta corrige sus cifras durante
+ * Reescribe los últimos 28 días, no sólo ayer: Meta corrige sus cifras durante
  * unos días, y si una mañana falla, la siguiente rellena el hueco. Escribe con
  * `merge`, así que no borra lo que el script manual hubiera puesto aparte
  * (el plan, la previsión).
@@ -57,7 +57,7 @@ export async function sincronizaCampana(): Promise<{ ok: boolean; dias?: number;
 
   try {
     const hasta = dia(new Date());
-    const desde = dia(new Date(Date.now() - 6 * 86400000));
+    const desde = dia(new Date(Date.now() - 27 * 86400000));
     const [cuenta, anuncios] = await Promise.all([
       lee(token, 'account', 'spend,impressions,reach,frequency,inline_link_clicks,actions', desde, hasta),
       lee(token, 'ad', 'ad_name,spend,inline_link_clicks', desde, hasta),
