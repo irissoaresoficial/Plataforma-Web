@@ -120,6 +120,9 @@ function dec(n: number, cifras = 1): string {
  * tarjeta sin deformar el grosor del trazo, porque `vector-effect` mantiene el
  * trazo en píxeles de pantalla y no en unidades del dibujo.
  */
+/* Sin uso desde que el panel son cuatro respuestas; se deja para cuando vuelva
+   a hacer falta un gráfico pequeño. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Chispa({ datos, color }: { datos: number[]; color: string }) {
   if (datos.length < 2) return null;
   const alto = 40;
@@ -202,20 +205,6 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
   );
 
   /** Una cifra pequeña de las de la derecha. Tres líneas y nada más. */
-  const ficha = (que: string, valor: string, pie: string) => (
-    <div style={css(tarjeta + "padding:var(--pad-card-sm);display:flex;flex-direction:column;justify-content:center;")}>
-      <div style={css(NOTA + "color:var(--text-3);")}>{que}</div>
-      <div
-        style={css(
-          "font-family:var(--font-display);font-size:clamp(22px,2.4vw,30px);font-weight:650;" +
-            "line-height:1.05;margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-.03em;color:var(--text);",
-        )}
-      >
-        {valor}
-      </div>
-      <div style={css(NOTA + "margin-top:4px;line-height:1.4;color:var(--text-3);")}>{pie}</div>
-    </div>
-  );
 
   /* Todavía no se ha escrito ningún día: se explica, no se pintan ceros. */
   if (dias.length === 0) {
@@ -239,136 +228,55 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
   /* Cuánto del camino llevamos hecho hacia el techo de la previsión. Se mide
      contra el MÁXIMO y no contra el mínimo: una barra que se llena enseguida
      porque el listón estaba bajo no dice nada. */
-  const avance = t.prevision && t.prevision.max > 0 ? Math.min(1, t.apuntadosDePago / t.prevision.max) : 0;
 
   return (
     <>
-      {/* ------------------------------------------------------------- el plan */}
-      {/* VA EL PRIMERO, Y ESO ES LA MITAD DE LO QUE HACE.
-          Un panel que empieza con «llevamos gastado 4,92 €» obliga a quien lo
-          abre a adivinar si eso es mucho o poco, pronto o tarde, bien o mal.
-          Empezando por «esta semana se recogen datos», el gasto que viene
-          debajo ya significa algo.
-          Lo que cambió el 22 de octubre es el TAMAÑO: era una pantalla de
-          prosa y ahora es una banda de dos columnas que se lee de un vistazo
-          sin dejar de decir lo mismo. */}
-      {t.plan && (
-        <section
-          style={css(
-            tarjeta +
-              "background:var(--bloque);color:var(--sobre-bloque);border-color:var(--bloque-borde);" +
-              "box-shadow:var(--shadow-lg);padding:var(--pad-card);",
-          )}
-        >
-          <div style={css("display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;")}>
-            <div style={css("display:flex;align-items:center;gap:10px;")}>
-              <i style={css("width:7px;height:7px;border-radius:50%;flex:none;background:var(--oro-luz);")} />
-              <span
-                style={css(
-                  "font-family:var(--font-display);font-size:var(--t-head);font-weight:620;" +
-                    "letter-spacing:-.02em;line-height:1.2;color:inherit;",
-                )}
-              >
-                {t.plan.fase}
-              </span>
-            </div>
-            <span style={css(NOTA + "color:var(--sobre-bloque-2);")}>
-              Del {corto(t.desde)} al {corto(t.hasta)}
-            </span>
-          </div>
-
-          <div
-            style={css(
-              "display:grid;gap:var(--s3) var(--s4);margin-top:var(--s3);padding-top:var(--s3);" +
-                "border-top:1px solid var(--bloque-borde);" +
-                "grid-template-columns:repeat(auto-fit,minmax(250px,1fr));align-items:start;",
-            )}
-          >
-            <div>
-              <div style={css(NOTA + "color:var(--sobre-bloque-2);margin-bottom:5px;")}>Qué se hace estos días</div>
-              <p style={css("margin:0;font-size:var(--t-body);line-height:1.55;color:inherit;text-wrap:pretty;")}>
-                {t.plan.semana}
-              </p>
-            </div>
-            <div>
-              <div style={css(NOTA + "color:var(--sobre-bloque-2);margin-bottom:5px;")}>Qué toca después</div>
-              <p style={css("margin:0;font-size:var(--t-body);line-height:1.55;color:inherit;text-wrap:pretty;")}>
-                {t.plan.despues}
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ------------------------------------------------- la cabeza del panel */}
-      {/* La cifra que manda, sola y oscura, con el gasto diario dibujado dentro
-          y la previsión como barra. A la derecha, las cuatro de apoyo en
-          rejilla. Contesta «¿vamos bien?» sin leer una palabra. */}
-      <div data-gasto-cabeza="">
-        <section
-          style={css(
-            tarjeta +
-              "background:var(--bloque);color:var(--sobre-bloque);border-color:var(--bloque-borde);" +
-              "box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:var(--s3);",
-          )}
-        >
-          <div style={css(NOTA + "color:var(--sobre-bloque-2);")}>Cuesta cada persona apuntada</div>
-          <div style={css("display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;")}>
+      {/* ------------------------------------------------- LAS CUATRO RESPUESTAS */}
+      {/* Gerson, 10 de noviembre: «no quiero tanto texto, solamente quiero que
+          se entienda cuánto se ha gastado, qué ha hecho clic, por qué no ha
+          funcionado y qué es lo que estamos haciendo para mejorar». Cuatro
+          preguntas, cuatro casillas, y una frase como mucho en cada una. Lo
+          demás está más abajo, plegado. */}
+      <section
+        style={css(
+          tarjeta +
+            "background:var(--bloque);color:var(--sobre-bloque);border-color:var(--bloque-borde);" +
+            "box-shadow:var(--shadow-lg);padding:var(--pad-card);display:grid;gap:var(--s4);" +
+            "grid-template-columns:repeat(auto-fit,minmax(210px,1fr));",
+        )}
+      >
+        {[
+          ["Gastado", euros(t.gasto), `Del ${corto(t.desde)} al ${corto(t.hasta)}`],
+          ["Han hecho clic", miles(t.clics), `A ${euros(t.porClic)} cada clic`],
+        ].map(([q, v, pie]) => (
+          <div key={q} style={css("display:grid;gap:6px;align-content:start;")}>
+            <span style={css(NOTA + "color:var(--sobre-bloque-2);")}>{q}</span>
             <span
               style={css(
-                "font-family:var(--font-display);font-size:clamp(40px,5.4vw,64px);font-weight:650;" +
-                  "line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.04em;color:inherit;",
+                "font-family:var(--font-display);font-size:clamp(34px,4vw,52px);font-weight:650;line-height:1;" +
+                  "font-variant-numeric:tabular-nums;letter-spacing:-.04em;color:inherit;",
               )}
             >
-              {t.apuntadosDePago > 0 ? euros(t.porApuntado) : "—"}
+              {v}
             </span>
-            <span style={css(NOTA + "color:var(--sobre-bloque-2);")}>
-              {t.apuntadosDePago > 0
-                ? `${miles(t.apuntadosDePago)} personas de la campaña`
-                : "todavía no se ha apuntado nadie"}
-            </span>
+            <span style={css(NOTA + "color:var(--sobre-bloque-2);")}>{pie}</span>
           </div>
-
-          <Chispa datos={d.porDia.map((x) => x.valor)} color="var(--oro-luz)" />
-
-          {t.prevision && (
-            <div style={css("margin-top:auto;padding-top:var(--s3);border-top:1px solid var(--bloque-borde);")}>
-              <div style={css("display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2);")}>
-                <span style={css(NOTA + "color:var(--sobre-bloque-2);")}>Se esperan antes de la masterclass</span>
-                <span style={css("font-size:var(--t-body);font-weight:500;color:inherit;font-variant-numeric:tabular-nums;")}>
-                  {miles(t.apuntadosDePago)} de {miles(t.prevision.min)}–{miles(t.prevision.max)}
-                </span>
-              </div>
-              {/* La barra se dibuja con `role="img"` y su etiqueta, para que
-                  quien use lector de pantalla reciba la misma frase que quien
-                  la ve. Un div de color sin nombre no dice nada. */}
-              <div
-                role="img"
-                aria-label={`Van ${miles(t.apuntadosDePago)} personas apuntadas de las ${miles(t.prevision.max)} que se esperan como mucho.`}
-                style={css(
-                  "margin-top:8px;height:6px;border-radius:999px;overflow:hidden;background:var(--bloque-2);",
-                )}
-              >
-                <div style={css(`width:${(avance * 100).toFixed(1)}%;height:100%;background:var(--oro-luz);border-radius:999px;`)} />
-              </div>
-              <p style={css(NOTA + "color:var(--sobre-bloque-2);margin:8px 0 0;line-height:1.45;")}>
-                Es una previsión y no una promesa: se ajusta cada día con los números reales.
-              </p>
-            </div>
-          )}
-        </section>
-
-        <div data-gasto-fichas="">
-          {ficha("Llevamos gastado", euros(t.gasto), `Desde el ${corto(t.desde)}`)}
-          {ficha("Han hecho clic", miles(t.clics), `A ${euros(t.porClic)} cada clic`)}
-          {ficha("Personas distintas", miles(t.alcance), "El mejor día, no la suma")}
-          {ficha(
-            "Llegan y se apuntan",
-            llegaron > 0 ? `${dec(t.convierte)} %` : "—",
-            llegaron > 0 ? `de ${miles(llegaron)} que llegan` : "sin visitas todavía",
-          )}
+        ))}
+        <div style={css("display:grid;gap:6px;align-content:start;")}>
+          <span style={css(NOTA + "color:var(--oro-luz);")}>{t.apuntadosDePago > 0 ? "Cómo va" : "Por qué no ha funcionado"}</span>
+          <p style={css("margin:0;font-size:var(--t-body);line-height:1.5;color:inherit;text-wrap:pretty;")}>
+            {t.apuntadosDePago > 0
+              ? `${miles(t.apuntadosDePago)} personas apuntadas, a ${euros(t.porApuntado)} cada una.`
+              : `${miles(t.clics)} clics y nadie se apuntó. Llegaba gente curiosa, no gente con ganas de venir.`}
+          </p>
         </div>
-      </div>
+        <div style={css("display:grid;gap:6px;align-content:start;")}>
+          <span style={css(NOTA + "color:var(--oro-luz);")}>Qué estamos haciendo</span>
+          <p style={css("margin:0;font-size:var(--t-body);line-height:1.5;color:inherit;text-wrap:pretty;")}>
+            {t.plan?.fase || "Pagar por inscripción y no por clic: Meta busca a quien se apunta."}
+          </p>
+        </div>
+      </section>
 
       {/* ------------------------------------------------- los gráficos, por pares */}
       <div data-gasto-par="">
@@ -401,6 +309,12 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
           />,
         )}
 
+      </div>
+
+      <details>
+        <summary style={css(NOTA + "cursor:pointer;font-weight:500;color:var(--text-2);padding:var(--s2) 0;")}>Ver más detalle</summary>
+        <div style={css("display:grid;gap:var(--gap);margin-top:var(--s3);")}>
+      <div data-gasto-par="">
         {d.anuncios.length > 0
           ? bloque(
               "En qué anuncio se va el dinero",
@@ -468,6 +382,8 @@ export default function Gasto({ dias, tarjeta }: { dias: DiaCampana[]; tarjeta: 
         no lo sabe Meta: sale de cruzar lo que se gastó con la gente que de verdad dejó su correo. «Personas distintas»
         es el mejor día y no la suma de todos, porque sumarlos contaría varias veces a la misma persona.
       </p>
+        </div>
+      </details>
     </>
   );
 }
