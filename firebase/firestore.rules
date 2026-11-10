@@ -216,6 +216,11 @@ service cloud.firestore {
     match /difusion-config/{id} {
       allow read, write: if esAdmin();
     }
+    /* Las decisiones de la campaña que se enseñan en Métricas, editables
+       desde allí. Sólo administración. */
+    match /metricas-plan/{id} {
+      allow read, write: if esAdmin();
+    }
 
     match /leads/{id} {
       /* Se leen desde la plataforma y se pueden mover de estado —nuevo,

@@ -23,16 +23,17 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where, writeBatch } from "firebase/firestore";
+import { collection, deleteField, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where, writeBatch } from "firebase/firestore";
 import { css } from "@/lib/css";
 import { nube } from "@/lib/firebase";
-import { APOYO, BOTON_NORMAL, CABECERA, LECTURA, NOTA, PANTALLA, TARJETA, TITULO, botonPrincipal, punto, rotulo } from "@/lib/ui";
+import { APOYO, BOTON_NORMAL, CABECERA, CAMPO, LECTURA, NOTA, PANTALLA, TARJETA, TITULO, botonPrincipal, punto, rotulo } from "@/lib/ui";
 
 const WEB = process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com";
 const LISTA = "marco";
 const TOPE_POR_DEFECTO = 50;
 
-type Envio = { id: string; dia: string; asunto: string; previo: string; aInscritas: boolean };
+type Textos = { dia: string; asunto: string; previo: string; titular: string; cuerpo: string; boton: string };
+type Envio = Textos & { id: string; aInscritas: boolean };
 type Contacto = { email: string; baja: boolean; enviados: Record<string, unknown> };
 type Inscrita = { email: string; baja: boolean; recordatorios: Record<string, boolean> };
 
@@ -65,6 +66,11 @@ export default function CorreosScreen() {
   const [aviso, setAviso] = useState("");
   const [fallo, setFallo] = useState("");
   const [ocupado, setOcupado] = useState(false);
+  /* Qué correo se está editando y su borrador. La vista previa se recarga
+     con `version` cada vez que se guarda. */
+  const [editando, setEditando] = useState<string | null>(null);
+  const [borrador, setBorrador] = useState<Textos | null>(null);
+  const [version, setVersion] = useState(0);
 
   const carga = useCallback(async () => {
     const base = nube();
@@ -84,13 +90,40 @@ export default function CorreosScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    void carga();
+  const cargaEnvios = useCallback(() => {
     fetch(`${WEB}/api/difusion/vista`, { cache: "no-store" })
       .then((r) => r.json())
       .then((j) => setEnvios(j.envios ?? []))
       .catch(() => setFallo("No se ha podido leer la lista de correos de la web."));
-  }, [carga]);
+  }, []);
+
+  useEffect(() => {
+    void carga();
+    cargaEnvios();
+  }, [carga, cargaEnvios]);
+
+  async function guardaTextos(id: string, t: Textos | null) {
+    const base = nube();
+    if (!base) return;
+    setOcupado(true);
+    setFallo("");
+    try {
+      await setDoc(
+        doc(base, "difusion-config", LISTA),
+        { textos: { [id]: t ? { ...t } : deleteField() }, cambiado: serverTimestamp() },
+        { merge: true },
+      );
+      setEditando(null);
+      setBorrador(null);
+      setAviso(t ? "Guardado. Es lo que saldrá a partir de ahora." : "Vuelto al texto original.");
+      cargaEnvios();
+      setVersion((v) => v + 1);
+    } catch (e) {
+      setFallo("No se ha podido guardar el correo: " + String(e).slice(0, 140));
+    } finally {
+      setOcupado(false);
+    }
+  }
 
   const hoy = hoyMadrid();
   const n = useMemo(() => {
@@ -236,11 +269,66 @@ export default function CorreosScreen() {
                   <span style={css("color:var(--text);font-weight:500;")}>{e.asunto}</span>
                   <span style={css(NOTA)}>{estado}</span>
                 </span>
-                <button type="button" style={css(BOTON_NORMAL)} onClick={() => setViendo(viendo === e.id ? null : e.id)}>
-                  {viendo === e.id ? "Cerrar" : "Ver correo"}
-                </button>
+                <span style={css("display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;")}>
+                  <button type="button" style={css(BOTON_NORMAL)} onClick={() => setViendo(viendo === e.id ? null : e.id)}>
+                    {viendo === e.id ? "Cerrar" : "Ver"}
+                  </button>
+                  <button
+                    type="button"
+                    style={css(BOTON_NORMAL)}
+                    onClick={() => {
+                      if (editando === e.id) return setEditando(null);
+                      setEditando(e.id);
+                      setViendo(e.id);
+                      setBorrador({ dia: e.dia, asunto: e.asunto, previo: e.previo, titular: e.titular, cuerpo: e.cuerpo, boton: e.boton });
+                    }}
+                  >
+                    {editando === e.id ? "Cancelar" : "Editar"}
+                  </button>
+                </span>
+                {editando === e.id && borrador && (
+                  <div style={css("grid-column:1/-1;display:grid;gap:12px;padding:16px;border-radius:var(--r-sm);background:color-mix(in srgb, var(--text) 4%, transparent);")}>
+                    {(
+                      [
+                        ["dia", "Día que sale", "date"],
+                        ["asunto", "Asunto", "text"],
+                        ["previo", "Lo que se lee en la bandeja", "text"],
+                        ["titular", "Título dentro del correo", "text"],
+                        ["boton", "Texto del botón", "text"],
+                      ] as Array<[keyof Textos, string, string]>
+                    ).map(([k, q, tipo]) => (
+                      <label key={k} style={css("display:grid;gap:6px;")}>
+                        <span style={css(NOTA)}>{q}</span>
+                        <input type={tipo} value={borrador[k]} onChange={(ev) => setBorrador({ ...borrador, [k]: ev.target.value })} style={css(CAMPO)} />
+                      </label>
+                    ))}
+                    <label style={css("display:grid;gap:6px;")}>
+                      <span style={css(NOTA)}>Texto · una línea en blanco separa párrafos, **así** va en negrita y [botón] marca dónde va el botón</span>
+                      <textarea
+                        value={borrador.cuerpo}
+                        rows={14}
+                        onChange={(ev) => setBorrador({ ...borrador, cuerpo: ev.target.value })}
+                        style={css(CAMPO + "resize:vertical;line-height:1.55;")}
+                      />
+                    </label>
+                    <span style={css("display:flex;gap:8px;flex-wrap:wrap;")}>
+                      <button type="button" disabled={ocupado} style={css(botonPrincipal(!ocupado))} onClick={() => void guardaTextos(e.id, borrador)}>
+                        Guardar
+                      </button>
+                      <button
+                        type="button"
+                        disabled={ocupado}
+                        style={css(BOTON_NORMAL)}
+                        onClick={() => window.confirm("¿Volver al texto original de este correo?") && void guardaTextos(e.id, null)}
+                      >
+                        Volver al original
+                      </button>
+                    </span>
+                  </div>
+                )}
                 {viendo === e.id && (
                   <iframe
+                    key={`${e.id}-${version}`}
                     title={e.asunto}
                     src={`${WEB}/api/difusion/vista?id=${e.id}`}
                     style={css("grid-column:1/-1;width:100%;height:760px;border:1px solid var(--border);border-radius:var(--r-sm);background:#f1ede4;")}

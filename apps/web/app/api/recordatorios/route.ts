@@ -45,7 +45,7 @@ import { db, FieldValue } from '@/lib/firebase';
 import { correoRecordatorio, type Recordatorio } from '@/lib/correo';
 import { MASTERCLASS } from '@/content/site';
 import { sincronizaCampana } from '@/lib/campana-sync';
-import { CONFIG, COLECCION, LISTA, TOPE_POR_DEFECTO, correoDifusion, envioDeHoy } from '@/lib/difusion';
+import { CONFIG, COLECCION, LISTA, TOPE_POR_DEFECTO, correoDifusion, envioDeHoy, conCambios, type Textos } from '@/lib/difusion';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -176,9 +176,9 @@ async function enviaDifusion(
   yaSalidos: number,
 ) {
   const res = { envio: null as string | null, enviados: 0, pendientes: 0, fallados: 0, nota: '' };
-  const conf = (await base.collection(CONFIG).doc(LISTA).get()).data() as { activa?: boolean; tope?: number } | undefined;
+  const conf = (await base.collection(CONFIG).doc(LISTA).get()).data() as { activa?: boolean; textos?: Record<string, Partial<Textos>> } | undefined;
   if (!conf?.activa) return { ...res, nota: 'apagado desde la plataforma' };
-  const e = envioDeHoy();
+  const e = envioDeHoy(conCambios(conf.textos));
   if (!e) return { ...res, nota: 'hoy no toca ningún envío' };
   res.envio = e.id;
 
@@ -201,7 +201,7 @@ async function enviaDifusion(
       const envio = await resend.batch.send(
         tanda.map((d) => {
           const email = String(d.get('email'));
-          const { asunto, html } = correoDifusion(e.id, email);
+          const { asunto, html } = correoDifusion(e, email);
           return { from: DE_MARCO, to: email, replyTo: CONTESTAR_A, subject: asunto, html };
         }),
       );

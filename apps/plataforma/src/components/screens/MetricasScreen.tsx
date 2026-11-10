@@ -59,6 +59,7 @@ import { porDia, todasLasVisitas } from "@/lib/escuela/trofeos";
 import { ultimosLeads, type Lead } from "@/lib/despacho/leads";
 import Embudo from "../metricas/Embudo";
 import Gasto from "../metricas/Gasto";
+import Masterclass from "../metricas/Masterclass";
 import { ultimosDias, type DiaCampana } from "@/lib/despacho/campana";
 
 type Datos = {
@@ -94,6 +95,9 @@ type Datos = {
   clientasAntes: number;
   fuentes: Barra[];
 };
+
+/** Lo de la escuela y el negocio, apagado mientras dure la campaña. */
+const RESTO = false;
 
 export default function MetricasScreen() {
   const { puede } = useSesion();
@@ -170,7 +174,13 @@ export default function MetricasScreen() {
    */
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--gap);")}>
-      <Banda
+      {/* DESDE EL 10 DE NOVIEMBRE, SÓLO LA MASTERCLASS. Gerson: «veo info que
+          ahora mismo es irrelevante, quítalo». Con la escuela aún sin alumnos
+          y la campaña en marcha, lo único que se mira aquí es la masterclass.
+          Lo demás no se borra: `RESTO` lo vuelve a enseñar el día que haga
+          falta. */}
+      {d && puede("campana") && <Masterclass dias={d.campana} leads={d.leads} />}
+      {RESTO && <Banda
         foto="/escuela/banda-cursos.jpg"
         encuadre="50% 60%"
         titulo="Métricas"
@@ -185,7 +195,7 @@ export default function MetricasScreen() {
             </button>
           ) : undefined
         }
-      />
+      />}
 
       {d === null && !roto && <p style={css(NOTA + "margin:0;")}>Cargando…</p>}
 
@@ -195,7 +205,7 @@ export default function MetricasScreen() {
         </p>
       )}
 
-      {vacio && (
+      {RESTO && vacio && (
         <div style={css(tarjeta + "max-width:620px;")}>
           <h2 style={css(CABECERA + "margin:0 0 var(--s2);")}>Todavía no hay nada que medir</h2>
           <p style={css(LECTURA + "margin:0;")}>
@@ -205,7 +215,7 @@ export default function MetricasScreen() {
         </div>
       )}
 
-      {d && !vacio && !tabla && (
+      {RESTO && d && !vacio && !tabla && (
         <>
           {/* ------------------------------------------------- tu negocio */}
           <h2 style={css(SECCION)}>Tu negocio</h2>
@@ -288,7 +298,7 @@ export default function MetricasScreen() {
         </>
       )}
 
-      {d && !vacio && tabla && (
+      {RESTO && d && !vacio && tabla && (
         <section style={css(tarjeta)}>
           <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>En tabla</h2>
           <div style={css("overflow-x:auto;")}>
