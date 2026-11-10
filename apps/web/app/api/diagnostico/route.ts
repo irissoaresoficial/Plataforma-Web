@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db, hayFirebase, FieldValue } from '@/lib/firebase';
+import { sincronizaCampana } from '@/lib/campana-sync';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -261,6 +262,22 @@ export async function GET(peticion: Request) {
   /* Y el contador del embudo, que es con lo que se decide si la página
      funciona o no. */
   pasos.push(await compruebaEmbudo());
+
+  /* Las métricas de la plataforma: al abrir esta página se traen de Meta en
+     el momento, así no hay que esperar al reloj de las 8:00 para ver si el
+     token funciona. Es idempotente: reescribe los mismos siete días. */
+  {
+    const m = await sincronizaCampana();
+    pasos.push({
+      paso: 'Métricas de Meta en la plataforma',
+      ok: m.ok,
+      detalle: m.ok
+        ? `Actualizadas ahora: ${m.dias} días escritos. Se repite sola cada mañana a las 8:00.`
+        : m.nota === 'falta META_ADS_TOKEN en Vercel'
+          ? 'Falta META_ADS_TOKEN en Vercel: sin él la pantalla de Métricas de la plataforma no se actualiza.'
+          : `Meta no ha dejado leer: ${m.nota}. Si dice que el token ha caducado, hay que generar uno nuevo.`,
+    });
+  }
 
   pasos.push({
     paso: 'Variable APPS_SCRIPT_URL',

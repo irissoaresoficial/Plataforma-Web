@@ -44,6 +44,7 @@ import { Resend } from 'resend';
 import { db, FieldValue } from '@/lib/firebase';
 import { correoRecordatorio, type Recordatorio } from '@/lib/correo';
 import { MASTERCLASS } from '@/content/site';
+import { sincronizaCampana } from '@/lib/campana-sync';
 import { CONFIG, COLECCION, LISTA, TOPE_POR_DEFECTO, correoDifusion, envioDeHoy } from '@/lib/difusion';
 
 export const runtime = 'nodejs';
@@ -87,6 +88,10 @@ export async function GET(peticion: Request) {
 
   const dias = diasQueFaltan();
   const tipo = tocaHoy(dias);
+
+  /* Primero, las métricas de la plataforma: Meta → `campana`. No depende de
+     nada de lo de abajo y, si falla, los correos salen igual. */
+  const metricas = await sincronizaCampana();
 
   const clave = process.env.RESEND_API_KEY;
   const base = db();
@@ -152,6 +157,7 @@ export async function GET(peticion: Request) {
     saltados,
     fallados,
     difusion,
+    metricas,
   });
 }
 
