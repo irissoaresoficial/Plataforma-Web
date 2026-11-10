@@ -97,9 +97,14 @@ export default function CorreosScreen() {
       .catch(() => setFallo("No se ha podido leer la lista de correos de la web."));
   }, []);
 
+  /* Fuera del pintado: `carga` puede avisar de un fallo al momento, y eso no
+     puede ocurrir dentro del propio efecto. */
   useEffect(() => {
-    void carga();
-    cargaEnvios();
+    const t = setTimeout(() => {
+      void carga();
+      cargaEnvios();
+    }, 0);
+    return () => clearTimeout(t);
   }, [carga, cargaEnvios]);
 
   async function guardaTextos(id: string, t: Textos | null) {
