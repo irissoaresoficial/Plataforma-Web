@@ -130,6 +130,27 @@ export function b22(n: number): number {
   return x === 0 ? 22 : x;
 }
 
+/**
+ * LAS OREJAS DE CADA CÍRCULO (13 de noviembre de 2026).
+ *
+ * En «La máscara y el espejo» cada círculo lleva dos bolitas encima, las
+ * orejas de Mickey. Iris, por audio a Gerson el 12 de noviembre: «cada bolita
+ * de las orejas de Mickey tienen que restarse al número del círculo principal,
+ * 20 y 21 […] eso no aparece y me acabo de dar cuenta ahora».
+ *
+ * La regla sale de su tabla hecha a mano, donde las ocho que se leen cuadran
+ * todas: la de la izquierda es 22 menos el número y la de la derecha 21 menos
+ * el número (9 → 13 y 12; 10 → 12 y 11; 14 → 8 y 7; 15 → 7 y 6; 5 → 17 y 16;
+ * 11 → 11 y 10; 1 → 21 y 20).
+ *
+ * Con 21 y 22 la resta da 0 o menos. Se aplica la regla de siempre de esta
+ * tabla —un 0 se lee como 22 y se toma el valor sin signo—, pero Iris no lo ha
+ * dicho para las orejas: está pendiente de que lo confirme.
+ */
+export function orejas(n: number): [number, number] {
+  return [b22(22 - n), b22(21 - n)];
+}
+
 /** Reducir a 1..9, que es la otra lectura de la misma tabla. */
 export function b9(n: number): number {
   let x = Math.abs(Math.round(n));

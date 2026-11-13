@@ -48,7 +48,7 @@
  * ---------------------------------------------------------------------------
  * CONFIRMADA    círculo de aro dorado. La fórmula cuadra con la tabla de Iris
  *               y además hay fuente escrita publicada.
- * RECONSTRUIDA  igual, con un punto pequeño arriba a la derecha. Cuadra con la
+ * RECONSTRUIDA  igual, con un punto pequeño abajo a la derecha. Cuadra con la
  *               tabla, pero ninguna fuente accesible enuncia la fórmula: son
  *               las seis casillas del Espejo.
  * PENDIENTE     círculo de trazo discontinuo y un interrogante en vez del
@@ -59,7 +59,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
-import { baseReducida, calculaBase22, cuentaDe, type BaseNacimiento, type Calculada } from "@/lib/base22";
+import { baseReducida, calculaBase22, cuentaDe, orejas, type BaseNacimiento, type Calculada } from "@/lib/base22";
 import FichaGrafico, { type Contenido } from "./FichaGrafico";
 
 /**
@@ -175,6 +175,9 @@ export default function RejillaBase22({ base }: Props) {
             <circle cx="5" cy="5" r="3.4" fill="var(--gold)" />
           </svg>
           Casilla deducida: cuadra con la tabla de Iris, pero no hay fuente escrita.
+        </span>
+        <span style={css("font-size:var(--t-mini);color:var(--text-4);")}>
+          Las orejas de cada círculo: 22 menos el número y 21 menos el número.
         </span>
       </div>
     </div>
@@ -308,6 +311,28 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: typeof ANCHA }) {
                 fill="var(--gold-soft)"
                 style={{ opacity: enciende ? 1 : 0, transition: "opacity .18s ease" }}
               />
+              {/* Las orejas: 22 − n a la izquierda y 21 − n a la derecha, como
+                  en la tabla de Iris (ver `orejas` en lib/base22.ts). Van antes
+                  que el círculo para que éste las monte por delante. */}
+              {!falta &&
+                orejas(p.valor as number).map((o, j) => {
+                  const ox = x + (j === 0 ? -1 : 1) * G.r * 0.92;
+                  const oy = y - G.r * 0.96;
+                  return (
+                    <g key={j}>
+                      <circle cx={ox} cy={oy} r={G.r * 0.48} fill="var(--surface)" stroke="var(--gold)" strokeWidth={1} />
+                      <text
+                        x={ox}
+                        y={oy}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        style={{ fontFamily: "var(--font-ui)", fontSize: G.r * 0.44, fontWeight: 600, fill: "var(--text-2)", pointerEvents: "none" }}
+                      >
+                        {o}
+                      </text>
+                    </g>
+                  );
+                })}
               <circle
                 cx={x}
                 cy={y}
@@ -333,9 +358,10 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: typeof ANCHA }) {
               >
                 {falta ? "?" : p.valor}
               </text>
-              {/* El punto de «casilla deducida», arriba a la derecha del aro. */}
+              {/* El punto de «casilla deducida», abajo a la derecha del aro:
+                  arriba están las orejas. */}
               {p.certeza === "reconstruido" && (
-                <circle cx={x + G.r * 0.72} cy={y - G.r * 0.72} r={3.4} fill="var(--gold)" />
+                <circle cx={x + G.r * 0.74} cy={y + G.r * 0.74} r={3.4} fill="var(--gold)" />
               )}
               {/* El nombre debajo. En la rejilla ancha va entero, partido en dos
                   renglones cuando es largo; en la estrecha va la abreviatura. */}
@@ -379,6 +405,14 @@ function fichaDe(p: Calculada, tabla: Calculada[], base: { dia: number; mes: num
   const bloques: Contenido["bloques"] = [];
 
   if (p.de) bloques.push({ label: "De dónde sale", texto: p.de + ".", tono: "normal" });
+  if (p.valor !== null) {
+    const [a, b] = orejas(p.valor);
+    bloques.push({
+      label: "Las orejas",
+      tono: "normal",
+      texto: `22 − ${p.valor} = ${a} a la izquierda y 21 − ${p.valor} = ${b} a la derecha.${p.valor >= 21 ? " Con 21 y 22 la resta da cero o menos: el cero se lee como 22. Pendiente de que Iris lo confirme." : ""}`,
+    });
+  }
 
   if (p.certeza === "reconstruido") {
     bloques.push({
