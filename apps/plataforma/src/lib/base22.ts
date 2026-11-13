@@ -187,6 +187,20 @@ function restaEncadenada(a: number, b: number, c: number): number {
  *
  * Arriba, lo social: lo que la persona enseña fuera. Abajo, lo espejado: la
  * defensa. Y en medio la familia —madre, yo, padre— de la que sale todo.
+ *
+ * LAS LÍNEAS (`une`) SON LAS DE LA LÁMINA «LA MÁSCARA Y EL ESPEJO» que Iris
+ * usa en clase, rehechas el 13 de noviembre de 2026. Antes había líneas que la
+ * lámina no tiene (yo–nudo emocional, nudo emocional–PES, nudo de dolor–PED…)
+ * y faltaban las que sí: madre–NE, padre–NE, madre–ND, padre–ND, yo–CID,
+ * yo–CED, yo–BEs, PED–huida, PED–búsqueda de salida. La lámina, leída bien,
+ * dibuja casi siempre DE DÓNDE SALE cada casilla: el nudo emocional cuelga de
+ * la madre y del padre porque es día + año, el CID de la madre y el Yo porque
+ * es día − mes. Ahora cada línea es una pieza de la cuenta, más el borde del
+ * rectángulo, que también lo es (EM = NR + PES, NH = NR − PED…).
+ * La lámina dibuja «CIS–CID» y «CES–CED» como una sola raya vertical, pero
+ * pasa por el centro de la madre y del padre: son madre–CIS + madre–CID y
+ * padre–CES + padre–CED, que es lo que dice la fórmula.
+ * Las fórmulas (`calcula`) no se han tocado.
  */
 export const POSICIONES: Posicion[] = [
   /* ---------------------------------------------------------- LA FAMILIA --
@@ -203,7 +217,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => b.dia,
     significado:
       "El número del alma: cómo es la persona por dentro, antes de actuar. Va ligado a la madre —la Luna, cuyo recorrido marca el día dentro del mes—, que es quien acoge y encuadra al niño. Se lee como el mensaje que viene del lado materno: el proyecto, el mandato y las expectativas que la persona trae incorporados sin haberlos elegido.",
-    une: ["yo", "resistencia", "comportIntSocial", "comportIntDefensa"],
+    une: ["yo", "resistencia", "comportIntSocial", "comportIntDefensa", "nudoEmocional", "nudoDolor"],
   },
   {
     k: "yo",
@@ -217,7 +231,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => b.mes,
     significado:
       "La identidad y el carácter nuclear: el Yo virgen del recién nacido, lo que la persona es antes de que la vida la moldee. Ocupa el sitio del niño entre el padre y la madre, y por eso en la tabla está físicamente entre los dos. Es el punto de referencia desde el que se leen todas las demás casillas.",
-    une: ["madre", "padre", "nudoEmocional", "nudoDolor"],
+    une: ["madre", "padre", "comportIntSocial", "comportExtSocial", "comportIntDefensa", "comportExtDefensa", "busqEspiritual"],
   },
   {
     k: "padre",
@@ -231,7 +245,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => b.anio,
     significado:
       "La energía que rige la vida de la persona y la fuerza interna de la que dispone. Corresponde al padre —el Sol, cuyo recorrido marca el año—. Algunas escuelas lo llaman número del don o regalo divino: el poder con el que se viene equipado. Como mensaje del padre se lee como el permiso o la prohibición que viene de la línea paterna.",
-    une: ["yo", "persProfunda", "comportExtSocial", "comportExtDefensa"],
+    une: ["yo", "persProfunda", "comportExtSocial", "comportExtDefensa", "nudoEmocional", "nudoDolor"],
   },
 
   /* -------------------------------------------------------- LO SOCIAL --
@@ -264,7 +278,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => b22(b.dia + b.anio),
     significado:
       "El punto frágil: por dónde le atraviesa la emoción a esta persona. Dice cómo vibra emocionalmente y, muy en concreto, cómo siente —o cómo no siente— el amor de los demás. Es la herida por la que se entra en terapia. Une a la madre con el padre, es decir, el nudo se forma en la relación entre las dos figuras. Cuando está bloqueado, se entra por la búsqueda emocional.",
-    une: ["yo", "persExtSocial", "busqEmocional", "comportIntSocial", "comportExtSocial"],
+    une: ["madre", "padre", "busqEmocional"],
   },
   {
     k: "busqEmocional",
@@ -279,7 +293,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (_b, ya) => b22(ya.persProfunda + ya.nudoEmocional),
     significado:
       "La puerta de entrada a las emociones cuando el nudo emocional está cerrado. Dice qué necesita la persona por dentro y por dónde hay que entrarle: es el «cómo se le habla» a alguien que tiene la emoción bloqueada. Nace de sumar lo que es en esencia con su punto frágil, así que señala qué recurso propio puede mover frente a su propia herida.",
-    une: ["nudoEmocional", "persProfunda", "busqArmonia"],
+    une: ["nudoEmocional", "persProfunda"],
   },
   {
     k: "comportIntSocial",
@@ -294,7 +308,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => b22(b.dia + b.mes),
     significado:
       "Cómo se comporta la persona dentro de su familia y de su círculo íntimo. Y un matiz que las fuentes repiten: no es sólo cómo se comporta, es cómo le está PROPUESTO comportarse en su familia. No es conducta, es papel asignado. Va ligado a la madre, porque es a partir de ella como uno se construye por dentro. Es el registro de casa.",
-    une: ["emersor", "madre", "nudoEmocional", "persExtSocial"],
+    une: ["madre", "yo", "persExtSocial"],
   },
   {
     k: "comportExtSocial",
@@ -309,7 +323,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => b22(b.mes + b.anio),
     significado:
       "Cómo es la persona fuera de su familia: con los amigos, en el trabajo, cuando sale, de vacaciones. Va ligado al padre y representa lo que las escuelas llaman el nido ampliado: el círculo que ya no es la casa pero todavía no es la vida profesional formal. Junto con el comportamiento interno, alimenta la personalidad externa.",
-    une: ["nudoEmocional", "padre", "busqEmocional", "persExtSocial"],
+    une: ["yo", "padre", "persExtSocial"],
   },
   {
     k: "persExtSocial",
@@ -324,7 +338,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (_b, ya) => b22(ya.comportIntSocial + ya.comportExtSocial),
     significado:
       "La identidad exterior y el tono profesional: quién es la persona cuando está fuera, cómo se afirma en sociedad, qué papel juega trabajando. Es la síntesis de las dos conductas sociales, y por eso funciona como la cara que se le enseña al mundo. Es la contraparte de la personalidad profunda: buena parte del trabajo terapéutico consiste en armonizar el ser con el parecer.",
-    une: ["emersor", "nudoEmocional", "busqArmonia", "comportIntSocial", "comportExtSocial"],
+    une: ["emersor", "busqArmonia", "comportIntSocial", "comportExtSocial"],
   },
   {
     k: "busqArmonia",
@@ -339,7 +353,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (_b, ya) => b22(ya.persExtSocial + ya.persProfunda),
     significado:
       "Lo que le recarga las pilas. Las fuentes lo llaman literalmente «el medicamento»: son las características que la persona necesita encontrar EN LOS DEMÁS para estar bien consigo misma. Marca qué gente y qué clima le devuelven el equilibrio, y por tanto qué le falta cuando está agotada o irritable. Al nacer del parecer más el ser, es el punto donde los dos se reconcilian.",
-    une: ["persExtSocial", "busqEmocional", "persProfunda"],
+    une: ["persExtSocial", "persProfunda"],
   },
   {
     k: "busqEspiritual",
@@ -354,7 +368,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b, ya) => b22(b.mes + ya.persProfunda),
     significado:
       "Cómo se dirige la persona para expresar lo que piensa de forma natural y abrir su espíritu. Es su vía de acceso al conocimiento y al sentido. Las fuentes la describen en clave muy práctica: cuando el sistema se atasca, ésta es la palanca que lo desatasca —volver al estudio, a un libro, a un seminario, a lo que le apasiona intelectualmente—.",
-    une: ["persProfunda"],
+    une: ["persProfunda", "yo"],
   },
   {
     k: "resistencia",
@@ -369,7 +383,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => restaEncadenada(b.dia, b.mes, b.anio),
     significado:
       "El nivel de aguante: cuánto puede soportar la persona antes de romperse, y por dónde rompe. Es la contraparte exacta de la personalidad profunda —donde aquélla suma los tres datos de la fecha, ésta los resta—, así que expresa la tensión entre madre, Yo y padre en vez de su síntesis. Es una casilla bisagra: alimenta el emersor arriba y el número de huida abajo.",
-    une: ["madre", "comportIntSocial", "comportIntDefensa", "emersor", "huida"],
+    une: ["madre", "emersor", "huida"],
   },
   {
     k: "emersor",
@@ -384,7 +398,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (_b, ya) => b22(ya.resistencia + ya.persExtSocial),
     significado:
       "El recurso de emergencia: lo que le permite a la persona salir a flote cuando ya lo ha intentado todo y nada ha funcionado. Las fuentes lo llaman «el último pilar antes de caer en la máscara». Si el emersor funciona, la persona se recompone; si falla, se desploma a la mitad de abajo de la tabla y empiezan la defensa y la huida. Es la casilla clave para aconsejar en crisis.",
-    une: ["comportIntSocial", "persExtSocial", "resistencia"],
+    une: ["persExtSocial", "resistencia"],
   },
 
   /* --------------------------------------------------------- EL ESPEJO --
@@ -410,7 +424,7 @@ export const POSICIONES: Posicion[] = [
       "La contraparte exacta del nudo emocional: el mismo par —madre y padre—, restado en vez de sumado. Ocupa el centro geométrico de la carta, y las escuelas leen eso como que todo el sistema pivota sobre él. Es el dolor estructural: la herida antigua, casi siempre de origen familiar, alrededor de la cual se organizan todas las defensas de abajo. Donde el nudo emocional dice cómo siente, éste dice qué le duele.",
     aviso:
       "Algunas escuelas la llaman «nudo de defensa» en vez de nudo de dolor. Parece ser la misma casilla, pero no hay tabla de equivalencias publicada.",
-    une: ["yo", "persExtDefensa"],
+    une: ["madre", "padre"],
   },
   {
     k: "comportIntDefensa",
@@ -425,7 +439,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => b22(Math.abs(b.dia - b.mes)),
     significado:
       "Cómo se comporta la persona dentro de su familia y de su círculo íntimo CUANDO ESTÁ MAL. Donde el comportamiento interno social describe la conducta doméstica normal, ésta describe la conducta doméstica bajo presión: el repliegue, la coraza o la reacción que aparece en casa cuando uno se siente atacado. Se activa en el eje madre-Yo.",
-    une: ["madre", "persExtDefensa", "huida", "resistencia"],
+    une: ["madre", "yo", "persExtDefensa"],
   },
   {
     k: "comportExtDefensa",
@@ -440,7 +454,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (b) => b22(Math.abs(b.mes - b.anio)),
     significado:
       "Cómo se comporta la persona fuera de la familia —con amigos, en el trabajo, en público— cuando está en dificultad. Es la protección en el terreno social ampliado: la retirada, la agresividad, la fachada o la sobreadaptación que salen ante los demás cuando no puede sostener su registro de siempre. Sale del eje Yo-padre, el mundo de lo público y lo laboral.",
-    une: ["padre", "persExtDefensa", "busqSalida"],
+    une: ["yo", "padre", "persExtDefensa"],
   },
   {
     k: "persExtDefensa",
@@ -457,7 +471,7 @@ export const POSICIONES: Posicion[] = [
       "La cara que la persona pone ante el mundo cuando está en modo defensa: la máscara propiamente dicha, el personaje que se fabrica para que los demás no vean que está mal. Igual que la personalidad externa social sintetiza las dos conductas sociales, ésta sintetiza las dos de defensa, pero por diferencia. Es la casilla que explica el desfase entre lo que alguien aparenta y lo que le pasa.",
     aviso:
       "Es la única casilla cuyo valor NO figura en la tabla de Iris: no se pudo comprobar de frente. Su valor queda fijado por tres caminos que coinciden —la fórmula del espejo, los numeritos del diagrama y el hecho de que sólo ese valor hace cuadrar a la vez la búsqueda de salida y la huida—, pero conviene que Iris lea ese círculo y lo confirme.",
-    une: ["nudoDolor", "comportIntDefensa", "comportExtDefensa"],
+    une: ["comportIntDefensa", "comportExtDefensa", "huida", "busqSalida"],
   },
   {
     k: "busqSalida",
@@ -472,7 +486,7 @@ export const POSICIONES: Posicion[] = [
     significado:
       "Por dónde busca salir la persona cuando ya está instalada en la defensa: a qué se agarra, dónde busca alivio, antes de llegar al extremo de la huida. Se construye enfrentando la esencia con la máscara, o sea, mide la distancia entre lo que uno es y el personaje que ha montado. Esa distancia es justo lo que sale a buscar fuera.",
     aviso: "Otras escuelas la llaman «nudo de escape» o «búsqueda de escape».",
-    une: ["comportExtDefensa", "persProfunda"],
+    une: ["persExtDefensa", "persProfunda"],
   },
   {
     k: "huida",
@@ -487,7 +501,7 @@ export const POSICIONES: Posicion[] = [
     calcula: (_b, ya) => b22(Math.abs(ya.resistencia - ya.persExtDefensa)),
     significado:
       "El fondo del pozo de la carta: por dónde huye la persona cuando el aguante ya no da más y sólo queda la máscara. Es la conducta de escape extrema —desaparecer, la fuga hacia adelante, el hundimiento, la adicción, el abandono—, según el arcano que caiga. Es la imagen especular del emersor: aquél suma para salir a flote, éste resta para hundirse. Leídos juntos dicen las dos salidas de una crisis: emerger o huir.",
-    une: ["comportIntDefensa", "resistencia"],
+    une: ["resistencia", "persExtDefensa"],
   },
 ];
 
