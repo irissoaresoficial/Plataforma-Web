@@ -27,6 +27,7 @@
  * Como las otras dos, no toca `localStorage`: habla con `lib/despacho`.
  */
 
+import Rescate from "../despacho/Rescate";
 import { useCallback, useEffect, useState } from "react";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
@@ -342,6 +343,7 @@ export default function FacturasScreen() {
           titulo="Facturas"
           pie="Numeradas seguidas, sin saltarse ninguna."
         />
+        <Rescate facturas />
 
         {/* ------------------------------------------------ quién factura */}
         {/*

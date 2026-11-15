@@ -33,6 +33,7 @@
  * trabaja.
  */
 
+import Rescate from "../despacho/Rescate";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
@@ -386,6 +387,9 @@ export default function PersonasScreen() {
               ]
         }
       />
+
+      {/* Lo que se quedó en el navegador antes de conectar la cuenta. */}
+      <Rescate alSubir={recargar} />
 
       {/* ================================================== buscar y las caras */}
       <section style={css(TARJETA + PAD + "margin-bottom:var(--gap-lg);min-width:0;")}>
