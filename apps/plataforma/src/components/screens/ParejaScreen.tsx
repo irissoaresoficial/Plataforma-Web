@@ -8,9 +8,10 @@ import { useApp, valida } from "@/lib/app-context";
 import { KDATA } from "@/lib/kdata";
 import Particulas from "../Particulas";
 import Pendiente from "../panel/Pendiente";
+import SuFicha, { nacimientoDe } from "../despacho/SuFicha";
 
 export default function ParejaScreen() {
-  const { r, re, p, setP, comparar, pr, comp } = useApp();
+  const { r, re, p, setP, comparar, pr, comp, pareja, id, vinculaParejaB } = useApp();
   /* Va aquí arriba, antes del `return` de más abajo: un hook no puede quedarse
      sin llamar según lo que haya en pantalla. */
   const { exporta, sinDialogo, trasPulsar, ayuda, guiaApple, cierraGuia, enApp, aSafari } = useExportar();
@@ -123,6 +124,18 @@ export default function ParejaScreen() {
           */}
           {titulo(r.nombre.texto)} &amp; {pr ? titulo(pr.nombre.texto) : "su pareja"}
         </h1>
+        {/* Guardada al comparar. Aquí sólo se dice de quién es la segunda
+            persona: su ficha en Personas, o crearla. Ver SuFicha. */}
+        {pr && pareja && pareja.estudioA === id && (
+          <div style={css("display:flex;justify-content:center;margin-top:var(--s3);")}>
+            <SuFicha
+              nombre={pareja.nombreB}
+              nacimiento={nacimientoDe(pareja.b.dia, pareja.b.mes, pareja.b.anio)}
+              clienteId={pareja.clienteIdB}
+              alUnir={vinculaParejaB}
+            />
+          </div>
+        )}
         <p style={css("font-size:var(--t-read);line-height:1.6;color:var(--text-3);margin:var(--s4) auto 0;max-width:62ch;text-wrap:pretty;")}>
           La comparativa no juzga si una pareja funciona: enseña qué traen los dos en común y qué les toca aprender juntos. Se
           miran cuatro cosas — el camino que forman entre los dos, si comparten estructura y portales, qué planos de consciencia

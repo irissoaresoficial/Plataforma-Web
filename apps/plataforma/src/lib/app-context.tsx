@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { analizaNombre, calcula, calculaEmpresa, comparaPareja, ficha as fichaDe, type Resultado, type ResultadoEmpresa, type Comparativa, type Ficha, type Genero } from "./engine";
 import { cargaHistorial, guardaHistorial, cargaEdits, guardaEdits, cargaActual, guardaActual, type HistItem, type Edits } from "./storage";
 import { borraUno as borraDeLaNube, funde, guardaUno, guardaVarios, hayNube, leeTodo } from "./estudios";
+import { cargaParejas, guardaPareja, idDePareja, vinculaB, type ParejaGuardada } from "./parejas";
 import { descargaRespaldo, importaRespaldo, type ResultadoImportar } from "./respaldo";
 import type { Capacidad } from "./roles";
 
@@ -431,6 +432,12 @@ type Ctx = {
   pr: Resultado | null;
   comp: Comparativa | null;
   comparar: () => void;
+  /** La comparativa en pantalla, tal como se ha guardado. */
+  pareja: ParejaGuardada | null;
+  /** Abre una comparativa guardada. false si su primer estudio no está. */
+  abrePareja: (x: ParejaGuardada) => boolean;
+  /** Une la segunda persona de la comparativa a su ficha. */
+  vinculaParejaB: (clienteId: string) => void;
   marca: string;
   anioUniversal: number;
 };
@@ -472,6 +479,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [p, setPState] = useState<FormState>(FORM_VACIO);
   const [pr, setPr] = useState<Resultado | null>(null);
   const [comp, setComp] = useState<Comparativa | null>(null);
+  /** La comparativa que hay en pantalla, ya guardada. */
+  const [pareja, setPareja] = useState<ParejaGuardada | null>(null);
 
   // Hasta que no se ha intentado recuperar el estudio abierto no se sabe si
   // hay uno; sin esta bandera el guardia de <Shell> vería `r` vacío en el
@@ -758,7 +767,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const resultado = calcula(entradaDe(p, anioUniversal));
     setPr(resultado);
     setComp(comparaPareja(r, resultado));
-  }, [p, r, anioUniversal]);
+    /* Y se guarda: quiénes son los dos, no el resultado (ver lib/parejas.ts).
+       Si ya existía, conserva la ficha de la segunda persona. */
+    const a = hist.find((h) => h.id === id);
+    if (!a) return;
+    const b = { nombre: p.nombre, ap1: p.ap1, ap2: p.ap2, apPadre2: p.apPadre2, apMadre2: p.apMadre2, dia: p.dia, mes: p.mes, anio: p.anio, genero: p.genero };
+    const pid = idDePareja(a.id, b);
+    const previa = cargaParejas().find((x) => x.id === pid);
+    const ahora = new Date().toISOString();
+    setPareja(
+      guardaPareja({
+        id: pid,
+        estudioA: a.id,
+        nombreA: a.nombre,
+        b,
+        nombreB: [p.nombre, p.ap1, p.ap2].filter(Boolean).join(" "),
+        ...(previa?.clienteIdB ? { clienteIdB: previa.clienteIdB } : {}),
+        creada: previa?.creada ?? ahora,
+        tocado: ahora,
+      })
+    );
+  }, [p, r, anioUniversal, hist, id]);
+
+  /** Abre una comparativa guardada: el estudio de la primera y se recalcula. */
+  const abrePareja = useCallback(
+    (x: ParejaGuardada) => {
+      const a = hist.find((h) => h.id === x.estudioA);
+      if (!a) return false;
+      const formA = formDe(a);
+      setF(formA);
+      aplica(formA);
+      setId(a.id);
+      const formB: FormState = { ...FORM_VACIO, ...x.b, tipo: "persona", genero: (x.b.genero as Genero) || "f" };
+      setPState(formB);
+      if (formA.tipo !== "empresa") {
+        const ra = calcula(entradaDe(formA, anioUniversal));
+        const rb = calcula(entradaDe(formB, anioUniversal));
+        setPr(rb);
+        setComp(comparaPareja(ra, rb));
+      }
+      setPareja(x);
+      setView("pareja");
+      return true;
+    },
+    [hist, aplica, anioUniversal, setView]
+  );
+
+  const vinculaParejaB = useCallback((clienteId: string) => {
+    setPareja((x) => (x ? vinculaB(x.id, clienteId) ?? x : x));
+  }, []);
 
   const value = useMemo<Ctx>(
     () => ({
@@ -810,10 +867,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       pr,
       comp,
       comparar,
+      pareja,
+      abrePareja,
+      vinculaParejaB,
       marca: MARCA,
       anioUniversal,
     }),
-    [view, setView, seccion, disciplina, base, parteFs, lateral, clienteAbierto, vinculaEstudio, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
+    [view, setView, seccion, disciplina, base, parteFs, lateral, clienteAbierto, vinculaEstudio, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, pareja, abrePareja, vinculaParejaB, anioUniversal]
   );
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;

@@ -36,6 +36,7 @@ import { useApp } from "@/lib/app-context";
 import { APOYO, BOTON_NORMAL, BOTON_PLANO, LECTURA, NOTA, RAYA, botonPrincipal, rotulo } from "@/lib/ui";
 import { titulo as enTitulo } from "@/lib/format";
 import { pideAbrir, todosLosEstudiosFs, type EstudioFs } from "@/lib/fengshui/estudio";
+import { cargaParejas, todasLasParejas, type ParejaGuardada } from "@/lib/parejas";
 import Confirmar from "../Confirmar";
 import { Estado, Vacio } from "./Piezas";
 import {
@@ -90,7 +91,7 @@ export default function FichaCliente({
   /** La ficha ya no existe: hay que cerrar la hoja. */
   alBorrar: () => void;
 }) {
-  const { hist, abrir, set, setView, focoFicha, setFocoFicha, setFacturaAbierta, setRecado, setClienteAbierto, vinculaEstudio, setParaCliente } = useApp();
+  const { hist, abrir, set, setView, focoFicha, setFocoFicha, setFacturaAbierta, setRecado, setClienteAbierto, vinculaEstudio, setParaCliente, abrePareja } = useApp();
 
   // Los datos de facturar se editan sobre una copia y se guardan al pulsar: si
   // se escribieran directamente, cada tecla sería una escritura en disco y un
@@ -152,6 +153,24 @@ export default function FichaCliente({
     if (buscado.length < 3) return [];
     return hist.filter((h) => !h.clienteId && (sinTildes(h.nombre).includes(buscado) || buscado.includes(sinTildes(h.nombre))));
   }, [ficha.nombre, hist]);
+
+  /* Las comparativas de pareja en las que sale: como primera persona (por la
+     ficha de su estudio) o como segunda (si Iris la unió). */
+  const [parejas, setParejas] = useState<ParejaGuardada[]>([]);
+  const [avisoPareja, setAvisoPareja] = useState("");
+  useEffect(() => {
+    let vivo = true;
+    void todasLasParejas()
+      .then((xs) => vivo && setParejas(xs))
+      .catch(() => vivo && setParejas(cargaParejas()));
+    return () => {
+      vivo = false;
+    };
+  }, [ficha.id]);
+  const susParejas = useMemo(
+    () => parejas.filter((x) => hist.find((h) => h.id === x.estudioA)?.clienteId === ficha.id || x.clienteIdB === ficha.id),
+    [parejas, hist, ficha.id]
+  );
 
   /* Los de Feng Shui viven en otra colección y llegan después. */
   const [deFengShui, setDeFengShui] = useState<EstudioFs[]>([]);
@@ -506,7 +525,7 @@ export default function FichaCliente({
       {/* ---------------------------------------------------------- sus estudios */}
       <div style={css(RAYA + "margin-top:var(--s5);padding-top:var(--s4);")}>
         <div style={css(rotulo() + "margin-bottom:var(--s2);")}>Sus estudios</div>
-        {estudios.length === 0 && deFengShui.length === 0 && porElNombre.length === 0 ? (
+        {estudios.length === 0 && deFengShui.length === 0 && susParejas.length === 0 && porElNombre.length === 0 ? (
           <Vacio>Todavía no le has hecho ninguno. Con el botón de arriba se abre la consulta con su nombre puesto.</Vacio>
         ) : (
           estudios.map((h, i) => (
@@ -540,8 +559,25 @@ export default function FichaCliente({
             </button>
           </div>
         ))}
+        {susParejas.map((x, i) => (
+          <div key={x.id} style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:var(--s3) 0;" + (i || estudios.length || deFengShui.length ? RAYA : ""))}>
+            <span style={css("flex:1 1 auto;min-width:0;font-size:var(--t-body);color:var(--text-2);overflow-wrap:anywhere;")}>
+              Pareja · {enTitulo(x.nombreA)} y {enTitulo(x.nombreB)}
+              <span style={css(NOTA + "display:block;margin-top:2px;")}>Comparada el {new Date(x.tocado).toLocaleDateString("es-ES")}</span>
+            </span>
+            <button
+              onClick={() => {
+                if (!abrePareja(x)) setAvisoPareja("El estudio de la primera persona no está en esta lista: ábrelo primero desde Consulta.");
+              }}
+              style={css(BOTON_PLANO)}
+            >
+              Abrir la comparativa
+            </button>
+          </div>
+        ))}
+        {avisoPareja && <p role="status" style={css(APOYO + "margin:var(--s2) 0 0;color:var(--text-2);")}>{avisoPareja}</p>}
         {porElNombre.length > 0 && (
-          <div style={css((estudios.length || deFengShui.length ? RAYA + "margin-top:var(--s2);" : "") + "padding-top:var(--s3);")}>
+          <div style={css((estudios.length || deFengShui.length || susParejas.length ? RAYA + "margin-top:var(--s2);" : "") + "padding-top:var(--s3);")}>
             <span style={css(NOTA + "display:block;margin-bottom:var(--s2);")}>
               Con un nombre parecido, sin unir a ninguna ficha. ¿Son suyos?
             </span>

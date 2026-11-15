@@ -621,6 +621,13 @@ service cloud.firestore {
     match /fengshui-planos/{id} { allow read, write: if esAdmin(); }
 
     /*
+     * LAS COMPARATIVAS DE PAREJA (15 de noviembre de 2026). Se guarda quiénes
+     * son los dos —nombres y fechas de nacimiento—, no el resultado. Datos de
+     * terceros, como `estudios`: sólo administración.
+     */
+    match /parejas/{id} { allow read, write: if esAdmin(); }
+
+    /*
      * LO QUE CUESTA LA PUBLICIDAD: UN DOCUMENTO POR DÍA.
      *
      * Gerson, el 20 de octubre de 2026: quiere ver en la plataforma el gasto y
