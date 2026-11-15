@@ -512,10 +512,11 @@ export default function FacturasScreen() {
         )}
       </div>
 
-      {/* `data-hoja` lo lee la hoja de impresión: al imprimir, la rejilla de dos
+      {/* `data-folio` (antes `data-hoja`, que ahora es el nombre de las hojas
+       * laterales y les pone 580 px de ancho) lo lee la hoja de impresión: al imprimir, la rejilla de dos
        * columnas se deshace para que la factura salga a todo el folio. */}
       {apartado === "facturas" && (
-      <div data-dos="" data-hoja="">
+      <div data-dos="" data-folio="">
         {/* ------------------------------------------------------- la lista */}
         {/* El aviso va FUERA de la tarjeta de la lista, no dentro: dentro de
          * una tarjeta no va otra tarjeta — lo que separa es una línea. */}

@@ -1450,8 +1450,10 @@ button:not(:disabled):active {
    * Su pantalla es una rejilla de dos columnas —la lista y el documento— y al
    * imprimir la lista desaparece por ser `data-chrome`, pero la rejilla sigue
    * en pie: el documento se quedaba metido en la columna estrecha, de 300 px,
-   * y salía la factura impresa en un tercio del folio. */
-  [data-hoja] {
+   * y salía la factura impresa en un tercio del folio.
+   * Se llama `data-folio`: `data-hoja` es ahora la hoja lateral en cristal
+   * (580 px de ancho), y compartir nombre aplastaba la pantalla de Facturas. */
+  [data-folio] {
     display: block !important;
   }
 
