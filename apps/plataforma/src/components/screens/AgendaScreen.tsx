@@ -43,9 +43,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD_SM, RAYA, TARJETA, botonPrincipal, rotulo } from "@/lib/ui";
+import { APOYO, BOTON_PLANO, NOTA, PAD_SM, RAYA, TARJETA, botonPrincipal, rotulo } from "@/lib/ui";
 import Confirmar from "../Confirmar";
-import { AvisoNavegador, Avatar, Estado, Vacio, useEstrecho } from "../despacho/Piezas";
+import { AvisoNavegador, Estado, Vacio, useEstrecho } from "../despacho/Piezas";
 import HojaLateral from "../despacho/HojaLateral";
 import MiniCalendario from "../despacho/MiniCalendario";
 import RejillaSemana, { COLOR_TIPO } from "../despacho/RejillaSemana";
@@ -398,7 +398,20 @@ export default function AgendaScreen() {
       >
         {hora(c.inicioISO)}
       </span>
-      <Avatar nombre={nombreDe(c.personaId)} tamano={32} />
+      {/* La inicial en el color de su clase: el mismo que el bloque de la
+          rejilla, para que lista y rejilla se lean igual. */}
+      <span
+        aria-hidden="true"
+        style={css(
+          `flex:none;display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;font-size:var(--t-mini);font-weight:500;` +
+            (c.estado === "anulada"
+              ? "background:var(--surface-2);color:var(--text-3);"
+              : `background:${COLOR_TIPO[c.tipo].fondo};color:${COLOR_TIPO[c.tipo].tinta};`) +
+            (c.estado === "pedida" ? `outline:1.5px dashed ${COLOR_TIPO[c.tipo].fondo};outline-offset:2px;` : "")
+        )}
+      >
+        {(nombreDe(c.personaId).trim().charAt(0) || "?").toLocaleUpperCase("es")}
+      </span>
       <span style={css("flex:1 1 auto;min-width:0;")}>
         <span style={css("display:block;font-size:var(--t-read);color:var(--text);overflow-wrap:anywhere;")}>
           {nombreDe(c.personaId)}
@@ -447,9 +460,9 @@ export default function AgendaScreen() {
     const dias = cuadriculaDelMes(ancla);
     const hoy = claveDia(new Date());
     return (
-      <div style={css("display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;")}>
+      <div style={css("display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;")}>
         {["lun", "mar", "mié", "jue", "vie", "sáb", "dom"].map((d) => (
-          <div key={d} style={css(NOTA + "background:var(--surface);text-align:center;padding:7px 0;font-weight:600;color:var(--text-4);")}>
+          <div key={d} style={css(NOTA + "text-align:center;padding:4px 0 6px;")}>
             {d}
           </div>
         ))}
@@ -459,6 +472,7 @@ export default function AgendaScreen() {
             .filter((c) => claveDia(new Date(c.inicioISO)) === k)
             .sort((a, b) => a.inicioISO.localeCompare(b.inicioISO));
           const esDeEsteMes = d.getMonth() === ancla.getMonth();
+          const esHoy = k === hoy;
           return (
             <button
               key={k}
@@ -466,44 +480,64 @@ export default function AgendaScreen() {
                 setAncla(d);
                 elegirVista("dia");
               }}
+              aria-label={diaLargo(d) + (delDia.length ? `, ${delDia.length} citas` : "")}
               style={css(
-                "display:flex;flex-direction:column;gap:3px;align-items:stretch;text-align:left;cursor:pointer;border:none;font-family:inherit;" +
-                  "min-height:86px;padding:6px 7px;background:" +
-                  (esDeEsteMes ? "var(--surface)" : "var(--surface-2)") +
-                  ";"
+                "display:flex;flex-direction:column;gap:3px;align-items:stretch;text-align:left;cursor:pointer;font-family:inherit;min-width:0;" +
+                  `min-height:${estrecho ? 58 : 92}px;padding:6px;border-radius:var(--r-sm);` +
+                  "border:1px solid var(--border);background:" +
+                  (esDeEsteMes ? "var(--surface-solid)" : "transparent") +
+                  ";" +
+                  (esDeEsteMes ? "" : "opacity:.55;")
               )}
             >
               <span
                 data-cifras=""
                 style={css(
-                  "font-size:var(--t-mini);font-weight:600;line-height:1;color:" +
-                    (k === hoy ? "var(--accion)" : esDeEsteMes ? "var(--text-2)" : "var(--text-4)") +
-                    ";"
+                  "display:inline-grid;place-items:center;align-self:flex-start;width:26px;height:26px;border-radius:50%;font-size:var(--t-mini);line-height:1;" +
+                    (esHoy ? "background:var(--cita-hoy);color:var(--cita-hoy-tx);font-weight:500;" : "color:var(--text-2);")
                 )}
               >
                 {d.getDate()}
               </span>
-              {/* En estrecho no caben los nombres: se dice cuántas hay, que es
-                  lo que se necesita para decidir en qué día entrar. */}
-              {estrecho
-                ? delDia.length > 0 && (
-                    <span style={css("font-size:var(--t-micro);color:var(--text-4);line-height:1.2;")}>{delDia.length}</span>
-                  )
-                : delDia.slice(0, 3).map((c) => (
+              {/* En estrecho no caben los nombres: un punto por cita, en su
+                  color. En ancho, hasta tres pastillas con hora y nombre. */}
+              {estrecho ? (
+                delDia.length > 0 && (
+                  <span style={css("display:flex;flex-wrap:wrap;gap:3px;padding-left:2px;")}>
+                    {delDia.slice(0, 4).map((c) => (
+                      <span
+                        key={c.id}
+                        style={css(
+                          "width:7px;height:7px;border-radius:50%;background:" +
+                            (c.estado === "anulada" ? "var(--text-4)" : COLOR_TIPO[c.tipo].fondo) +
+                            ";box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--text) 14%, transparent);"
+                        )}
+                      />
+                    ))}
+                  </span>
+                )
+              ) : (
+                delDia.slice(0, 3).map((c) => {
+                  const anulada = c.estado === "anulada";
+                  const { fondo, tinta } = anulada ? { fondo: "var(--surface-2)", tinta: "var(--text-3)" } : COLOR_TIPO[c.tipo];
+                  return (
                     <span
                       key={c.id}
+                      data-cifras=""
                       style={css(
-                        "font-size:var(--t-micro);line-height:1.25;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" +
-                          "padding-left:5px;border-left:2px solid " +
-                          (c.estado === "anulada" ? "var(--text-4)" : "var(--gold)") +
-                          ";"
+                        `display:block;font-size:var(--t-micro);line-height:1.3;padding:2px 6px;border-radius:var(--r-pill);background:${fondo};color:${tinta};` +
+                          "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" +
+                          (anulada ? "text-decoration:line-through;" : "") +
+                          (c.estado === "pedida" ? `box-shadow:inset 0 0 0 1px ${tinta};` : "")
                       )}
                     >
                       {hora(c.inicioISO)} {nombreDe(c.personaId)}
                     </span>
-                  ))}
+                  );
+                })
+              )}
               {!estrecho && delDia.length > 3 && (
-                <span style={css("font-size:var(--t-micro);color:var(--text-4);")}>y {delDia.length - 3} más</span>
+                <span style={css("font-size:var(--t-micro);color:var(--text-3);padding-left:4px;")}>y {delDia.length - 3} más</span>
               )}
             </button>
           );
@@ -546,11 +580,22 @@ export default function AgendaScreen() {
       .sort((x, y) => x.inicioISO.localeCompare(y.inicioISO));
   }, [citas]);
 
+  /** Las del mes que se mira, sin las anuladas: la cifra de la vista de mes. */
+  const delMes = useMemo(() => {
+    if (!ancla) return 0;
+    return citas.filter((c) => {
+      const d = new Date(c.inicioISO);
+      return c.estado !== "anulada" && d.getMonth() === ancla.getMonth() && d.getFullYear() === ancla.getFullYear();
+    }).length;
+  }, [citas, ancla]);
+
   const cifras = cargando
     ? []
     : [
         { n: hoyQuedan, que: "Hoy" },
-        { n: enLosDias.filter((c) => c.estado !== "anulada").length, que: vista === "semana" ? "Esta semana" : "Este día" },
+        vista === "mes"
+          ? { n: delMes, que: "Este mes" }
+          : { n: enLosDias.filter((c) => c.estado !== "anulada").length, que: vista === "semana" ? "Esta semana" : "Este día" },
         ...(porConfirmar > 0 ? [{ n: porConfirmar, que: "Por confirmar", viva: true }] : []),
       ];
 
@@ -921,16 +966,20 @@ export default function AgendaScreen() {
                   onClick={() => setTipo(t.k)}
                   aria-pressed={tipo === t.k}
                   style={css(
-                    "flex:1;padding:8px 10px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:var(--t-body);font-weight:590;white-space:nowrap;" +
-                      "transition:background var(--t-normal) var(--curva),color var(--t-normal),box-shadow var(--t-normal);background:" +
-                      (tipo === t.k ? "var(--surface-solid)" : "transparent") +
-                      ";box-shadow:" +
-                      (tipo === t.k ? "var(--shadow-sm)" : "none") +
+                    "flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:var(--r-pill);border:none;cursor:pointer;font-family:inherit;font-size:var(--t-body);font-weight:500;white-space:nowrap;" +
+                      "transition:background var(--t-normal) var(--curva),color var(--t-normal);background:" +
+                      /* La elegida se rellena con el color que tendrá su bloque
+                         en la rejilla: se ve qué se va a apuntar antes de
+                         apuntarlo. */
+                      (tipo === t.k ? COLOR_TIPO[t.k].fondo : "transparent") +
                       ";color:" +
-                      (tipo === t.k ? "var(--text)" : "var(--text-3)") +
+                      (tipo === t.k ? COLOR_TIPO[t.k].tinta : "var(--text-3)") +
                       ";"
                   )}
                 >
+                  {tipo !== t.k && (
+                    <span aria-hidden="true" style={css(`width:8px;height:8px;border-radius:50%;flex:none;background:${COLOR_TIPO[t.k].fondo};box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--text) 14%, transparent);`)} />
+                  )}
                   {t.label}
                 </button>
               ))}
@@ -965,14 +1014,34 @@ export default function AgendaScreen() {
         abierta={Boolean(sesionAbierta)}
         cerrar={() => setHoja(null)}
         titulo={sesionAbierta ? nombreDe(sesionAbierta.personaId) : ""}
-        pie={
-          sesionAbierta
-            ? `${diaLargo(new Date(sesionAbierta.inicioISO))} a las ${hora(sesionAbierta.inicioISO)} · ${duracion(sesionAbierta.minutos)}`
-            : undefined
-        }
+        /* Sin pie: el día, la hora y lo que dura van en la pieza de color de
+           justo debajo, que se lee mejor. Repetirlos aquí era decirlo dos veces. */
       >
         {sesionAbierta && (
           <div>
+            {/* LA CITA EN SU COLOR, arriba: la misma pieza que en la rejilla,
+                en grande. Se sabe qué es y a qué hora antes de leer nada. */}
+            {(() => {
+              const anulada = sesionAbierta.estado === "anulada";
+              const { fondo, tinta } = anulada ? { fondo: "var(--surface-2)", tinta: "var(--text-2)" } : COLOR_TIPO[sesionAbierta.tipo];
+              const fin = new Date(new Date(sesionAbierta.inicioISO).getTime() + sesionAbierta.minutos * 60000).toISOString();
+              return (
+                <div
+                  style={css(
+                    `background:${fondo};color:${tinta};border-radius:var(--r);padding:var(--s4) var(--s5);margin-bottom:var(--s4);` +
+                      (sesionAbierta.estado === "pedida" ? `border:1.5px dashed ${tinta};` : "border:1px solid transparent;")
+                  )}
+                >
+                  <div style={css("font-size:var(--t-mini);font-weight:500;opacity:.86;")}>{etiquetaTipo(sesionAbierta.tipo)}</div>
+                  <div data-cifras="" style={css("font-size:var(--t-head);font-weight:500;letter-spacing:-.03em;line-height:1.1;margin-top:4px;" + (anulada ? "text-decoration:line-through;" : ""))}>
+                    {hora(sesionAbierta.inicioISO)} – {hora(fin)}
+                  </div>
+                  <div style={css("font-size:var(--t-body);margin-top:4px;opacity:.86;")}>
+                    {diaLargo(new Date(sesionAbierta.inicioISO)).replace(/^./, (c) => c.toLocaleUpperCase("es"))} · {duracion(sesionAbierta.minutos)}
+                  </div>
+                </div>
+              );
+            })()}
             <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;")}>
               <Estado
                 texto={
@@ -986,7 +1055,6 @@ export default function AgendaScreen() {
                 }
                 color={COLOR_ESTADO[sesionAbierta.estado]}
               />
-              <span style={css(NOTA)}>{etiquetaTipo(sesionAbierta.tipo)}</span>
             </div>
 
             {sesionAbierta.notas && (
@@ -1000,14 +1068,14 @@ export default function AgendaScreen() {
                   hecha» pasa entonces al botón plano — es de otro momento del
                   día, no de este. */}
               {sesionAbierta.estado === "pedida" && (
-                <button onClick={() => void confirmar(sesionAbierta)} style={css(BOTON_NORMAL)}>
+                <button onClick={() => void confirmar(sesionAbierta)} style={css(botonPrincipal())}>
                   Confirmar esta hora
                 </button>
               )}
               {sesionAbierta.estado !== "hecha" && (
                 <button
                   onClick={() => void marcarHecha(sesionAbierta)}
-                  style={css(sesionAbierta.estado === "pedida" ? BOTON_PLANO : BOTON_NORMAL)}
+                  style={css(sesionAbierta.estado === "pedida" ? BOTON_PLANO : botonPrincipal())}
                 >
                   Ya está hecha
                 </button>
