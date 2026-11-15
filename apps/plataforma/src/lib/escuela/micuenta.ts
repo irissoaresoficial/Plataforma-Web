@@ -84,6 +84,38 @@ export async function cambiaNombre(uid: string, nombre: string): Promise<void> {
   await updateDoc(doc(base(), "usuarios", uid), { nombre: limpio });
 }
 
+/* --------------------------------------------------------- correo de contacto */
+
+/**
+ * EL CORREO AL QUE TE ESCRIBEN, APARTE DEL CORREO CON EL QUE ENTRAS.
+ *
+ * Son dos cosas distintas y se confunden: con el de entrar se abre la puerta
+ * (lo guarda Firebase Auth y lo cambia la escuela), y éste es el que se le da
+ * a las clientas. Iris puede entrar con uno y querer que le escriban a otro.
+ *
+ * Se guarda en su ficha, en `contacto`. Hoy sólo lo puede cambiar la
+ * administración —las reglas dejan a un alumno tocar su nombre y su foto, nada
+ * más— y por eso la pantalla sólo se lo enseña a ella.
+ */
+export async function miContacto(uid: string): Promise<string> {
+  const f = await getDoc(doc(base(), "usuarios", uid));
+  const c = f.exists() ? f.data().contacto : "";
+  return typeof c === "string" ? c : "";
+}
+
+/** Un correo con pinta de correo. No se comprueba que exista —eso sólo lo
+ *  sabe quien lo recibe—, sólo que no tenga un error a la vista. */
+export function correoValido(c: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c.trim());
+}
+
+export async function cambiaContacto(uid: string, correo: string): Promise<void> {
+  const limpio = correo.trim().toLowerCase();
+  if (limpio && !correoValido(limpio)) throw new Error("Ese correo tiene algo mal escrito.");
+  if (limpio.length > 254) throw new Error("Ese correo es demasiado largo.");
+  await updateDoc(doc(base(), "usuarios", uid), { contacto: limpio });
+}
+
 /* ------------------------------------------------- descargar lo que hay */
 
 export type MisDatos = {

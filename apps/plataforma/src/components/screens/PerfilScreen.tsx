@@ -44,9 +44,19 @@ import { cambiaFoto } from "@/lib/escuela/foto";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
-import { BOTON_NORMAL, BOTON_PLANO, CABECERA, CAMPO, LECTURA, NOTA, TITULO, PANTALLA, botonPrincipal } from "@/lib/ui";
+import { BOTON_NORMAL, BOTON_PLANO, CABECERA, CAMPO, LECTURA, NOTA, TITULO, PANTALLA, botonPrincipal, rotulo } from "@/lib/ui";
 import Confirmar from "@/components/Confirmar";
-import { cambiaNombre, descarga, miBaja, misDatos, pideBaja, type Baja } from "@/lib/escuela/micuenta";
+import {
+  cambiaContacto,
+  cambiaNombre,
+  correoValido,
+  descarga,
+  miBaja,
+  miContacto,
+  misDatos,
+  pideBaja,
+  type Baja,
+} from "@/lib/escuela/micuenta";
 import { NOMBRE_ROL } from "@/lib/roles";
 import {
   avance as repoAvance,
@@ -66,7 +76,7 @@ function fecha(iso: string): string {
 }
 
 export default function PerfilScreen() {
-  const { usuario, esAdmin, ponFoto } = useSesion();
+  const { usuario, esAdmin, ponFoto, conNube } = useSesion();
   const quieto = useReducedMotion();
   const uid = usuario ? usuario.uid : "";
 
@@ -153,6 +163,46 @@ export default function PerfilScreen() {
       vivo = false;
     };
   }, [uid, esAdmin]);
+
+  /* ------------------------------------------------- el correo de contacto */
+  /* `null` mientras no se ha leído: así el campo no sale vacío un instante y
+     parece que no había nada guardado. */
+  const [contacto, setContacto] = useState<string | null>(null);
+  const [contactoNuevo, setContactoNuevo] = useState("");
+  const [guardandoContacto, setGuardandoContacto] = useState(false);
+  const [avisoContacto, setAvisoContacto] = useState("");
+  const [falloContacto, setFalloContacto] = useState("");
+  useEffect(() => {
+    if (!uid || !esAdmin || !conNube) return;
+    let vivo = true;
+    miContacto(uid)
+      .then((c) => {
+        if (!vivo) return;
+        setContacto(c);
+        setContactoNuevo(c);
+      })
+      .catch(() => vivo && setContacto(""));
+    return () => {
+      vivo = false;
+    };
+  }, [uid, esAdmin, conNube]);
+
+  async function guardaContacto() {
+    setFalloContacto("");
+    setAvisoContacto("");
+    setGuardandoContacto(true);
+    try {
+      await cambiaContacto(uid, contactoNuevo);
+      const limpio = contactoNuevo.trim().toLowerCase();
+      setContacto(limpio);
+      setContactoNuevo(limpio);
+      setAvisoContacto(limpio ? "Guardado." : "Quitado. Te escribirán al correo con el que entras.");
+    } catch (e) {
+      setFalloContacto(e instanceof Error ? e.message : "No se ha podido guardar.");
+    } finally {
+      setGuardandoContacto(false);
+    }
+  }
 
   async function guardaNombre() {
     setFallo("");
@@ -258,7 +308,9 @@ export default function PerfilScreen() {
 
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s5);max-width:min(var(--ancho),960px);")}>
-      <h1 style={css(TITULO + "margin:0;")}>Tu perfil</h1>
+      {/* Para Iris esto es la configuración de su plataforma; para un alumno,
+          su perfil. Misma pantalla, el nombre que cada uno buscaría. */}
+      <h1 style={css(TITULO + "margin:0;")}>{esAdmin ? "Configuración" : "Tu perfil"}</h1>
 
 
       {/* ------------------------------------------------------ quién eres */}
@@ -361,6 +413,114 @@ export default function PerfilScreen() {
         )}
       </section>
 
+      {esAdmin && (
+        <>
+          {/* ------------------------------------------------------ correos */}
+          <section style={css(tarjeta)}>
+            <h2 style={css(CABECERA + "margin:0 0 var(--s3);font-size:var(--t-head);")}>Tus correos</h2>
+
+            <div style={css("display:grid;gap:var(--s4);")}>
+              <div>
+                <div style={css(NOTA + "margin-bottom:5px;")}>Con el que entras</div>
+                <div style={css("font-size:var(--t-body);color:var(--text);overflow-wrap:anywhere;")}>{email}</div>
+                <p style={css(NOTA + "margin:6px 0 0;line-height:1.5;max-width:58ch;")}>
+                  Es tu llave para abrir la plataforma. No se cambia desde aquí.
+                </p>
+              </div>
+
+              <div style={css("border-top:1px solid var(--border);padding-top:var(--s4);")}>
+                <label htmlFor="mi-contacto" style={css(NOTA + "display:block;margin-bottom:7px;")}>
+                  Al que te escriben tus clientas
+                </label>
+                <div style={css("display:flex;gap:var(--s3);flex-wrap:wrap;align-items:flex-start;")}>
+                  <input
+                    id="mi-contacto"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder={email}
+                    value={contactoNuevo}
+                    disabled={!conNube || contacto === null}
+                    onChange={(e) => {
+                      setContactoNuevo(e.target.value);
+                      setAvisoContacto("");
+                      setFalloContacto("");
+                    }}
+                    maxLength={254}
+                    style={css(CAMPO + "flex:1 1 240px;")}
+                  />
+                  {(() => {
+                    const cambia =
+                      contacto !== null &&
+                      contactoNuevo.trim().toLowerCase() !== contacto &&
+                      (!contactoNuevo.trim() || correoValido(contactoNuevo));
+                    return (
+                      <button
+                        onClick={guardaContacto}
+                        disabled={!cambia || guardandoContacto}
+                        style={css(BOTON_NORMAL + "flex:none;" + (cambia ? "" : "opacity:.55;cursor:not-allowed;"))}
+                      >
+                        {guardandoContacto ? "Guardando…" : "Guardar"}
+                      </button>
+                    );
+                  })()}
+                </div>
+                <p style={css(NOTA + "margin:8px 0 0;line-height:1.5;max-width:58ch;")}>
+                  {!conNube
+                    ? "Sin conexión con la base de datos: aquí no se puede guardar nada."
+                    : "Si lo dejas en blanco, se usa el de entrar."}
+                </p>
+                {avisoContacto && <p style={css(NOTA + "margin:8px 0 0;color:var(--text-2);")}>{avisoContacto}</p>}
+                {falloContacto && (
+                  <p style={css(NOTA + "margin:8px 0 0;color:var(--alarma, #C0392B);line-height:1.5;")}>{falloContacto}</p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* ------------------------------------------------------- Google */}
+          {/*
+              NADA DICE «CONECTADO» SI NO LO ESTÁ (CLAUDE.md, reglas de
+              honestidad). Hasta que la plataforma esté dada de alta en Google
+              —el proyecto de Google Cloud con su pantalla de permisos, que
+              tiene que crear la escuela con su cuenta— el botón no puede hacer
+              nada. Se enseña apagado y se dice por qué, en vez de esconderlo o
+              de dejar que abra una ventana de Google que da error.
+          */}
+          <section style={css(tarjeta)}>
+            <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s2);")}>
+              <span style={css(rotulo())}>Google</span>
+              <span
+                style={css(
+                  "display:inline-flex;align-items:center;gap:6px;font-size:var(--t-micro);font-weight:500;" +
+                    "padding:3px 10px;border-radius:var(--r-pill);" +
+                    "background:color-mix(in srgb, var(--text) 8%, transparent);color:var(--text-3);"
+                )}
+              >
+                <span aria-hidden style={css("width:6px;height:6px;border-radius:50%;background:var(--text-4);")} />
+                Sin conectar
+              </span>
+            </div>
+            <h2 style={css(CABECERA + "margin:0 0 var(--s2);font-size:var(--t-head);")}>
+              Tu calendario y tu Drive
+            </h2>
+            <p style={css(LECTURA + "margin:0 0 var(--s4);max-width:60ch;")}>
+              Conecta tu Gmail y las citas de tu Google Calendar saldrán en la agenda, junto a las de aquí. Lo que
+              guardes desde la plataforma podrá ir a tu Drive.
+            </p>
+            <div style={css("display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;")}>
+              <button disabled aria-disabled style={css(botonPrincipal(false))}>
+                Conectar con Google
+              </button>
+              <span style={css(NOTA + "line-height:1.5;max-width:46ch;")}>
+                Todavía no se puede: falta dar de alta la plataforma en Google. Cuando esté, será pulsar aquí y elegir
+                tu cuenta.
+              </span>
+            </div>
+          </section>
+        </>
+      )}
+
       {/* --------------------------------------------------- lo que llevas */}
       {/* Iris no es alumna: enseñarle una racha y unos puntos sería inventarle
           un juego que no juega. Ve su escuela, no su expediente. */}
@@ -377,6 +537,9 @@ export default function PerfilScreen() {
       )}
 
       {/* ------------------------------------------------------- medallas */}
+      {/* Tampoco para Iris: en su configuración, seis medallas de alumna a
+          cero son ruido entre sus ajustes. */}
+      {!esAdmin && (
       <section>
         <div style={css("display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s3);flex-wrap:wrap;")}>
           <h2 style={css(CABECERA + "margin:0;font-size:var(--t-head);")}>Medallas</h2>
@@ -428,6 +591,7 @@ export default function PerfilScreen() {
           ))}
         </div>
       </section>
+      )}
 
       {/* --------------------------------------------------------- tu cuenta */}
       {/*

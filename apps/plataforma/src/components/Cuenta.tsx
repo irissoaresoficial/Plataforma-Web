@@ -20,7 +20,7 @@ import { useSesion } from "@/lib/sesion";
 import { useApp } from "@/lib/app-context";
 
 export default function Cuenta() {
-  const { usuario, sale } = useSesion();
+  const { usuario, sale, esAdmin } = useSesion();
   const { setView } = useApp();
   const [abierto, setAbierto] = useState(false);
   const caja = useRef<HTMLDivElement>(null);
@@ -96,7 +96,7 @@ export default function Cuenta() {
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              Mi perfil
+              {esAdmin ? "Configuración" : "Mi perfil"}
             </button>
 
             <button
