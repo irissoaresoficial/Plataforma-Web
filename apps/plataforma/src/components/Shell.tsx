@@ -1,27 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { css } from "@/lib/css";
 import { useApp, PESTANAS, VISTAS_DE_ESTUDIO, llaveDe, dondeEmpieza } from "@/lib/app-context";
 import { useSesion } from "@/lib/sesion";
-import ConsultaScreen from "./screens/ConsultaScreen";
-import CorreosScreen from "./screens/CorreosScreen";
-import PanelScreen from "./screens/PanelScreen";
-import EstudioScreen from "./screens/EstudioScreen";
-import ParejaScreen from "./screens/ParejaScreen";
-import FengShuiScreen from "./screens/FengShuiScreen";
-import AgendaScreen from "./screens/AgendaScreen";
-import PersonasScreen from "./screens/PersonasScreen";
-import FacturasScreen from "./screens/FacturasScreen";
-import EscuelaScreen from "./screens/EscuelaScreen";
-import CursosScreen from "./screens/CursosScreen";
-import MetricasScreen from "./screens/MetricasScreen";
-import ComunidadScreen from "./screens/ComunidadScreen";
-import PerfilScreen from "./screens/PerfilScreen";
-import GestionScreen from "./screens/GestionScreen";
-import TableroScreen from "./screens/TableroScreen";
-import MiAgendaScreen from "./screens/MiAgendaScreen";
-import MisMetricasScreen from "./screens/MisMetricasScreen";
-import DetalleModal from "./DetalleModal";
+import dynamic from "next/dynamic";
 import Sidebar, { Dock } from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
 import Tema from "./Tema";
@@ -34,6 +16,103 @@ import Novedades from "./despacho/Novedades";
 import Particulas from "./Particulas";
 import SinEstudio from "./SinEstudio";
 import type { View } from "@/lib/app-context";
+
+/*
+ * CADA PANTALLA, CON SU PROPIO CÓDIGO Y SÓLO CUANDO SE ABRE.
+ *
+ * Aquí se importaban las diecinueve pantallas de golpe, arriba del archivo. Y
+ * como todas las direcciones (/, /panel, /agenda…) pintan este mismo Shell,
+ * cualquiera de ellas obligaba a descargar y a leer el código de TODAS: un
+ * alumno que entraba a ver su curso se bajaba el Feng Shui, las facturas, el
+ * panel de la Kábala y las métricas de Iris antes de ver nada. Medido el 15 de
+ * noviembre de 2026: 2,6 MB de JavaScript (784 KB comprimidos) en cada
+ * dirección, la misma cifra en todas, que es la firma de este fallo.
+ *
+ * Ahora cada pantalla es un trozo aparte que se pide cuando hace falta. La
+ * primera que se ve llega antes porque viene sola, y las demás se traen
+ * después, en silencio, cuando el navegador no tiene nada mejor que hacer
+ * (`calienta`, abajo): al pulsar en la columna ya están en casa y el cambio
+ * es igual de inmediato que antes.
+ *
+ * Mientras llega, un hueco del alto de la pantalla y nada más. Sin rueda ni
+ * «Cargando…»: casi siempre ya está y un aviso sería un parpadeo; y el hueco
+ * evita que el pie suba de golpe y vuelva a bajar.
+ */
+const CARGAS: Record<View, () => Promise<{ default: ComponentType }>> = {
+  tablero: () => import("./screens/TableroScreen"),
+  miagenda: () => import("./screens/MiAgendaScreen"),
+  mismetricas: () => import("./screens/MisMetricasScreen"),
+  inicio: () => import("./screens/ConsultaScreen"),
+  panel: () => import("./screens/PanelScreen"),
+  estudio: () => import("./screens/EstudioScreen"),
+  pareja: () => import("./screens/ParejaScreen"),
+  fengshui: () => import("./screens/FengShuiScreen"),
+  agenda: () => import("./screens/AgendaScreen"),
+  personas: () => import("./screens/PersonasScreen"),
+  facturas: () => import("./screens/FacturasScreen"),
+  escuela: () => import("./screens/EscuelaScreen"),
+  cursos: () => import("./screens/CursosScreen"),
+  comunidad: () => import("./screens/ComunidadScreen"),
+  perfil: () => import("./screens/PerfilScreen"),
+  metricas: () => import("./screens/MetricasScreen"),
+  gestion: () => import("./screens/GestionScreen"),
+  correos: () => import("./screens/CorreosScreen"),
+};
+
+/* La ficha que se abre al pulsar un número o un arcano. Sólo existe en las
+   pantallas del estudio, pero arrastraba los diccionarios del documento en
+   los tres idiomas (por `chips` → `documento`) a la primera carga de todo el
+   mundo. Va aparte y llega justo después, sin que nadie espere por ella: hasta
+   que alguien pulsa algo no tiene nada que pintar. */
+const DetalleModal = dynamic(() => import("./DetalleModal"));
+
+const Hueco = () => <div aria-hidden="true" style={css("min-height:70vh;")} />;
+
+/* `next/dynamic` necesita ver cada `import()` escrito a mano para partir el
+   código, así que va una por una y no en un bucle sobre CARGAS. */
+const TableroScreen = dynamic(() => import("./screens/TableroScreen"), { loading: Hueco });
+const MiAgendaScreen = dynamic(() => import("./screens/MiAgendaScreen"), { loading: Hueco });
+const MisMetricasScreen = dynamic(() => import("./screens/MisMetricasScreen"), { loading: Hueco });
+const ConsultaScreen = dynamic(() => import("./screens/ConsultaScreen"), { loading: Hueco });
+const PanelScreen = dynamic(() => import("./screens/PanelScreen"), { loading: Hueco });
+const EstudioScreen = dynamic(() => import("./screens/EstudioScreen"), { loading: Hueco });
+const ParejaScreen = dynamic(() => import("./screens/ParejaScreen"), { loading: Hueco });
+const FengShuiScreen = dynamic(() => import("./screens/FengShuiScreen"), { loading: Hueco });
+const AgendaScreen = dynamic(() => import("./screens/AgendaScreen"), { loading: Hueco });
+const PersonasScreen = dynamic(() => import("./screens/PersonasScreen"), { loading: Hueco });
+const FacturasScreen = dynamic(() => import("./screens/FacturasScreen"), { loading: Hueco });
+const EscuelaScreen = dynamic(() => import("./screens/EscuelaScreen"), { loading: Hueco });
+const CursosScreen = dynamic(() => import("./screens/CursosScreen"), { loading: Hueco });
+const ComunidadScreen = dynamic(() => import("./screens/ComunidadScreen"), { loading: Hueco });
+const PerfilScreen = dynamic(() => import("./screens/PerfilScreen"), { loading: Hueco });
+const MetricasScreen = dynamic(() => import("./screens/MetricasScreen"), { loading: Hueco });
+const GestionScreen = dynamic(() => import("./screens/GestionScreen"), { loading: Hueco });
+const CorreosScreen = dynamic(() => import("./screens/CorreosScreen"), { loading: Hueco });
+
+/**
+ * Trae en segundo plano el código de las pantallas que esta persona puede
+ * abrir, de una en una y sólo cuando el navegador está desocupado. Las que no
+ * le tocan no se piden: a un alumno no le hace falta el despacho ni para
+ * tenerlo guardado.
+ */
+function calienta(vistas: View[]) {
+  const ocioso: (fn: () => void) => void =
+    typeof window !== "undefined" && "requestIdleCallback" in window
+      ? (fn) => window.requestIdleCallback(fn, { timeout: 4000 })
+      : (fn) => window.setTimeout(fn, 600);
+  let i = 0;
+  const siguiente = () => {
+    const v = vistas[i++];
+    if (!v) return;
+    CARGAS[v]()
+      .catch(() => {
+        /* Si falla aquí no pasa nada: se volverá a pedir al abrir la pantalla,
+           y ahí sí se verá el error si lo hay. */
+      })
+      .finally(() => ocioso(siguiente));
+  };
+  ocioso(siguiente);
+}
 
 /*
  * LAS PANTALLAS QUE YA VAN EN CRISTAL.
@@ -128,6 +207,14 @@ export default function Shell() {
    * devuelve false para todo y lo seguro es llevarte a tu sitio.
    */
   const vista = usuario != null && !puede(llaveDe(view)) ? dondeEmpieza(puede) : view;
+
+  /* Una vez pintada la primera pantalla, el resto de las suyas se va
+     trayendo sin prisa (ver CARGAS, arriba). Depende sólo de quién es: no se
+     repite al navegar. */
+  useEffect(() => {
+    if (usuario == null) return;
+    calienta((Object.keys(CARGAS) as View[]).filter((v) => puede(llaveDe(v))));
+  }, [usuario, puede]);
 
   /*
    * SIN ESTUDIO NO HAY PANEL, PERO TAMPOCO SE MUEVE A NADIE DE SITIO.
