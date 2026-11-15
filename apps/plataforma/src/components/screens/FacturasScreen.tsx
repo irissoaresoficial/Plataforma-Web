@@ -42,7 +42,6 @@ import {
   claveDia,
   emisorCargado,
   emisorCompleto,
-  euros,
   falta,
   faltaDelEmisor,
   fechaDeFactura,
@@ -50,7 +49,6 @@ import {
   nuevoId,
   numeroDe,
   sinTildes,
-  totales,
   EMISOR,
   type Cliente,
   type DatosFiscales,
@@ -59,6 +57,7 @@ import {
 import { AvisoNavegador, useEstrecho, useLlevaAlDetalle } from "../despacho/Piezas";
 import HojaFactura from "../despacho/HojaFactura";
 import Mesa, { VerGrande } from "../despacho/Mesa";
+import Historial from "../despacho/Historial";
 import Control from "../despacho/Control";
 import Resumen from "../despacho/Resumen";
 import Plantillas, { GuardarPlantilla, usePlantillas } from "../despacho/Plantillas";
@@ -101,12 +100,6 @@ const paraEditar = (d: DatosFiscales): DatosFiscales => ({
   direccion: falta(d.direccion) ? "" : d.direccion,
 });
 
-const COLOR_ESTADO: Record<Factura["estado"], string> = {
-  borrador: "var(--gold)",
-  emitida: "var(--green)",
-  anulada: "var(--red)",
-};
-
 export default function FacturasScreen() {
   const { marca, setView, setClienteAbierto, facturaAbierta, setFacturaAbierta, recado, setRecado } = useApp();
 
@@ -135,6 +128,7 @@ export default function FacturasScreen() {
    */
   const estrecho = useEstrecho(900);
   const [grande, setGrande] = useState(false);
+  const [historial, setHistorial] = useState(false);
   const editor = useRef<HTMLDivElement>(null);
   const [altoEditor, setAltoEditor] = useState(640);
   useEffect(() => {
@@ -616,49 +610,6 @@ export default function FacturasScreen() {
       */}
       {apartado === "facturas" && (
         <>
-          {/* ------------------------------------------------ la tira */}
-          <div data-chrome="1" style={css(TARJETA + "padding:5px 5px 5px var(--s4);display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3);min-width:0;min-height:46px;")}>
-            <span style={css(rotulo() + "flex:none;")}>
-              {cargando ? "Un momento…" : lista.length === 1 ? "1 factura" : `${lista.length} facturas`}
-            </span>
-            <div style={css("flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding:2px;")}>
-              {!cargando && lista.length === 0 && !estrecho && <span style={css(NOTA + "align-self:center;")}>Todavía ninguna. La primera ya está empezada aquí abajo.</span>}
-              {lista.map((f) => {
-                const on = enPantalla?.id === f.id;
-                return (
-                  <button
-                    key={f.id}
-                    onClick={() => abrir(f)}
-                    aria-pressed={on}
-                    style={css(
-                      "flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:var(--r-pill);cursor:pointer;font:inherit;font-size:var(--t-mini);white-space:nowrap;" +
-                        (on ? "background:var(--accion-suave);border:1px solid var(--accion-borde);color:var(--accion);" : "background:transparent;border:1px solid var(--border);color:var(--text-2);")
-                    )}
-                  >
-                    <span style={css("width:7px;height:7px;border-radius:50%;background:" + COLOR_ESTADO[f.estado] + ";")} />
-                    <span data-cifras="" style={css("font-weight:500;")}>{f.estado === "borrador" ? "Borrador" : numeroDe(f)}</span>
-                    <span style={css("max-width:14ch;overflow:hidden;text-overflow:ellipsis;")}>{f.cliente.nombre || "Sin nombre"}</span>
-                    <span data-cifras="">{euros(totales(f).total)}</span>
-                  </button>
-                );
-              })}
-            </div>
-            {/* En el móvil el folio no cabe al lado: se abre desde aquí arriba,
-                que es donde se mira antes de bajar por el formulario. */}
-            {estrecho && enPantalla && (
-              <button onClick={() => setGrande(true)} style={css(BOTON_PLANO + "flex:none;")}>
-                Ver
-              </button>
-            )}
-            {/* Con una factura nueva sin tocar ya abierta, «Nueva factura» no
-                hace nada: ya estás en ella. Sale en cuanto hay otra cosa. */}
-            {!borradorIntacto && (
-              <button onClick={nueva} style={css(BOTON_NORMAL + "flex:none;padding:7px 16px;")}>
-                {estrecho ? "Nueva" : "Nueva factura"}
-              </button>
-            )}
-          </div>
-
           {/* ------------------------------------------------ la ventana partida */}
           <div
             data-folio=""
@@ -678,6 +629,28 @@ export default function FacturasScreen() {
                   (estrecho ? "" : "min-height:0;overflow-y:auto;padding:2px 6px 2px 2px;scrollbar-width:thin;")
               )}
             >
+              {/* EL HISTORIAL, A UN BOTÓN. Ger: «no me los metas ahí llenando;
+                  un pequeño apartado que diga ver historial y se abra una
+                  lista tipo pop-up». Esta fila va a la altura de la barra del
+                  zoom del folio, para que las dos mitades empiecen igual. */}
+              <div data-chrome="1" style={css("display:flex;align-items:center;gap:var(--s2);flex:none;")}>
+                <button type="button" onClick={() => setHistorial(true)} style={css(BOTON_PLANO + "padding:6px 14px;")}>
+                  Historial
+                  <span data-cifras="" style={css("color:var(--text-3);")}>
+                    {cargando ? "" : `· ${lista.length}`}
+                  </span>
+                </button>
+                {estrecho && enPantalla && (
+                  <button type="button" onClick={() => setGrande(true)} style={css(BOTON_PLANO + "padding:6px 14px;")}>
+                    Ver la factura
+                  </button>
+                )}
+                {!borradorIntacto && (
+                  <button type="button" onClick={nueva} style={css(BOTON_PLANO + "padding:6px 14px;margin-left:auto;")}>
+                    + Nueva factura
+                  </button>
+                )}
+              </div>
           {abierta ? (
               /* --------------------------------------------- una ya emitida */
               <section data-chrome="1" style={css(TARJETA + PAD)}>
@@ -983,11 +956,6 @@ export default function FacturasScreen() {
                 </section>
               )
             )}
-              {estrecho && enPantalla && (
-                <button onClick={() => setGrande(true)} style={css(BOTON_NORMAL + "align-self:stretch;")}>
-                  Ver la factura
-                </button>
-              )}
               <AvisoNavegador que="Las facturas" />
             </div>
 
@@ -1004,6 +972,7 @@ export default function FacturasScreen() {
               ))}
           </div>
           {grande && enPantalla && <VerGrande f={enPantalla} marca={marca} alCerrar={() => setGrande(false)} />}
+          {historial && <Historial lista={lista} actual={enPantalla?.id ?? null} onAbrir={abrir} alCerrar={() => setHistorial(false)} />}
         </>
       )}
     </main>
