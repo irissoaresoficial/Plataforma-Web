@@ -33,7 +33,7 @@ import { APOYO, BOTON_NORMAL, CABECERA, CAMPO, LECTURA, NOTA, PANTALLA, TARJETA,
    de correos llegaba vacía y la pantalla no enseñaba ninguno. */
 const WEB = (process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com").replace("://escueladesabiduria33.com", "://www.escueladesabiduria33.com");
 const LISTA = "marco";
-const TOPE_POR_DEFECTO = 50;
+const TOPE_POR_DEFECTO = 95;
 
 type Textos = { dia: string; asunto: string; previo: string; titular: string; cuerpo: string; boton: string };
 type Envio = Textos & { id: string; aInscritas: boolean };
@@ -362,7 +362,7 @@ export default function CorreosScreen() {
               }}
             />
           </label>
-          <span style={css(APOYO)}>Salen 50 al día, contando los recordatorios de las inscritas de ese día.</span>
+          <span style={css(APOYO)}>Salen 95 al día, contando los recordatorios de las inscritas de ese día.</span>
         </div>
       </section>
 

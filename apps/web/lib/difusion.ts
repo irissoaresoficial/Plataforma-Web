@@ -130,9 +130,11 @@ Até logo à noite,`,
 export const LISTA = 'marco';
 export const COLECCION = 'difusion';
 export const CONFIG = 'difusion-config';
-/** Cincuenta al día, decidido por Gerson el 10 de noviembre: la lista se
- *  reparte en mañanas seguidas. Cuenta también los recordatorios del día. */
-export const TOPE_POR_DEFECTO = 50;
+/** Noventa y cinco al día. Gerson lo puso en 50 el 10 de noviembre y lo subió
+ *  a 95 el 15 («sí, súbelo a 95 al día»): con 50 la invitación no llegaba a
+ *  todas antes del recordatorio del 23. 95 cabe en el plan gratuito de Resend
+ *  (100 al día), y cuenta también los recordatorios que salgan ese día. */
+export const TOPE_POR_DEFECTO = 95;
 
 const CAMPOS: Array<keyof Textos> = ['dia', 'asunto', 'previo', 'titular', 'cuerpo', 'boton'];
 
