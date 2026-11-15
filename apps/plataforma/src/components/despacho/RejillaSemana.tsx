@@ -395,7 +395,16 @@ export default function RejillaSemana({
                         (anulada ? "" : "box-shadow:0 1px 2px rgba(34,29,31,.08),0 6px 16px rgba(34,29,31,.1);")
                     )}
                   >
-                    {corto ? (
+                    {carriles > 1 && dias.length > 3 ? (
+                      /* Dos citas a la vez en una columna de semana: cada una
+                         tiene medio carril, y ahí un nombre sólo cabe roto
+                         («Nu…»). Va su inicial y la hora; el nombre entero
+                         está en el título y en la ficha al pulsar. */
+                      <span data-cifras="" style={css("display:flex;flex-direction:column;align-items:center;gap:2px;font-size:var(--t-micro);line-height:1.1;")}>
+                        <span style={css("font-size:var(--t-mini);font-weight:500;")}>{inicial(nombre)}</span>
+                        <span style={css("opacity:.86;")}>{hora(c.inicioISO)}</span>
+                      </span>
+                    ) : corto ? (
                       <span
                         data-cifras=""
                         style={css(
@@ -439,7 +448,7 @@ export default function RejillaSemana({
                     {/* Abajo, la inicial de quien viene y qué es —o lo que le
                         falta—, sólo si el bloque da para ello: en uno corto el
                         nombre es lo único que no puede faltar. */}
-                    {altoBloque >= 90 && (
+                    {altoBloque >= 90 && !(carriles > 1 && dias.length > 3) && (
                       <span style={css("margin-top:auto;display:flex;align-items:center;gap:6px;min-width:0;")}>
                         <span
                           aria-hidden="true"
