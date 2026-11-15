@@ -337,6 +337,11 @@ export function valida(f: FormState): string | null {
   return null;
 }
 
+/** Para comparar nombres sin que estorben tildes ni mayúsculas. */
+function sinTildesCtx(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
 type Ctx = {
   view: View;
   setView: (v: View) => void;
@@ -403,6 +408,10 @@ type Ctx = {
   hist: HistItem[];
   calcular: () => void;
   abrir: (h: HistItem) => void;
+  /** Ata un estudio a una ficha de Personas (o lo desata, con null). */
+  vinculaEstudio: (estudioId: string, clienteId: string | null) => void;
+  /** Apunta de qué ficha sale el próximo estudio que se calcule. */
+  setParaCliente: (c: { id: string; nombre: string } | null) => void;
   borrar: (h: HistItem) => void;
   edits: Edits;
   /** Baja un fichero con todos los estudios de este navegador. */
@@ -440,6 +449,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [base, setBase] = useState<Base>("b22");
   const [parteFs, setParteFs] = useState<ParteFengShui>("datos");
   const [clienteAbierto, setClienteAbierto] = useState<string | null>(null);
+  /** La ficha desde la que se ha pulsado «Hacerle el estudio», para atarle el estudio que salga. */
+  const [paraCliente, setParaCliente] = useState<{ id: string; nombre: string } | null>(null);
   const [focoFicha, setFocoFicha] = useState<"nota" | null>(null);
   const [facturaAbierta, setFacturaAbierta] = useState<string | null>(null);
   const [recado, setRecado] = useState<string | null>(null);
@@ -502,6 +513,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
       f: empresa ? { tipo: "empresa", nombre: f.nombre, ap1: "", ap2: "", apPadre2: "", apMadre2: "", dia: "", mes: "", anio: "", genero: "n" } : { ...f },
       tocado: new Date().toISOString(),
     };
+    /* A QUIÉN PERTENECE. Si el estudio ya existía, conserva su ficha: volver a
+       calcularlo no puede desatarlo de su persona. Si viene de «Hacerle el
+       estudio» en una ficha, se ata a ella — pero sólo si el nombre sigue
+       siendo el de esa persona: si Iris lo cambió para estudiar a otra, no se
+       ata a nadie y lo decide ella desde el estudio. */
+    const previo = hist.find((h) => h.id === hid);
+    const deLaFicha =
+      paraCliente && sinTildesCtx(item.nombre).includes(sinTildesCtx(paraCliente.nombre).split(" ")[0] || "\u0000")
+        ? paraCliente.id
+        : undefined;
+    const clienteId = previo?.clienteId ?? deLaFicha;
+    if (clienteId) item.clienteId = clienteId;
+    setParaCliente(null);
     setHist((s) => {
       const next = [item].concat(s.filter((h) => h.id !== hid)).slice(0, 40);
       guardaHistorial(next);
@@ -511,12 +535,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
        guardado en el navegador y en la lista, así que un fallo de red no puede
        quitarle a Iris lo que acaba de levantar. Se vuelve a subir solo la
        próxima vez que se abra la plataforma, al fundir. */
-    if (hayNube()) void guardaUno(item).catch(() => {});
+    /* Con sus correcciones: sin ellas, recalcular un estudio ya corregido
+       dejaba las de la nube en blanco. */
+    if (hayNube()) void guardaUno(item, edits[hid]).catch(() => {});
     aplica(f);
     setId(hid);
     setView("panel");
     setSeccion("resumen");
-  }, [f, anioUniversal, aplica, setView]);
+  }, [f, anioUniversal, aplica, setView, hist, edits, paraCliente]);
+
+  /**
+   * ATAR (O DESATAR) UN ESTUDIO A UNA FICHA DE PERSONAS. Sólo lo llama Iris
+   * con un botón: nunca se ata solo por parecido de nombre.
+   */
+  const vinculaEstudio = useCallback(
+    (estudioId: string, clienteId: string | null) => {
+      const h = hist.find((x) => x.id === estudioId);
+      if (!h) return;
+      const { clienteId: _fuera, ...resto } = h;
+      void _fuera;
+      const nuevo: HistItem = { ...resto, ...(clienteId ? { clienteId } : {}), tocado: new Date().toISOString() };
+      setHist((s) => {
+        const next = s.map((x) => (x.id === estudioId ? nuevo : x));
+        guardaHistorial(next);
+        return next;
+      });
+      if (hayNube()) void guardaUno(nuevo, edits[estudioId]).catch(() => {});
+    },
+    [hist, edits]
+  );
 
   const abrir = useCallback(
     (h: HistItem) => {
@@ -728,6 +775,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setLateral,
       setSeccion,
       clienteAbierto,
+      vinculaEstudio,
+      setParaCliente,
       setClienteAbierto,
       focoFicha,
       setFocoFicha,
@@ -764,7 +813,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       marca: MARCA,
       anioUniversal,
     }),
-    [view, setView, seccion, disciplina, base, parteFs, lateral, clienteAbierto, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
+    [view, setView, seccion, disciplina, base, parteFs, lateral, clienteAbierto, vinculaEstudio, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, anioUniversal]
   );
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;

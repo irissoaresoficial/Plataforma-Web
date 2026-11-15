@@ -22,12 +22,10 @@
  * pantalla. Por eso ya no hay tres tarjetas —la hoja ES la tarjeta— y lo que
  * separa los bloques es una línea, que es lo que separa dentro de una tarjeta.
  *
- * LOS ESTUDIOS SE CRUZAN POR EL NOMBRE, y sigue siendo una atadura con cuerda:
- * el historial de estudios se guarda con un identificador hecho del nombre y la
- * fecha, y no sabe nada de esta ficha. Con base de datos, la ficha guardará el
- * identificador del estudio. Mientras tanto, cruzar por nombre acierta en el
- * caso que importa —Iris estudia a quien atiende— y cuando falla, falla por
- * defecto: no enseña un estudio que no es.
+ * LOS ESTUDIOS SE CRUZAN POR LA FICHA (15 de noviembre de 2026): cada estudio
+ * de Kábala, Numerología o Feng Shui guarda el id de esta ficha. Los de antes,
+ * que no lo tienen, salen aparte por el nombre y con un botón para unirlos:
+ * un nombre parecido es una pista, no una prueba.
  *
  * No toca `localStorage`: escribe por los repositorios de `lib/despacho`.
  */
@@ -37,6 +35,7 @@ import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { APOYO, BOTON_NORMAL, BOTON_PLANO, LECTURA, NOTA, RAYA, botonPrincipal, rotulo } from "@/lib/ui";
 import { titulo as enTitulo } from "@/lib/format";
+import { pideAbrir, todosLosEstudiosFs, type EstudioFs } from "@/lib/fengshui/estudio";
 import Confirmar from "../Confirmar";
 import { Estado, Vacio } from "./Piezas";
 import {
@@ -91,7 +90,7 @@ export default function FichaCliente({
   /** La ficha ya no existe: hay que cerrar la hoja. */
   alBorrar: () => void;
 }) {
-  const { hist, abrir, set, setView, focoFicha, setFocoFicha, setFacturaAbierta, setRecado, setClienteAbierto } = useApp();
+  const { hist, abrir, set, setView, focoFicha, setFocoFicha, setFacturaAbierta, setRecado, setClienteAbierto, vinculaEstudio, setParaCliente } = useApp();
 
   // Los datos de facturar se editan sobre una copia y se guardan al pulsar: si
   // se escribieran directamente, cada tecla sería una escritura en disco y un
@@ -139,13 +138,32 @@ export default function FichaCliente({
 
   const susFacturas = useMemo(() => todasFacturas.filter((f) => f.clienteId === ficha.id), [ficha.id, todasFacturas]);
 
-  /** Los estudios que ya se le han hecho. Ver la nota de arriba sobre por qué
-   *  se cruzan por el nombre. */
-  const estudios = useMemo(() => {
+  /**
+   * LOS ESTUDIOS QUE YA SE LE HAN HECHO.
+   *
+   * Desde el 15 de noviembre de 2026 cada estudio guarda el id de su ficha
+   * (`clienteId`) y se cruza por ahí. Los de antes no lo tienen: siguen
+   * saliendo por el nombre, pero aparte y con un botón para atarlos, porque
+   * un nombre parecido no es una prueba. Los atados a OTRA ficha no salen.
+   */
+  const estudios = useMemo(() => hist.filter((h) => h.clienteId === ficha.id), [ficha.id, hist]);
+  const porElNombre = useMemo(() => {
     const buscado = sinTildes(ficha.nombre);
     if (buscado.length < 3) return [];
-    return hist.filter((h) => sinTildes(h.nombre).includes(buscado) || buscado.includes(sinTildes(h.nombre)));
+    return hist.filter((h) => !h.clienteId && (sinTildes(h.nombre).includes(buscado) || buscado.includes(sinTildes(h.nombre))));
   }, [ficha.nombre, hist]);
+
+  /* Los de Feng Shui viven en otra colección y llegan después. */
+  const [deFengShui, setDeFengShui] = useState<EstudioFs[]>([]);
+  useEffect(() => {
+    let vivo = true;
+    void todosLosEstudiosFs()
+      .then((xs) => vivo && setDeFengShui(xs.filter((x) => x.clienteId === ficha.id)))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [ficha.id]);
 
   /* ------------------------------------------------------------- escrituras */
 
@@ -221,6 +239,8 @@ export default function FichaCliente({
    * persona. Va entero en el primer campo y que ella lo coloque.
    */
   const hacerleElEstudio = () => {
+    /* El estudio que salga se ata a esta ficha (ver `calcular`). */
+    setParaCliente({ id: ficha.id, nombre: ficha.nombre });
     set("tipo", "persona");
     set("nombre", ficha.nombre);
     set("ap1", "");
@@ -313,7 +333,7 @@ export default function FichaCliente({
         <button onClick={hacerleFactura} style={css(BOTON_PLANO)}>
           Hacerle una factura
         </button>
-        {estudios.length === 0 && (
+        {estudios.length === 0 && porElNombre.length === 0 && (
           <button onClick={hacerleElEstudio} style={css(BOTON_PLANO)}>
             Hacerle el estudio
           </button>
@@ -486,7 +506,7 @@ export default function FichaCliente({
       {/* ---------------------------------------------------------- sus estudios */}
       <div style={css(RAYA + "margin-top:var(--s5);padding-top:var(--s4);")}>
         <div style={css(rotulo() + "margin-bottom:var(--s2);")}>Sus estudios</div>
-        {estudios.length === 0 ? (
+        {estudios.length === 0 && deFengShui.length === 0 && porElNombre.length === 0 ? (
           <Vacio>Todavía no le has hecho ninguno. Con el botón de arriba se abre la consulta con su nombre puesto.</Vacio>
         ) : (
           estudios.map((h, i) => (
@@ -502,6 +522,46 @@ export default function FichaCliente({
               </button>
             </div>
           ))
+        )}
+        {deFengShui.map((x, i) => (
+          <div key={x.id} style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:var(--s3) 0;" + (i || estudios.length ? RAYA : ""))}>
+            <span style={css("flex:1 1 auto;min-width:0;font-size:var(--t-body);color:var(--text-2);overflow-wrap:anywhere;")}>
+              Feng Shui · {x.direccion || "vivienda sin dirección"}
+              <span style={css(NOTA + "display:block;margin-top:2px;")}>Tocado el {new Date(x.actualizado).toLocaleDateString("es-ES")}</span>
+            </span>
+            <button
+              onClick={() => {
+                pideAbrir(x.id);
+                setView("fengshui");
+              }}
+              style={css(BOTON_PLANO)}
+            >
+              Abrir el estudio
+            </button>
+          </div>
+        ))}
+        {porElNombre.length > 0 && (
+          <div style={css((estudios.length || deFengShui.length ? RAYA + "margin-top:var(--s2);" : "") + "padding-top:var(--s3);")}>
+            <span style={css(NOTA + "display:block;margin-bottom:var(--s2);")}>
+              Con un nombre parecido, sin unir a ninguna ficha. ¿Son suyos?
+            </span>
+            {porElNombre.map((h, i) => (
+              <div key={h.id} style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:var(--s3) 0;" + (i ? RAYA : ""))}>
+                <span style={css("flex:1 1 auto;min-width:0;font-size:var(--t-body);color:var(--text-2);overflow-wrap:anywhere;")}>
+                  {enTitulo(h.nombre)}
+                  <span style={css(NOTA + "display:block;margin-top:2px;")}>
+                    {h.f.tipo === "empresa" ? `Empresa · valor del nombre ${h.corazon}` : `${h.fecha} · corazón ${h.corazon}`}
+                  </span>
+                </span>
+                <button onClick={() => vinculaEstudio(h.id, ficha.id)} style={css(BOTON_PLANO)}>
+                  Sí, es suyo
+                </button>
+                <button onClick={() => abrir(h)} style={css(BOTON_PLANO)}>
+                  Abrir
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 

@@ -19,6 +19,12 @@ export type HistItem = {
    * leen como «lo más viejo que hay» — que es exactamente lo que son.
    */
   tocado?: string;
+  /**
+   * La ficha de Personas (colección `clientes`) de quien es el estudio. Entró
+   * el 15 de noviembre de 2026; los de antes no lo tienen y se cruzan por el
+   * nombre hasta que Iris los ata con un botón. Nunca se ata solo.
+   */
+  clienteId?: string;
   /** Los estudios guardados antes de que existieran empresas no traen `tipo`
    *  ni `genero`; al faltar se leen como persona, que es lo que eran. */
   f: {

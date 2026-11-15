@@ -78,6 +78,12 @@ export type Cliente = Omit<Persona, "consentimiento" | "notas"> & {
    */
   nif?: string;
   direccion?: string;
+  /**
+   * Fecha de nacimiento, «AAAA-MM-DD». Entró el 15 de noviembre de 2026 para
+   * crear la ficha desde un estudio, que ya la tiene. Puede faltar: las fichas
+   * de antes no la traen y una ficha creada a mano no la pide.
+   */
+  nacimiento?: string;
 };
 
 /* ------------------------------------------------------------------ */

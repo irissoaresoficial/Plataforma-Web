@@ -83,6 +83,11 @@ export type EstudioFs = {
   /** Lo que escribe quien hace el estudio en cada zona. Va al informe. */
   notas: Partial<Record<string, string>>;
   notaGeneral: string;
+  /**
+   * La ficha de Personas (`clientes`) de quien encarga el estudio. null = sin
+   * atar todavía. Se ata con un botón, nunca solo.
+   */
+  clienteId: string | null;
   creado: string;
   actualizado: string;
 };
@@ -112,6 +117,7 @@ export function estudioNuevo(): EstudioFs {
     ocupantes: [],
     notas: {},
     notaGeneral: "",
+    clienteId: null,
     creado: ahora,
     actualizado: ahora,
   };
@@ -381,6 +387,20 @@ export async function traePlano(id: string): Promise<string | null> {
     }
   }
   return arriba;
+}
+
+/** Todos los estudios, los de aquí y los de la cuenta. Para la ficha de Personas. */
+export async function todosLosEstudiosFs(): Promise<EstudioFs[]> {
+  return (await sincronizaEstudios()) ?? cargaEstudios();
+}
+
+/** Deja apuntado cuál abrir al entrar en Feng Shui. Para ir desde una ficha. */
+export function pideAbrir(id: string) {
+  try {
+    localStorage.setItem(LLAVE_ACTUAL, JSON.stringify(id));
+  } catch {
+    /* sin almacenamiento: se abrirá el más reciente */
+  }
 }
 
 /** Borrar un estudio de verdad: aquí lo hace la pantalla, arriba esto. */

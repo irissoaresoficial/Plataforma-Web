@@ -1,4 +1,5 @@
 "use client";
+import SuFicha, { nacimientoDe } from "../despacho/SuFicha";
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
@@ -33,7 +34,8 @@ const SECCIONES: Array<{ k: Seccion; label: string; pie: string }> = [
 ];
 
 export default function PanelScreen() {
-  const { r, re, seccion, setSeccion, disciplina, base, verNumero } = useApp();
+  const { r, re, seccion, setSeccion, disciplina, base, verNumero, id, hist, vinculaEstudio } = useApp();
+  const abierto = hist.find((h) => h.id === id);
   const quieto = useReducedMotion();
   const tira = useRef<HTMLElement>(null);
 
@@ -149,6 +151,17 @@ export default function PanelScreen() {
           <div style={css("font-size:var(--t-body);color:var(--text-3);margin-top:6px;")} data-cifras="">
             {r ? `${r.fecha.dia} / ${r.fecha.mes} / ${r.fecha.anio}` : "Estudio de empresa · sólo el nombre"}
           </div>
+          {/* De quién es: su ficha en Personas, o crearla. Ver SuFicha. */}
+          {abierto && (
+            <div style={css("margin-top:var(--s3);")}>
+              <SuFicha
+                nombre={abierto.nombre}
+                nacimiento={abierto.f.tipo === "empresa" ? undefined : nacimientoDe(abierto.f.dia, abierto.f.mes, abierto.f.anio)}
+                clienteId={abierto.clienteId}
+                alUnir={(cid) => vinculaEstudio(abierto.id, cid)}
+              />
+            </div>
+          )}
         </div>
 
         {/*

@@ -99,6 +99,7 @@ import mesa from "../fengshui/Mesa.module.css";
 import Informe from "../fengshui/Informe";
 import Escena from "../fengshui/Escena";
 import DondeSeGuarda from "../fengshui/DondeSeGuarda";
+import SuFicha, { nacimientoDe, seParecen } from "../despacho/SuFicha";
 
 const PARTES: Array<{ k: ParteFengShui; label: string }> = [
   { k: "datos", label: "Vivienda" },
@@ -261,6 +262,9 @@ export default function FengShuiScreen() {
         return [...nuevos, ...fundida];
       });
       setE((prev) => {
+        /* Si desde una ficha se pidió uno que aquí no estaba, se abre ése. */
+        const pedido = !l.some((x) => x.id === id) ? arriba.find((x) => x.id === id) : undefined;
+        if (pedido) return pedido;
         const deArriba = arriba.find((x) => x.id === prev.id);
         if (deArriba) return deArriba.actualizado > prev.actualizado ? deArriba : prev;
         /* Si no había nada abierto aquí, se abre el más reciente de la cuenta. */
@@ -580,6 +584,16 @@ export default function FengShuiScreen() {
                 <Campo label="Cliente">
                   <input value={e.cliente} onChange={(ev) => cambia({ cliente: ev.target.value })} placeholder="Nombre y apellidos" style={css(CAMPO)} />
                 </Campo>
+                {/* De quién es: su ficha en Personas, o crearla. Ver SuFicha. */}
+                <SuFicha
+                  nombre={e.cliente}
+                  nacimiento={(() => {
+                    const o = e.ocupantes.find((x) => seParecen(x.nombre, e.cliente));
+                    return o ? nacimientoDe(o.dia, o.mes, o.anio) : undefined;
+                  })()}
+                  clienteId={e.clienteId}
+                  alUnir={(cid) => cambia({ clienteId: cid })}
+                />
                 <Campo label="Dirección">
                   <input value={e.direccion} onChange={(ev) => cambia({ direccion: ev.target.value })} placeholder="Calle, número, ciudad" style={css(CAMPO)} />
                 </Campo>
