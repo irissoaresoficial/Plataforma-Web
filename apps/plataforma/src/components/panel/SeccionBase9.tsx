@@ -71,6 +71,8 @@ export default function SeccionBase9() {
     nombre: e.nombre,
     apellido1: e.apellido1,
     apellido2: e.apellido2,
+    apellidoPadre2: e.apellidoPadre2,
+    apellidoMadre2: e.apellidoMadre2,
     dia: e.dia,
     mes: e.mes,
     anio: e.anio,
@@ -196,6 +198,14 @@ export default function SeccionBase9() {
           Es la innovación de esta escuela: además del nombre y la fecha, se leen los <b>cuatro</b> apellidos — los dos
           del padre y los dos de la madre. Los dos primeros traen el linaje masculino; los de las abuelas, el femenino.
         </p>
+        {/* Iris no encontraba dónde se escribían. Si faltan las abuelas, se
+            dice dónde ponerlas en vez de dejar dos rayas sin explicación. */}
+        {(!e.apellidoPadre2 || !e.apellidoMadre2) && (
+          <p style={css(NOTA + "margin:0 0 var(--s3);max-width:64ch;")}>
+            Los apellidos de las abuelas se escriben en <b style={css("color:var(--text-3);")}>Consulta</b>, en «Apellidos de
+            los padres»: el 2.º apellido del padre y el 2.º de la madre. Después, «Generar el estudio» otra vez.
+          </p>
+        )}
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
           {b.herencias.map((h) => (
             <div

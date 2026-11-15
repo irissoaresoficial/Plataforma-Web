@@ -29,6 +29,9 @@
  * luego lo que se deduce—, se toca para abrir la ficha, y al pasar por encima
  * se encienden las líneas que salen de la casilla.
  *
+ * LAS OREJAS: 22 − n y 21 − n encima de cada casilla, menos en madre, Yo y
+ * padre, que son el día, el mes y el año (ver SIN_OREJAS).
+ *
  * TRES ESTADOS. Confirmada: forma normal. Reconstruida: con un punto dorado
  * abajo a la derecha. Pendiente: trazo discontinuo y un interrogante, nunca un
  * número inventado.
@@ -108,6 +111,15 @@ const LAMINA: Record<string, { x: number; y: number; color: string; forma?: Form
   persExtDefensa: { x: 405, y: 1040, color: C.oscuro },
   busqSalida: { x: 720, y: 1040, color: C.morado },
 };
+
+/**
+ * Las tres de la fecha NO llevan orejas. Iris, el 15 de noviembre de 2026,
+ * sobre una captura del estudio: «El día, mes y año no llevan orejas de
+ * Mickey». Madre (día), Yo (mes) y padre (año) son el dato de partida, no una
+ * casilla calculada, y tampoco salen en su ficha. Las dos búsquedas de fuera
+ * tampoco las llevan en el dibujo, como en la lámina, pero su ficha sí las da.
+ */
+const SIN_OREJAS = new Set(["madre", "yo", "padre"]);
 
 /** Las tres de la familia van rellenas, como en la lámina. Colores fijos en
  *  claro y en oscuro, así que la tinta de encima también es fija. */
@@ -271,7 +283,7 @@ export default function RejillaBase22({ base }: Props) {
           Casilla deducida: cuadra con la tabla de Iris, pero no hay fuente escrita.
         </span>
         <span style={css("font-size:var(--t-mini);color:var(--text-4);")}>
-          Las orejas: 22 menos el número y 21 menos el número.
+          Las orejas: 22 menos el número y 21 menos el número. El día, el mes y el año no llevan.
         </span>
       </div>
     </div>
@@ -574,6 +586,7 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: Tam }) {
                   llevan, como en la lámina; su ficha sí las da. */}
               {!falta &&
                 forma !== "suelto" &&
+                !SIN_OREJAS.has(p.k) &&
                 orejas(p.valor as number).map((o, j) => {
                   const ox = x + (j === 0 ? -1 : 1) * R * 0.92;
                   const oy = y - R * 0.96;
@@ -685,7 +698,7 @@ function fichaDe(p: Calculada, tabla: Calculada[], base: { dia: number; mes: num
   const bloques: Contenido["bloques"] = [];
 
   if (p.de) bloques.push({ label: "De dónde sale", texto: p.de + ".", tono: "normal" });
-  if (p.valor !== null) {
+  if (p.valor !== null && !SIN_OREJAS.has(p.k)) {
     const [a, b] = orejas(p.valor);
     bloques.push({
       label: "Las orejas",

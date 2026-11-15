@@ -225,6 +225,8 @@ export default function FichaCliente({
     set("nombre", ficha.nombre);
     set("ap1", "");
     set("ap2", "");
+    set("apPadre2", "");
+    set("apMadre2", "");
     setView("inicio");
   };
 

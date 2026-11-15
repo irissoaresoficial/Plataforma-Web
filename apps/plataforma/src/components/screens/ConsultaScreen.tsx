@@ -32,7 +32,11 @@ export default function ConsultaScreen() {
   const err = valida(f);
   const listo = !err;
 
-  const campo = (label: string, key: "nombre" | "ap1" | "ap2" | "dia" | "mes" | "anio", numeric?: boolean) => (
+  const campo = (
+    label: string,
+    key: "nombre" | "ap1" | "ap2" | "apPadre2" | "apMadre2" | "dia" | "mes" | "anio",
+    numeric?: boolean
+  ) => (
     <label style={css("display:flex;flex-direction:column;gap:5px;min-width:0;")}>
       <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>{label}</span>
       <input
@@ -151,6 +155,25 @@ export default function ConsultaScreen() {
                 <div style={css("display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);")}>
                   {campo("Primer apellido", "ap1")}
                   {campo("Segundo apellido", "ap2")}
+                </div>
+              )}
+              {/* Los apellidos de los padres, para «Herencias familiares». La
+               * base 9 lee CUATRO: el 1.º y el 2.º de la persona son ya el
+               * primero del padre y el primero de la madre; faltan los segundos
+               * de cada uno, que son el linaje de las dos abuelas. Antes no
+               * había dónde escribirlos e Iris preguntó dónde iban. */}
+              {!empresa && (
+                <div style={css("display:flex;flex-direction:column;gap:5px;")}>
+                  <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>
+                    Apellidos de los padres · para las herencias familiares
+                  </span>
+                  <span style={css("font-size:var(--t-mini);line-height:1.45;color:var(--text-4);")}>
+                    El primero de cada uno ya está arriba. Aquí va el segundo: el de las abuelas. Si no se sabe, se deja en blanco.
+                  </span>
+                  <div style={css("display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);")}>
+                    {campo("2.º apellido del padre", "apPadre2")}
+                    {campo("2.º apellido de la madre", "apMadre2")}
+                  </div>
                 </div>
               )}
               {/* La empresa se lee entera de su nombre: no se le pide fecha

@@ -21,7 +21,20 @@ export type HistItem = {
   tocado?: string;
   /** Los estudios guardados antes de que existieran empresas no traen `tipo`
    *  ni `genero`; al faltar se leen como persona, que es lo que eran. */
-  f: { tipo?: string; nombre: string; ap1: string; ap2: string; dia: string; mes: string; anio: string; genero?: string };
+  f: {
+    tipo?: string;
+    nombre: string;
+    ap1: string;
+    ap2: string;
+    /** Los segundos apellidos del padre y de la madre (las abuelas). Los
+     *  estudios de antes del 15 de noviembre de 2026 no los traen. */
+    apPadre2?: string;
+    apMadre2?: string;
+    dia: string;
+    mes: string;
+    anio: string;
+    genero?: string;
+  };
 };
 
 export function cargaHistorial(): HistItem[] {

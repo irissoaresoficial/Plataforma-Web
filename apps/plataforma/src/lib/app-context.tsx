@@ -232,8 +232,28 @@ export type ParteFengShui = "datos" | "brujula" | "plano" | "estrellas" | "infor
  *  apellidos, ni género, ni fecha: se lee entera de su nombre. */
 export type Tipo = "persona" | "empresa";
 
-export type FormState = { tipo: Tipo; nombre: string; ap1: string; ap2: string; dia: string; mes: string; anio: string; genero: Genero };
-const FORM_VACIO: FormState = { tipo: "persona", nombre: "", ap1: "", ap2: "", dia: "", mes: "", anio: "", genero: "f" };
+/**
+ * `ap1` y `ap2` son los dos apellidos de la persona: el 1.º es el primero del
+ * padre y el 2.º el primero de la madre. `apPadre2` y `apMadre2` son los
+ * SEGUNDOS apellidos del padre y de la madre —el linaje de las dos abuelas—, que
+ * la base 9 lee en «Herencias familiares». Hasta el 15 de noviembre de 2026 el
+ * cálculo los esperaba pero no había dónde escribirlos; Iris preguntó «¿dónde
+ * se escriben los apellidos para que los analicen también?». Son opcionales y
+ * no cambian ningún otro número.
+ */
+export type FormState = {
+  tipo: Tipo;
+  nombre: string;
+  ap1: string;
+  ap2: string;
+  apPadre2: string;
+  apMadre2: string;
+  dia: string;
+  mes: string;
+  anio: string;
+  genero: Genero;
+};
+const FORM_VACIO: FormState = { tipo: "persona", nombre: "", ap1: "", ap2: "", apPadre2: "", apMadre2: "", dia: "", mes: "", anio: "", genero: "f" };
 
 export type Detalle =
   | { tipo: "numero"; f: Ficha }
@@ -248,6 +268,8 @@ function entradaDe(f: FormState, anioUniversal: number) {
     nombre: f.nombre,
     apellido1: f.ap1,
     apellido2: f.ap2,
+    apellidoPadre2: f.apPadre2,
+    apellidoMadre2: f.apMadre2,
     dia: +f.dia,
     mes: +f.mes,
     anio: +f.anio,
@@ -265,6 +287,8 @@ function formDe(h: HistItem): FormState {
     nombre: h.f.nombre || "",
     ap1: h.f.ap1 || "",
     ap2: h.f.ap2 || "",
+    apPadre2: h.f.apPadre2 || "",
+    apMadre2: h.f.apMadre2 || "",
     dia: h.f.dia || "",
     mes: h.f.mes || "",
     anio: h.f.anio || "",
@@ -475,7 +499,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       nombre: partes.filter(Boolean).join(" "),
       fecha: empresa ? "" : `${f.dia}/${f.mes}/${f.anio}`,
       corazon: empresa ? analizaNombre(f.nombre, true).total : calcula(entradaDe(f, anioUniversal)).corazon.valor,
-      f: empresa ? { tipo: "empresa", nombre: f.nombre, ap1: "", ap2: "", dia: "", mes: "", anio: "", genero: "n" } : { ...f },
+      f: empresa ? { tipo: "empresa", nombre: f.nombre, ap1: "", ap2: "", apPadre2: "", apMadre2: "", dia: "", mes: "", anio: "", genero: "n" } : { ...f },
       tocado: new Date().toISOString(),
     };
     setHist((s) => {

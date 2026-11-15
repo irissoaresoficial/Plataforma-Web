@@ -56,6 +56,10 @@ export type Entrada = {
   nombre: string;
   apellido1: string;
   apellido2: string;
+  /** Segundos apellidos del padre y de la madre. Este motor no los usa: van de
+   *  paso hasta la base 9, que los lee en «Herencias familiares». */
+  apellidoPadre2?: string;
+  apellidoMadre2?: string;
   dia: number;
   mes: number;
   anio: number;
