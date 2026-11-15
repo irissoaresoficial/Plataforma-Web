@@ -191,6 +191,18 @@
   --vidrio-borde: rgba(255, 255, 255, 0.9);
   --vidrio-difuminado: saturate(1.6) blur(20px);
 
+  /* EL CRISTAL SOBRE OSCURO, del sistema de cristal compartido. Es el de las
+     piezas que flotan encima de una imagen oscura (la escena del Feng Shui:
+     el plano de la vivienda de fondo, sobre el bloque granate). Va igual en
+     claro y en oscuro porque lo que tiene debajo es siempre oscuro. Medidas
+     de la referencia que pasó Gerson el 15 de noviembre de 2026. */
+  --cristal-oscuro: rgba(255, 255, 255, 0.14);
+  --cristal-oscuro-chip: rgba(255, 255, 255, 0.065);
+  --cristal-oscuro-raya: rgba(255, 255, 255, 0.255);
+  --cristal-oscuro-raya-v: rgba(255, 255, 255, 0.175);
+  --cristal-oscuro-difuminado: blur(34px) saturate(115%);
+  --cristal-oscuro-sombra: inset 0 0 0 1px rgba(255, 255, 255, 0.055), 0 22px 54px rgba(3, 9, 19, 0.38);
+
   --text: #221d1f;
   --text-2: #605551;
   /* Los dos grises de apoyo están medidos, no elegidos a ojo. El cuarto tono

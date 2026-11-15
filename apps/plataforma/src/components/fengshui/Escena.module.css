@@ -1,0 +1,672 @@
+/*
+ * LA ESCENA DEL FENG SHUI
+ *
+ * La vivienda en grande de fondo y la interfaz en piezas de cristal encima,
+ * con el centro libre para que se vea la casa. Sigue la referencia que pasó
+ * Gerson el 15 de noviembre de 2026, con la marca de Iris: el granate de
+ * fondo, el oro como acento y una sola tipografía.
+ *
+ * Todo escala con la pantalla: los márgenes y la columna van en clamp().
+ * En el móvil la escena cabe entera sin scroll y las tarjetas pasan a un
+ * carrusel abajo.
+ */
+.escena {
+  --m: clamp(16px, 1.7vw, 28px);
+  --col: clamp(330px, 30vw, 394px);
+  position: relative;
+  isolation: isolate;
+  height: clamp(600px, calc(100svh - 150px), 880px);
+  border-radius: var(--r-tarjeta);
+  overflow: hidden;
+  background:
+    radial-gradient(60% 70% at 35% 45%, color-mix(in srgb, var(--oro) 26%, transparent), transparent 70%),
+    radial-gradient(50% 60% at 90% 100%, color-mix(in srgb, var(--oro-luz) 10%, transparent), transparent 70%),
+    var(--bloque);
+  color: var(--sobre-bloque);
+  box-shadow: var(--shadow-lg);
+}
+
+/* -------------------------------------------------------------- el fondo */
+.fondo {
+  position: absolute;
+  inset: -60px;
+  width: calc(100% + 120px);
+  height: calc(100% + 120px);
+  object-fit: cover;
+  filter: blur(34px) brightness(0.42) saturate(0.7);
+  z-index: -2;
+}
+.velo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bloque) 55%, transparent) 0%, transparent 28%, transparent 70%, color-mix(in srgb, var(--bloque) 70%, transparent) 100%);
+  pointer-events: none;
+}
+
+/* La casa: el plano, nítido, en el hueco que deja la interfaz. */
+.casa {
+  position: absolute;
+  top: 29%;
+  bottom: 19%;
+  left: var(--m);
+  right: calc(var(--col) + var(--m) * 2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.casa img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--r);
+  box-shadow: 0 30px 80px color-mix(in srgb, var(--bloque) 80%, transparent);
+}
+.sinPlano {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  max-width: 340px;
+  pointer-events: auto;
+}
+.sinPlano p {
+  margin: 0;
+  font-size: var(--t-read);
+  line-height: 1.5;
+  color: var(--sobre-bloque-2);
+}
+
+/* ------------------------------------------------------------- la capa */
+.capa {
+  position: absolute;
+  inset: 0;
+  padding: var(--m);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--col);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  column-gap: var(--m);
+  pointer-events: none;
+}
+.capa > * {
+  pointer-events: auto;
+}
+.arriba {
+  grid-area: 1 / 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--m);
+  min-width: 0;
+}
+.abajo {
+  grid-area: 3 / 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--m);
+  min-width: 0;
+}
+.columna {
+  grid-area: 1 / 2 / 4 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+/* Si las tres tarjetas no caben, la columna corre y el borde de abajo se
+   funde: se ve que hay más, sin barra. */
+.columna {
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+  padding-bottom: 28px;
+}
+.columna::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------------------------------------------------- las piezas */
+.cristal {
+  background: var(--cristal-oscuro);
+  -webkit-backdrop-filter: var(--cristal-oscuro-difuminado);
+  backdrop-filter: var(--cristal-oscuro-difuminado);
+  border-radius: var(--r);
+  box-shadow: var(--cristal-oscuro-sombra);
+}
+.izq {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.select {
+  appearance: none;
+  min-width: 0;
+  max-width: 260px;
+  padding: 10px 34px 10px 16px;
+  border: none;
+  border-radius: var(--r-pill);
+  font: inherit;
+  font-size: var(--t-body);
+  font-weight: 500;
+  color: var(--sobre-bloque);
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--sobre-bloque-2) 50%), linear-gradient(135deg, var(--sobre-bloque-2) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+.select option {
+  color: var(--text);
+}
+.nombre {
+  margin: 0;
+  font-size: var(--t-title);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pestanas {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--r-pill);
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  align-self: flex-start;
+}
+.pestanas::-webkit-scrollbar {
+  display: none;
+}
+.pestana {
+  border: none;
+  background: transparent;
+  color: var(--sobre-bloque-2);
+  font: inherit;
+  font-size: var(--t-body);
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 9px 17px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.pestana:hover {
+  color: var(--sobre-bloque);
+  background: var(--cristal-oscuro-chip);
+}
+.pestana[aria-selected="true"] {
+  background: var(--sobre-bloque);
+  color: var(--vino);
+}
+
+.dos {
+  display: flex;
+  gap: 28px;
+  padding-left: 4px;
+}
+.dato {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.rot {
+  font-size: var(--t-mini);
+  font-weight: 500;
+  color: var(--sobre-bloque-2);
+}
+.val {
+  font-size: var(--t-read);
+  font-weight: 500;
+  color: var(--sobre-bloque);
+  font-variant-numeric: tabular-nums;
+}
+
+/* El mini plano: dónde mira la fachada con el norte arriba. */
+.mini {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.enlace {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: var(--t-mini);
+  font-weight: 500;
+  color: var(--oro-luz);
+  cursor: pointer;
+  transition: color 0.16s ease;
+}
+.enlace:hover {
+  color: var(--sobre-bloque);
+}
+.mini svg {
+  width: clamp(96px, 8.5vw, 128px);
+  height: auto;
+  display: block;
+}
+
+/* Las fichas de abajo a la izquierda. */
+.fichas {
+  display: flex;
+  gap: 8px;
+}
+.ficha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+}
+.ficha svg {
+  width: 20px;
+  height: 20px;
+  color: var(--oro-luz);
+  flex-shrink: 0;
+}
+.ficha b {
+  display: block;
+  font-size: var(--t-title);
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.ficha span {
+  font-size: var(--t-micro);
+  color: var(--sobre-bloque-2);
+}
+
+/* Los botones de abajo a la derecha. */
+.botones {
+  display: flex;
+  gap: 8px;
+}
+.boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  font: inherit;
+  font-size: var(--t-body);
+  font-weight: 500;
+  color: var(--sobre-bloque);
+  padding: 11px 18px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+.boton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cristal-oscuro) 100%, var(--sobre-bloque) 10%);
+}
+.boton {
+  white-space: nowrap;
+}
+.boton .largo {
+  margin-left: -4px;
+}
+.boton:disabled {
+  cursor: default;
+  color: var(--sobre-bloque-2);
+}
+.boton small {
+  font-size: var(--t-micro);
+  color: var(--sobre-bloque-2);
+}
+.botonBorde {
+  box-shadow: inset 0 0 0 1px var(--sobre-bloque), var(--cristal-oscuro-sombra);
+}
+
+/* --------------------------------------------------------- las tarjetas */
+.tarjeta {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.cabFila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 30px;
+}
+.cab {
+  font-size: var(--t-micro);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--oro-luz);
+}
+.grande {
+  margin: 0;
+  font-size: var(--t-head);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.sub {
+  margin: 0;
+  font-size: var(--t-body);
+  color: var(--sobre-bloque-2);
+  line-height: 1.45;
+}
+.raya {
+  height: 1px;
+  background: var(--cristal-oscuro-raya);
+  border: none;
+  margin: 0;
+}
+.columnas {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.columnas > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 10px;
+  min-width: 0;
+  border-left: 1px solid var(--cristal-oscuro-raya-v);
+}
+.columnas > div:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+.columnas b {
+  font-size: var(--t-read);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.columnas span {
+  font-size: var(--t-micro);
+  color: var(--sobre-bloque-2);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: var(--r-xs);
+  background: var(--cristal-oscuro-chip);
+  font: inherit;
+  font-size: var(--t-mini);
+  color: var(--sobre-bloque);
+}
+.chip i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--oro-luz);
+}
+button.chip {
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+button.chip[aria-pressed="true"] {
+  background: var(--sobre-bloque);
+  color: var(--vino);
+}
+
+.kua {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.kua b {
+  font-size: var(--t-hero);
+  font-weight: 300;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.dirs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.dirs > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.dirs > div:first-child {
+  padding-right: 14px;
+}
+.dirs > div + div {
+  padding-left: 14px;
+  border-left: 1px solid var(--cristal-oscuro-raya-v);
+}
+.dirs ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dirs li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: 8px;
+  font-size: var(--t-mini);
+}
+.dirs li span:last-child {
+  color: var(--sobre-bloque-2);
+  white-space: nowrap;
+}
+.dosBotones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.solido,
+.borde {
+  white-space: nowrap;
+  border: none;
+  font: inherit;
+  font-size: var(--t-body);
+  font-weight: 500;
+  padding: 11px 14px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.solido {
+  background: var(--sobre-bloque);
+  color: var(--vino);
+}
+.solido:hover {
+  background: var(--oro-luz);
+}
+.borde {
+  background: transparent;
+  color: var(--sobre-bloque);
+  box-shadow: inset 0 0 0 1px var(--cristal-oscuro-raya);
+}
+.borde:hover {
+  background: var(--cristal-oscuro-chip);
+}
+
+/* Lo que hay que cambiar, por zonas. */
+.zonas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.zona {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 6px 8px;
+  margin: 0 -8px;
+  width: calc(100% + 16px);
+  border: none;
+  background: transparent;
+  border-radius: var(--r-sm);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+.zona:hover {
+  background: var(--cristal-oscuro-chip);
+}
+.miniatura {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-sm);
+  background: var(--cristal-oscuro-chip);
+  box-shadow: inset 0 0 0 1px var(--cristal-oscuro-raya-v);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.miniatura b {
+  font-size: var(--t-read);
+  font-weight: 500;
+  line-height: 1;
+}
+.miniatura span {
+  font-size: var(--t-micro);
+  color: var(--sobre-bloque-2);
+  font-variant-numeric: tabular-nums;
+}
+.zonaTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.zonaTexto b {
+  font-size: var(--t-body);
+  font-weight: 500;
+}
+.zonaTexto span {
+  font-size: var(--t-mini);
+  line-height: 1.4;
+  color: var(--sobre-bloque-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------- el foco */
+.escena button:focus-visible,
+.escena select:focus-visible {
+  outline: 2px solid var(--oro-luz);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .escena * {
+    transition: none !important;
+  }
+}
+
+/* --------------------------------------------------------------- tableta */
+@media (max-width: 1100px) and (min-width: 641px) {
+  .fichas .ficha:nth-child(3) {
+    display: none;
+  }
+  .botones small {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- móvil */
+@media (max-width: 640px) {
+  .escena {
+    height: calc(100svh - 132px);
+    min-height: 600px;
+    border-radius: var(--r-lg);
+  }
+  .capa {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding: 14px 0;
+  }
+  .arriba {
+    padding: 0 14px;
+  }
+  .mini,
+  .abajo {
+    display: none;
+  }
+  .casa {
+    top: 27%;
+    bottom: 47%;
+    left: 14px;
+    right: 14px;
+  }
+  .columna {
+    grid-area: 3 / 1;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    padding: 0 14px;
+    scroll-padding: 0 14px;
+    max-height: 46svh;
+  }
+  .largo {
+    display: none;
+  }
+  .columna {
+    -webkit-mask-image: none;
+    mask-image: none;
+    padding-bottom: 0;
+    align-items: flex-end;
+  }
+  .tarjeta {
+    flex: 0 0 86%;
+    max-height: 100%;
+    scroll-snap-align: start;
+    overflow-y: auto;
+    padding: 16px;
+    gap: 12px;
+  }
+  .dos {
+    gap: 20px;
+  }
+  .grande {
+    font-size: var(--t-title);
+  }
+}
