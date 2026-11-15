@@ -94,6 +94,7 @@ import Cuadricula, { Recorrido } from "../fengshui/Cuadricula";
 import MesaPlano, { type Paso } from "../fengshui/MesaPlano";
 import mesa from "../fengshui/Mesa.module.css";
 import Informe from "../fengshui/Informe";
+import Escena from "../fengshui/Escena";
 
 const PARTES: Array<{ k: ParteFengShui; label: string }> = [
   { k: "datos", label: "Vivienda" },
@@ -364,22 +365,6 @@ export default function FengShuiScreen() {
   };
 
   /* ----------------------------------------------------------- PIEZAS */
-  const resumen: Array<[string, string]> = [
-    ["Fachada", e.fachada !== null ? `${coma(e.fachada)}° · ${montanaDe(e.fachada).codigo} ${montanaDe(e.fachada).pinyin}` : "Sin medir"],
-    ["Periodo", periodo ? String(periodo) : "Falta el año"],
-    ["Carta", carta ? FORMACION[carta.formacion].nombre : "Sin calcular"],
-    [
-      "Personas",
-      e.ocupantes.length
-        ? e.ocupantes
-            .map((o) => kuaDe(o))
-            .filter(Boolean)
-            .map((k) => `Kua ${k!.kua}`)
-            .join(" · ") || `${e.ocupantes.length}`
-        : "Ninguna",
-    ],
-  ];
-
   const detalleZona = (k: Casilla) => {
     if (!carta) return null;
     const m = carta.montana[k];
@@ -515,57 +500,26 @@ export default function FengShuiScreen() {
   /* ================================================================ VISTA */
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--gap);")}>
-      {/* ----------------------------------------------------- CABECERA */}
-      <div data-chrome="1" style={css("display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s4);")}>
-        <div style={css("display:flex;flex-direction:column;gap:6px;min-width:0;")}>
-          <span style={css(rotulo("var(--gold)"))}>Feng Shui · escuela de la brújula</span>
-          <h1 style={css(CABECERA + "margin:0;")}>{e.cliente || "Vivienda sin nombre"}</h1>
-          {e.direccion && <span style={css(APOYO)}>{e.direccion}</span>}
-        </div>
-        <div style={css("display:flex;flex-wrap:wrap;gap:8px;align-items:center;")}>
-          {lista.length > 1 && (
-            <select aria-label="Abrir otro estudio" value={e.id} onChange={(ev) => abre(ev.target.value)} style={css(CAMPO + "width:auto;max-width:240px;")}>
-              {lista.map((x) => (
-                <option key={x.id} value={x.id}>
-                  {x.cliente || "Vivienda sin nombre"}
-                </option>
-              ))}
-            </select>
-          )}
-          <button type="button" onClick={nuevo} style={css(BOTON_NORMAL)}>
-            Nuevo estudio
-          </button>
-        </div>
-      </div>
-
-      {/* -------------------------------------------------- EL RESUMEN */}
-      <div data-chrome="1" style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;")}>
-        {resumen.map(([t, v]) => (
-          <div key={t} style={css(CRISTAL + "padding:14px 16px;display:flex;flex-direction:column;gap:4px;border-radius:var(--r-lg);")}>
-            <span style={css(rotulo("var(--text-4)"))}>{t}</span>
-            <span style={css("font-size:var(--t-read);font-weight:600;color:var(--text);letter-spacing:-.01em;")}>{v}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* ------------------------------------------------- LAS PARTES */}
-      <div data-chrome="1" role="tablist" aria-label="Partes del estudio" style={css(CRISTAL + "display:flex;gap:4px;padding:5px;border-radius:var(--r-pill);overflow-x:auto;align-self:flex-start;max-width:100%;")}>
-        {PARTES.map(({ k, label }) => (
-          <button
-            key={k}
-            type="button"
-            role="tab"
-            aria-selected={parteFs === k}
-            onClick={() => setParteFs(k)}
-            style={css(
-              "border:none;cursor:pointer;white-space:nowrap;padding:9px 18px;border-radius:var(--r-pill);font-size:var(--t-body);font-weight:590;transition:background var(--t-normal),color var(--t-normal);" +
-                (parteFs === k ? "background:var(--accion);color:var(--sobre-accion);box-shadow:var(--shadow-sm);" : "background:transparent;color:var(--text-3);")
-            )}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      {/* ------------------------------------------------- LA ESCENA
+          La vivienda en grande y el estudio en cristal encima: quién es,
+          las cinco partes, hacia dónde mira, el Kua y lo que hay que cambiar.
+          Sólo coloca lo que ya se calculaba aquí. */}
+      <Escena
+        e={e}
+        plano={plano}
+        lista={lista}
+        carta={carta}
+        periodo={periodo}
+        anio={anios[0]}
+        partes={PARTES}
+        parte={parteFs}
+        alParte={setParteFs}
+        alAbrir={abre}
+        alNuevo={nuevo}
+        alZona={setZona}
+        persona={persona}
+        alPersona={setPersona}
+      />
 
       {aviso && (
         <div data-chrome="1" role="alert" style={css("padding:12px 16px;border-radius:var(--r);background:var(--red-soft);border:1px solid var(--red-border);color:var(--red);font-size:var(--t-body);")}>
