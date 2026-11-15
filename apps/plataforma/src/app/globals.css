@@ -357,6 +357,25 @@
   --ficha-verde: #4c9a5a;
   --ficha-amarillo: #e5b63c;
 
+  /* LOS COLORES DE LA AGENDA, uno por clase de cita (noviembre de 2026).
+     Ger: «con cosas importantes, con colores importantes. Dale contraste».
+     Rellenan el bloque entero —aquí sí, a diferencia del resto de la casa—
+     porque en una semana llena lo que hay que ver de un golpe es qué clase de
+     cita es cada cosa. Tres y no más: los tres tipos que existen.
+       · Sesión, la de pago: el vino macizo con la letra clara (13,7:1).
+       · Sinergia, el estudio gratis de quien llega nuevo: el oro vivo, lo que
+         más salta, con el vino encima (8,8:1).
+       · Seguimiento: el rosa vino, claro, con el vino encima (10,7:1).
+     `--cita-hoy` es el círculo del día de hoy: el mismo oro vivo. */
+  --cita-sesion: var(--vino);
+  --cita-sesion-tx: #fbf6ee;
+  --cita-sinergia: #f0c24f;
+  --cita-sinergia-tx: var(--vino);
+  --cita-seguimiento: #f4d3df;
+  --cita-seguimiento-tx: var(--vino);
+  --cita-hoy: #f0c24f;
+  --cita-hoy-tx: var(--vino);
+
   /* Las tres sombras de la casa son ahora relieve: siguen llamándose igual, así
    * que ninguna pantalla ha tenido que tocarse — piden `--shadow` como pedían
    * antes y lo que les llega es el volumen nuevo. La línea de un pelo sigue en
@@ -587,6 +606,13 @@
   --melocoton-tx: #f6cfad;
   --cielo: #15293f;
   --cielo-tx: #bcd9ef;
+
+  /* La sesión, en oscuro, sube de luz hasta recortarse del cristal ahumado
+     (8,5:1 con la letra clara). Los dos claros no cambian: sobre lo oscuro
+     saltan todavía más. */
+  --cita-sesion: #7c2c3f;
+  --cita-sinergia-tx: #2a0f16;
+  --cita-hoy-tx: #2a0f16;
 
   /* Los colores de código —los tres caminos, los avisos— suben de luz sobre el
      granate. Con los tonos de antes se quedaban por debajo de 4,5:1 y las
