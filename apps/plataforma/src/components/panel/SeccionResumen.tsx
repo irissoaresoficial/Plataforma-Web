@@ -1,6 +1,6 @@
 "use client";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL, tarjetaCon } from "@/lib/ui";
+import { BOTON_NORMAL } from "@/lib/ui";
 import { useApp } from "@/lib/app-context";
 import { COL, COL_TX } from "@/lib/tree";
 import { frase, titulo } from "@/lib/format";
@@ -17,7 +17,7 @@ const ROTULO = "font-size:var(--t-mini);font-weight:590;color:var(--text-3);";
  * salen esos números.
  */
 export default function SeccionResumen() {
-  const { r, setSeccion, setView, verNumero, verArcano } = useApp();
+  const { r, setSeccion, setView, verArcano } = useApp();
   if (!r) return null;
 
   const c = r.ciclos;
@@ -29,18 +29,6 @@ export default function SeccionResumen() {
     { k: "destino" as const, etapa: "Destino", d: r.caminos.destino, rango: `desde los ${r.turbulencias ? r.turbulencias.hasta : r.caminos.edadCambio} años` },
   ];
 
-  // Los números que resumen la lectura. El primero va destacado, como la cifra
-  // principal de un cuadro de mandos. La edad de cambio estaba sólo en la tira
-  // de la cabecera —que no sale en el resumen— y es de lo primero que se mira:
-  // marca cuándo se pasa del camino de origen al de destino.
-  const cifras = [
-    { label: "Número de esencia", valor: r.esencia.valor, pie: "Lo que has venido a ser", n: r.esencia.valor, destacada: true },
-    { label: "Número de ego", valor: r.ego.valor, pie: "Cómo te ven los demás", n: r.ego.valor },
-    { label: "Edad de cambio", valor: r.caminos.edadCambio, pie: "Cuándo entras en tu destino", ir: "arbol" as const },
-    { label: "Lema de vida", valor: r.cuentas.lemaDeVida, pie: "La vibración de tu propósito", ir: "cuentas" as const },
-    { label: "Estructura energética", valor: r.estructura.tipo, pie: `${r.aprendizajes.length} aprendizajes abiertos`, ir: "estructura" as const },
-    { label: "Imagen del alma", valor: r.imagenAlma.numero, pie: `${r.bloqueos.length} bloqueos en los planos`, ir: "alma" as const },
-  ];
 
   // Posición dentro del ciclo vital en curso: la misma idea que una barra de
   // consumo, pero medida en años vividos de esa etapa.
@@ -177,49 +165,9 @@ export default function SeccionResumen() {
 
         {/* --------------------------------------------------- columna derecha */}
         <div data-cascada="" style={css("display:flex;flex-direction:column;gap:var(--gap);")}>
-          <div data-cascada="" style={css("display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4);")}>
-            {cifras.map((x, i) => (
-              <button
-                key={i}
-                data-alza=""
-                onClick={() => (x.ir ? setSeccion(x.ir) : verNumero(x.n!))}
-                /*
-                 * SEIS TARJETAS IGUALES QUE HACEN DOS COSAS DISTINTAS.
-                 *
-                 * Cuatro de estas seis se van a otra sección y cambian la
-                 * pantalla entera; las otras dos abren una ficha encima. Por
-                 * fuera eran idénticas, así que Iris pulsaba «Número de esencia»,
-                 * leía la ficha, la cerraba, pulsaba «Edad de cambio» esperando
-                 * otra ficha — y se le iba la pantalla. Se aprende a base de
-                 * sustos qué tarjeta es de qué clase, que es exactamente lo que
-                 * no debería tener que aprenderse.
-                 *
-                 * Ahora cada una dice a dónde lleva, en su pie. La flecha marca
-                 * la diferencia: «→» es irse, sin flecha es abrir aquí mismo.
-                 *
-                 * Y el relleno granate se va. Lo puse yo al repartir los colores
-                 * —granate para lo que se pulsa y lo que está elegido— sin caer
-                 * en que esta tarjeta lleva el relleno SIEMPRE: se leía como
-                 * «seleccionada» cuando nadie la había seleccionado. Destacar y
-                 * estar elegido no son lo mismo, así que destaca por el canto,
-                 * que es como destaca todo lo demás en esta casa.
-                 */
-                style={css(
-                  "text-align:left;padding:17px 18px;cursor:pointer;border-radius:var(--r);" +
-                    (x.destacada ? tarjetaCon("var(--accion)") + "box-shadow:var(--nm-alto);" : TARJETA)
-                )}
-              >
-                <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>{x.label}</div>
-                <div style={css("font-size:var(--t-hero);font-weight:700;letter-spacing:-.028em;line-height:1.1;margin-top:6px;color:var(--text);")}>{x.valor}</div>
-                <div style={css("font-size:var(--t-mini);margin-top:3px;line-height:1.3;color:var(--text-4);")}>{x.pie}</div>
-                <div style={css("display:flex;align-items:center;gap:5px;margin-top:9px;font-size:var(--t-mini);font-weight:590;color:var(--accion);")}>
-                  {x.ir ? "Ver la sección" : "Ver la ficha"}
-                  {x.ir && <span aria-hidden>→</span>}
-                </div>
-              </button>
-            ))}
-          </div>
-
+          {/* Las seis tarjetas de cifras que iban aquí se han subido a la
+           * cabecera, donde salen en todas las secciones y se pueden pulsar
+           * igual. Aquí sólo las repetían. */}
           <section style={css(TARJETA + "padding:var(--pad-card-sm);")}>
             <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
               <div>

@@ -17,6 +17,7 @@ import SeccionEmpresa from "../panel/SeccionEmpresa";
 import Pendiente from "../panel/Pendiente";
 import { DISCIPLINAS, KABALA } from "../Sidebar";
 import pestanas from "../panel/Pestanas.module.css";
+import cabecera from "../panel/Cabecera.module.css";
 
 /* El nombre largo y, debajo, qué se está mirando. En la lateral los nombres
  * van cortos para que la columna quede a plomo, así que el encabezado de la
@@ -32,7 +33,7 @@ const SECCIONES: Array<{ k: Seccion; label: string; pie: string }> = [
 ];
 
 export default function PanelScreen() {
-  const { r, re, seccion, setSeccion, disciplina, base } = useApp();
+  const { r, re, seccion, setSeccion, disciplina, base, verNumero } = useApp();
   const quieto = useReducedMotion();
   const tira = useRef<HTMLElement>(null);
 
@@ -76,18 +77,34 @@ export default function PanelScreen() {
   const empresa = !!re;
   if (!r && !re) return null;
 
-  const resumen = r ? [
-    { label: "Corazón", valor: r.corazon.valor },
-    { label: "Esencia", valor: r.esencia.valor },
-    { label: "Ego", valor: r.ego.valor },
-    { label: "Edad de cambio", valor: r.caminos.edadCambio },
-    { label: "Estructura", valor: r.estructura.tipo },
-    { label: "Imagen del alma", valor: r.imagenAlma.numero },
+  /*
+   * LAS SEIS CIFRAS DE LA CABECERA, AHORA EN TODAS LAS SECCIONES Y PULSABLES.
+   *
+   * En el Resumen la tira no salía —estaban repetidas en seis tarjetas más
+   * abajo— y la cabecera se quedaba en una caja de 180 píxeles con el nombre
+   * y la fecha, media vacía. En el móvil, encima, esas seis tarjetas caían
+   * detrás de la lista de aprendizajes, en la tercera pantalla. Ahora las
+   * cifras van siempre aquí arriba y las tarjetas se van.
+   *
+   * En el Resumen el corazón tiene su tarjeta grande justo debajo, así que su
+   * hueco lo ocupa el lema de vida, que si no se quedaba sin sitio.
+   *
+   * Cada cifra hace lo que hacía su tarjeta: las que tienen ficha la abren
+   * encima; las que son una sección llevan a ella.
+   */
+  const enResumen = seccion === "resumen";
+  const resumen: Array<{ label: string; valor: number | string; ir?: Seccion; n?: number }> = r ? [
+    enResumen
+      ? { label: "Lema de vida", valor: r.cuentas.lemaDeVida, ir: "cuentas" }
+      : { label: "Corazón", valor: r.corazon.valor, n: r.corazon.valor },
+    { label: "Esencia", valor: r.esencia.valor, n: r.esencia.valor },
+    { label: "Ego", valor: r.ego.valor, n: r.ego.valor },
+    { label: "Edad de cambio", valor: r.caminos.edadCambio, ir: "arbol" },
+    { label: "Estructura", valor: r.estructura.tipo, ir: "estructura" },
+    { label: "Imagen del alma", valor: r.imagenAlma.numero, ir: "alma" },
   ] : [];
 
-  /* La tira de cifras del banner sale en todas las secciones de Kábala menos en
-     el Resumen, donde las mismas seis ya están en las tarjetas de debajo. */
-  const mostrarTira = disciplina === "kabala" && seccion !== "resumen" && !empresa;
+  const mostrarTira = disciplina === "kabala" && !empresa;
 
   return (
     <main style={css("max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);")}>
@@ -153,21 +170,18 @@ export default function PanelScreen() {
             grita más fuerte, y eso nunca es un buen sistema.
         */}
         {mostrarTira && (
-        <div
-          data-tira-cifras=""
-          style={css("position:relative;z-index:1;display:flex;flex-wrap:wrap;margin-left:auto;")}
-        >
+        <div className={cabecera.tira}>
           {resumen.map((k, i) => (
-            <div
+            <button
               key={i}
-              style={css(
-                "display:flex;flex-direction:column;gap:5px;align-items:flex-start;padding:0 clamp(12px,1.6vw,20px);" +
-                  (i ? "border-left:1px solid var(--border);" : "")
-              )}
+              type="button"
+              className={cabecera.cifra}
+              title={k.ir ? "Ir a la sección" : "Ver la ficha"}
+              onClick={() => (k.ir ? setSeccion(k.ir) : verNumero(k.n!))}
             >
-              <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-4);white-space:nowrap;")}>{k.label}</span>
+              <span className={cabecera.rotulo} style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-4);")}>{k.label}</span>
               <span data-cifras="" style={css("font-weight:600;font-size:var(--t-head);color:var(--text);line-height:1;letter-spacing:-.02em;")}>{k.valor}</span>
-            </div>
+            </button>
           ))}
         </div>
         )}

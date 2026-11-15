@@ -1,0 +1,79 @@
+/*
+ * LA TIRA DE CIFRAS DE LA CABECERA.
+ *
+ * Vivía en la hoja global con un `display:flex` en línea en el componente, y
+ * la regla del móvil (tres columnas) nunca llegó a ganarle: en 390 píxeles
+ * salían cuatro cifras en fila, apretadas, y las otras dos escondidas a la
+ * derecha sin nada que dijera que estaban. Ahora la colocación entera está
+ * aquí y no hay nada en línea con lo que pelearse.
+ */
+.tira {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.cifra {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  padding: 0 clamp(12px, 1.6vw, 20px);
+  background: none;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.cifra + .cifra {
+  border-left: 1px solid var(--border);
+}
+.cifra:first-child {
+  padding-left: 0;
+}
+
+@media (max-width: 1100px) {
+  .tira {
+    margin-left: 0;
+    width: 100%;
+    padding-top: var(--s4);
+    border-top: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 700px) {
+  .tira {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s4) 0;
+  }
+  .cifra {
+    padding: 0 var(--s3);
+    min-width: 0;
+  }
+  .cifra:nth-child(3n + 1) {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+/* En el ordenador el rótulo va en un renglón. En el móvil cabe a dos: con
+   puntos suspensivos «Imagen del alma» salía «Imagen del …». Las cifras se
+   asientan abajo, así que una fila sigue a plomo aunque un rótulo ocupe dos
+   renglones y el de al lado uno. */
+.rotulo {
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .rotulo {
+    white-space: normal;
+    line-height: 1.25;
+  }
+  .cifra {
+    justify-content: space-between;
+  }
+}
