@@ -52,6 +52,12 @@ export default function Particulas({ cantidad = 26, color }: { cantidad?: number
   useEffect(() => {
     const lienzo = ref.current;
     if (!lienzo) return;
+    /* En el cristal no hay polvo: allí nada se mueve si no se toca (MARCA.md,
+       «El cristal»). Y no basta con esconder el lienzo, porque el bucle de
+       dibujo seguiría gastando treinta fotogramas por segundo sin que se viera
+       nada — que es justo de lo que Ger se quejaba al decir que iba lento. Si
+       está dentro del cristal, ni empieza. */
+    if (lienzo.closest("[data-cristal]")) return;
     const ctx = lienzo.getContext("2d");
     if (!ctx) return;
 

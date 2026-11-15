@@ -1,4 +1,5 @@
 "use client";
+import { subeArriba } from "@/lib/arriba";
 import SuFicha, { nacimientoDe } from "../despacho/SuFicha";
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
@@ -71,7 +72,7 @@ export default function PanelScreen() {
    * saltarse en unos renders y en otros no.
    */
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: quieto ? "auto" : "smooth" });
+    subeArriba(quieto);
   }, [seccion, disciplina, quieto]);
 
   // Un estudio de empresa se lee sólo del nombre: no tiene fecha, ni

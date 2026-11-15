@@ -43,7 +43,27 @@ import type { View } from "@/lib/app-context";
  * a 390. Las demás siguen como estaban hasta su turno — mejor una pantalla de
  * antes entera que una nueva a medias.
  */
-const CRISTAL: View[] = ["tablero"];
+const CRISTAL: View[] = [
+  "tablero",
+  "inicio",
+  "panel",
+  "estudio",
+  "pareja",
+  "agenda",
+  "personas",
+  "facturas",
+  "escuela",
+  "cursos",
+  "comunidad",
+  "perfil",
+  "miagenda",
+  "mismetricas",
+  "metricas",
+  "correos",
+  "gestion",
+  /* Feng Shui entra cuando su chat lo cierre: lo está rediseñando con estos
+     mismos tokens y no se le pisa la pantalla. */
+];
 
 export default function Shell() {
   const { view, setView, r, re, rehidratado } = useApp();
@@ -310,7 +330,10 @@ export default function Shell() {
       {/* Por encima del polvo. Sin `position` propia, este bloque va en el
           flujo normal y el lienzo —que está posicionado— se le pintaría encima,
           tapando la aplicación entera con un velo de motas. */}
-      <div style={css("position:relative;z-index:1;display:flex;align-items:flex-start;")}>
+      <div
+        data-fila={cristal ? "" : undefined}
+        style={css("position:relative;z-index:1;display:flex;align-items:" + (cristal ? "stretch" : "flex-start") + ";")}
+      >
         {/* La columna, en todas. Salía sólo en el panel, lo cual era coherente
             cuando llevaba únicamente las partes de la carta; ahora que es toda
             la navegación, esconderla en cinco de las seis pantallas dejaría

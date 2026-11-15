@@ -665,6 +665,10 @@
 
 html,
 body {
+  /* Sin negrita fingida: si una regla pide un peso que no se descarga (600,
+     700), el navegador usa el 500 en vez de engordar la letra a mano. Ver
+     layout.tsx. */
+  font-synthesis-weight: none;
   margin: 0;
   padding: 0;
   background: var(--bg);
@@ -2326,29 +2330,40 @@ html[data-guia="1"] body {
    una foto, y el token no sabe lo que tiene debajo. De ahí los velos.
    =========================================================================== */
 :root {
+  /* VELOCIDAD. Los paneles, la barra y el riel NO desenfocan: la foto de
+     detrás ya viene desenfocada en el archivo, y desenfocarla otra vez en
+     cada panel costaba mucha tarjeta gráfica —la plataforma iba lenta— para
+     un cambio que no se veía. Sólo desenfoca el dock, que es lo único que pasa
+     por encima del contenido que se mueve. Los tokens se quedan, a `none`,
+     por si un día hace falta encenderlos en una pieza concreta. */
   /* La foto: la tablilla de la cuenta con la amatista, de la web de Iris,
      desenfocada ya en el archivo (12 kB). Desenfocarla con CSS en cada
      fotograma costaría batería para el mismo resultado. */
   --cristal-foto: url("/fondo-cristal.webp");
   /* El velo sobre la foto. En claro la aclara lo justo para que la tinta
      marrón de los rótulos llegue a 4,5:1 encima del cristal. */
-  --cristal-velo: linear-gradient(180deg, rgba(250, 245, 238, 0.6), rgba(250, 245, 238, 0.5));
+  --cristal-velo: linear-gradient(180deg, rgba(252, 248, 243, 0.62), rgba(252, 248, 243, 0.5));
 
-  --cristal-ventana: rgba(255, 251, 246, 0.36);
+  --cristal-ventana: rgba(255, 252, 248, 0.42);
   --cristal-ventana-filo: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 18px 48px rgba(40, 24, 20, 0.1);
 
-  --cristal-panel: rgba(255, 255, 255, 0.46);
+  /* Paneles más blancos: con menos, el conjunto se leía «opaco», gris
+     lechoso. Ahora la pieza es luz y el color lo pone lo que lleva dentro. */
+  --cristal-panel: rgba(255, 255, 255, 0.7);
   --cristal-panel-filo: inset 0 0 0 0.5px rgba(255, 255, 255, 0.8);
-  --cristal-filtro: blur(12px) saturate(1.2);
+  --cristal-filtro: none;
 
   --cristal-barra: rgba(255, 253, 250, 0.6);
-  --cristal-barra-filtro: blur(34px) saturate(1.3);
+  --cristal-barra-filtro: none;
   --cristal-barra-sombra: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), 0 24px 54px rgba(40, 24, 20, 0.12);
   /* El campo de dentro de la barra, un punto más hondo que ella. */
   --cristal-campo: rgba(69, 26, 37, 0.07);
+  /* La barra que flota encima del papel del documento. Con el cristal normal
+     la letra se mezclaba con el folio crema de debajo: ésta tapa casi entero. */
+  --cristal-barra-densa: rgba(255, 253, 250, 0.9);
 
-  --cristal-riel: rgba(255, 253, 250, 0.68);
-  --cristal-riel-filtro: blur(30px) saturate(1.3);
+  --cristal-riel: rgba(255, 253, 250, 0.8);
+  --cristal-riel-filtro: none;
   --cristal-riel-sombra: inset 0 0 0 0.5px rgba(255, 255, 255, 0.8), 0 26px 56px rgba(40, 24, 20, 0.12);
 
   /* El dock es el cristal más rico: degradado propio, brillo arriba y un óvalo
@@ -2376,6 +2391,8 @@ html[data-guia="1"] body {
 
   /* Fuera del cristal, las piezas no desenfocan nada. */
   --pieza-filtro: none;
+  /* La mesa gris claro sobre la que van los folios del documento. */
+  --mesa-estudio: #f5f5f4;
 }
 :root[data-tema="oscuro"] {
   /* En oscuro, la referencia tal cual: piedra ahumada y letra clara. El velo
@@ -2388,15 +2405,16 @@ html[data-guia="1"] body {
 
   --cristal-panel: rgba(240, 250, 255, 0.1);
   --cristal-panel-filo: inset 0 0 0 0.5px rgba(255, 255, 255, 0.14);
-  --cristal-filtro: blur(12px);
+  --cristal-filtro: none;
 
   --cristal-barra: rgba(132, 126, 125, 0.44);
-  --cristal-barra-filtro: blur(34px) saturate(1.05);
+  --cristal-barra-filtro: none;
   --cristal-barra-sombra: inset 0 1.5px 0 rgba(255, 255, 255, 0.18), 0 24px 54px rgba(0, 0, 0, 0.16);
   --cristal-campo: rgba(30, 30, 30, 0.32);
+  --cristal-barra-densa: rgba(52, 46, 45, 0.92);
 
   --cristal-riel: rgba(100, 95, 90, 0.34);
-  --cristal-riel-filtro: blur(30px);
+  --cristal-riel-filtro: none;
   --cristal-riel-sombra: inset 0 0 0 0.5px rgba(255, 255, 255, 0.28), 0 26px 56px rgba(0, 0, 0, 0.16);
 
   --cristal-dock: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.075) 48%, rgba(255, 255, 255, 0.12)), rgba(58, 53, 51, 0.82);
@@ -2421,6 +2439,10 @@ html[data-guia="1"] body {
   --shadow: var(--cristal-panel-filo);
   --r-tarjeta: var(--r-panel);
   --pieza-filtro: var(--cristal-filtro);
+  --mesa-estudio: transparent;
+  /* Lo pegado arriba se pega al borde de la ventana, no debajo de la barra:
+     dentro del cristal la ventana es la que se desplaza. */
+  --pegado: var(--s3);
   /* La pieza granate se queda —es el ancla de la pantalla— pero deja pasar un
      poco de la foto, como todo lo demás. */
   --bloque: color-mix(in srgb, var(--vino) 92%, transparent);
@@ -2430,6 +2452,12 @@ html[data-guia="1"] body {
      madera de la foto y el gris de siempre se quedaba en 3,7:1 encima. */
   --text-3: #514644;
   --text-4: #574c49;
+  /* El dorado de los rótulos, el hondo: el de siempre se quedaba en 4,4:1. */
+  --gold: var(--gold-deep);
+  /* Lo que se queda pegado arriba al desplazar (la cabecera de los días de la
+     agenda, una modal) no puede ser cristal: se vería pasar el contenido por
+     debajo. Es el color que da el cristal ya pintado, pero opaco. */
+  --surface-solid: #efe9e3;
   background: var(--bg);
   background-image: none;
 }
@@ -2447,7 +2475,28 @@ html[data-guia="1"] body {
      cristal el de siempre se quedaba en 3,7:1. */
   --accion: var(--accion-honda);
   --accion-suave: rgba(255, 255, 255, 0.06);
+  --gold: var(--gold-deep);
+  --surface-solid: #4b4342;
+  /* El rojo de los avisos, un punto más claro: el de siempre se quedaba en
+     3,6:1 encima del cristal. */
+  --red: #f6b0a9;
   background-image: none;
+}
+
+/* LA PÁGINA NO SE MUEVE. Lo pidió Ger: al desplazar, la barra, el riel y la
+   ventana se quedan quietos y sólo corre lo de dentro de la ventana, como en
+   una aplicación. Así la ventana tampoco pasa por debajo de la barra. */
+[data-cristal] {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0 !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+[data-cristal] > [data-fila] {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 /* La foto, fija a la ventana del navegador: no se va con el scroll. */
@@ -2468,8 +2517,8 @@ html[data-guia="1"] body {
 
 /* ----------------------------------------------------------- la barra de arriba */
 [data-barra] {
-  position: sticky;
-  top: var(--s3);
+  position: relative;
+  flex: none;
   z-index: 40;
   display: flex;
   align-items: center;
@@ -2516,11 +2565,9 @@ html[data-guia="1"] body {
 
 /* ------------------------------------------------------------- el riel */
 [data-riel] {
-  position: sticky;
-  top: 70px;
-  align-self: flex-start;
+  position: relative;
   flex: none;
-  height: calc(100vh - 70px);
+  min-height: 0;
   display: flex;
   align-items: center;
   padding: var(--s3) var(--s4) var(--s3) var(--gutter);
@@ -2551,8 +2598,14 @@ html[data-guia="1"] body {
 
 /* ------------------------------------------------------------- la ventana */
 [data-ventana] {
-  margin: var(--s3) var(--gutter) var(--s5) 0;
-  min-height: calc(100vh - 100px);
+  margin: var(--s3) var(--gutter) var(--s4) 0;
+  min-height: 0;
+  /* Aquí dentro corre el contenido; las esquinas redondas lo recortan. */
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
   border-radius: var(--r-ventana);
   background: var(--cristal-ventana);
   box-shadow: var(--cristal-ventana-filo);
@@ -2566,9 +2619,11 @@ html[data-guia="1"] body {
   [data-riel] {
     display: none;
   }
+  /* La ventana llega hasta abajo y el dock flota encima; el hueco del final
+     es para que lo último no se quede escondido detrás del dock. */
   [data-ventana] {
     margin-left: var(--gutter);
-    margin-bottom: 104px;
+    padding-bottom: 96px;
   }
   [data-dock] {
     position: fixed;
@@ -2635,5 +2690,39 @@ html[data-guia="1"] body {
 @media (prefers-reduced-motion: reduce) {
   [data-nav-boton]:active {
     transform: none;
+  }
+}
+
+/* -------------------------------------------- el documento, dentro del cristal
+   La barra de idiomas y «Exportar PDF» deja de ser una franja pegada de lado a
+   lado —cortaba las esquinas redondas de la ventana— y pasa a ser una pieza de
+   cristal más, con su canto y su sombra. Los folios siguen siendo papel. */
+[data-cristal] [data-estudio-barra] {
+  top: var(--s3);
+  margin: var(--s3) var(--s3) 0;
+  border-bottom: none;
+  border-radius: var(--r-panel);
+  background: var(--cristal-barra-densa);
+  backdrop-filter: var(--cristal-barra-filtro);
+  -webkit-backdrop-filter: var(--cristal-barra-filtro);
+  box-shadow: var(--cristal-barra-sombra);
+}
+
+/* En papel no hay foto ni ventana: la hoja sale como siempre. */
+@media print {
+  [data-cristal]::before {
+    display: none !important;
+  }
+  [data-cristal] {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  [data-ventana] {
+    margin: 0 !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
+    background: none !important;
   }
 }

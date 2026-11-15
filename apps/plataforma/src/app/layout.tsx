@@ -40,9 +40,13 @@ const display = Fraunces({
 
 const texto = Instrument_Sans({
   subsets: ["latin"],
-  /* El 700 entró con los titulares en palo seco: con una sola familia, el
-     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
-  weight: ["400", "500", "600", "700"],
+  /* SÓLO 400 Y 500. Por encima de 500 no se sube (MARCA.md, «Los pesos»), y
+     había más de setenta reglas pidiendo 600 o 700 —titulares, cifras,
+     botones— que engordaban la letra contra la referencia «Apple light».
+     En vez de perseguirlas una a una, no se descargan: con `font-synthesis`
+     apagado en globals.css, quien pide 600 o 700 recibe el 500, que es el
+     peso más cercano que hay. Y una descarga menos en cada visita. */
+  weight: ["400", "500"],
   style: ["normal", "italic"],
   variable: "--f-texto",
   display: "swap",
@@ -89,9 +93,13 @@ const texto = Instrument_Sans({
  */
 const lectura = Cormorant_Garamond({
   subsets: ["latin"],
-  /* El 700 entró con los titulares en palo seco: con una sola familia, el
-     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
-  weight: ["400", "500", "600", "700"],
+  /* SÓLO 400 Y 500. Por encima de 500 no se sube (MARCA.md, «Los pesos»), y
+     había más de setenta reglas pidiendo 600 o 700 —titulares, cifras,
+     botones— que engordaban la letra contra la referencia «Apple light».
+     En vez de perseguirlas una a una, no se descargan: con `font-synthesis`
+     apagado en globals.css, quien pide 600 o 700 recibe el 500, que es el
+     peso más cercano que hay. Y una descarga menos en cada visita. */
+  weight: ["400", "500"],
   style: ["normal", "italic"],
   variable: "--f-lectura",
   display: "swap",
@@ -99,18 +107,26 @@ const lectura = Cormorant_Garamond({
 
 const cifra = Cinzel({
   subsets: ["latin"],
-  /* El 700 entró con los titulares en palo seco: con una sola familia, el
-     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
-  weight: ["400", "500", "600", "700"],
+  /* SÓLO 400 Y 500. Por encima de 500 no se sube (MARCA.md, «Los pesos»), y
+     había más de setenta reglas pidiendo 600 o 700 —titulares, cifras,
+     botones— que engordaban la letra contra la referencia «Apple light».
+     En vez de perseguirlas una a una, no se descargan: con `font-synthesis`
+     apagado en globals.css, quien pide 600 o 700 recibe el 500, que es el
+     peso más cercano que hay. Y una descarga menos en cada visita. */
+  weight: ["400", "500"],
   variable: "--f-cifra",
   display: "swap",
 });
 
 const rotulo = Karla({
   subsets: ["latin"],
-  /* El 700 entró con los titulares en palo seco: con una sola familia, el
-     peso es la mitad de la jerarquía y 600 se queda corto en un título. */
-  weight: ["400", "500", "600", "700"],
+  /* SÓLO 400 Y 500. Por encima de 500 no se sube (MARCA.md, «Los pesos»), y
+     había más de setenta reglas pidiendo 600 o 700 —titulares, cifras,
+     botones— que engordaban la letra contra la referencia «Apple light».
+     En vez de perseguirlas una a una, no se descargan: con `font-synthesis`
+     apagado en globals.css, quien pide 600 o 700 recibe el 500, que es el
+     peso más cercano que hay. Y una descarga menos en cada visita. */
+  weight: ["400", "500"],
   variable: "--f-rotulo",
   display: "swap",
 });
@@ -121,6 +137,11 @@ export const metadata: Metadata = {
 };
 
 /**
+ * SE EMPIEZA SIEMPRE EN CLARO. Antes, sin elección guardada, se copiaba el
+ * tema del ordenador, y quien lo tiene en oscuro entraba a una plataforma
+ * ahumada que Ger encontró «muy opaca, muy oscura». El oscuro sigue ahí, en el
+ * botón de la luna, para quien lo elija.
+ *
  * El tema se decide antes del primer pintado. Si esperásemos a que React
  * monte, la página aparecería en claro y saltaría a oscuro delante de quien
  * mira. Por eso va en un script suelto, síncrono, en el <head>.
@@ -128,7 +149,7 @@ export const metadata: Metadata = {
 const ELIGE_TEMA = `
 try {
   var t = localStorage.getItem("es33.tema");
-  if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro";
+  if (!t) t = "claro";
   document.documentElement.dataset.tema = t;
 } catch (e) {
   document.documentElement.dataset.tema = "claro";

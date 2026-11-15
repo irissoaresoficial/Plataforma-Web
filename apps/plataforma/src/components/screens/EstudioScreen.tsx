@@ -108,7 +108,7 @@ export default function EstudioScreen() {
 
   return (
     <div className={styles.wrap}>
-      <div data-chrome="1" className={styles.toolbar}>
+      <div data-chrome="1" data-estudio-barra="" className={styles.toolbar}>
         {/* Los dos documentos, uno al lado del otro y los dos legibles.
          * Estaban en un control segmentado gris sobre gris: el que no estaba
          * elegido apenas se veía, y la hoja del cliente —que es la mitad de

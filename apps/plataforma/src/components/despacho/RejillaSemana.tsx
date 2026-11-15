@@ -201,7 +201,7 @@ export default function RejillaSemana({
             la izquierda, o al desplazarse deja pasar los números por debajo. */}
         <div
           style={css(
-            `position:sticky;top:0;left:0;z-index:${CAPA.ESQUINA};background:var(--surface);border-bottom:1px solid var(--border);height:56px;`
+            `position:sticky;top:0;left:0;z-index:${CAPA.ESQUINA};background:var(--surface-solid);border-bottom:1px solid var(--border);height:56px;`
           )}
         />
         {dias.map((d) => {
@@ -213,7 +213,7 @@ export default function RejillaSemana({
               key={claveDia(d)}
               style={css(
                 `position:sticky;top:0;z-index:${CAPA.DIAS};height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;` +
-                  "background:var(--surface);border-bottom:1px solid var(--border);border-left:1px solid var(--border);" +
+                  "background:var(--surface-solid);border-bottom:1px solid var(--border);border-left:1px solid var(--border);" +
                   /* El día que se está mirando lleva el granate de la casa —lo
                      elegido— y hoy, cuando no es el elegido, sólo el aro de oro. */
                   (esElegido ? "box-shadow:inset 0 2px 0 var(--accion);" : esHoy ? "box-shadow:inset 0 2px 0 var(--gold);" : "")
@@ -240,7 +240,7 @@ export default function RejillaSemana({
         })}
 
         {/* ------------------------------------------------- la columna de horas */}
-        <div style={css(`position:sticky;left:0;z-index:${CAPA.HORAS};background:var(--surface);height:${alto}px;`)}>
+        <div style={css(`position:sticky;left:0;z-index:${CAPA.HORAS};background:var(--surface-solid);height:${alto}px;`)}>
           {horas.map((h, i) => (
             <div
               key={h}

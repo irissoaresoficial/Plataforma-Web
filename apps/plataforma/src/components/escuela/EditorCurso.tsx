@@ -232,7 +232,7 @@ export default function EditorCurso({
              que no existe: la barra era transparente y el formulario pasaba
              por debajo de los botones al bajar. Va pegada justo bajo la
              cabecera de la aplicación (63 px), no encima de ella. */
-          "position:sticky;top:75px;z-index:20;display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;" +
+          "position:sticky;top:var(--pegado, 75px);z-index:20;display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;" +
             "padding:10px 12px;border-radius:var(--r-pill);background:var(--vidrio-denso);" +
             "backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);" +
             "border:1px solid var(--border);box-shadow:var(--shadow-sm);"

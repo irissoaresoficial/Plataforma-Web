@@ -155,7 +155,8 @@ algo). Mismo valor en claro y en oscuro:
 La plataforma pasa, pantalla por pantalla, a una ventana de cristal sobre una
 foto desenfocada (la referencia «liquid glass» que pasó Gerson). Se enciende con
 `data-cristal` en la raíz; qué pantallas lo llevan lo decide la lista `CRISTAL`
-de `Shell.tsx`. Hoy: **el Tablero**. Valores exactos en
+de `Shell.tsx`. Hoy: **todas las pantallas menos Feng Shui**, que tiene su
+propio chat y entra cuando lo cierre. Valores exactos en
 `apps/plataforma/src/app/globals.css`, sección «EL CRISTAL».
 
 | Token | Qué es |
@@ -163,7 +164,8 @@ de `Shell.tsx`. Hoy: **el Tablero**. Valores exactos en
 | `--cristal-foto` | La foto del fondo: `fondo-cristal.webp`, la tablilla de la cuenta con la amatista, ya desenfocada |
 | `--cristal-velo` | El velo sobre la foto. Es lo que deja la letra a 4,5:1 encima del cristal |
 | `--cristal-ventana` | La ventana grande. **No desenfoca**: si lo hiciera, sus paneles dejarían de esmerilar la foto |
-| `--cristal-panel` · `--cristal-filtro` | Los paneles de dentro: tinte y desenfoque de 12 px |
+| `--cristal-panel` · `--cristal-filtro` | Los paneles de dentro. El filtro está a `none` a propósito: la foto ya viene desenfocada y desenfocar cada panel hacía ir lenta la plataforma. Sólo desenfoca el dock |
+| `--cristal-barra-densa` | La barra del documento, que flota encima del papel: casi opaca, o la letra se mezcla con el folio |
 | `--cristal-barra` · `--cristal-campo` | La barra en píldora de arriba y el campo «dónde estás» |
 | `--cristal-riel` | La columna, que flota a la izquierda. Plegada es un riel de iconos |
 | `--cristal-dock` | Por debajo de 1130 px el riel pasa a dock abajo. El cristal con más cuerpo |
@@ -176,6 +178,21 @@ suben casi a blanco (`#f1eaec` a `#e6dce0`). En cristal la jerarquía la hacen
 el tamaño y el peso, no lo apagada que esté la letra. Nada se mueve solo: el
 polvo que sube no se pinta en cristal, y lo único que se anima es el toque
 (aclara al pasar, encoge a 0,94 al pulsar).
+
+Más reglas del cristal, todas medidas:
+
+- **La página no se mueve.** Barra, riel y ventana se quedan quietos; sólo
+  corre lo de dentro de la ventana. Lo que se pega arriba al desplazar usa
+  `--pegado`, y para volver arriba se usa `subeArriba()` (`lib/arriba.ts`),
+  nunca `window.scrollTo`.
+- **Lo pegado es opaco.** Una cabecera que se queda fija mientras pasa el
+  contenido por debajo va con `--surface-solid`, nunca con `--surface`.
+- **En cristal el dorado de texto es `--gold-deep`** y en oscuro el rojo de
+  aviso sube a `#f6b0a9`: los de siempre se quedaban por debajo de 4,5:1.
+- **Se entra en claro.** El oscuro es una elección del botón de la luna, no se
+  copia del ordenador.
+- **Pesos: sólo se descargan 400 y 500** y `font-synthesis-weight` está
+  apagado. Cualquier regla que pida 600 o 700 recibe el 500.
 
 Y los que cambian según el bloque (`.claro`, `.arena`, `.vino`):
 `--bg`, `--tx`, `--tx-2`, `--tx-3`, `--acento`, `--superficie`.

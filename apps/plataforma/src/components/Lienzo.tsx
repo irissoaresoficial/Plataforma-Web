@@ -42,7 +42,7 @@ export default function Lienzo({
           "border-radius:var(--r);padding:" +
           (compacto ? "var(--pad-card-sm)" : "var(--pad-card)") +
           ";min-width:0;" +
-          (anclado ? "position:sticky;top:78px;align-self:start;max-height:calc(100vh - 96px);overflow-y:auto;" : "")
+          (anclado ? "position:sticky;top:var(--pegado, 78px);align-self:start;max-height:calc(100vh - 96px);overflow-y:auto;" : "")
       )}
     >
       {children}

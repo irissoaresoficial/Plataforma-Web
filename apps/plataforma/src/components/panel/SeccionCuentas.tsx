@@ -126,7 +126,7 @@ export default function SeccionCuentas() {
       <div data-dos="">
       {/* La tabla acompaña la lectura mientras se baja: es a lo que hay que
        * volver todo el rato para saber de qué fila sale cada número. */}
-      <div data-anclado="" style={css("position:sticky;top:78px;align-self:start;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:var(--pad-card-sm);")}>
+      <div data-anclado="" style={css("position:sticky;top:var(--pegado, 78px);align-self:start;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:var(--pad-card-sm);")}>
         <div style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);margin-bottom:16px;")}>Cuentas abiertas</div>
         <div style={css("display:grid;grid-template-columns:26px 1fr 1fr 1fr 1fr;gap:6px;")}>
           {tabla.map((cell, i) => (

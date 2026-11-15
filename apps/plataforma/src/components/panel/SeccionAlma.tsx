@@ -28,7 +28,7 @@ export default function SeccionAlma() {
 
   return (
     <div data-dos="">
-      <div data-anclado="" style={css("position:sticky;top:78px;align-self:start;max-height:calc(100vh - 96px);overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:var(--pad-card-sm);")}>
+      <div data-anclado="" style={css("position:sticky;top:var(--pegado, 78px);align-self:start;max-height:calc(100vh - 96px);overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:var(--pad-card-sm);")}>
         <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s4);")}>
           <span style={css("font-size:var(--t-mini);font-weight:590;color:var(--text-3);")}>Imagen del alma</span>
           <span style={css("font-family:var(--font-display);font-size:var(--t-head);font-weight:500;color:var(--gold);line-height:1;")}>{ia.numero}</span>

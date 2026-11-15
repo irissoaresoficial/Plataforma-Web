@@ -27,6 +27,7 @@
  * Como las otras dos, no toca `localStorage`: habla con `lib/despacho`.
  */
 
+import { subeArriba } from "@/lib/arriba";
 import Rescate from "../despacho/Rescate";
 import { useCallback, useEffect, useState } from "react";
 import { css } from "@/lib/css";
@@ -452,7 +453,7 @@ export default function FacturasScreen() {
         {/* ------------------------------------------------------- la lista */}
         {/* El aviso va FUERA de la tarjeta de la lista, no dentro: dentro de
          * una tarjeta no va otra tarjeta — lo que separa es una línea. */}
-        <div data-chrome="1" data-anclado="" style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;position:sticky;top:79px;")}>
+        <div data-chrome="1" data-anclado="" style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;position:sticky;top:var(--pegado, 79px);")}>
           <section
             style={css(TARJETA + PAD + "max-height:calc(100vh - 220px);overflow-y:auto;min-width:0;")}
           >
@@ -526,7 +527,7 @@ export default function FacturasScreen() {
         </div>
 
         {/* ------------------------------------------- el formulario o la hoja */}
-        <div ref={alDetalle} style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;scroll-margin-top:79px;")}>
+        <div ref={alDetalle} style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;scroll-margin-top:var(--pegado, 79px);")}>
           {abierta ? (
             /* --------------------------------------------- una ya emitida */
             <section data-chrome="1" style={css(TARJETA + PAD)}>
@@ -813,7 +814,7 @@ export default function FacturasScreen() {
                            movimiento: quien pide menos animación no quiere que
                            la página se le mueva sola durante medio segundo. */
                         const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-                        window.scrollTo({ top: 0, behavior: quieto ? "auto" : "smooth" });
+                        subeArriba(quieto);
                       }}
                       style={css(
                         "background:none;border:none;padding:0;cursor:pointer;font:inherit;color:var(--accion);font-weight:590;text-decoration:underline;"

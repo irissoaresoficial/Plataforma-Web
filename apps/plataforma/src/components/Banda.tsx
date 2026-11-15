@@ -37,7 +37,10 @@ export default function Banda({
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={foto} alt="" style={css(`position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${encuadre};`)} />
-      <span aria-hidden="true" style={css("position:absolute;inset:0;background:linear-gradient(90deg,rgba(34,29,31,.88) 0%,rgba(34,29,31,.6) 50%,rgba(34,29,31,.25) 100%);")} />
+      {/* El velo vuelve a oscurecer a la derecha, que es donde van las cifras:
+          acababa en .25 y los rótulos dorados quedaban a 3,2:1 encima de la
+          foto de los cristales. */}
+      <span aria-hidden="true" style={css("position:absolute;inset:0;background:linear-gradient(90deg,rgba(34,29,31,.88) 0%,rgba(34,29,31,.6) 50%,rgba(34,29,31,.72) 100%);")} />
       <div
         style={css(
           "position:relative;width:100%;padding:var(--pad-card);display:flex;align-items:flex-end;justify-content:space-between;gap:var(--gap-lg);flex-wrap:wrap;"
