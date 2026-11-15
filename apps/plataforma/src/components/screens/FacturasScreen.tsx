@@ -59,6 +59,7 @@ import {
 import { AvisoNavegador, Cabecera, Estado, Vacio, useLlevaAlDetalle } from "../despacho/Piezas";
 import HojaFactura from "../despacho/HojaFactura";
 import Control from "../despacho/Control";
+import Resumen from "../despacho/Resumen";
 import Plantillas, { GuardarPlantilla, usePlantillas } from "../despacho/Plantillas";
 import { PLANTILLAS_CASA, baseDesdeFinal, type Plantilla } from "@/lib/despacho/plantillas";
 
@@ -118,8 +119,8 @@ export default function FacturasScreen() {
   const [anulando, setAnulando] = useState(false);
   const [motivo, setMotivo] = useState("");
   const [cargando, setCargando] = useState(true);
-  /** Las dos mitades de la pantalla: hacer facturas, o llevar las cuentas. */
-  const [apartado, setApartado] = useState<"facturas" | "control">("facturas");
+  /** Tres pestañas: el resumen —lo primero que se ve—, las facturas y los gastos. */
+  const [apartado, setApartado] = useState<"resumen" | "facturas" | "gastos">("resumen");
   /** Las plantillas de factura: las de la casa y las que ha guardado Iris. */
   const { propias, setPropias } = usePlantillas();
   const [elegida, setElegida] = useState<string | null>(null);
@@ -269,11 +270,17 @@ export default function FacturasScreen() {
     if (cargando) return;
     if (facturaAbierta) {
       const f = lista.find((x) => x.id === facturaAbierta);
-      if (f) abrir(f);
+      /* Un recado de otra pantalla va a una factura concreta: se salta a la
+         pestaña de Facturas, o se abriría detrás del Resumen sin verse. */
+      if (f) {
+        setApartado("facturas");
+        abrir(f);
+      }
       setFacturaAbierta(null);
       return;
     }
     if (recado) {
+      setApartado("facturas");
       nueva();
       cambiaCliente(recado);
       setRecado(null);
@@ -369,7 +376,13 @@ export default function FacturasScreen() {
       <div data-chrome="1">
         <Cabecera
           titulo="Facturas"
-          pie={apartado === "facturas" ? "Numeradas seguidas, sin saltarse ninguna." : "Lo que entra, lo que sale y el trimestre, para tu gestor."}
+          pie={
+            apartado === "resumen"
+              ? "Cómo va el trimestre, de un vistazo."
+              : apartado === "facturas"
+                ? "Numeradas seguidas, sin saltarse ninguna."
+                : "Lo que pagas por tu trabajo, con su tique."
+          }
         />
         {/* LAS DOS MITADES. El control va aquí dentro y no en el menú porque
             es la misma cosa vista desde el otro lado: los ingresos del control
@@ -377,15 +390,16 @@ export default function FacturasScreen() {
             vino lleno es del botón principal, y sólo hay uno por pantalla. */}
         <div
           role="tablist"
-          aria-label="Facturas o control"
+          aria-label="Resumen, facturas o gastos"
           style={css(
             "display:flex;gap:6px;margin-bottom:var(--gap-lg);padding:5px;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--border);width:max-content;max-width:100%;box-shadow:var(--shadow-sm);"
           )}
         >
           {(
             [
-              ["facturas", "Hacer facturas"],
-              ["control", "Control y gastos"],
+              ["resumen", "Resumen"],
+              ["facturas", "Facturas"],
+              ["gastos", "Gastos"],
             ] as const
           ).map(([k, label]) => (
             <button
@@ -402,7 +416,19 @@ export default function FacturasScreen() {
             </button>
           ))}
         </div>
-        {apartado === "control" && <Control facturas={lista} />}
+        {apartado === "resumen" && (
+          <Resumen
+            facturas={lista}
+            onNuevaFactura={() => {
+              nueva();
+              setApartado("facturas");
+            }}
+            onApuntarGasto={() => setApartado("gastos")}
+            onVerFacturas={() => setApartado("facturas")}
+            onVerGastos={() => setApartado("gastos")}
+          />
+        )}
+        {apartado === "gastos" && <Control facturas={lista} />}
         {apartado === "facturas" && <Rescate facturas />}
 
         {/* ------------------------------------------------ quién factura */}

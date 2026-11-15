@@ -30,7 +30,6 @@ import {
   gastoVacio,
   gastos as repoGastos,
   guardadoEnLaNube,
-  hastaTrimestre,
   mesesTrimestre,
   mismoTrimestre,
   nombreTrimestre,
@@ -97,9 +96,8 @@ export default function Control({ facturas }: { facturas: Factura[] }) {
     [facturas, q]
   );
   const r = useMemo(() => (q ? resumen(facturas, lista, (f) => mismoTrimestre(f, q)) : null), [facturas, lista, q]);
-  const ano = useMemo(() => (q ? resumen(facturas, lista, hastaTrimestre(q)) : null), [facturas, lista, q]);
 
-  if (!q || !g || !r || !ano) return null;
+  if (!q || !g || !r) return null;
 
   const d = desglose(g);
   const cambia = (parte: Partial<Gasto>) => setG({ ...g, ...parte });
@@ -174,17 +172,6 @@ export default function Control({ facturas }: { facturas: Factura[] }) {
     </label>
   );
 
-  /** Una cifra del resumen: el número grande y, debajo, de dónde sale. */
-  const cifra = (titulo: string, valor: number, pie: string, tono = "var(--text)") => (
-    <div style={css("min-width:0;display:flex;flex-direction:column;gap:6px;")}>
-      <span style={css(rotulo())}>{titulo}</span>
-      <span data-cifras="" style={css("font-size:var(--t-hero);font-weight:300;letter-spacing:-.02em;line-height:1.05;color:" + tono + ";overflow-wrap:anywhere;")}>
-        {euros(valor)}
-      </span>
-      <span style={css(NOTA + "line-height:1.45;")}>{pie}</span>
-    </div>
-  );
-
   const hoyQ = trimestreDe(claveDia(new Date()));
   const esElDeHoy = hoyQ.ano === q.ano && hoyQ.t === q.t;
 
@@ -195,7 +182,7 @@ export default function Control({ facturas }: { facturas: Factura[] }) {
         {/* El título a la izquierda y las dos flechas juntas a la derecha. Si
             van una a cada lado del título, en el móvil se parten en tres
             renglones y parecen botones sueltos. */}
-        <div style={css("display:flex;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s5);")}>
+        <div style={css("display:flex;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s3);")}>
           <div style={css("flex:1;min-width:0;")}>
             <div style={css("font-size:var(--t-title);font-weight:500;letter-spacing:-.015em;color:var(--text);")}>{nombreTrimestre(q)}</div>
             <div style={css(NOTA + "margin-top:2px;line-height:1.45;")}>
@@ -223,26 +210,13 @@ export default function Control({ facturas }: { facturas: Factura[] }) {
           </div>
         </div>
 
-        <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:var(--s5) var(--gap-lg);")}>
-          {cifra("Has facturado", r.ingresos, `${r.nFacturas === 1 ? "1 factura" : `${r.nFacturas} facturas`}, sin IVA.`)}
-          {cifra("Has gastado", r.gastos, `${r.nGastos === 1 ? "1 gasto" : `${r.nGastos} gastos`}, sin IVA.`)}
-          {cifra(
-            "IVA del trimestre",
-            r.iva,
-            `Cobrado ${euros(r.ivaRepercutido)} menos pagado ${euros(r.ivaSoportado)}. ${r.iva >= 0 ? "Es lo que sale a ingresar (modelo 303)." : "Sale a tu favor."}`
+        {/* Las cifras grandes viven en el Resumen. Aquí sólo lo que hace
+            falta para apuntar: cuánto llevas y qué falta por justificar. */}
+        <p data-cifras="" style={css(APOYO + "margin:0;")}>
+          {r.nGastos === 0 ? "Sin gastos apuntados." : `${r.nGastos === 1 ? "1 gasto" : `${r.nGastos} gastos`} · ${euros(r.gastos + r.ivaSoportado)} pagados.`}
+          {r.sinTique > 0 && (
+            <span style={css("color:var(--red);")}> {r.sinTique === 1 ? "1 sin tique" : `${r.sinTique} sin tique`}: sin él, tu gestor no lo puede justificar.</span>
           )}
-          {cifra(
-            "Te queda",
-            r.rendimiento,
-            `Facturado menos gastado. Desde enero llevas ${euros(ano.rendimiento)}, que es lo que mira el modelo 130.`,
-            r.rendimiento < 0 ? "var(--red)" : "var(--text)"
-          )}
-        </div>
-
-        <p style={css(NOTA + "line-height:1.5;margin:var(--s5) 0 0;" + RAYA + "padding-top:var(--s4);")}>
-          Son tus números en orden, no la declaración. Lo que pagas al final lo cierra tu gestor: puede faltar algún gasto
-          que aquí no está, o sobrar uno que no se deduce.
-          {r.sinTique > 0 && ` ${r.sinTique === 1 ? "Hay 1 gasto" : `Hay ${r.sinTique} gastos`} sin tique: sin él, el gestor no lo puede justificar.`}
         </p>
       </section>
 
