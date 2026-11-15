@@ -63,7 +63,7 @@ export default function Menu({ abierto, cerrar }: { abierto: boolean; cerrar: ()
             <div style={css("display:flex;align-items:center;gap:11px;padding:0 6px;")}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/logo.jpeg"
+                src="/logo-chico.jpeg"
                 alt=""
                 style={css("width:34px;height:34px;flex:none;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px rgba(201,168,76,.4);")}
               />

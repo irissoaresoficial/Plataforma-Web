@@ -92,7 +92,7 @@ export default function ConsultaScreen() {
           <div data-entrada-marca="" style={css("display:inline-flex;align-items:center;gap:11px;margin-bottom:var(--s5);")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.jpeg"
+              src="/logo-chico.jpeg"
               alt="Escuela de Sabiduría 33"
               style={css("width:42px;height:42px;flex:none;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px rgba(201,168,76,.4),0 0 24px var(--border-accent);")}
             />

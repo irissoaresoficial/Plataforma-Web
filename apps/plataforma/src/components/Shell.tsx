@@ -303,9 +303,13 @@ export default function Shell() {
       <header data-chrome="1" data-app-header="" data-barra="">
         <BotonMenu onClick={() => setMenu(true)} />
         <div style={css("display:flex;align-items:center;gap:11px;min-width:0;flex:none;")}>
+          {/* `logo-chico.jpeg` es el mismo sello a 160 px (13 KB). Aquí se
+              pintaba a 38 px pidiendo el original de 1024 px, 171 KB en la
+              primera visita de cada aparato sólo para la esquina de la barra.
+              El grande se queda para el documento, que se imprime. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo.jpeg"
+            src="/logo-chico.jpeg"
             alt="Escuela de Sabiduría 33"
             style={css("width:38px;height:38px;flex:none;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--border-accent);")}
           />
@@ -342,7 +346,7 @@ export default function Shell() {
         <div data-marca="" style={css("display:flex;align-items:center;gap:13px;min-width:0;")}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo.jpeg"
+            src="/logo-chico.jpeg"
             alt="Escuela de Sabiduría 33"
             style={css("width:38px;height:38px;flex:none;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px rgba(201,168,76,.4),0 0 22px var(--border-accent);")}
           />
