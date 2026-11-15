@@ -111,15 +111,24 @@ export default function MetricasScreen() {
       /* Los leads van en el mismo `Promise.all` y no en una llamada aparte:
          son cinco lecturas que no dependen unas de otras, y encadenarlas
          multiplicaría por cinco lo que tarda en abrirse la pantalla. */
+      /* CON `RESTO` APAGADO, SÓLO SE PIDE LO QUE SE PINTA. La pantalla enseña
+         la masterclass y nada más, y la masterclass sólo lee los leads y la
+         campaña. Las otras seis lecturas —todos los usuarios, todos los
+         cursos, todos los avances, todas las visitas, todas las citas, todas
+         las facturas y todos los clientes— se seguían haciendo enteras cada
+         vez que se abría esto, para calcular cifras que nadie veía. Eran casi
+         todo lo que tardaba la pantalla en abrir. Se piden otra vez solas el
+         día que `RESTO` vuelva a encenderse. */
+      const nada = <T,>(): Promise<T[]> => Promise.resolve([]);
       const [gente, cursos, avances, visitas, leads, citas, facturas, clientes, campana] = await Promise.all([
-        listaUsuarios(),
-        repoCursos.listar(),
-        todosLosAvances(),
-        todasLasVisitas(),
+        RESTO ? listaUsuarios() : nada<Awaited<ReturnType<typeof listaUsuarios>>[number]>(),
+        RESTO ? repoCursos.listar() : nada<Curso>(),
+        RESTO ? todosLosAvances() : nada<Avance>(),
+        RESTO ? todasLasVisitas() : nada<Awaited<ReturnType<typeof todasLasVisitas>>[number]>(),
         ultimosLeads(500),
-        repoCitas.listar(),
-        repoFacturas.listar(),
-        repoClientes.listar(),
+        RESTO ? repoCitas.listar() : nada<Cita>(),
+        RESTO ? repoFacturas.listar() : nada<Factura>(),
+        RESTO ? repoClientes.listar() : nada<Cliente>(),
         /* Lo de la campaña entra en el mismo paquete que lo demás. Y no puede
            tumbar la pantalla: `ultimosDias` devuelve lista vacía si no hay
            permiso o no hay nube, en vez de lanzar. Las métricas de la escuela
