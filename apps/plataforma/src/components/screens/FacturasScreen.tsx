@@ -397,7 +397,13 @@ export default function FacturasScreen() {
             se emite. Eso no es una limitación nuestra, es la ley española, y
             está dicho junto al botón apagado, que es donde hace falta leerlo.
         */}
-        {apartado === "facturas" && sabemosDelEmisor && mios && (
+        {/* Y CON LOS DATOS COMPLETOS, NADA (15 de noviembre de 2026). Ger: «quita
+            eso y déjalo ya por defecto». Los datos de Iris vienen puestos en
+            `emisor.ts` y salen en la propia factura, que es donde se leen.
+            Esto sólo vuelve a pintarse si faltara alguno —para no dejar el
+            botón de emitir apagado sin explicación— o si se abre desde el
+            aviso de junto a ese botón. */}
+        {apartado === "facturas" && sabemosDelEmisor && mios && (!completo || abriendoDatos) && (
           /* UNA LÍNEA, NO UN BLOQUE (15 de noviembre de 2026). Era una tarjeta
              entera con un rótulo rojo y el botón principal de la pantalla, y
              Ger la tenía delante cada vez que entraba: los datos se escriben
