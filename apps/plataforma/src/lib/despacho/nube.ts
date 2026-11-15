@@ -64,6 +64,47 @@ function baseOpcional() {
   return nube();
 }
 
+/*
+ * DOS PANTALLAS QUE PIDEN LO MISMO A LA VEZ, UNA SOLA LECTURA.
+ *
+ * Al abrir el tablero se leían las citas, los clientes y las facturas enteras
+ * DOS veces en el mismo instante: una el propio tablero y otra la campana de
+ * avisos de la cabecera, que vuelve a contar cada vez que se cambia de
+ * pantalla. Lo mismo en la agenda y en personas. Eran dos viajes idénticos a
+ * Firestore compitiendo por la misma conexión, y la pantalla tardaba lo que
+ * tardase el más lento.
+ *
+ * Aquí, si ya hay una lectura de esa colección EN CAMINO, quien llega después
+ * se sube a ella en vez de lanzar otra. En cuanto contesta se olvida: la
+ * siguiente lectura vuelve a ir a la nube, así que nada se queda viejo. Y
+ * cualquier escritura de esa colección la suelta antes y después de escribir,
+ * para que quien lea justo después de guardar no reciba la foto de antes.
+ *
+ * Cada uno se lleva SU copia: más de una pantalla ordena o retoca la lista que
+ * recibe, y si compartieran el mismo objeto se lo cambiarían la una a la otra.
+ */
+function juntaLecturas<T extends object>(leer: () => Promise<T[]>) {
+  let enCamino: Promise<T[]> | null = null;
+  const lee = (): Promise<T[]> => {
+    if (!enCamino) {
+      const esta = leer();
+      enCamino = esta;
+      const suelta = () => {
+        if (enCamino === esta) enCamino = null;
+      };
+      esta.then(suelta, suelta);
+    }
+    /* Copia de la lista y de cada ficha, pero no en profundidad: dentro puede
+       venir un `Timestamp` de Firestore, y `structuredClone` lo dejaría en un
+       objeto sin sus métodos (`toDate`, `toMillis`). */
+    return enCamino.then((lista) => lista.map((x) => ({ ...x })));
+  };
+  const olvida = () => {
+    enCamino = null;
+  };
+  return { lee, olvida };
+}
+
 /** Firestore devuelve los campos sueltos; el `id` va aparte y hay que pegarlo. */
 function conId<T>(id: string, datos: unknown): T {
   return { ...(datos as object), id } as T;
@@ -71,12 +112,16 @@ function conId<T>(id: string, datos: unknown): T {
 
 /* -------------------------------------------------------------- clientes */
 
+const lecturaClientes = juntaLecturas(async (): Promise<Cliente[]> => {
+  const b = baseOpcional();
+  if (!b) return [];
+  const r = await getDocs(query(collection(b, "clientes"), orderBy("nombre")));
+  return r.docs.map((d) => conId<Cliente>(d.id, d.data()));
+});
+
 export const clientesNube: RepoClientes = {
   async listar() {
-    const b = baseOpcional();
-    if (!b) return [];
-    const r = await getDocs(query(collection(b, "clientes"), orderBy("nombre")));
-    return r.docs.map((d) => conId<Cliente>(d.id, d.data()));
+    return lecturaClientes.lee();
   },
 
   async obtener(id) {
@@ -87,13 +132,17 @@ export const clientesNube: RepoClientes = {
   },
 
   async guardar(c) {
+    lecturaClientes.olvida();
     const guardado = { ...c, id: c.id || nuevoId(), actualizada: new Date().toISOString() };
     await setDoc(doc(base(), "clientes", guardado.id), guardado);
+    lecturaClientes.olvida();
     return guardado;
   },
 
   async borrar(id) {
+    lecturaClientes.olvida();
     await deleteDoc(doc(base(), "clientes", id));
+    lecturaClientes.olvida();
   },
 
   async buscar(texto) {
@@ -119,12 +168,16 @@ export const clientesNube: RepoClientes = {
 
 /* ----------------------------------------------------------------- citas */
 
+const lecturaCitas = juntaLecturas(async (): Promise<Cita[]> => {
+  const b = baseOpcional();
+  if (!b) return [];
+  const r = await getDocs(query(collection(b, "citas"), orderBy("inicioISO")));
+  return r.docs.map((d) => conId<Cita>(d.id, d.data()));
+});
+
 export const citasNube: RepoCitas = {
   async listar() {
-    const b = baseOpcional();
-    if (!b) return [];
-    const r = await getDocs(query(collection(b, "citas"), orderBy("inicioISO")));
-    return r.docs.map((d) => conId<Cita>(d.id, d.data()));
+    return lecturaCitas.lee();
   },
 
   async obtener(id) {
@@ -135,13 +188,17 @@ export const citasNube: RepoCitas = {
   },
 
   async guardar(c) {
+    lecturaCitas.olvida();
     const guardado = { ...c, id: c.id || nuevoId() };
     await setDoc(doc(base(), "citas", guardado.id), guardado);
+    lecturaCitas.olvida();
     return guardado;
   },
 
   async borrar(id) {
+    lecturaCitas.olvida();
     await deleteDoc(doc(base(), "citas", id));
+    lecturaCitas.olvida();
   },
 
   async entre(desdeISO, hastaISO) {
@@ -181,9 +238,14 @@ const listaFacturas = async (): Promise<Factura[]> => {
   });
 };
 
+/* Sólo `listar` se junta. `emitir` sigue llamando a `listaFacturas` a pelo:
+   el número de una factura nueva sale de mirar todas las que hay en ESE
+   momento, y ahí no vale subirse a una lectura que ya iba de camino. */
+const lecturaFacturas = juntaLecturas(listaFacturas);
+
 export const facturasNube: RepoFacturas = {
   async listar() {
-    return listaFacturas();
+    return lecturaFacturas.lee();
   },
 
   async obtener(id) {
@@ -199,8 +261,10 @@ export const facturasNube: RepoFacturas = {
     if (previa && previa.estado !== "borrador") {
       throw new Error("Esa factura ya está emitida: no se puede cambiar. Si está mal, anúlala y haz otra.");
     }
+    lecturaFacturas.olvida();
     const guardado = { ...f, id: f.id || nuevoId() };
     await setDoc(doc(base(), "facturas", guardado.id), guardado);
+    lecturaFacturas.olvida();
     return guardado;
   },
 
@@ -210,7 +274,9 @@ export const facturasNube: RepoFacturas = {
     if (f.estado !== "borrador") {
       throw new Error("Una factura emitida no se borra: se anula, y su número se queda ocupado.");
     }
+    lecturaFacturas.olvida();
     await deleteDoc(doc(base(), "facturas", id));
+    lecturaFacturas.olvida();
   },
 
   async emitir(id) {
@@ -253,7 +319,9 @@ export const facturasNube: RepoFacturas = {
       emisor: { ...EMISOR },
       emitida: new Date().toISOString(),
     };
+    lecturaFacturas.olvida();
     await setDoc(doc(base(), "facturas", definitiva.id), definitiva);
+    lecturaFacturas.olvida();
     return definitiva;
   },
 
@@ -263,7 +331,9 @@ export const facturasNube: RepoFacturas = {
     if (f.estado === "borrador") throw new Error("Un borrador no se anula: se borra.");
     if (!motivo.trim()) throw new Error("Escribe por qué se anula.");
     const anulada: Factura = { ...f, estado: "anulada", motivoAnulacion: motivo.trim() };
+    lecturaFacturas.olvida();
     await setDoc(doc(base(), "facturas", anulada.id), anulada);
+    lecturaFacturas.olvida();
     return anulada;
   },
 };
@@ -272,19 +342,24 @@ export const facturasNube: RepoFacturas = {
 
 const MEDIO_ANO = 183 * 86400000;
 
+const lecturaAvisos = juntaLecturas(async (): Promise<AvisoVisto[]> => {
+  const b = baseOpcional();
+  if (!b) return [];
+  const r = await getDocs(collection(b, "avisos"));
+  const corte = Date.now() - MEDIO_ANO;
+  return r.docs
+    .map((d) => conId<AvisoVisto>(d.id, d.data()))
+    .filter((v) => Date.parse(v.cuando) > corte);
+});
+
 export const avisosNube: RepoAvisos = {
   async vistos() {
-    const b = baseOpcional();
-    if (!b) return [];
-    const r = await getDocs(collection(b, "avisos"));
-    const corte = Date.now() - MEDIO_ANO;
-    return r.docs
-      .map((d) => conId<AvisoVisto>(d.id, d.data()))
-      .filter((v) => Date.parse(v.cuando) > corte);
+    return lecturaAvisos.lee();
   },
 
   async marcar(nuevos) {
     if (!nuevos.length) return;
+    lecturaAvisos.olvida();
     const b = base();
     const cuando = new Date().toISOString();
     /*
@@ -302,5 +377,6 @@ export const avisosNube: RepoAvisos = {
         setDoc(doc(b, "avisos", id.replace(/[/\\.#$[\]]/g, "_").slice(0, 380)), { id, sello, cuando }),
       ),
     );
+    lecturaAvisos.olvida();
   },
 };
