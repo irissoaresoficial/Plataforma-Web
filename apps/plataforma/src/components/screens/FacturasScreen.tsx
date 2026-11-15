@@ -59,17 +59,12 @@ import {
 import { AvisoNavegador, Cabecera, Estado, Vacio, useLlevaAlDetalle } from "../despacho/Piezas";
 import HojaFactura from "../despacho/HojaFactura";
 import Control from "../despacho/Control";
+import Plantillas, { GuardarPlantilla, usePlantillas } from "../despacho/Plantillas";
+import { PLANTILLAS_CASA, baseDesdeFinal, type Plantilla } from "@/lib/despacho/plantillas";
 
 /** El tipo general de IVA en España. Se puede cambiar en el formulario: no
  *  todos los servicios llevan el mismo, y adivinar cuál toca no es cosa nuestra. */
 const IVA_GENERAL = 21;
-
-/** Lo que se suele facturar, para no teclearlo cada vez. */
-const CONCEPTOS = [
-  { label: "Una sesión", texto: "Sesión individual" },
-  { label: "Un curso", texto: "Curso" },
-  { label: "Otra cosa", texto: "" },
-];
 
 function facturaVacia(fecha: string): Factura {
   return {
@@ -125,6 +120,9 @@ export default function FacturasScreen() {
   const [cargando, setCargando] = useState(true);
   /** Las dos mitades de la pantalla: hacer facturas, o llevar las cuentas. */
   const [apartado, setApartado] = useState<"facturas" | "control">("facturas");
+  /** Las plantillas de factura: las de la casa y las que ha guardado Iris. */
+  const { propias, setPropias } = usePlantillas();
+  const [elegida, setElegida] = useState<string | null>(null);
 
 
   /*
@@ -186,7 +184,37 @@ export default function FacturasScreen() {
     setAbierta(null);
     setAnulando(false);
     setMensaje("");
+    setElegida(null);
     setBorrador(facturaVacia(claveDia(new Date())));
+  };
+
+  /*
+   * ELEGIR UNA PLANTILLA. Las de la casa traen lo que paga la clienta y aquí se
+   * saca la base con el IVA que tenga la factura; las suyas traen sus líneas
+   * tal cual. Un precio PENDIENTE no se rellena con nada: se dice.
+   */
+  const aplicaPlantilla = (p: Plantilla) => {
+    if (!borrador) return;
+    setElegida(p.id);
+    if (p.propia && p.lineas) {
+      cambia({ lineas: p.lineas.map((l) => ({ ...l })), iva: p.iva ?? borrador.iva });
+      setMensaje("");
+      return;
+    }
+    const precio = p.precioFinal == null ? 0 : baseDesdeFinal(p.precioFinal, borrador.iva);
+    cambia({ lineas: [{ concepto: p.concepto, cantidad: 1, precio }] });
+    setMensaje(p.precioFinal == null ? `El precio de «${p.nombre}» está PENDIENTE: escríbelo sin IVA en la línea.` : "");
+  };
+
+  /** Si cambia el IVA con una plantilla de la casa puesta, la base se recalcula
+   *  para que la clienta siga pagando lo anunciado. Si ya se ha tocado la línea,
+   *  no: entonces manda lo que Iris haya escrito. */
+  const cambiaIva = (iva: number) => {
+    if (!borrador) return;
+    const p = PLANTILLAS_CASA.find((x) => x.id === elegida);
+    const intacta = p && p.precioFinal != null && borrador.lineas.length === 1 && borrador.lineas[0].concepto === p.concepto && borrador.lineas[0].cantidad === 1;
+    if (p && p.precioFinal != null && intacta) cambia({ iva, lineas: [{ ...borrador.lineas[0], precio: baseDesdeFinal(p.precioFinal, iva) }] });
+    else cambia({ iva });
   };
 
   const abrir = (f: Factura) => {
@@ -654,7 +682,11 @@ export default function FacturasScreen() {
                 <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s4);")}>Nueva factura</div>
 
                 <div style={css("display:flex;flex-direction:column;gap:var(--s4);")}>
+                  {/* -------------------------------------------- qué: plantillas */}
+                  <Plantillas propias={propias} setPropias={setPropias} elegida={elegida} onElige={aplicaPlantilla} />
+
                   {/* -------------------------------------------- a quién */}
+                  <div style={css(RAYA + "padding-top:var(--s4);")} />
                   <div style={css("display:flex;flex-direction:column;gap:var(--s3);")}>
                     {campo(
                       "¿A quién le facturas?",
@@ -701,23 +733,7 @@ export default function FacturasScreen() {
 
                   {/* --------------------------------------------- qué se factura */}
                   <div style={css(RAYA + "padding-top:var(--s4);display:flex;flex-direction:column;gap:var(--s3);")}>
-                    <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;")}>
-                      <span style={css(rotulo())}>¿Qué le facturas?</span>
-                      <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;margin-left:auto;")}>
-                        {CONCEPTOS.map((c) => (
-                          <button
-                            key={c.label}
-                            type="button"
-                            onClick={() =>
-                              cambia({ lineas: [{ ...borrador.lineas[0], concepto: c.texto }, ...borrador.lineas.slice(1)] })
-                            }
-                            style={css(BOTON_PLANO)}
-                          >
-                            {c.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    <span style={css(rotulo())}>Lo que sale en la factura</span>
 
                     {/* Las tres casillas de cada línea no llevan rótulo encima
                      * —serían tres rótulos por línea y la tarjeta se llenaría
@@ -790,7 +806,7 @@ export default function FacturasScreen() {
                       <input
                         value={borrador.iva}
                         inputMode="numeric"
-                        onChange={(e) => cambia({ iva: Number(e.target.value.replace(/\D/g, "")) || 0 })}
+                        onChange={(e) => cambiaIva(Number(e.target.value.replace(/\D/g, "")) || 0)}
                         style={css(entrada + "text-align:right;")}
                       />
                     )}
@@ -827,6 +843,14 @@ export default function FacturasScreen() {
                   <button onClick={() => void guardarBorrador()} style={css(BOTON_NORMAL)}>
                     Guardar el borrador
                   </button>
+                  <GuardarPlantilla
+                    lineas={borrador.lineas}
+                    iva={borrador.iva}
+                    onGuardada={(l, nombre) => {
+                      setPropias(l);
+                      setMensaje(`Plantilla «${nombre}» guardada. La tienes arriba, con las demás.`);
+                    }}
+                  />
                   <button onClick={() => void tirarBorrador()} style={css(BOTON_PLANO + "margin-left:auto;color:var(--red);")}>
                     Tirar el borrador
                   </button>
