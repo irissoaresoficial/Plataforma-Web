@@ -22,7 +22,7 @@ import TableroScreen from "./screens/TableroScreen";
 import MiAgendaScreen from "./screens/MiAgendaScreen";
 import MisMetricasScreen from "./screens/MisMetricasScreen";
 import DetalleModal from "./DetalleModal";
-import Sidebar from "./Sidebar";
+import Sidebar, { Dock } from "./Sidebar";
 import Menu, { BotonMenu } from "./Menu";
 import Tema from "./Tema";
 import Cuenta from "./Cuenta";
@@ -33,6 +33,17 @@ import GuiaPasos from "./escuela/GuiaPasos";
 import Novedades from "./despacho/Novedades";
 import Particulas from "./Particulas";
 import SinEstudio from "./SinEstudio";
+import type { View } from "@/lib/app-context";
+
+/*
+ * LAS PANTALLAS QUE YA VAN EN CRISTAL.
+ *
+ * El cristal (globals.css, «EL CRISTAL») entra pantalla por pantalla: cada una
+ * se añade aquí cuando está revisada en captura, en claro y en oscuro, a 1440 y
+ * a 390. Las demás siguen como estaban hasta su turno — mejor una pantalla de
+ * antes entera que una nueva a medias.
+ */
+const CRISTAL: View[] = ["tablero"];
 
 export default function Shell() {
   const { view, setView, r, re, rehidratado } = useApp();
@@ -120,11 +131,16 @@ export default function Shell() {
    * recuperar el estudio guardado y el cartel saldría siempre, incluso cuando
    * sí lo hay.
    */
+  const cristal = CRISTAL.includes(vista);
+  const nombreVista =
+    PESTANAS.find((t) => t.k === vista)?.label ?? (vista === "pareja" ? "Comparativa" : vista === "fengshui" ? "Feng Shui" : "");
+
   const faltaEstudio = rehidratado && VISTAS_DE_ESTUDIO.includes(vista) && !r && !re;
 
   return (
     <div
       data-app-root=""
+      data-cristal={cristal ? "" : undefined}
       style={css(
         "position:relative;min-height:100vh;color:var(--text);font-family:var(--font-ui);"
       )}
@@ -145,7 +161,7 @@ export default function Shell() {
           Fijo a la ventana a propósito: es aire de la habitación, no del
           documento, así que no se va con el scroll.
       */}
-      <div aria-hidden="true" style={css("position:fixed;inset:0;z-index:0;pointer-events:none;")}>
+      <div data-polvo="" aria-hidden="true" style={css("position:fixed;inset:0;z-index:0;pointer-events:none;")}>
         <Particulas cantidad={34} />
       </div>
       {/*
@@ -162,7 +178,35 @@ export default function Shell() {
           Misma cabecera y misma columna en las seis: no hay que aprenderse una
           pantalla que funciona distinta de las demás.
       */}
-      {(
+      {cristal ? (
+      /* LA BARRA DE CRISTAL: una píldora que flota arriba, como la de Safari.
+         La marca a la izquierda, en el centro dónde estás y a la derecha lo
+         mismo que en la cabecera de siempre. La forma la pone globals.css. */
+      <header data-chrome="1" data-app-header="" data-barra="">
+        <BotonMenu onClick={() => setMenu(true)} />
+        <div style={css("display:flex;align-items:center;gap:11px;min-width:0;flex:none;")}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.jpeg"
+            alt="Escuela de Sabiduría 33"
+            style={css("width:38px;height:38px;flex:none;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--border-accent);")}
+          />
+          <span data-barra-nombre="" style={css("font-size:var(--t-body);font-weight:500;letter-spacing:.02em;color:var(--text);white-space:nowrap;")}>
+            Escuela de Sabiduría 33
+          </span>
+        </div>
+        <div data-barra-campo="" aria-current="page">
+          {nombreVista}
+        </div>
+        <div style={css("display:flex;align-items:center;gap:8px;flex:none;")}>
+          <MisPuntos />
+          <AgenteIA />
+          {puede("despacho") && <Avisos />}
+          <Tema />
+          <Cuenta />
+        </div>
+      </header>
+      ) : (
       <header
         data-chrome="1"
         data-app-header=""
@@ -215,7 +259,7 @@ export default function Shell() {
               data-marca-vista=""
               style={css("font-size:var(--t-mini);font-weight:600;color:var(--accion);letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}
             >
-              {PESTANAS.find((t) => t.k === vista)?.label ?? (vista === "pareja" ? "Comparativa" : vista === "fengshui" ? "Feng Shui" : "")}
+              {nombreVista}
             </div>
           </div>
         </div>
@@ -271,12 +315,12 @@ export default function Shell() {
             cuando llevaba únicamente las partes de la carta; ahora que es toda
             la navegación, esconderla en cinco de las seis pantallas dejaría
             cinco pantallas sin salida. */}
-        <Sidebar />
+        <Sidebar cristal={cristal} />
         {/* `key={view}` es lo que hace que la pantalla nueva sea un elemento
             nuevo y no el mismo repintado: sin eso, React reutiliza el nodo y la
             animación de entrada de `[data-vista]` no vuelve a dispararse nunca.
             El porqué de que haya animación está en globals.css. */}
-        <div key={vista} data-vista="" style={css("flex:1;min-width:0;")}>
+        <div key={vista} data-vista="" data-ventana={cristal ? "" : undefined} style={css("flex:1;min-width:0;")}>
           {vista === "tablero" && <TableroScreen />}
           {vista === "miagenda" && <MiAgendaScreen />}
           {vista === "mismetricas" && <MisMetricasScreen />}
@@ -299,6 +343,9 @@ export default function Shell() {
         </div>
       </div>
 
+      {/* Por debajo de 1130 px el riel se convierte en un dock abajo, en el
+          centro. Sólo en cristal: fuera de él manda el cajón de siempre. */}
+      {cristal && <Dock abrirMenu={() => setMenu(true)} />}
       <Menu abierto={menu} cerrar={() => setMenu(false)} />
       {/* Los avisos que aparecen solos cuando entra alguien por la web. Van
           aquí, al final y fuera de todo, porque son una capa que flota encima:

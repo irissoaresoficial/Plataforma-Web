@@ -2303,3 +2303,337 @@ html[data-guia="1"] body {
     animation: none;
   }
 }
+
+/* ===========================================================================
+   EL CRISTAL (noviembre de 2026)
+
+   La plataforma pasa a ser una ventana de cristal sobre una foto desenfocada,
+   como pidió Ger con su referencia de «liquid glass». Se toma el MATERIAL y la
+   COMPOSICIÓN; el color y la letra siguen siendo los de la casa.
+
+   Va por pantallas: se enciende con `data-cristal` en la raíz, y Shell.tsx
+   decide en cuáles (la lista `CRISTAL`). Así cada pantalla entra cuando está
+   revisada en captura, sin pintar a medias las que todavía no lo están.
+
+   CÓMO SE HACE EL CRISTAL, en una línea: relleno semitransparente, desenfoque
+   de lo que hay detrás, un filo interior blanco fino y una sombra suave.
+
+   LA VENTANA NO DESENFOCA. Si lo hiciera, se convertiría en el fondo de sus
+   paneles y éstos esmerilarían un color liso en vez de la foto: dejarían de
+   parecer cristal. Por eso la ventana es sólo un tinte con su filo.
+
+   EL CONTRASTE SE MIDIÓ SOBRE EL PÍXEL PINTADO, no sobre el token: detrás hay
+   una foto, y el token no sabe lo que tiene debajo. De ahí los velos.
+   =========================================================================== */
+:root {
+  /* La foto: la tablilla de la cuenta con la amatista, de la web de Iris,
+     desenfocada ya en el archivo (12 kB). Desenfocarla con CSS en cada
+     fotograma costaría batería para el mismo resultado. */
+  --cristal-foto: url("/fondo-cristal.webp");
+  /* El velo sobre la foto. En claro la aclara lo justo para que la tinta
+     marrón de los rótulos llegue a 4,5:1 encima del cristal. */
+  --cristal-velo: linear-gradient(180deg, rgba(250, 245, 238, 0.6), rgba(250, 245, 238, 0.5));
+
+  --cristal-ventana: rgba(255, 251, 246, 0.36);
+  --cristal-ventana-filo: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 18px 48px rgba(40, 24, 20, 0.1);
+
+  --cristal-panel: rgba(255, 255, 255, 0.46);
+  --cristal-panel-filo: inset 0 0 0 0.5px rgba(255, 255, 255, 0.8);
+  --cristal-filtro: blur(12px) saturate(1.2);
+
+  --cristal-barra: rgba(255, 253, 250, 0.6);
+  --cristal-barra-filtro: blur(34px) saturate(1.3);
+  --cristal-barra-sombra: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), 0 24px 54px rgba(40, 24, 20, 0.12);
+  /* El campo de dentro de la barra, un punto más hondo que ella. */
+  --cristal-campo: rgba(69, 26, 37, 0.07);
+
+  --cristal-riel: rgba(255, 253, 250, 0.68);
+  --cristal-riel-filtro: blur(30px) saturate(1.3);
+  --cristal-riel-sombra: inset 0 0 0 0.5px rgba(255, 255, 255, 0.8), 0 26px 56px rgba(40, 24, 20, 0.12);
+
+  /* El dock es el cristal más rico: degradado propio, brillo arriba y un óvalo
+     de luz. */
+  /* Más cuerpo que en oscuro: va encima del contenido que pasa por debajo, y
+     con menos se leían las cifras de detrás a través de los iconos. */
+  --cristal-dock: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.68) 48%, rgba(255, 255, 255, 0.78));
+  --cristal-dock-sombra: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(255, 255, 255, 0.25), 0 2px 5px rgba(24, 20, 18, 0.08), 0 18px 44px rgba(24, 20, 18, 0.2);
+  --cristal-dock-filtro: blur(38px) saturate(1.45) brightness(1.06);
+
+  /* Al pasar por encima, el cristal se aclara un punto. */
+  --cristal-encima: rgba(255, 255, 255, 0.32);
+
+  /* Dónde estás, en la navegación. En claro, el vino de la casa: un círculo
+     blanco sobre cristal blanco no se ve. En oscuro, el círculo claro de la
+     referencia. */
+  --nav-activo: var(--accion);
+  --nav-activo-tx: var(--sobre-accion);
+
+  /* Los radios del cristal. Fluidos: crecen con la pantalla, como los de la
+     referencia. */
+  --r-ventana: clamp(18px, 1.9vw, 40px);
+  --r-panel: clamp(14px, 1.5vw, 30px);
+  --r-medio: clamp(11px, 1.15vw, 22px);
+
+  /* Fuera del cristal, las piezas no desenfocan nada. */
+  --pieza-filtro: none;
+}
+:root[data-tema="oscuro"] {
+  /* En oscuro, la referencia tal cual: piedra ahumada y letra clara. El velo
+     es hondo porque el centro de la foto es una tarjeta crema, y encima de
+     ella la letra clara no llegaba a leerse. */
+  --cristal-velo: linear-gradient(180deg, rgba(23, 17, 19, 0.7), rgba(23, 17, 19, 0.76));
+
+  --cristal-ventana: rgba(92, 84, 81, 0.44);
+  --cristal-ventana-filo: inset 0 0 0 1px rgba(255, 255, 255, 0.36), 0 18px 48px rgba(0, 0, 0, 0.1);
+
+  --cristal-panel: rgba(240, 250, 255, 0.1);
+  --cristal-panel-filo: inset 0 0 0 0.5px rgba(255, 255, 255, 0.14);
+  --cristal-filtro: blur(12px);
+
+  --cristal-barra: rgba(132, 126, 125, 0.44);
+  --cristal-barra-filtro: blur(34px) saturate(1.05);
+  --cristal-barra-sombra: inset 0 1.5px 0 rgba(255, 255, 255, 0.18), 0 24px 54px rgba(0, 0, 0, 0.16);
+  --cristal-campo: rgba(30, 30, 30, 0.32);
+
+  --cristal-riel: rgba(100, 95, 90, 0.34);
+  --cristal-riel-filtro: blur(30px);
+  --cristal-riel-sombra: inset 0 0 0 0.5px rgba(255, 255, 255, 0.28), 0 26px 56px rgba(0, 0, 0, 0.16);
+
+  --cristal-dock: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.075) 48%, rgba(255, 255, 255, 0.12)), rgba(58, 53, 51, 0.82);
+  --cristal-dock-sombra: inset 0 1px 0 rgba(255, 255, 255, 0.42), inset 0 -1px 0 rgba(255, 255, 255, 0.08), 0 2px 5px rgba(24, 20, 18, 0.1), 0 18px 44px rgba(24, 20, 18, 0.24);
+  --cristal-dock-filtro: blur(38px) saturate(1.45) brightness(1.08);
+
+  --cristal-encima: rgba(255, 255, 255, 0.1);
+
+  /* El círculo claro de la referencia, y dentro el vino: con letra blanca
+     sobre un círculo blanco translúcido se quedaba en 3,96:1. */
+  --nav-activo: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.74));
+  --nav-activo-tx: var(--vino);
+}
+
+/* --------------------------------------------- dentro del cristal, los tokens
+   Ningún componente sabe que está en cristal: lee `--surface` y `--text` como
+   siempre, y aquí se le cambia lo que valen. */
+[data-cristal] {
+  --surface: var(--cristal-panel);
+  --surface-2: var(--cristal-campo);
+  --nm-alto: var(--cristal-panel-filo);
+  --shadow: var(--cristal-panel-filo);
+  --r-tarjeta: var(--r-panel);
+  --pieza-filtro: var(--cristal-filtro);
+  /* La pieza granate se queda —es el ancla de la pantalla— pero deja pasar un
+     poco de la foto, como todo lo demás. */
+  --bloque: color-mix(in srgb, var(--vino) 92%, transparent);
+  --border: rgba(255, 255, 255, 0.5);
+  --border-strong: rgba(34, 29, 31, 0.16);
+  /* En claro, los grises de la letra bajan un punto: el cristal deja pasar la
+     madera de la foto y el gris de siempre se quedaba en 3,7:1 encima. */
+  --text-3: #514644;
+  --text-4: #574c49;
+  background: var(--bg);
+  background-image: none;
+}
+:root[data-tema="oscuro"] [data-cristal] {
+  --bloque: color-mix(in srgb, var(--vino) 78%, transparent);
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  /* La letra clara, medida encima del panel más claro: ninguna baja de 4,5:1.
+     Por eso los grises bajan poco: la jerarquía la hacen el tamaño y el peso,
+     no lo apagada que esté la letra. */
+  --text-2: #f1eaec;
+  --text-3: #ebe2e5;
+  --text-4: #e6dce0;
+  /* El dorado de «hoy», un punto más claro, y su fondo, más flojo: encima del
+     cristal el de siempre se quedaba en 3,7:1. */
+  --accion: var(--accion-honda);
+  --accion-suave: rgba(255, 255, 255, 0.06);
+  background-image: none;
+}
+
+/* La foto, fija a la ventana del navegador: no se va con el scroll. */
+[data-cristal]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--cristal-velo), var(--cristal-foto) center / cover no-repeat;
+}
+
+/* El polvo que sube no va con el cristal: la referencia sólo se mueve cuando
+   se toca algo. Se deja de pintar; el componente sigue ahí para el resto. */
+[data-cristal] [data-polvo] {
+  display: none;
+}
+
+/* ----------------------------------------------------------- la barra de arriba */
+[data-barra] {
+  position: sticky;
+  top: var(--s3);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.4vw, 16px);
+  width: calc(100% - 2 * var(--gutter));
+  margin: var(--s3) auto 0;
+  padding: 7px 8px 7px 9px;
+  border-radius: var(--r-pill);
+  background: var(--cristal-barra);
+  backdrop-filter: var(--cristal-barra-filtro);
+  -webkit-backdrop-filter: var(--cristal-barra-filtro);
+  box-shadow: var(--cristal-barra-sombra);
+}
+/* El campo del centro dice dónde estás, como la dirección en Safari. */
+[data-barra-campo] {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 300px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  background: var(--cristal-campo);
+  color: var(--text);
+  font-size: var(--t-mini);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+[data-cristal] [data-boton-menu] {
+  display: none !important;
+}
+@media (max-width: 900px) {
+  [data-barra-nombre] {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------- el riel */
+[data-riel] {
+  position: sticky;
+  top: 70px;
+  align-self: flex-start;
+  flex: none;
+  height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  padding: var(--s3) var(--s4) var(--s3) var(--gutter);
+}
+[data-riel-pastilla] {
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: var(--r-panel);
+  background: var(--cristal-riel);
+  backdrop-filter: var(--cristal-riel-filtro);
+  -webkit-backdrop-filter: var(--cristal-riel-filtro);
+  box-shadow: var(--cristal-riel-sombra);
+  transition: width var(--t-lento) var(--curva);
+}
+[data-riel-pastilla]::-webkit-scrollbar {
+  display: none;
+}
+/* Plegado es el riel de iconos de la referencia: una píldora. */
+[data-riel-pastilla][data-plegado] {
+  border-radius: var(--r-pill);
+  padding: 10px 7px;
+}
+
+/* ------------------------------------------------------------- la ventana */
+[data-ventana] {
+  margin: var(--s3) var(--gutter) var(--s5) 0;
+  min-height: calc(100vh - 100px);
+  border-radius: var(--r-ventana);
+  background: var(--cristal-ventana);
+  box-shadow: var(--cristal-ventana-filo);
+}
+
+/* ------------------------------------------------------------- el dock */
+[data-dock] {
+  display: none;
+}
+@media (max-width: 1130px) {
+  [data-riel] {
+    display: none;
+  }
+  [data-ventana] {
+    margin-left: var(--gutter);
+    margin-bottom: 104px;
+  }
+  [data-dock] {
+    position: fixed;
+    z-index: 45;
+    left: 50%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    border-radius: var(--r-pill);
+    background: var(--cristal-dock);
+    backdrop-filter: var(--cristal-dock-filtro);
+    -webkit-backdrop-filter: var(--cristal-dock-filtro);
+    box-shadow: var(--cristal-dock-sombra);
+    isolation: isolate;
+    overflow: hidden;
+  }
+  /* El brillo de arriba. */
+  [data-dock]::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 50% 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent);
+  }
+  /* Y el óvalo de luz arriba a la izquierda. */
+  [data-dock]::after {
+    content: "";
+    position: absolute;
+    left: 6%;
+    top: -60%;
+    width: 46%;
+    height: 120%;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.28), transparent);
+  }
+}
+@media (max-width: 680px) {
+  [data-ventana] {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  [data-barra] {
+    width: calc(100% - 20px);
+  }
+}
+
+/* -------------------------------------------------- tocar, y sólo al tocar
+   Al pasar por encima se aclara; al pulsar encoge un poco. Nada más se mueve. */
+[data-nav-boton] {
+  transition: box-shadow 0.18s ease, transform 0.16s ease;
+}
+[data-nav-boton]:hover:not(:disabled):not([aria-current="page"]) {
+  box-shadow: inset 0 0 0 100px var(--cristal-encima);
+}
+[data-nav-boton]:active:not(:disabled) {
+  transform: scale(0.94);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-nav-boton]:active {
+    transform: none;
+  }
+}

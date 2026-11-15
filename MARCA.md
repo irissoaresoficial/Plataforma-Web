@@ -150,6 +150,33 @@ algo). Mismo valor en claro y en oscuro:
 | `--ficha-verde` | `#4c9a5a` | Maestría, punto verde |
 | `--ficha-amarillo` | `#e5b63c` | Portal que se repite (con `--vino` encima) |
 
+### El cristal de la plataforma (noviembre de 2026)
+
+La plataforma pasa, pantalla por pantalla, a una ventana de cristal sobre una
+foto desenfocada (la referencia «liquid glass» que pasó Gerson). Se enciende con
+`data-cristal` en la raíz; qué pantallas lo llevan lo decide la lista `CRISTAL`
+de `Shell.tsx`. Hoy: **el Tablero**. Valores exactos en
+`apps/plataforma/src/app/globals.css`, sección «EL CRISTAL».
+
+| Token | Qué es |
+|---|---|
+| `--cristal-foto` | La foto del fondo: `fondo-cristal.webp`, la tablilla de la cuenta con la amatista, ya desenfocada |
+| `--cristal-velo` | El velo sobre la foto. Es lo que deja la letra a 4,5:1 encima del cristal |
+| `--cristal-ventana` | La ventana grande. **No desenfoca**: si lo hiciera, sus paneles dejarían de esmerilar la foto |
+| `--cristal-panel` · `--cristal-filtro` | Los paneles de dentro: tinte y desenfoque de 12 px |
+| `--cristal-barra` · `--cristal-campo` | La barra en píldora de arriba y el campo «dónde estás» |
+| `--cristal-riel` | La columna, que flota a la izquierda. Plegada es un riel de iconos |
+| `--cristal-dock` | Por debajo de 1130 px el riel pasa a dock abajo. El cristal con más cuerpo |
+| `--nav-activo` · `--nav-activo-tx` | «Estás aquí». En claro, el vino; en oscuro, un círculo claro con el vino dentro |
+| `--r-ventana` · `--r-panel` · `--r-medio` | Radios fluidos del cristal: `clamp(18px,1.9vw,40px)`, `clamp(14px,1.5vw,30px)`, `clamp(11px,1.15vw,22px)` |
+
+Dentro del cristal, los grises de la letra se mueven para no bajar de 4,5:1
+medido sobre el píxel pintado: en claro bajan a `#514644`/`#574c49`, en oscuro
+suben casi a blanco (`#f1eaec` a `#e6dce0`). En cristal la jerarquía la hacen
+el tamaño y el peso, no lo apagada que esté la letra. Nada se mueve solo: el
+polvo que sube no se pinta en cristal, y lo único que se anima es el toque
+(aclara al pasar, encoge a 0,94 al pulsar).
+
 Y los que cambian según el bloque (`.claro`, `.arena`, `.vino`):
 `--bg`, `--tx`, `--tx-2`, `--tx-3`, `--acento`, `--superficie`.
 
