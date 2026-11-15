@@ -1,0 +1,28 @@
+/*
+ * LOS TRES CAMINOS.
+ *
+ * Tres tarjetas en fila. En un móvil cada una se queda en unos 100 píxeles y
+ * «Transformación» no cabía: se salía por el canto de su tarjeta. Por debajo
+ * de 480 píxeles pasan a ser tres filas —etapa, arcano y carta en un renglón—,
+ * que se leen de arriba abajo como lo que son: un orden en el tiempo.
+ */
+.caminos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s2);
+}
+
+@media (max-width: 480px) {
+  .caminos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .caminos > button {
+    display: grid;
+    grid-template-columns: 7.5em 2.2em minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: var(--s2);
+  }
+  .caminos > button > * {
+    margin-top: 0 !important;
+  }
+}

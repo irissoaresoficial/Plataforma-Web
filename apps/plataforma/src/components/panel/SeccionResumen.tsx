@@ -1,6 +1,7 @@
 "use client";
 import { css } from "@/lib/css";
-import { BOTON_NORMAL } from "@/lib/ui";
+import { BOTON_NORMAL, BOTON_PLANO, botonPrincipal } from "@/lib/ui";
+import resumen from "./Resumen.module.css";
 import { useApp } from "@/lib/app-context";
 import { COL, COL_TX } from "@/lib/tree";
 import { frase, titulo } from "@/lib/format";
@@ -67,16 +68,15 @@ export default function SeccionResumen() {
               Esencia {r.esencia.valor} · Ego {r.ego.valor}
             </div>
             <div style={css("display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap;")}>
-              <button
-                onClick={() => setView("estudio")}
-                style={css("flex:1;min-width:130px;padding:12px 18px;border:none;border-radius:var(--r-pill);cursor:pointer;font-size:var(--t-body);font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(180deg,#5D2734,#2B1119);box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 18px rgba(36,31,46,.24);")}
-              >
+              {/* UN SOLO BOTÓN QUE MANDA. Eran dos pastillas del mismo tamaño
+                  —el estudio y la pareja— y dos botones iguales no son dos
+                  opciones: son una duda. En el móvil, además, «Comparar
+                  pareja» se partía en dos renglones. El estudio es lo que se
+                  viene a hacer aquí; la pareja va en plano al lado. */}
+              <button onClick={() => setView("estudio")} style={css(botonPrincipal() + "flex:1;min-width:150px;")}>
                 Ver el estudio
               </button>
-              <button
-                onClick={() => setView("pareja")}
-                style={css("flex:1;min-width:130px;padding:12px 18px;border:1px solid var(--border-strong);border-radius:var(--r-pill);cursor:pointer;font-size:var(--t-body);font-weight:590;letter-spacing:-.01em;color:var(--text-2);background:color-mix(in srgb, var(--surface-solid) 70%, transparent);")}
-              >
+              <button onClick={() => setView("pareja")} style={css(BOTON_PLANO + "flex:none;")}>
                 Comparar pareja
               </button>
             </div>
@@ -90,7 +90,7 @@ export default function SeccionResumen() {
                   edad de cambio · <span style={css("font-weight:600;color:var(--gold);")}>{r.caminos.edadCambio}</span>
                 </span>
               </div>
-              <div data-cascada="" style={css("display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);")}>
+              <div data-cascada="" className={resumen.caminos}>
                 {caminos.map((x) => (
                   <button
                     key={x.k}
