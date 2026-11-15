@@ -672,6 +672,13 @@ export type Curso = {
    * decidido, porque va pegado a un botón de pagar.
    */
   incluye: string[];
+  /**
+   * ADÓNDE LLEVA LA FICHA DE LA ESTANTERÍA. Vacío = a la masterclass, que es
+   * por donde se entra a Desórdenes Amorosos. Un curso que no se apunta por
+   * ahí necesita el suyo: mandarlo a la masterclass de otro curso es mandar a
+   * alguien al sitio equivocado.
+   */
+  enlace?: string;
 };
 
 /*
@@ -746,6 +753,56 @@ export const CURSOS: Curso[] = [
     paraQuien: [],
     teLlevas: [],
     incluye: [],
+  },
+  /*
+   * ===========================================================================
+   * NUMEROLOGÍA TRANSGENERACIONAL Y ÁRBOL GENEALÓGICO — noviembre de 2026.
+   * ===========================================================================
+   *
+   * Todo sale del cartel de Iris, pasado por Gerson el 15 de noviembre de
+   * 2026. Lo que el cartel no dice se queda en rojo: el precio. Las plazas son
+   * limitadas, pero el cartel no da un número, así que no se pinta contador.
+   *
+   * La frase «ayuda a millones de personas» del cartel NO va: es una cifra sin
+   * respaldo (MARCA.md §7).
+   *
+   * Va DETRÁS de Desórdenes Amorosos a propósito: `CURSOS[0]` decide la
+   * cabecera de /cursos, los metadatos al compartir y la presentación, y eso
+   * no se cambia sin preguntar.
+   *
+   * La duración (13 h) es la suma de los dos horarios del cartel: 4 + 9.
+   */
+  {
+    id: 'numerologia-transgeneracional-arbol',
+    titulo: 'Numerología Transgeneracional y Estudio del Árbol Genealógico',
+    claim: 'Conoce tus raíces, libera patrones y crea tu propio destino.',
+    fechas: '22 y 28 de noviembre de 2026',
+    fechaISO: '2026-11-22',
+    horario: 'Domingo 22: 10:00 → 14:00 · Sábado 28: 10:00 → 19:00 (hora española)',
+    duracion: '2 días · 13 h en directo',
+    modalidad: 'Online',
+    precio: null,
+    precioAntes: null,
+    plazas: null,
+    videoUrl: '',
+    stripeUrl: '',
+    descripcion: 'Una formación profunda y transformadora para comprender, sanar y evolucionar.',
+    bloques: [],
+    paraQuien: [
+      'Quien quiere transformar su vida y la de su familia.',
+      'Quien quiere ampliar su conocimiento profesional.',
+      'Quien quiere combinar esta sabiduría con su profesión.',
+    ],
+    teLlevas: [
+      'Descubrir los patrones heredados.',
+      'Comprender los ciclos de tu vida.',
+      'Sanar relaciones y liberar bloqueos.',
+      'Potenciar tu propósito.',
+    ],
+    incluye: [],
+    enlace:
+      'mailto:irissoaresoficial@gmail.com?subject=' +
+      encodeURIComponent('Formación Numerología Transgeneracional y Árbol Genealógico'),
   },
   /*
    * AQUÍ ESTABA LA FORMACIÓN EN NUMEROLOGÍA TRANSGENERACIONAL, la de los días

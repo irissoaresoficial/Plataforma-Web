@@ -99,7 +99,7 @@ export default function Discografia() {
               {/* Todos los cursos de hoy llevan a la masterclass, que es por
                   donde se entra a Desórdenes Amorosos. Cuando haya cursos con
                   página propia, esto pasa a `/cursos/${c.id}`. */}
-              <Link href="/masterclass" className="casa-disco-ficha">
+              <Link href={c.enlace || '/masterclass'} className="casa-disco-ficha">
                 <span className="casa-disco-cara">
                   {/* El campo se llama `cartel` y es opcional: un curso sin
                       cartel no rompe la estantería, enseña el sello. Mejor un
