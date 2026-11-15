@@ -51,11 +51,23 @@ const LS_EMISOR = "es33.emisor.v1";
  * Es un objeto que se muta a propósito —ver la cabecera— y por eso lo que se
  * exporta es la misma referencia siempre.
  */
-export const EMISOR: DatosFiscales = {
-  nombre: PENDIENTE,
-  nif: PENDIENTE,
-  direccion: PENDIENTE,
+/**
+ * LOS DATOS DE IRIS, YA PUESTOS.
+ *
+ * Son los mismos del aviso legal de la web (`apps/web/content/site.ts`,
+ * `TITULAR`): el NIF lo dio Gerson el 7 de noviembre de 2026. Estaban en el
+ * repositorio y la plataforma seguía enseñando «Faltan tus datos fiscales»
+ * porque aquí arrancaban en PENDIENTE. Ahora son el punto de partida: si Iris
+ * los cambia desde la pantalla, manda lo que ella guarde. Si algún día cambian
+ * en la web, se cambian aquí también.
+ */
+const TITULAR: DatosFiscales = {
+  nombre: "Iris Soares",
+  nif: "36177246V",
+  direccion: "Rúa de Urzáiz, 158, 3, 36205 Vigo (Pontevedra), España",
 };
+
+export const EMISOR: DatosFiscales = { ...TITULAR };
 
 /** Un dato que no está puesto: pendiente, vacío o sin definir. */
 export const falta = (v: unknown) => v === PENDIENTE || v === null || v === "" || v === undefined;
@@ -79,9 +91,11 @@ export function emisorCompleto(e: DatosFiscales = EMISOR): boolean {
 
 /** Deja el objeto compartido exactamente igual a lo que se le pase. */
 function rellena(d: Partial<DatosFiscales>) {
-  EMISOR.nombre = (d.nombre || "").trim() || PENDIENTE;
-  EMISOR.nif = (d.nif || "").trim() || PENDIENTE;
-  EMISOR.direccion = (d.direccion || "").trim() || PENDIENTE;
+  /* Un hueco vacío o en PENDIENTE no borra el dato que ya se conoce. */
+  const usa = (v: string | undefined, def: string) => (v && v.trim() && v !== PENDIENTE ? v.trim() : def);
+  EMISOR.nombre = usa(d.nombre, TITULAR.nombre);
+  EMISOR.nif = usa(d.nif, TITULAR.nif);
+  EMISOR.direccion = usa(d.direccion, TITULAR.direccion);
 }
 
 let cargado = false;
