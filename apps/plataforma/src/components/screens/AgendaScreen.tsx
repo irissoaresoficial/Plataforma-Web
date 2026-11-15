@@ -43,13 +43,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD, PAD_SM, RAYA, TARJETA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
+import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD_SM, RAYA, TARJETA, botonPrincipal, rotulo } from "@/lib/ui";
 import Confirmar from "../Confirmar";
 import { AvisoNavegador, Avatar, Estado, Vacio, useEstrecho } from "../despacho/Piezas";
-import Banda from "../Banda";
 import HojaLateral from "../despacho/HojaLateral";
 import MiniCalendario from "../despacho/MiniCalendario";
-import RejillaSemana from "../despacho/RejillaSemana";
+import RejillaSemana, { COLOR_TIPO } from "../despacho/RejillaSemana";
 import {
   citas as repoCitas,
   clientes as repoClientes,
@@ -125,6 +124,8 @@ export default function AgendaScreen() {
   const [tipos, setTipos] = useState<Array<Cita["tipo"]>>(TIPOS_CITA.map((t) => t.k));
   const [verAnuladas, setVerAnuladas] = useState(false);
   const [verFiltros, setVerFiltros] = useState(false);
+  /** En el móvil el mes va plegado a su semana; se abre con su botón. */
+  const [mesAbierto, setMesAbierto] = useState(false);
 
   // El formulario. La fecha arranca en hoy y la hora en la media hora
   // siguiente: es lo que casi siempre se quiere y ahorra teclear.
@@ -528,256 +529,342 @@ export default function AgendaScreen() {
     </button>
   );
 
-  const filtros = (
-    <div>
-      <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s3);")}>Qué se ve</div>
-      <div style={css("display:flex;flex-direction:column;gap:var(--s2);")}>
-        {TIPOS_CITA.map((t) => {
-          const on = tipos.includes(t.k);
-          return (
-            <label key={t.k} style={css("display:flex;align-items:center;gap:9px;cursor:pointer;font-size:var(--t-body);color:var(--text-2);")}>
-              <input
-                type="checkbox"
-                checked={on}
-                onChange={() => setTipos((s) => (on ? s.filter((x) => x !== t.k) : [...s, t.k]))}
-                style={css("width:16px;height:16px;flex:none;accent-color:var(--accion);box-shadow:none;")}
-              />
-              {/* El mismo punto de color que lleva la raya del bloque en la
-                  rejilla: es lo que ata el filtro con lo que se ve. */}
-              <span
-                aria-hidden="true"
-                style={css(
-                  "width:7px;height:7px;border-radius:50%;flex:none;background:" +
-                    (t.k === "sesion" ? "var(--gold)" : t.k === "seguimiento" ? "var(--via-transformacion-tx)" : "var(--via-destino-tx)") +
-                    ";"
-                )}
-              />
-              {t.label}
-            </label>
-          );
-        })}
-        <label style={css(RAYA + "margin-top:var(--s2);padding-top:var(--s3);display:flex;align-items:center;gap:9px;cursor:pointer;font-size:var(--t-body);color:var(--text-2);")}>
-          <input
-            type="checkbox"
-            checked={verAnuladas}
-            onChange={() => setVerAnuladas((v) => !v)}
-            style={css("width:16px;height:16px;flex:none;accent-color:var(--accion);box-shadow:none;")}
-          />
-          Ver también las anuladas
-        </label>
-      </div>
+  /** Las que han entrado por la web y aún no ha mirado, de hoy en adelante. Es
+   *  la cifra que pide hacer algo, y por eso va en la cabecera. */
+  const porConfirmar = useMemo(() => {
+    const desde = abreDia(new Date()).toISOString();
+    return citas.filter((c) => c.estado === "pedida" && c.inicioISO >= desde).length;
+  }, [citas]);
+
+  /** Lo de hoy, en orden, para la lista de la columna: se tacha lo hecho. */
+  const deHoy = useMemo(() => {
+    const ahora = new Date();
+    const desde = abreDia(ahora).toISOString();
+    const hasta = cierraDia(ahora).toISOString();
+    return citas
+      .filter((c) => c.estado !== "anulada" && c.inicioISO >= desde && c.inicioISO <= hasta)
+      .sort((x, y) => x.inicioISO.localeCompare(y.inicioISO));
+  }, [citas]);
+
+  const cifras = cargando
+    ? []
+    : [
+        { n: hoyQuedan, que: "Hoy" },
+        { n: enLosDias.filter((c) => c.estado !== "anulada").length, que: vista === "semana" ? "Esta semana" : "Este día" },
+        ...(porConfirmar > 0 ? [{ n: porConfirmar, que: "Por confirmar", viva: true }] : []),
+      ];
+
+  /** Día / Semana / Mes. La activa, rellena en vino con la letra clara: es el
+   *  selector de la referencia, con el color de la casa. */
+  const selector = (
+    <div
+      role="group"
+      aria-label="Cómo ver la agenda"
+      style={css(
+        "display:flex;gap:2px;padding:4px;border-radius:var(--r-pill);flex:none;background:var(--surface);box-shadow:var(--nm-alto);border:1px solid var(--border);" +
+          (estrecho ? "width:100%;" : "")
+      )}
+    >
+      {VISTAS.map((v) => {
+        const on = vista === v.k;
+        return (
+          <button
+            key={v.k}
+            onClick={() => elegirVista(v.k)}
+            aria-pressed={on}
+            style={css(
+              "flex:1;padding:9px 20px;border-radius:var(--r-pill);border:none;cursor:pointer;font-family:inherit;font-size:var(--t-body);font-weight:500;white-space:nowrap;" +
+                "transition:background var(--t-normal) var(--curva),color var(--t-normal);background:" +
+                (on ? "var(--cita-sesion)" : "transparent") +
+                ";color:" +
+                (on ? "var(--cita-sesion-tx)" : "var(--text-3)") +
+                ";"
+            )}
+          >
+            {v.label}
+          </button>
+        );
+      })}
     </div>
   );
 
+  const botonApuntar = (
+    <button
+      onClick={() => {
+        setAviso("");
+        setHoja({ modo: "apuntar" });
+      }}
+      style={css(botonPrincipal() + "display:inline-flex;align-items:center;justify-content:center;gap:8px;" + (estrecho ? "width:100%;" : ""))}
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+      Apuntar una sesión
+    </button>
+  );
+
+  /** La leyenda de colores, que es a la vez el filtro: cada clase con su
+   *  círculo del color de sus bloques. Se apaga pulsándola. */
+  const leyenda = (
+    <div style={css("display:flex;flex-direction:column;gap:2px;")}>
+      {TIPOS_CITA.map((t) => {
+        const on = tipos.includes(t.k);
+        return (
+          <button
+            key={t.k}
+            onClick={() => setTipos((s) => (on ? s.filter((x) => x !== t.k) : [...s, t.k]))}
+            aria-pressed={on}
+            style={css(
+              "display:flex;align-items:center;gap:10px;width:100%;padding:7px 0;border:none;background:none;cursor:pointer;font-family:inherit;text-align:left;" +
+                "font-size:var(--t-body);color:" + (on ? "var(--text)" : "var(--text-4)") + ";"
+            )}
+          >
+            <span
+              aria-hidden="true"
+              style={css(
+                "flex:none;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;" +
+                  (on
+                    ? `background:${COLOR_TIPO[t.k].fondo};color:${COLOR_TIPO[t.k].tinta};box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--text) 10%, transparent);`
+                    : "background:none;box-shadow:inset 0 0 0 1.5px var(--border-strong);")
+              )}
+            >
+              {on && (
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m5 12 5 5 9-10" />
+                </svg>
+              )}
+            </span>
+            {t.label}
+          </button>
+        );
+      })}
+      <button
+        onClick={() => setVerAnuladas((v) => !v)}
+        aria-pressed={verAnuladas}
+        style={css(
+          RAYA +
+            "margin-top:var(--s2);padding:10px 0 2px;display:flex;align-items:center;gap:10px;width:100%;border-left:none;border-right:none;border-bottom:none;background:none;cursor:pointer;font-family:inherit;text-align:left;" +
+            "font-size:var(--t-body);color:" + (verAnuladas ? "var(--text)" : "var(--text-3)") + ";"
+        )}
+      >
+        <span
+          aria-hidden="true"
+          style={css(
+            "flex:none;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;" +
+              (verAnuladas ? "background:var(--text-3);color:var(--surface-solid);" : "box-shadow:inset 0 0 0 1.5px var(--border-strong);")
+          )}
+        >
+          {verAnuladas && (
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m5 12 5 5 9-10" />
+            </svg>
+          )}
+        </span>
+        Ver también las anuladas
+      </button>
+    </div>
+  );
+
+  /** Lo de hoy como lista de tareas: el círculo se rellena y el nombre se tacha
+   *  cuando la sesión está hecha. Se pulsa y se abre la sesión. */
+  const listaDeHoy = (
+    <div>
+      <div style={css("display:flex;align-items:baseline;gap:var(--s2);margin-bottom:var(--s2);")}>
+        <span style={css("font-size:var(--t-read);font-weight:500;color:var(--text);letter-spacing:-.01em;")}>Hoy</span>
+        <span style={css(NOTA)}>{ancla ? diaYMes(new Date()) : ""}</span>
+      </div>
+      {deHoy.length === 0 ? (
+        <p style={css(APOYO + "margin:0;")}>No tienes ninguna sesión.</p>
+      ) : (
+        deHoy.map((c) => {
+          const hecha = c.estado === "hecha";
+          return (
+            <button
+              key={c.id}
+              onClick={() => setHoja({ modo: "sesion", id: c.id })}
+              style={css(
+                "display:flex;align-items:center;gap:10px;width:100%;padding:8px 0;border:none;background:none;cursor:pointer;font-family:inherit;text-align:left;"
+              )}
+            >
+              <span
+                aria-hidden="true"
+                style={css(
+                  "flex:none;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;" +
+                    (hecha ? "background:var(--cita-sesion);color:var(--cita-sesion-tx);" : "box-shadow:inset 0 0 0 1.5px var(--border-strong);")
+                )}
+              >
+                {hecha && (
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m5 12 5 5 9-10" />
+                  </svg>
+                )}
+              </span>
+              <span style={css("flex:1;min-width:0;")}>
+                <span
+                  style={css(
+                    "display:block;font-size:var(--t-body);line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:" +
+                      (hecha ? "var(--text-4);text-decoration:line-through;" : "var(--text);")
+                  )}
+                >
+                  {nombreDe(c.personaId)}
+                </span>
+                <span data-cifras="" style={css(NOTA + "display:block;margin-top:1px;")}>
+                  {hora(c.inicioISO)} · {etiquetaTipo(c.tipo)}
+                  {c.estado === "pedida" ? " · por confirmar" : ""}
+                </span>
+              </span>
+              <span aria-hidden="true" style={css(`flex:none;width:8px;height:8px;border-radius:50%;background:${COLOR_TIPO[c.tipo].fondo};box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--text) 14%, transparent);`)} />
+            </button>
+          );
+        })
+      )}
+    </div>
+  );
+
+  const calendarioPequeno = ancla && (
+    <section style={css("background:var(--bloque);color:var(--sobre-bloque);border-radius:var(--r-tarjeta);padding:var(--pad-card-sm);min-width:0;box-shadow:var(--nm-alto);")}>
+      <MiniCalendario
+        mes={ancla}
+        elegido={ancla}
+        conSesion={diasConSesion}
+        semana={vista === "semana"}
+        plegado={estrecho && !mesAbierto}
+        alPlegar={estrecho ? () => setMesAbierto((v) => !v) : undefined}
+        alElegir={(d) => setAncla(d)}
+        alCambiarMes={(pasos) => setAncla((a) => (a ? masMeses(a, pasos) : a))}
+      />
+    </section>
+  );
+
+  const hoyLargo = ancla ? diaLargo(new Date()).replace(/^./, (c) => c.toLocaleUpperCase("es")) : "";
+
   return (
     <main style={css("max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);min-width:0;")}>
-      {/* LA CABECERA CON FOTO, como Personas y Cursos. Gerson: «la agenda de
-          Iris aparece horrible». Un título suelto sobre el fondo y una
-          rejilla gris hundida: no se sabía si era una pantalla o un hueco. */}
-      <Banda
-        foto="/escuela/basico.jpg"
-        encuadre="50% 55%"
-        titulo="Agenda"
-        sub="Pulsa un hueco de la semana para apuntar una sesión."
-        cifras={
-          cargando
-            ? []
-            : [
-                { n: hoyQuedan, que: "Hoy" },
-                { n: enLosDias.filter((c) => c.estado !== "anulada").length, que: vista === "semana" ? "Esta semana" : "Este día" },
-              ]
-        }
-      />
+      {/* LA CABECERA, sin foto (noviembre de 2026). La banda con foto se comía
+          un tercio de la pantalla antes de llegar a la semana. Ahora va como en
+          la referencia que pasó Ger: el título a la izquierda, el selector en
+          medio y a la derecha las cifras grandes y el único botón lleno. */}
+      <header
+        style={css(
+          "display:flex;flex-wrap:wrap;align-items:flex-end;gap:" + (estrecho ? "var(--s3)" : "var(--s4) var(--gap-lg)") + ";margin-bottom:var(--gap);" +
+            (estrecho ? "flex-direction:column;align-items:stretch;" : "")
+        )}
+      >
+        <div style={css("flex:1 1 auto;min-width:0;")}>
+          <h1 style={css("margin:0;font-family:var(--font-display);font-size:var(--t-hero);font-weight:500;letter-spacing:-.035em;line-height:1;color:var(--text);")}>
+            Agenda
+          </h1>
+          <p style={css(APOYO + "margin:8px 0 0;")}>{hoyLargo}</p>
+        </div>
+
+        {!estrecho && selector}
+
+        {cifras.length > 0 && (
+          <div style={css("display:flex;gap:var(--gap-lg);align-items:flex-end;" + (estrecho ? "justify-content:space-between;" : ""))}>
+            {cifras.map((c) => (
+              <div key={c.que} style={css("min-width:0;")}>
+                <div
+                  data-cifras=""
+                  style={css(
+                    "font-size:" + (estrecho ? "var(--t-head)" : "var(--t-hero)") + ";font-weight:500;letter-spacing:-.04em;line-height:1;" +
+                      ("viva" in c && c.viva
+                        ? "display:inline-grid;place-items:center;min-width:1.25em;height:1.25em;padding:0 .2em;border-radius:var(--r-pill);background:var(--cita-sinergia);color:var(--cita-sinergia-tx);"
+                        : "color:var(--text);")
+                  )}
+                >
+                  {c.n}
+                </div>
+                <div style={css(NOTA + "margin-top:" + (estrecho ? 4 : 6) + "px;")}>{c.que}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {estrecho && selector}
+        <div style={css(estrecho ? "" : "flex:none;")}>{botonApuntar}</div>
+      </header>
 
       <div
         style={css(
-          "display:grid;gap:var(--gap-lg);align-items:start;min-width:0;" +
-            (estrecho ? "grid-template-columns:minmax(0,1fr);" : "grid-template-columns:250px minmax(0,1fr);")
+          "display:grid;gap:var(--gap);align-items:start;min-width:0;" +
+            (estrecho ? "grid-template-columns:minmax(0,1fr);" : "grid-template-columns:260px minmax(0,1fr);")
         )}
       >
         {/* ============================================== la columna de la izquierda */}
-        {!estrecho && (
+        {estrecho ? (
+          calendarioPequeno
+        ) : (
           <div style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;")}>
+            {calendarioPequeno}
+            <section style={css(TARJETA + PAD_SM + "min-width:0;")}>{listaDeHoy}</section>
             <section style={css(TARJETA + PAD_SM + "min-width:0;")}>
-              {ancla && (
-                <MiniCalendario
-                  mes={ancla}
-                  elegido={ancla}
-                  conSesion={diasConSesion}
-                  alElegir={(d) => setAncla(d)}
-                  alCambiarMes={(pasos) => setAncla((a) => (a ? masMeses(a, pasos) : a))}
-                />
-              )}
-              <div style={css(RAYA + "margin-top:var(--s4);padding-top:var(--s4);")}>{filtros}</div>
+              <div style={css("font-size:var(--t-read);font-weight:500;color:var(--text);letter-spacing:-.01em;margin-bottom:var(--s1);")}>Qué se ve</div>
+              {leyenda}
             </section>
             <AvisoNavegador que="Las sesiones apuntadas" />
           </div>
         )}
 
         {/* ================================================================ el centro */}
-        <div style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;")}>
-          {/* ------------------------------------------------------------ la barra */}
-          <section style={css(TARJETA + PAD + "min-width:0;")}>
-            {/*
-                EN UN TELÉFONO, PRIMERO QUÉ DÍA ES.
-
-                Los cuatro trozos —flechas, tramo, selector y botón— iban en una
-                sola fila que se envolvía sola. En 390 px eso salía en cuatro
-                renglones desiguales y, lo peor, el tramo («Hoy, 7 de
-                septiembre») quedaba apretado A LA DERECHA de las flechas, en
-                una caja de 120 px, partido en dos líneas. La primera pregunta de
-                una agenda —¿qué día estoy mirando?— contestada en letra rota y
-                en el segundo sitio donde mira el ojo.
-
-                En estrecho va en su propio renglón y arriba del todo, que es
-                donde se lee sin buscarlo. En ancho no hace falta: ahí caben los
-                cuatro en una fila y el tramo va entre las flechas y el selector,
-                como en cualquier calendario.
-            */}
+        <section style={css(TARJETA + PAD_SM + "min-width:0;display:flex;flex-direction:column;gap:var(--s4);")}>
+          {/* La barra: el tramo que se mira, «Hoy» y las flechas en círculo. */}
+          <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;padding:2px 2px 0;")}>
+            <h2 style={css("margin:0;" + (estrecho ? "flex:1 1 100%;" : "flex:1 1 160px;") + "min-width:0;font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;line-height:1.2;color:var(--text);")}>
+              {tituloDelTramo()}
+            </h2>
             {estrecho && (
-              <h2 style={css(TITULO + "margin:0 0 var(--s3);")}>{tituloDelTramo()}</h2>
+              <button onClick={() => setVerFiltros((v) => !v)} style={css(BOTON_PLANO + "margin-right:auto;")}>
+                {verFiltros ? "Dejar los filtros" : "Filtrar"}
+              </button>
             )}
-            <div style={css("display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);")}>
-              <div style={css("display:flex;align-items:center;gap:var(--s2);")}>
-                {flecha(-1)}
-                {flecha(1)}
-                <button onClick={() => setAncla(new Date())} style={css(BOTON_PLANO)}>
-                  Hoy
-                </button>
-              </div>
+            <button
+              onClick={() => setAncla(new Date())}
+              style={css("border:none;background:none;cursor:pointer;font-family:inherit;font-size:var(--t-body);font-weight:500;color:var(--accion);padding:6px 4px;")}
+            >
+              Hoy
+            </button>
+            {flecha(-1)}
+            {flecha(1)}
+          </div>
 
-              {/* El tramo que se está viendo. Va en el título de tarjeta porque
-                  es lo que dice dónde estás, que es la primera pregunta. */}
-              {!estrecho && <h2 style={css(TITULO + "margin:0;flex:1 1 120px;min-width:0;")}>{tituloDelTramo()}</h2>}
-
-              {/* El selector y el botón van juntos en su propia caja: al
-                  estrecharse la pantalla bajan a la misma línea en vez de
-                  repartirse en dos renglones y comerse media pantalla de
-                  teléfono antes de llegar a la agenda. */}
-              <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;" + (estrecho ? "flex:1 1 100%;" : ""))}>
-                {/* Día / Semana / Mes, con la pastilla de la casa. */}
-                <div
-                  role="group"
-                  aria-label="Cómo ver la agenda"
-                  style={css("display:flex;gap:2px;background:color-mix(in srgb, var(--text) 6%, transparent);border-radius:var(--r-pill);padding:3px;flex:none;")}
+          {estrecho && (
+            <AnimatePresence initial={false}>
+              {verFiltros && (
+                <motion.div
+                  initial={quieto ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                  animate={quieto ? { opacity: 1 } : { opacity: 1, height: "auto" }}
+                  exit={quieto ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                  transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+                  style={css("overflow:hidden;")}
                 >
-                  {VISTAS.map((v) => {
-                    const on = vista === v.k;
-                    return (
-                      <button
-                        key={v.k}
-                        onClick={() => elegirVista(v.k)}
-                        aria-pressed={on}
-                        style={css(
-                          "padding:7px 14px;border-radius:var(--r-pill);border:none;cursor:pointer;font-size:var(--t-mini);font-weight:590;white-space:nowrap;" +
-                            "transition:background var(--t-normal) var(--curva),color var(--t-normal),box-shadow var(--t-normal);background:" +
-                            (on ? "var(--surface-solid)" : "transparent") +
-                            ";box-shadow:" +
-                            (on ? "var(--shadow-sm)" : "none") +
-                            ";color:" +
-                            (on ? "var(--text)" : "var(--text-3)") +
-                            ";"
-                        )}
-                      >
-                        {v.label}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* La única mancha de granate de la pantalla. En estrecho se
-                    estira hasta el borde de la tarjeta: un botón principal
-                    acabando a dos tercios del ancho deja un canto derecho
-                    partido, y además es lo que más se pulsa con el pulgar. */}
-                <button
-                  onClick={() => {
-                    setAviso("");
-                    setHoja({ modo: "apuntar" });
-                  }}
-                  style={css(botonPrincipal() + (estrecho ? "flex:1 1 100%;" : ""))}
-                >
-                  Apuntar una sesión
-                </button>
-              </div>
-            </div>
-
-            {/* «Hoy tienes 3 sesiones», que es como se lo diría alguien. Y a su
-                derecha, cuando no hay columna donde ponerlos, los filtros. */}
-            <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s3);")}>
-              <p style={css(APOYO + "margin:0;")}>
-                {cargando
-                  ? "Un momento…"
-                  : hoyQuedan === 0
-                    ? "Hoy no tienes ninguna sesión."
-                    : hoyQuedan === 1
-                      ? "Hoy tienes 1 sesión."
-                      : `Hoy tienes ${hoyQuedan} sesiones.`}
-              </p>
-              {estrecho && (
-                <button onClick={() => setVerFiltros((v) => !v)} style={css(BOTON_PLANO + "margin-left:auto;")}>
-                  {verFiltros ? "Dejar los filtros" : "Filtrar"}
-                </button>
+                  {leyenda}
+                </motion.div>
               )}
-            </div>
+            </AnimatePresence>
+          )}
 
-            {/* En estrecho los filtros no caben en una columna al lado, así que
-                se piden. Plegados no molestan y siguen estando. */}
-            {estrecho && (
-              <div>
-                <AnimatePresence>
-                  {verFiltros && (
-                    <motion.div
-                      initial={quieto ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                      animate={quieto ? { opacity: 1 } : { opacity: 1, height: "auto" }}
-                      exit={quieto ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                      transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-                      style={css("overflow:hidden;")}
-                    >
-                      <div style={css(RAYA + "margin-top:var(--s4);padding-top:var(--s4);")}>{filtros}</div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
-          </section>
+          {cargando || !ancla ? (
+            <Vacio>Un momento…</Vacio>
+          ) : vista === "mes" ? (
+            rejillaDelMes()
+          ) : estrecho && vista === "semana" ? (
+            listaPorDias()
+          ) : (
+            /* Aquí no va ningún aviso de «semana libre»: la rejilla vacía ya
+               dice que está vacía, y lo de pulsar se aprende en el primer clic. */
+            <RejillaSemana
+              dias={diasVisibles}
+              citas={visibles}
+              nombreDe={nombreDe}
+              elegido={ancla}
+              alPulsarCita={(c) => setHoja({ modo: "sesion", id: c.id })}
+              alPulsarHueco={abrirHueco}
+            />
+          )}
+        </section>
 
-          {/* ------------------------------------------------------- lo que se ve */}
-          <section style={css(TARJETA + (vista === "mes" || (estrecho && vista === "semana") ? PAD : PAD_SM) + "min-width:0;")}>
-            {cargando || !ancla ? (
-              <Vacio>Un momento…</Vacio>
-            ) : vista === "mes" ? (
-              rejillaDelMes()
-            ) : estrecho && vista === "semana" ? (
-              listaPorDias()
-            ) : (
-              <>
-                {/* El hueco se dice ARRIBA y no debajo de la rejilla: la rejilla
-                    mide seiscientos píxeles aunque esté vacía, así que un aviso
-                    al pie se queda fuera de la ventana justo el día que hace
-                    falta leerlo. */}
-                {/* AQUÍ NO VA NINGÚN AVISO, Y ES A PROPÓSITO.
-                    Decía «esa semana la tienes libre entera. Pulsa la hora que
-                    quieras para apuntar algo» encima de una rejilla vacía. La
-                    rejilla vacía ya dice que está vacía —para eso está dibujada—
-                    y lo de pulsar se aprende en el primer clic, no leyéndolo.
-                    Una frase que repite lo que ya se ve enseña a saltarse el
-                    texto de esta pantalla. */}
-                <RejillaSemana
-                  dias={diasVisibles}
-                  citas={visibles}
-                  nombreDe={nombreDe}
-                  elegido={ancla}
-                  alPulsarCita={(c) => setHoja({ modo: "sesion", id: c.id })}
-                  alPulsarHueco={abrirHueco}
-                />
-              </>
-            )}
-          </section>
-
-          {/* En estrecho el aviso de dónde viven las cosas va aquí abajo: la
-              columna que lo llevaba no existe en este ancho. */}
-          {estrecho && <AvisoNavegador que="Las sesiones apuntadas" />}
-        </div>
+        {estrecho && <section style={css(TARJETA + PAD_SM + "min-width:0;")}>{listaDeHoy}</section>}
+        {estrecho && <AvisoNavegador que="Las sesiones apuntadas" />}
       </div>
 
       {/* ================================================== apuntar una sesión */}

@@ -150,6 +150,20 @@ algo). Mismo valor en claro y en oscuro:
 | `--ficha-verde` | `#4c9a5a` | Maestría, punto verde |
 | `--ficha-amarillo` | `#e5b63c` | Portal que se repite (con `--vino` encima) |
 
+Los colores de la agenda, uno por clase de cita (noviembre de 2026). Aquí el
+color **rellena** el bloque entero: en una semana llena lo primero que hay que
+ver es qué es cada cosa. Tres y no más, los tres tipos que existen:
+
+| Token | Claro | Oscuro | Qué es |
+|---|---|---|---|
+| `--cita-sesion` · `-tx` | `--vino` · `#fbf6ee` (13,7:1) | `#7c2c3f` · `#fbf6ee` (8,5:1) | La sesión de pago |
+| `--cita-sinergia` · `-tx` | `#f0c24f` · `--vino` (8,8:1) | `#f0c24f` · `#2a0f16` (10,6:1) | El estudio gratis: lo que más salta |
+| `--cita-seguimiento` · `-tx` | `#f4d3df` · `--vino` (10,7:1) | igual | El seguimiento |
+| `--cita-hoy` · `-tx` | el oro vivo de la sinergia | igual | El círculo del día de hoy |
+
+Una cita por confirmar lleva el mismo color con un filo de trazos; una anulada
+pierde el color y va tachada.
+
 ### El cristal de la plataforma (noviembre de 2026)
 
 La plataforma pasa, pantalla por pantalla, a una ventana de cristal sobre una
