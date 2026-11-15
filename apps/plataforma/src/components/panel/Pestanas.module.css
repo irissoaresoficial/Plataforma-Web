@@ -1,0 +1,58 @@
+/*
+ * LAS SECCIONES DE KÁBALA, A MANO EN EL MÓVIL.
+ *
+ * Por debajo de 980 píxeles la columna de la izquierda desaparece y con ella
+ * la lista de secciones. Pasar de «Resumen» a «Ciclos» —lo que más se repite
+ * en una consulta— costaba abrir el cajón, buscar y cerrar: dos toques a
+ * ciegas cada vez. Ahora es una tira de pastillas que se desliza con el dedo
+ * y se queda pegada bajo la cabecera mientras se lee.
+ *
+ * Es cristal porque flota encima del contenido, como la cabecera: el mismo
+ * `--vidrio` y el mismo desenfoque, no uno parecido.
+ */
+.tira {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .tira {
+    display: flex;
+    gap: 6px;
+    position: sticky;
+    top: 59px; /* el alto de la cabecera en una fila (59,75 medidos) */
+    z-index: 30;
+    margin: 0 calc(var(--gutter) * -1) var(--gap);
+    padding: 8px var(--gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    background: var(--vidrio);
+    backdrop-filter: var(--vidrio-difuminado);
+    -webkit-backdrop-filter: var(--vidrio-difuminado);
+    border-bottom: 1px solid var(--border);
+  }
+  .tira::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.pastilla {
+  flex: none;
+  scroll-snap-align: start;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: var(--t-mini);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pastilla[aria-current="true"] {
+  background: var(--accion);
+  border-color: var(--accion);
+  color: var(--sobre-accion);
+}

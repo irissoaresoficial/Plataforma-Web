@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { titulo } from "@/lib/format";
@@ -15,7 +15,8 @@ import SeccionNumerologia from "../panel/SeccionNumerologia";
 import SeccionBase9 from "../panel/SeccionBase9";
 import SeccionEmpresa from "../panel/SeccionEmpresa";
 import Pendiente from "../panel/Pendiente";
-import { DISCIPLINAS } from "../Sidebar";
+import { DISCIPLINAS, KABALA } from "../Sidebar";
+import pestanas from "../panel/Pestanas.module.css";
 
 /* El nombre largo y, debajo, qué se está mirando. En la lateral los nombres
  * van cortos para que la columna quede a plomo, así que el encabezado de la
@@ -31,8 +32,20 @@ const SECCIONES: Array<{ k: Seccion; label: string; pie: string }> = [
 ];
 
 export default function PanelScreen() {
-  const { r, re, seccion, disciplina, base } = useApp();
+  const { r, re, seccion, setSeccion, disciplina, base } = useApp();
   const quieto = useReducedMotion();
+  const tira = useRef<HTMLElement>(null);
+
+  /* La pastilla elegida se trae a la vista dentro de la tira: con «Ciclos» al
+     final, pulsarla desde el Resumen dejaba la tira enseñando las primeras
+     cuatro y ninguna marcada, como si no se hubiera ido a ningún sitio. Se
+     mueve la tira, no la página. */
+  useEffect(() => {
+    const t = tira.current;
+    const el = t?.querySelector<HTMLElement>('[aria-current="true"]');
+    if (!t || !el) return;
+    t.scrollTo({ left: el.offsetLeft - (t.clientWidth - el.offsetWidth) / 2, behavior: quieto ? "auto" : "smooth" });
+  }, [seccion, quieto]);
 
   /*
    * AL CAMBIAR DE SECCIÓN, LA VISTA VUELVE ARRIBA.
@@ -160,6 +173,24 @@ export default function PanelScreen() {
         )}
       </div>
 
+
+      {/* En el móvil no hay columna lateral: las secciones van aquí, en una
+          tira que se desliza y se queda pegada bajo la cabecera. */}
+      {disciplina === "kabala" && !empresa && (
+        <nav ref={tira} aria-label="Secciones del estudio" className={pestanas.tira}>
+          {KABALA.map((x) => (
+            <button
+              key={x.k}
+              type="button"
+              aria-current={seccion === x.k}
+              className={pestanas.pastilla}
+              onClick={() => setSeccion(x.k)}
+            >
+              {x.label}
+            </button>
+          ))}
+        </nav>
+      )}
 
       {(() => {
         // El resumen ya se abre saludando a Iris por su nombre; no hace falta

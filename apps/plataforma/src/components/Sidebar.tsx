@@ -44,7 +44,7 @@ type Item = { k: Seccion; label: string; Ico: Ico };
 /* En la lateral los nombres van cortos: caben en un renglón y la columna
  * queda a plomo. El nombre largo sigue estando en el encabezado de cada
  * sección. */
-const KABALA: Item[] = [
+export const KABALA: Item[] = [
   { k: "resumen", label: "Resumen", Ico: IcoResumen },
   { k: "arbol", label: "Árbol", Ico: IcoArbol },
   { k: "numeros", label: "Números", Ico: IcoNumeros },
