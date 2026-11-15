@@ -37,7 +37,7 @@
  * número inventado.
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { baseReducida, calculaBase22, cuentaDe, orejas, type BaseNacimiento, type Calculada } from "@/lib/base22";
@@ -61,7 +61,7 @@ const C = {
 } as const;
 
 /** La sigla que pone la lámina. La de clase (QE, RH…) sigue en la ficha. */
-const SIGLA: Record<string, string> = {
+export const SIGLA: Record<string, string> = {
   emersor: "EM",
   persExtSocial: "PES",
   busqArmonia: "BA",
@@ -90,7 +90,7 @@ type Forma = "circulo" | "triangulo" | "rombo" | "suelto";
  * tiene. Las coordenadas están pensadas para el radio grande (el del móvil):
  * con él ya no se tocan las orejas de dos vecinos.
  */
-const LAMINA: Record<string, { x: number; y: number; color: string; forma?: Forma }> = {
+export const LAMINA: Record<string, { x: number; y: number; color: string; forma?: Forma }> = {
   emersor: { x: 80, y: 200, color: C.rojo },
   persExtSocial: { x: 405, y: 200, color: C.naranja },
   busqArmonia: { x: 720, y: 200, color: C.rosa },
@@ -123,7 +123,7 @@ const SIN_OREJAS = new Set(["madre", "yo", "padre"]);
 
 /** Las tres de la familia van rellenas, como en la lámina. Colores fijos en
  *  claro y en oscuro, así que la tinta de encima también es fija. */
-const RELLENO: Record<string, { fondo: string; tinta: string }> = {
+export const RELLENO: Record<string, { fondo: string; tinta: string }> = {
   madre: { fondo: "var(--via-origen)", tinta: "var(--sobre-bloque)" },
   yo: { fondo: "var(--oro-luz)", tinta: "var(--vino)" },
   padre: { fondo: "var(--via-transformacion)", tinta: "var(--sobre-bloque)" },
@@ -132,7 +132,7 @@ const RELLENO: Record<string, { fondo: string; tinta: string }> = {
 /** Las flechitas DN, MN y AN de la lámina: de qué dato de la fecha sale cada
  *  una. Dentro del dibujo no caben sin montarse en el móvil, así que van en la
  *  leyenda, junto a su nombre. */
-const DATO: Record<string, string> = {
+export const DATO: Record<string, string> = {
   madre: "día de nacimiento (DN)",
   yo: "mes de nacimiento (MN)",
   padre: "año de nacimiento (AN)",
@@ -297,8 +297,11 @@ function punta(x1: number, y1: number, x2: number, y2: number, t: number) {
   return `${x2},${y2} ${p(1, 0.45)} ${p(1, -0.45)}`;
 }
 
-function Dibujo({ base, G }: { base: BaseNacimiento; G: Tam }) {
-  const quieto = useReducedMotion();
+function Dibujo({ base, G, estatico = false }: { base: BaseNacimiento; G: Tam; estatico?: boolean }) {
+  /* `estatico` es la lámina para el papel: entera desde el primer instante,
+     sin nada que tocar y sin el punto de «casilla deducida», que es una nota
+     de escuela y no le dice nada a quien recibe el informe. */
+  const quieto = useReducedMotion() || estatico;
   const tabla = useMemo(() => calculaBase22(base), [base]);
   const reducida = useMemo(() => baseReducida(base), [base]);
   const porClave = useMemo(() => Object.fromEntries(tabla.map((p) => [p.k, p])), [tabla]);
@@ -312,6 +315,21 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: Tam }) {
     const relojes = ORDEN.map((_, i) => setTimeout(() => setPaso(i + 1), 280 + i * 400));
     return () => relojes.forEach(clearTimeout);
   }, [quieto]);
+
+  /** Lo que hace una casilla al tocarla o pasar por encima. */
+  const manos = (k: string) => ({
+    onClick: () => setAbierta(k),
+    onKeyDown: (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        setAbierta(k);
+      }
+    },
+    onPointerEnter: () => setSobre(k),
+    onPointerLeave: () => setSobre((s) => (s === k ? null : s)),
+    onFocus: () => setSobre(k),
+    onBlur: () => setSobre((s) => (s === k ? null : s)),
+  });
 
   const tandaDe = (k: string) => ORDEN.findIndex((t) => t.includes(k));
   const visible = (k: string) => tandaDe(k) < paso;
@@ -370,14 +388,7 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: Tam }) {
     );
   };
 
-  return (
-    <div
-      style={css(
-        G.movil
-          ? "display:flex;flex-direction:column;gap:var(--s5);"
-          : "display:grid;grid-template-columns:minmax(0,560px) minmax(220px,1fr);gap:var(--gap-lg);align-items:center;"
-      )}
-    >
+  const lamina = (
       <svg
         viewBox={`${VISTA.x} ${VISTA.y} ${VISTA.w} ${VISTA.h}`}
         style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }}
@@ -524,25 +535,13 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: Tam }) {
           return (
             <motion.g
               key={p.k}
-              className="grafico-toca"
-              role="button"
-              tabIndex={0}
+              {...(estatico ? {} : { className: "grafico-toca", role: "button", tabIndex: 0 })}
               aria-label={`${p.nombre}${p.valor === null ? "" : ", " + p.valor}`}
               initial={quieto ? false : { opacity: 0, scale: 0.7 }}
               animate={dentro ? { opacity: atenuada ? 0.45 : 1, scale: 1 } : { opacity: 0, scale: 0.7 }}
               transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
               style={{ transformOrigin: `${x}px ${y}px` }}
-              onClick={() => setAbierta(p.k)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setAbierta(p.k);
-                }
-              }}
-              onPointerEnter={() => setSobre(p.k)}
-              onPointerLeave={() => setSobre((s) => (s === p.k ? null : s))}
-              onFocus={() => setSobre(p.k)}
-              onBlur={() => setSobre((s) => (s === p.k ? null : s))}
+              {...(estatico ? {} : manos(p.k))}
             >
               {/* El halo de la elegida. */}
               <circle
@@ -622,7 +621,7 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: Tam }) {
                 {falta ? "?" : p.valor}
               </text>
               {/* El punto de «casilla deducida», abajo a la derecha. */}
-              {p.certeza === "reconstruido" && (
+              {!estatico && p.certeza === "reconstruido" && (
                 <circle
                   cx={x + (forma === "rombo" ? D * 0.62 : r * 0.74)}
                   cy={y + (forma === "rombo" ? D * 0.62 : r * 0.74)}
@@ -635,6 +634,18 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: Tam }) {
           );
         })}
       </svg>
+  );
+  if (estatico) return lamina;
+
+  return (
+    <div
+      style={css(
+        G.movil
+          ? "display:flex;flex-direction:column;gap:var(--s5);"
+          : "display:grid;grid-template-columns:minmax(0,560px) minmax(220px,1fr);gap:var(--gap-lg);align-items:center;"
+      )}
+    >
+      {lamina}
 
       {/* ------------------------------------------------------- leyenda --
           Lo que en la lámina va abajo: cada sigla con su nombre entero. Aquí
@@ -690,6 +701,15 @@ function Dibujo({ base, G }: { base: BaseNacimiento; G: Tam }) {
       />
     </div>
   );
+}
+
+/**
+ * La lámina quieta, para el informe que se entrega (ver
+ * components/estudio/InformeBase22.tsx). Es el mismo dibujo, con el tamaño de
+ * ordenador, que en un folio es el que se lee bien.
+ */
+export function LaminaImpresa({ base }: { base: BaseNacimiento }) {
+  return <Dibujo base={base} G={ANCHA} estatico />;
 }
 
 /** La casilla, convertida en lo que la ficha sabe pintar. */

@@ -382,3 +382,32 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* El informe de numerología (InformeBase22.tsx).
+   La lámina se pinta con los tokens de la plataforma, que en modo oscuro se
+   vuelven claros sobre oscuro. El papel del documento es siempre crema, así
+   que aquí esos tokens vuelven a sus valores CLAROS, los mismos que tiene
+   :root en globals.css. Si cambian allí, cambian aquí. */
+.informe22 {
+  --text: #221d1f;
+  --text-2: #605551;
+  --text-3: #605551;
+  --text-4: #6f6560;
+  --surface: #ffffff;
+  --surface-2: #f1eeea;
+  --gold: #7d5f1e;
+  --gold-soft: rgba(169, 136, 79, 0.14);
+  --red: #c0392b;
+  --green: #2e7d4f;
+  --via-origen-tx: #b23a31;
+  --via-transformacion-tx: #2a63a8;
+  --via-destino-tx: #6e3fa8;
+  --rosa-tx: #7a2c54;
+  --melocoton-tx: #7a441a;
+  --lima-tx: #4a5416;
+}
+/* Una casilla no se parte entre dos hojas: el número quedaría arriba y su
+   lectura en el folio siguiente. */
+.casilla22 {
+  break-inside: avoid;
+}

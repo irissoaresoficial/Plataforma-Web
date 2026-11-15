@@ -12,6 +12,7 @@ import { fechaLarga, titulo } from "@/lib/format";
 import BloqueView from "../estudio/BloqueView";
 import HojaCliente from "../estudio/HojaCliente";
 import HojaClienteEmpresa from "../estudio/HojaClienteEmpresa";
+import InformeBase22 from "../estudio/InformeBase22";
 import styles from "../estudio/Estudio.module.css";
 import Confirmar from "../Confirmar";
 import GuiaApple from "../GuiaApple";
@@ -20,7 +21,19 @@ export default function EstudioScreen() {
   const { r, re, marca, txt, guardaEdit, restablecer, edits, id } = useApp();
   // Dos documentos distintos con el mismo botón de imprimir: el estudio
   // entero, que es la herramienta de Iris, y la hoja que se lleva el cliente.
-  const [modo, setModo] = useState<"estudio" | "hoja">("estudio");
+  /* Y un tercero, el informe de numerología (la lámina de base 22 con lo que
+     dice cada número), que se abre también desde el apartado de Numerología
+     con «?doc=numerologia». */
+  const [modo, setModo] = useState<"estudio" | "hoja" | "numerologia">("estudio");
+  /* Se lee después de montar y no al crear el estado: al llegar con un enlace
+     de la propia plataforma, el componente nace un instante antes de que la
+     barra de direcciones cambie, y leída al nacer la dirección todavía es la
+     de antes. Es una sola vez por visita. */
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("doc") === "numerologia") setModo("numerologia");
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
   /* En qué idioma sale la hoja que se le manda a la persona. La plataforma
      sigue en español —Iris trabaja en español— y lo único que cambia de idioma
      es el documento que se entrega. Se recuerda de una sesión a otra: quien
@@ -82,6 +95,8 @@ export default function EstudioScreen() {
   const D = diccionario(listo);
 
   const hoja = modo === "hoja";
+  /* El informe de numerología es de personas: una empresa no tiene fecha. */
+  const num = modo === "numerologia" && !!r;
   const empresa = !!re;
   const nombreTexto = (r ?? re!).nombre.texto;
   /* Cuántos párrafos ha reescrito Iris en ESTE estudio. Se cuenta para poder
@@ -103,6 +118,7 @@ export default function EstudioScreen() {
           {([
             ["estudio", "Estudio completo", `${capitulos.length} capítulos`],
             ["hoja", "Hoja para el cliente", "1 página"],
+            ...(r ? ([["numerologia", "Numerología", "La lámina y cada número"]] as const) : []),
           ] as const).map(([k, label, pie]) => {
             const on = modo === k;
             return (
@@ -129,7 +145,9 @@ export default function EstudioScreen() {
           })}
         </div>
         <span className={styles.hint} style={css("font-size:var(--t-body);color:var(--text-4);")}>
-          {hoja
+          {num
+            ? "La lámina de base 22 con lo que dice cada número. Sale en español: estos textos aún no están traducidos."
+            : hoja
             ? `Una página, sin fórmulas ni claves: lo que se lleva la persona. Sale en ${EN_ESPANOL[idioma]}.`
             : `Haz clic en cualquier párrafo para reescribirlo con tus palabras. Sale en ${EN_ESPANOL[idioma]}.`}
         </span>
@@ -184,7 +202,7 @@ export default function EstudioScreen() {
           {/* El botón sólo existe si hay algo que descartar, y dice de quién es
               lo que se pierde. Decía «Restablecer textos», que suena a devolver
               algo a su sitio; lo que hace es tirar el trabajo de Iris. */}
-          {!hoja && misCambios > 0 && (
+          {modo === "estudio" && misCambios > 0 && (
             <Confirmar
               estilo={BOTON_NORMAL}
               pregunta={`Vas a descartar ${misCambios === 1 ? "el párrafo que has reescrito" : `los ${misCambios} párrafos que has reescrito`} de ${titulo(nombreTexto)} y volver al texto de fábrica. Esto no se puede deshacer.`}
@@ -203,7 +221,7 @@ export default function EstudioScreen() {
             onClick={exporta}
             style={css(botonPrincipal())}
           >
-            {hoja ? "Exportar la hoja" : "Exportar PDF"}
+            {hoja ? "Exportar la hoja" : num ? "Exportar el informe" : "Exportar PDF"}
           </button>
         </div>
         {/* En el iPad el diálogo no siempre se abre solo; la ruta manual
@@ -257,8 +275,9 @@ export default function EstudioScreen() {
       </div>
 
       <div className={styles.desk}>
+        {num && r && <InformeBase22 r={r} marca={marca} />}
         {hoja && (r ? <HojaCliente r={r} marca={marca} idioma={idioma} /> : <HojaClienteEmpresa re={re!} marca={marca} idioma={idioma} />)}
-        {!hoja && <section className={`${styles.page} ${styles.portada}`}>
+        {!hoja && !num && <section className={`${styles.page} ${styles.portada}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.jpeg" alt="" style={css("width:210px;height:210px;border-radius:50%;object-fit:cover;margin-bottom:34px;")} />
           <div style={css("font-weight:590;font-size:var(--t-mini);color:#9A7F32;")}>{marca}</div>
@@ -272,7 +291,7 @@ export default function EstudioScreen() {
           </div>
         </section>}
 
-        {!hoja && capitulos.map((cap, i) => {
+        {!hoja && !num && capitulos.map((cap, i) => {
           // En papel solo estrena hoja el capítulo que abre una sesión nueva.
           // Antes bastaba con cambiar de sección — y como dentro de una misma
           // sesión hay varias, salían hojas con tres líneas arriba y el resto

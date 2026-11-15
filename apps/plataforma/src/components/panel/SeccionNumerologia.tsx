@@ -28,7 +28,8 @@
 
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { APOYO, NOTA, TITULO } from "@/lib/ui";
+import Link from "next/link";
+import { APOYO, BOTON_NORMAL, NOTA, TITULO } from "@/lib/ui";
 import { cuantasCalculan } from "@/lib/base22";
 import RejillaBase22 from "./RejillaBase22";
 import Pendiente from "./Pendiente";
@@ -66,6 +67,18 @@ export default function SeccionNumerologia() {
       </div>
 
       <RejillaBase22 base={{ dia: r.fecha.dia, mes: r.fecha.mes, anio: r.fecha.anio }} />
+
+      {/* El informe para entregar: la lámina y lo que dice cada número, listo
+          para exportar en PDF. Vive en «El documento», junto al estudio y la
+          hoja, para que se exporte con el mismo botón que todo lo demás. */}
+      <div style={css("display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;")}>
+        <Link href="/estudio?doc=numerologia" style={css(BOTON_NORMAL + "text-decoration:none;display:inline-flex;align-items:center;")}>
+          Ver el informe para entregar
+        </Link>
+        <span style={css("font-size:var(--t-mini);color:var(--text-4);")}>
+          La lámina con sus números y lo que dice cada uno, en PDF.
+        </span>
+      </div>
 
       {/* El estado, dicho con los números exactos. «Comprobado» a secas no dice
           nada; decir cuántas tienen fuente y cuántas son deducción se puede
