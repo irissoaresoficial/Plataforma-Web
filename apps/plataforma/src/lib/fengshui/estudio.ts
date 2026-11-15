@@ -12,9 +12,13 @@
  * foto pesa cien veces más que todo lo demás junto y el navegador tiene un
  * tope: si no cabe, se avisa con palabras en vez de perder el estudio entero.
  *
- * El día que Feng Shui suba a la nube, ésta es la única puerta que cambia.
+ * DESDE EL 15 DE NOVIEMBRE DE 2026, TAMBIÉN EN LA NUBE (`./nube.ts`). Ésta
+ * sigue siendo la única puerta: la pantalla llama a las mismas funciones de
+ * siempre, y por detrás cada guardado se sube a la cuenta. El navegador se
+ * queda como copia rápida, y lo que sólo estaba aquí sube solo al abrir.
  */
 import { anioSolar, cartaNatal, grupoDe, kua, mediaCircular, periodoDe, type Formula, type Lado } from "./calculo";
+import { apuntaBajado, bajaPlano, borraEstudioNube, estaSubido, hayNubeFs, leeEstudiosNube, planoSubido, ponEstado, programaSubida, subePendientes, subePlano } from "./nube";
 
 export type Ocupante = {
   id: string;
@@ -266,14 +270,19 @@ export function idActual(): string | null {
   return lee<string | null>(LLAVE_ACTUAL, null);
 }
 
-/** Guarda la lista. Devuelve false si el navegador no ha dejado. */
+/**
+ * Guarda la lista aquí y la sube a la nube. Devuelve false sólo si no se ha
+ * guardado en ningún sitio: con la nube puesta, que el navegador esté lleno
+ * no pierde nada, y si la subida falla lo cuenta el aviso de `./nube.ts`.
+ */
 export function guardaEstudios(lista: EstudioFs[], actual: string | null): boolean {
+  programaSubida(lista);
   try {
     localStorage.setItem(LLAVE_LISTA, JSON.stringify(lista));
     localStorage.setItem(LLAVE_ACTUAL, JSON.stringify(actual));
     return true;
   } catch {
-    return false;
+    return hayNubeFs();
   }
 }
 
@@ -285,15 +294,98 @@ export function cargaPlano(id: string): string | null {
   }
 }
 
-/** Guarda el plano. false = no cabe en el navegador. */
+/**
+ * Guarda el plano aquí y lo sube. false = no cabe en el navegador y no hay
+ * nube que lo guarde. Si la subida falla después, lo dice el aviso de la nube.
+ */
 export function guardaPlano(id: string, datos: string | null): boolean {
+  if (hayNubeFs()) void subePlano(id, datos);
   try {
     if (datos) localStorage.setItem(llavePlano(id), datos);
     else localStorage.removeItem(llavePlano(id));
     return true;
   } catch {
-    return false;
+    return hayNubeFs();
   }
+}
+
+/* ------------------------------------------------------------------------- */
+/*  LA NUBE                                                                   */
+/* ------------------------------------------------------------------------- */
+
+/**
+ * AL ABRIR: junta lo de este navegador con lo de la cuenta.
+ *
+ * Gana la versión con el `actualizado` más reciente. Lo que sólo está aquí
+ * sube; lo que sólo está arriba baja. Nada se borra. También sube cualquier
+ * plano de este navegador que no esté arriba todavía.
+ *
+ * Devuelve la lista fundida, o null si no hay nube o no ha contestado: en ese
+ * caso la pantalla se queda con lo que tiene, que es lo del navegador.
+ */
+export async function sincronizaEstudios(): Promise<EstudioFs[] | null> {
+  if (!hayNubeFs()) return null;
+  try {
+    const arriba = await leeEstudiosNube();
+    const aqui = cargaEstudios();
+    const porId = new Map<string, EstudioFs>();
+    for (const e of aqui) porId.set(e.id, e);
+    for (const g of arriba) {
+      const mio = porId.get(g.id);
+      if (!mio || (g.actualizado ?? "") > (mio.actualizado ?? "")) {
+        porId.set(g.id, { ...estudioNuevo(), ...g });
+        apuntaBajado(g);
+      } else if (mio.actualizado === g.actualizado) {
+        apuntaBajado(g);
+      }
+    }
+    const lista = [...porId.values()].sort((a, b) => (b.actualizado ?? "").localeCompare(a.actualizado ?? ""));
+    try {
+      localStorage.setItem(LLAVE_LISTA, JSON.stringify(lista));
+    } catch {
+      /* el navegador lleno no impide trabajar: está todo arriba */
+    }
+
+    /* Sube lo que falte arriba y espera a que conteste, para poder decir la
+       verdad sobre si está guardado. */
+    let todoBien = true;
+    if (lista.some((e) => !estaSubido(e))) {
+      programaSubida(lista);
+      todoBien = await subePendientes();
+    }
+    for (const e of aqui) {
+      const p = cargaPlano(e.id);
+      if (p && !planoSubido(e.id, p)) todoBien = (await subePlano(e.id, p)) && todoBien;
+    }
+    if (todoBien) ponEstado("al-dia");
+    return lista;
+  } catch (err) {
+    ponEstado("fallo", err);
+    return null;
+  }
+}
+
+/**
+ * El plano de un estudio: el de este navegador si lo hay, y si no el de la
+ * cuenta (y se queda copiado aquí para la próxima vez, si cabe).
+ */
+export async function traePlano(id: string): Promise<string | null> {
+  const aqui = cargaPlano(id);
+  if (aqui) return aqui;
+  const arriba = await bajaPlano(id);
+  if (arriba) {
+    try {
+      localStorage.setItem(llavePlano(id), arriba);
+    } catch {
+      /* no cabe aquí: se volverá a bajar */
+    }
+  }
+  return arriba;
+}
+
+/** Borrar un estudio de verdad: aquí lo hace la pantalla, arriba esto. */
+export function olvidaEstudio(id: string) {
+  void borraEstudioNube(id);
 }
 
 /**

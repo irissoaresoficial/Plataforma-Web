@@ -611,6 +611,16 @@ service cloud.firestore {
     match /estudios/{id} { allow read, write: if esAdmin(); }
 
     /*
+     * LOS ESTUDIOS DE FENG SHUI Y SUS PLANOS (15 de noviembre de 2026).
+     * Hasta hoy vivían sólo en el navegador. Son lo mismo que `estudios`:
+     * la dirección de una casa y las fechas de nacimiento de quien vive en
+     * ella. Misma llave, por lo mismo. El plano va en su propia colección
+     * porque pesa cien veces más que el estudio (ver lib/fengshui/nube.ts).
+     */
+    match /fengshui/{id}        { allow read, write: if esAdmin(); }
+    match /fengshui-planos/{id} { allow read, write: if esAdmin(); }
+
+    /*
      * LO QUE CUESTA LA PUBLICIDAD: UN DOCUMENTO POR DÍA.
      *
      * Gerson, el 20 de octubre de 2026: quiere ver en la plataforma el gasto y

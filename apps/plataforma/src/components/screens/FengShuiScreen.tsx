@@ -80,6 +80,9 @@ import {
   guardaEstudios,
   guardaPlano,
   idActual,
+  olvidaEstudio,
+  sincronizaEstudios,
+  traePlano,
   kuaDe,
   lecturaNueva,
   mediaLecturas,
@@ -95,6 +98,7 @@ import MesaPlano, { type Paso } from "../fengshui/MesaPlano";
 import mesa from "../fengshui/Mesa.module.css";
 import Informe from "../fengshui/Informe";
 import Escena from "../fengshui/Escena";
+import DondeSeGuarda from "../fengshui/DondeSeGuarda";
 
 const PARTES: Array<{ k: ParteFengShui; label: string }> = [
   { k: "datos", label: "Vivienda" },
@@ -241,7 +245,45 @@ export default function FengShuiScreen() {
       if (elegido.fachada !== null) setVivo(elegido.fachada);
     }
     setListo(true);
+
+    /* Y después, la cuenta: lo que haya en otro ordenador baja, lo que sólo
+       esté aquí sube. Si mientras tanto se ha tocado algo, gana lo tocado. */
+    let vivoAun = true;
+    void sincronizaEstudios().then((arriba) => {
+      if (!vivoAun || !arriba) return;
+      setLista((prev) => {
+        const mios = new Map(prev.map((x) => [x.id, x]));
+        const fundida = arriba.map((x) => {
+          const m = mios.get(x.id);
+          return m && m.actualizado > x.actualizado ? m : x;
+        });
+        const nuevos = prev.filter((x) => !arriba.some((y) => y.id === x.id));
+        return [...nuevos, ...fundida];
+      });
+      setE((prev) => {
+        const deArriba = arriba.find((x) => x.id === prev.id);
+        if (deArriba) return deArriba.actualizado > prev.actualizado ? deArriba : prev;
+        /* Si no había nada abierto aquí, se abre el más reciente de la cuenta. */
+        return !l.length && arriba[0] ? arriba[0] : prev;
+      });
+    });
+    return () => {
+      vivoAun = false;
+    };
   }, []);
+
+  /* El plano que no está en este navegador se pide a la cuenta. */
+  useEffect(() => {
+    if (plano) return;
+    let vivoAun = true;
+    void traePlano(e.id).then((p) => {
+      if (vivoAun && p) setPlano(p);
+    });
+    return () => {
+      vivoAun = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [e.id]);
 
   /* Cada cambio se guarda. Si el navegador no deja, se dice. */
   const cambia = useCallback((parche: Partial<EstudioFs>) => {
@@ -281,6 +323,7 @@ export default function FengShuiScreen() {
   const borra = () => {
     const sig = lista.filter((x) => x.id !== e.id);
     guardaPlano(e.id, null);
+    olvidaEstudio(e.id);
     const sigActual = sig[0] ?? estudioNuevo();
     setLista(sig);
     setE(sigActual);
@@ -1158,9 +1201,7 @@ export default function FengShuiScreen() {
           )}
         </>
       )}
-      <p data-chrome="1" style={css(NOTA + "margin:0;")}>
-        Los estudios de Feng Shui se guardan en este navegador. Si cambias de ordenador, no estarán allí.
-      </p>
+      <DondeSeGuarda style={css(NOTA + "margin:0;")} />
     </div>
   );
 }
