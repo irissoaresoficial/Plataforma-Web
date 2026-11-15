@@ -12,7 +12,7 @@
  */
 
 import { creaRespaldo, leeRespaldo, fusiona, nombreDeRespaldo, type Fusion } from '@iris/datos';
-import { cargaEdits, cargaHistorial, guardaEdits, guardaHistorial, type Edits, type HistItem } from './storage';
+import { guardaEdits, guardaHistorial, type Edits, type HistItem } from './storage';
 
 /**
  * Baja un fichero con todo lo que hay en este navegador.
@@ -21,9 +21,10 @@ import { cargaEdits, cargaHistorial, guardaEdits, guardaHistorial, type Edits, t
  * importa salvar es lo que está guardado de verdad, no lo que se esté viendo
  * en pantalla en este momento.
  */
-export function descargaRespaldo(): { estudios: number; nombre: string } {
-  const estudios = cargaHistorial();
-  const respaldo = creaRespaldo(estudios, cargaEdits());
+/* Recibe la lista que hay en pantalla y no la lee del navegador: con la
+   cuenta conectada, en el navegador ya no hay nada (ver `storage.ts`). */
+export function descargaRespaldo(estudios: HistItem[], correcciones: Edits): { estudios: number; nombre: string } {
+  const respaldo = creaRespaldo(estudios, correcciones);
   const nombre = nombreDeRespaldo();
 
   const url = URL.createObjectURL(new Blob([JSON.stringify(respaldo, null, 2)], { type: 'application/json' }));
@@ -50,11 +51,11 @@ export type ResultadoImportar =
  * No sustituye: funde. Traer una copia de hace un mes no puede borrar los
  * estudios de esta semana, y si el fichero no es válido no se toca nada.
  */
-export function importaRespaldo(texto: string): ResultadoImportar {
+export function importaRespaldo(texto: string, estudios: HistItem[], correcciones: Edits): ResultadoImportar {
   const lectura = leeRespaldo(texto);
   if (!lectura.ok) return { ok: false, mensaje: lectura.motivo };
 
-  const aqui = { estudios: cargaHistorial(), correcciones: cargaEdits() };
+  const aqui = { estudios, correcciones };
   const fusion = fusiona(aqui, {
     estudios: lectura.respaldo.estudios,
     correcciones: lectura.respaldo.correcciones,

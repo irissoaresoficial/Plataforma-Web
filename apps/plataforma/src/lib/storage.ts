@@ -1,4 +1,19 @@
 import type { Entrada } from "./engine";
+import { hayFirebase } from "@/lib/firebase";
+
+/**
+ * CON LA CUENTA CONECTADA, LOS ESTUDIOS NO SE GUARDAN EN EL ORDENADOR.
+ *
+ * Gerson, 15 de noviembre de 2026: «estos estudios se deben guardar en bases
+ * de datos, no quiero que se guarde en el ordenador». Con Firebase, la lista
+ * de estudios y lo que Iris corrige encima viven sólo en Firestore
+ * (`lib/estudios.ts`); `guardaHistorial` y `guardaEdits` no escriben nada, y
+ * lo que hubiera de antes se sube y se borra de aquí al confirmarse arriba.
+ *
+ * Sin Firebase —trabajar en las pantallas sin claves— sigue como siempre, en
+ * el navegador: si no, la plataforma no se podría ni probar.
+ */
+export const SOLO_NUBE = hayFirebase();
 
 const LS_HIST = "es33.historial.v1";
 const LS_EDITS = "es33.edits.v1";
@@ -52,6 +67,7 @@ export function cargaHistorial(): HistItem[] {
   }
 }
 export function guardaHistorial(hist: HistItem[]) {
+  if (SOLO_NUBE) return;
   try {
     localStorage.setItem(LS_HIST, JSON.stringify(hist));
   } catch {
@@ -114,10 +130,24 @@ export function cargaEdits(): Edits {
   }
 }
 export function guardaEdits(edits: Edits) {
+  if (SOLO_NUBE) return;
   try {
     localStorage.setItem(LS_EDITS, JSON.stringify(edits));
   } catch {
     /* almacenamiento no disponible */
+  }
+}
+
+/**
+ * Borra del ordenador la lista y las correcciones de antes. Sólo se llama
+ * cuando Firestore ha confirmado que lo tiene todo.
+ */
+export function borraLoDeEsteOrdenador() {
+  try {
+    localStorage.removeItem(LS_HIST);
+    localStorage.removeItem(LS_EDITS);
+  } catch {
+    /* nada que borrar */
   }
 }
 

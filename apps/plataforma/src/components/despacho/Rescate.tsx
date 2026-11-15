@@ -47,7 +47,7 @@ export default function Rescate({ facturas = false, alSubir }: { facturas?: bool
         <p style={css(APOYO + "margin:0;")}>
           Han subido a tu cuenta{" "}
           {[r.fichasSubidas && n(r.fichasSubidas, "ficha", "fichas"), r.citasSubidas && n(r.citasSubidas, "cita", "citas")].filter(Boolean).join(" y ")} que
-          sólo estaban en este navegador, de antes de conectar la cuenta. Aquí se quedan también, de copia.
+          sólo estaban en este navegador, de antes de conectar la cuenta. Ya no se guardan en este ordenador.
         </p>
       )}
       {hayFacturas && (

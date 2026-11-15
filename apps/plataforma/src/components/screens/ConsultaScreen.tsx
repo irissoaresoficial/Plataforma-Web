@@ -22,7 +22,7 @@ const TARJETA =
 const ROTULO = "font-size:var(--t-mini);font-weight:590;color:var(--gold);";
 
 export default function ConsultaScreen() {
-  const { f, set, calcular, hist, abrir, borrar } = useApp();
+  const { f, set, calcular, hist, abrir, borrar, estadoEstudios } = useApp();
 
   const empresa = f.tipo === "empresa";
   // De una empresa se lee el nombre comercial entero; no tiene apellidos. Y si
@@ -367,7 +367,9 @@ botonPrincipal(listo) + "width:100%;margin-top:var(--s5);"
               <div style={css(ROTULO + "margin-bottom:var(--s4);")}>Estudios guardados</div>
               {hist.length === 0 ? (
                 <p style={css("font-size:var(--t-body);line-height:1.55;color:var(--text-4);margin:0;")}>
-                  {guardadoEnLaNube
+                  {estadoEstudios === "cargando"
+                    ? "Trayendo tus estudios de tu cuenta…"
+                    : guardadoEnLaNube
                     ? "Todavía no hay estudios guardados. Los que generes se quedan aquí y los tendrás en cualquier ordenador donde entres."
                     : "Todavía no hay estudios guardados. Los que generes se quedan aquí, en este equipo."}
                 </p>
@@ -405,7 +407,11 @@ botonPrincipal(listo) + "width:100%;margin-top:var(--s5);"
                         titulo={`Quitar el estudio de ${h.nombre}`}
                         alineado="derecha"
                         estilo="flex:none;display:grid;place-items:center;background:none;border:1px solid var(--red-border);color:var(--red);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:var(--t-title);line-height:1;"
-                        pregunta={`¿Quitar el estudio de ${h.nombre}? No se puede recuperar: sólo estaba en este navegador.`}
+                        pregunta={
+                          guardadoEnLaNube
+                            ? `¿Quitar el estudio de ${h.nombre}? Se borra de tu cuenta y no se puede recuperar.`
+                            : `¿Quitar el estudio de ${h.nombre}? No se puede recuperar: sólo estaba en este navegador.`
+                        }
                         confirmar="Sí, quitarlo"
                         alConfirmar={() => borrar(h)}
                       >

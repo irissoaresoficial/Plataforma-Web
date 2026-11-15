@@ -14,11 +14,13 @@
  *
  * DESDE EL 15 DE NOVIEMBRE DE 2026, TAMBIÉN EN LA NUBE (`./nube.ts`). Ésta
  * sigue siendo la única puerta: la pantalla llama a las mismas funciones de
- * siempre, y por detrás cada guardado se sube a la cuenta. El navegador se
- * queda como copia rápida, y lo que sólo estaba aquí sube solo al abrir.
+ * siempre, y por detrás cada guardado se sube a la cuenta. Con la cuenta
+ * conectada, en el navegador no se queda nada: sólo lo que espera a subir, y
+ * se borra de aquí en cuanto Firestore lo confirma (Gerson, 15 de noviembre:
+ * «no quiero que se guarde en el ordenador»).
  */
 import { anioSolar, cartaNatal, grupoDe, kua, mediaCircular, periodoDe, type Formula, type Lado } from "./calculo";
-import { apuntaBajado, bajaPlano, borraEstudioNube, estaSubido, hayNubeFs, leeEstudiosNube, planoSubido, ponEstado, programaSubida, subePendientes, subePlano } from "./nube";
+import { apuntaBajado, bajaPlano, borraEstudioNube, estaSubido, hayNubeFs, leeEstudiosNube, pendientesFs, planoSubido, ponEstado, programaSubida, subePendientes, subePlano } from "./nube";
 
 export type Ocupante = {
   id: string;
@@ -265,11 +267,22 @@ function lee<T>(llave: string, porDefecto: T): T {
   }
 }
 
+/**
+ * Lo que hay en este navegador. Sin cuenta, la lista entera. Con cuenta, sólo
+ * lo de antes que aún no se ha mudado y lo que espera a subir: la lista de
+ * verdad llega de Firestore con `sincronizaEstudios`.
+ */
 export function cargaEstudios(): EstudioFs[] {
-  const lista = lee<EstudioFs[]>(LLAVE_LISTA, []);
+  const crudo = lee<EstudioFs[]>(LLAVE_LISTA, []);
+  const deAntes = Array.isArray(crudo) ? crudo : [];
+  const porId = new Map(deAntes.map((e) => [e.id, e]));
+  if (hayNubeFs()) for (const e of pendientesFs()) {
+    const ya = porId.get(e.id);
+    if (!ya || e.actualizado > ya.actualizado) porId.set(e.id, e);
+  }
   /* Lo que se guardó con una versión anterior se completa con lo que falte,
      en vez de romper la pantalla por un campo nuevo. */
-  return Array.isArray(lista) ? lista.map((e) => ({ ...estudioNuevo(), ...e })) : [];
+  return [...porId.values()].map((e) => ({ ...estudioNuevo(), ...e }));
 }
 
 export function idActual(): string | null {
@@ -283,6 +296,16 @@ export function idActual(): string | null {
  */
 export function guardaEstudios(lista: EstudioFs[], actual: string | null): boolean {
   programaSubida(lista);
+  if (hayNubeFs()) {
+    /* Con cuenta, la lista NO se guarda aquí (ver `./nube.ts`). Sólo cuál
+       estaba abierto, que es una preferencia de pantalla. */
+    try {
+      localStorage.setItem(LLAVE_ACTUAL, JSON.stringify(actual));
+    } catch {
+      /* da igual: se abrirá el más reciente */
+    }
+    return true;
+  }
   try {
     localStorage.setItem(LLAVE_LISTA, JSON.stringify(lista));
     localStorage.setItem(LLAVE_ACTUAL, JSON.stringify(actual));
@@ -292,11 +315,25 @@ export function guardaEstudios(lista: EstudioFs[], actual: string | null): boole
   }
 }
 
+/** Con cuenta, los planos ya bajados viven en memoria, no en el disco. */
+const planosEnMemoria = new Map<string, string>();
+
 export function cargaPlano(id: string): string | null {
+  const enMemoria = planosEnMemoria.get(id);
+  if (enMemoria) return enMemoria;
   try {
     return localStorage.getItem(llavePlano(id));
   } catch {
     return null;
+  }
+}
+
+/** Quita del disco un plano que ya está arriba, si sigue siendo ése. */
+function olvidaPlanoLocal(id: string, datos: string) {
+  try {
+    if (localStorage.getItem(llavePlano(id)) === datos) localStorage.removeItem(llavePlano(id));
+  } catch {
+    /* nada */
   }
 }
 
@@ -305,7 +342,22 @@ export function cargaPlano(id: string): string | null {
  * nube que lo guarde. Si la subida falla después, lo dice el aviso de la nube.
  */
 export function guardaPlano(id: string, datos: string | null): boolean {
-  if (hayNubeFs()) void subePlano(id, datos);
+  if (hayNubeFs()) {
+    /* Con cuenta: se apunta aquí sólo mientras sube, y al confirmarse se
+       borra del disco y se queda en memoria. */
+    if (datos) planosEnMemoria.set(id, datos);
+    else planosEnMemoria.delete(id);
+    try {
+      if (datos) localStorage.setItem(llavePlano(id), datos);
+      else localStorage.removeItem(llavePlano(id));
+    } catch {
+      /* no cabe: sube igual, desde la memoria */
+    }
+    void subePlano(id, datos).then((ok) => {
+      if (ok && datos) olvidaPlanoLocal(id, datos);
+    });
+    return true;
+  }
   try {
     if (datos) localStorage.setItem(llavePlano(id), datos);
     else localStorage.removeItem(llavePlano(id));
@@ -346,11 +398,6 @@ export async function sincronizaEstudios(): Promise<EstudioFs[] | null> {
       }
     }
     const lista = [...porId.values()].sort((a, b) => (b.actualizado ?? "").localeCompare(a.actualizado ?? ""));
-    try {
-      localStorage.setItem(LLAVE_LISTA, JSON.stringify(lista));
-    } catch {
-      /* el navegador lleno no impide trabajar: está todo arriba */
-    }
 
     /* Sube lo que falte arriba y espera a que conteste, para poder decir la
        verdad sobre si está guardado. */
@@ -360,10 +407,29 @@ export async function sincronizaEstudios(): Promise<EstudioFs[] | null> {
       todoBien = await subePendientes();
     }
     for (const e of aqui) {
-      const p = cargaPlano(e.id);
-      if (p && !planoSubido(e.id, p)) todoBien = (await subePlano(e.id, p)) && todoBien;
+      let p: string | null = null;
+      try {
+        p = localStorage.getItem(llavePlano(e.id));
+      } catch {
+        p = null;
+      }
+      if (!p) continue;
+      const ok = planoSubido(e.id, p) || (await subePlano(e.id, p));
+      if (ok) {
+        planosEnMemoria.set(e.id, p);
+        olvidaPlanoLocal(e.id, p);
+      } else todoBien = false;
     }
-    if (todoBien) ponEstado("al-dia");
+    /* LA MUDANZA TERMINA AQUÍ: con todo confirmado arriba, la lista de antes
+       se borra de este ordenador. Si algo falló, se queda hasta la próxima. */
+    if (todoBien) {
+      try {
+        localStorage.removeItem(LLAVE_LISTA);
+      } catch {
+        /* nada */
+      }
+      ponEstado("al-dia");
+    }
     return lista;
   } catch (err) {
     ponEstado("fallo", err);
@@ -372,20 +438,15 @@ export async function sincronizaEstudios(): Promise<EstudioFs[] | null> {
 }
 
 /**
- * El plano de un estudio: el de este navegador si lo hay, y si no el de la
- * cuenta (y se queda copiado aquí para la próxima vez, si cabe).
+ * El plano de un estudio: el que está en memoria o esperando a subir, y si
+ * no, el de la cuenta.
  */
 export async function traePlano(id: string): Promise<string | null> {
   const aqui = cargaPlano(id);
   if (aqui) return aqui;
   const arriba = await bajaPlano(id);
-  if (arriba) {
-    try {
-      localStorage.setItem(llavePlano(id), arriba);
-    } catch {
-      /* no cabe aquí: se volverá a bajar */
-    }
-  }
+  /* En memoria, no en el disco: el plano vive en la cuenta. */
+  if (arriba) planosEnMemoria.set(id, arriba);
   return arriba;
 }
 

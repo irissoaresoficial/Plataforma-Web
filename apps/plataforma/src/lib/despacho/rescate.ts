@@ -13,7 +13,8 @@
  * Esto lo recupera, una vez por sesión, al entrar en Personas o en Facturas:
  *
  *   · FICHAS Y CITAS que estén aquí y no arriba → suben, con su mismo id, y
- *     se apuntan como subidas. Lo de aquí NO se borra: se queda de copia.
+ *     en cuanto Firestore confirma cada una, se borra de este ordenador
+ *     (Gerson: «no quiero que se guarde en el ordenador»).
  *     Si ya están arriba no se tocan, aunque aquí sean distintas: lo de
  *     arriba es lo que Iris ha estado usando desde entonces.
  *
@@ -38,6 +39,20 @@ export type Rescate = {
 };
 
 const LS_RESCATE = "es33.rescate.v1";
+
+/** Quita de este ordenador lo que ya está confirmado en la cuenta. */
+function olvidaAqui(clave: string, ids: string[]) {
+  if (!ids.length) return;
+  try {
+    const v = JSON.parse(localStorage.getItem(clave) || "[]");
+    if (!Array.isArray(v)) return;
+    const quedan = v.filter((x: { id?: string }) => !x?.id || !ids.includes(x.id));
+    if (quedan.length) localStorage.setItem(clave, JSON.stringify(quedan));
+    else localStorage.removeItem(clave);
+  } catch {
+    /* se intentará la próxima vez */
+  }
+}
 
 function apunta(que: "clientes" | "citas", ids: string[]) {
   if (!ids.length) return;
@@ -78,6 +93,7 @@ export function rescataDelNavegador(): Promise<Rescate | null> {
         }
       }
       apunta("clientes", subidas);
+      olvidaAqui("es33.clientes.v1", subidas);
       r.fichasSubidas = subidas.length;
 
       const citas = await soloAqui<Cita>(() => citasLocal.listar(), () => citasNube.listar());
@@ -91,6 +107,7 @@ export function rescataDelNavegador(): Promise<Rescate | null> {
         }
       }
       apunta("citas", subidasC);
+      olvidaAqui("es33.citas.v1", subidasC);
       r.citasSubidas = subidasC.length;
 
       r.facturasSoloAqui = await soloAqui<Factura>(() => facturasLocal.listar(), () => facturasNube.listar());

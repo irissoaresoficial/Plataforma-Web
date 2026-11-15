@@ -2,9 +2,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { analizaNombre, calcula, calculaEmpresa, comparaPareja, ficha as fichaDe, type Resultado, type ResultadoEmpresa, type Comparativa, type Ficha, type Genero } from "./engine";
-import { cargaHistorial, guardaHistorial, cargaEdits, guardaEdits, cargaActual, guardaActual, type HistItem, type Edits } from "./storage";
-import { borraUno as borraDeLaNube, funde, guardaUno, guardaVarios, hayNube, leeTodo } from "./estudios";
-import { cargaParejas, guardaPareja, idDePareja, vinculaB, type ParejaGuardada } from "./parejas";
+import { cargaHistorial, guardaHistorial, cargaEdits, guardaEdits, cargaActual, guardaActual, SOLO_NUBE, type HistItem, type Edits } from "./storage";
+import { borraUno as borraDeLaNube, guardaUno, guardaVarios, hayNube, hayPendientes, traeYMuda } from "./estudios";
+import { buscaPareja, guardaPareja, idDePareja, vinculaB, type ParejaGuardada } from "./parejas";
 import { descargaRespaldo, importaRespaldo, type ResultadoImportar } from "./respaldo";
 import type { Capacidad } from "./roles";
 
@@ -338,6 +338,8 @@ export function valida(f: FormState): string | null {
   return null;
 }
 
+export type EstadoEstudios = "navegador" | "cargando" | "al-dia" | "pendiente" | "fallo";
+
 /** Para comparar nombres sin que estorben tildes ni mayúsculas. */
 function sinTildesCtx(s: string): string {
   return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
@@ -409,6 +411,8 @@ type Ctx = {
   hist: HistItem[];
   calcular: () => void;
   abrir: (h: HistItem) => void;
+  /** Dónde están los estudios ahora mismo. Ver `estadoEstudios`. */
+  estadoEstudios: EstadoEstudios;
   /** Ata un estudio a una ficha de Personas (o lo desata, con null). */
   vinculaEstudio: (estudioId: string, clienteId: string | null) => void;
   /** Apunta de qué ficha sale el próximo estudio que se calcule. */
@@ -486,6 +490,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // hay uno; sin esta bandera el guardia de <Shell> vería `r` vacío en el
   // primer render y devolvería a la entrada antes de darle ocasión.
   const [rehidratado, setRehidratado] = useState(false);
+  /**
+   * Dónde están los estudios, para decirlo sin mentir. Con la cuenta: se
+   * están trayendo, están todos arriba, alguno espera a subir, o no ha
+   * contestado. Sin cuenta: viven en este navegador.
+   */
+  const [estadoEstudios, setEstadoEstudios] = useState<EstadoEstudios>(SOLO_NUBE ? "cargando" : "navegador");
+  /* Lo que cuenta la pantalla después de cada escritura en la cuenta. */
+  const alSubir = useCallback(() => setEstadoEstudios(hayPendientes() ? "pendiente" : "al-dia"), []);
+  const alFallar = useCallback(() => setEstadoEstudios("pendiente"), []);
 
   const anioUniversal = new Date().getFullYear();
 
@@ -536,7 +549,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (clienteId) item.clienteId = clienteId;
     setParaCliente(null);
     setHist((s) => {
-      const next = [item].concat(s.filter((h) => h.id !== hid)).slice(0, 40);
+      /* El tope de 40 era por el navegador. En la cuenta caben todos. */
+      const todos = [item].concat(s.filter((h) => h.id !== hid));
+      const next = SOLO_NUBE ? todos : todos.slice(0, 40);
       guardaHistorial(next);
       return next;
     });
@@ -546,12 +561,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
        próxima vez que se abra la plataforma, al fundir. */
     /* Con sus correcciones: sin ellas, recalcular un estudio ya corregido
        dejaba las de la nube en blanco. */
-    if (hayNube()) void guardaUno(item, edits[hid]).catch(() => {});
+    if (hayNube()) void guardaUno(item, edits[hid]).then(alSubir, alFallar);
     aplica(f);
     setId(hid);
     setView("panel");
     setSeccion("resumen");
-  }, [f, anioUniversal, aplica, setView, hist, edits, paraCliente]);
+  }, [f, anioUniversal, aplica, setView, hist, edits, paraCliente, alSubir, alFallar]);
 
   /**
    * ATAR (O DESATAR) UN ESTUDIO A UNA FICHA DE PERSONAS. Sólo lo llama Iris
@@ -569,9 +584,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         guardaHistorial(next);
         return next;
       });
-      if (hayNube()) void guardaUno(nuevo, edits[estudioId]).catch(() => {});
+      if (hayNube()) void guardaUno(nuevo, edits[estudioId]).then(alSubir, alFallar);
     },
-    [hist, edits]
+    [hist, edits, alSubir, alFallar]
   );
 
   const abrir = useCallback(
@@ -595,23 +610,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // equipo, así que sembrar el estudio en el primer render rompería la
   // hidratación. Corre una sola vez, al montar.
   //
+  /** Abre el estudio que estaba abierto, si está en la lista. */
+  const rehidrata = useCallback(
+    (lista: HistItem[]) => {
+      const guardado = cargaActual();
+      const h = guardado ? lista.find((x) => x.id === guardado) : undefined;
+      if (h) {
+        const form = formDe(h);
+        setF(form);
+        if (form.tipo === "empresa") setRe(calculaEmpresa({ nombre: form.nombre, anioUniversal }));
+        else setR(calcula(entradaDe(form, anioUniversal)));
+        setId(h.id);
+      }
+      setRehidratado(true);
+    },
+    [anioUniversal]
+  );
+
+  /* Sin cuenta: lo del navegador, al momento, como siempre. */
   /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
   useEffect(() => {
+    if (SOLO_NUBE) return;
     const guardados = cargaHistorial();
     setHist(guardados);
     setEdits(cargaEdits());
-    const guardado = cargaActual();
-    const h = guardado ? guardados.find((x) => x.id === guardado) : undefined;
-    if (h) {
-      const form = formDe(h);
-      setF(form);
-      if (form.tipo === "empresa") setRe(calculaEmpresa({ nombre: form.nombre, anioUniversal }));
-      else setR(calcula(entradaDe(form, anioUniversal)));
-      setId(h.id);
-    }
-    setRehidratado(true);
+    rehidrata(guardados);
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+
+
 
   /*
    * Y DESPUÉS, LA NUBE.
@@ -631,43 +658,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * regla ya lo da por bueno.
    */
   useEffect(() => {
-    if (!hayNube()) return;
+    if (!SOLO_NUBE) return;
     let vivo = true;
-    (async () => {
-      try {
-        const arriba = await leeTodo();
-        if (!vivo) return;
-        const aqui = cargaHistorial();
-        const aquiEdits = cargaEdits();
-        const r = funde(aqui, aquiEdits, arriba);
-
-        /* Si lo de la nube no añade ni cambia nada, no se toca el estado: un
-           `setHist` con una lista equivalente vuelve a pintar la pantalla
-           entera por nada, y en la lista de estudios eso se ve como un
-           parpadeo justo al entrar. */
-        const igual =
-          r.estudios.length === aqui.length &&
-          r.estudios.every((h, i) => aqui[i]?.id === h.id && (aqui[i]?.tocado ?? "") === (h.tocado ?? ""));
-        if (!igual) {
-          setHist(r.estudios);
-          guardaHistorial(r.estudios);
-          setEdits(r.correcciones);
-          guardaEdits(r.correcciones);
-        }
-
-        /* LA MUDANZA, que ocurre sola y una sola vez. La primera vez que Iris
-           abre esto sus estudios están aquí y la nube está vacía, así que
-           `faltanArriba` son todos y suben. A partir de ahí casi siempre está
-           vacío y esto no hace nada. */
-        if (r.faltanArriba.length) await guardaVarios(r.faltanArriba, r.correcciones);
-      } catch {
-        /* Sin red, o con las reglas sin publicar, se sigue trabajando con lo
-           del navegador. Lo que no se puede es dejar la consulta en blanco. */
-      }
-    })();
+    void traeYMuda().then((res) => {
+      if (!vivo) return;
+      setHist(res.estudios);
+      setEdits(res.correcciones);
+      rehidrata(res.estudios);
+      setEstadoEstudios(res.estado);
+    });
     return () => {
       vivo = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -686,27 +689,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
        borrar sí significa exactamente eso. Si no se quitara de arriba,
        reaparecería en el siguiente fundido, que es la forma más desquiciante
        de que algo esté roto. */
-    if (hayNube()) void borraDeLaNube(h.id).catch(() => {});
-  }, []);
+    if (hayNube()) void borraDeLaNube(h.id).then(alSubir, alFallar);
+  }, [alSubir, alFallar]);
 
   /* --- la copia de seguridad ---
    * Mientras no haya servidor, esto es lo único que hay entre el trabajo de
    * Iris y perderlo. Al traer un fichero se actualiza también el estado de
    * React, o el historial de la pantalla seguiría enseñando lo de antes. */
-  const guardaCopia = useCallback(() => descargaRespaldo(), []);
+  const guardaCopia = useCallback(() => descargaRespaldo(hist, edits), [hist, edits]);
 
   const traeCopia = useCallback((texto: string) => {
-    const res = importaRespaldo(texto);
+    const res = importaRespaldo(texto, hist, edits);
     if (res.ok) {
       setHist(res.estudios);
       setEdits(res.correcciones);
       /* Lo que entra por un fichero sube también. Si no, traer una copia en un
          ordenador dejaría esos estudios viviendo sólo ahí — justo el problema
          que esto venía a quitar. */
-      if (hayNube()) void guardaVarios(res.estudios, res.correcciones).catch(() => {});
+      if (hayNube()) void guardaVarios(res.estudios, res.correcciones).then(alSubir, alFallar);
     }
     return res;
-  }, []);
+  }, [hist, edits, alSubir, alFallar]);
 
   /*
    * LO QUE IRIS ESCRIBE ENCIMA DE UNA CARTA.
@@ -728,12 +731,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         guardaEdits(next);
         if (hayNube()) {
           const h = hist.find((x) => x.id === id);
-          if (h) void guardaUno({ ...h, tocado: new Date().toISOString() }, next[id]).catch(() => {});
+          if (h) void guardaUno({ ...h, tocado: new Date().toISOString() }, next[id]).then(alSubir, alFallar);
         }
         return next;
       });
     },
-    [id, hist]
+    [id, hist, alSubir, alFallar]
   );
   const txt = useCallback((bloqueId: string, def: string) => (id && edits[id] && edits[id][bloqueId] !== undefined ? edits[id][bloqueId] : def), [id, edits]);
   const restablecer = useCallback(() => {
@@ -747,11 +750,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         /* Se sube con las correcciones vacías, no se deja de subir: si no, el
            documento de arriba se quedaría con las de antes y volverían solas
            al abrir en otro ordenador. */
-        if (h) void guardaUno({ ...h, tocado: new Date().toISOString() }, {}).catch(() => {});
+        if (h) void guardaUno({ ...h, tocado: new Date().toISOString() }, {}).then(alSubir, alFallar);
       }
       return next;
     });
-  }, [id, hist]);
+  }, [id, hist, alSubir, alFallar]);
 
   const verNumero = useCallback((n: number) => {
     const F = fichaDe(n);
@@ -773,19 +776,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!a) return;
     const b = { nombre: p.nombre, ap1: p.ap1, ap2: p.ap2, apPadre2: p.apPadre2, apMadre2: p.apMadre2, dia: p.dia, mes: p.mes, anio: p.anio, genero: p.genero };
     const pid = idDePareja(a.id, b);
-    const previa = cargaParejas().find((x) => x.id === pid);
     const ahora = new Date().toISOString();
-    setPareja(
-      guardaPareja({
-        id: pid,
-        estudioA: a.id,
-        nombreA: a.nombre,
-        b,
-        nombreB: [p.nombre, p.ap1, p.ap2].filter(Boolean).join(" "),
-        ...(previa?.clienteIdB ? { clienteIdB: previa.clienteIdB } : {}),
-        creada: previa?.creada ?? ahora,
-        tocado: ahora,
-      })
+    /* Se busca primero la que ya hubiera (aquí o en la cuenta) para no perder
+       la ficha de la segunda persona ni la fecha en que se hizo. */
+    void buscaPareja(pid).then((previa) =>
+      setPareja(
+        guardaPareja({
+          id: pid,
+          estudioA: a.id,
+          nombreA: a.nombre,
+          b,
+          nombreB: [p.nombre, p.ap1, p.ap2].filter(Boolean).join(" "),
+          ...(previa?.clienteIdB ? { clienteIdB: previa.clienteIdB } : {}),
+          creada: previa?.creada ?? ahora,
+          tocado: ahora,
+        })
+      )
     );
   }, [p, r, anioUniversal, hist, id]);
 
@@ -832,6 +838,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setLateral,
       setSeccion,
       clienteAbierto,
+      estadoEstudios,
       vinculaEstudio,
       setParaCliente,
       setClienteAbierto,
@@ -873,7 +880,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       marca: MARCA,
       anioUniversal,
     }),
-    [view, setView, seccion, disciplina, base, parteFs, lateral, clienteAbierto, vinculaEstudio, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, pareja, abrePareja, vinculaParejaB, anioUniversal]
+    [view, setView, seccion, disciplina, base, parteFs, lateral, clienteAbierto, estadoEstudios, vinculaEstudio, focoFicha, facturaAbierta, recado, f, set, r, re, id, rehidratado, hist, calcular, abrir, borrar, edits, guardaCopia, traeCopia, txt, guardaEdit, restablecer, detalle, verNumero, verArcano, verTexto, cerrarDetalle, p, setP, pr, comp, comparar, pareja, abrePareja, vinculaParejaB, anioUniversal]
   );
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;

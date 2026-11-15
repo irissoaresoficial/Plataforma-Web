@@ -17,7 +17,7 @@ import { guardadoEnLaNube } from "@/lib/escuela";
  * está vivo, así que no puede mandar sobre ello.
  */
 export default function Copia() {
-  const { hist, guardaCopia, traeCopia } = useApp();
+  const { hist, guardaCopia, traeCopia, estadoEstudios } = useApp();
   const quieto = useReducedMotion();
   const entrada = useRef<HTMLInputElement>(null);
   const [aviso, setAviso] = useState<{ bien: boolean; texto: string } | null>(null);
@@ -88,10 +88,16 @@ export default function Copia() {
           un cartel que hay que acordarse de cambiar acabará mintiendo en una
           de las dos direcciones.
       */}
-      <p style={css("font-size:var(--t-mini);line-height:1.5;color:var(--text-4);margin:var(--s3) 0 0;")}>
-        {guardadoEnLaNube
-          ? "Los estudios se guardan solos y los tienes en cualquier ordenador donde entres. Esta copia es para llevártela aparte: sirve si algún día no hay internet, o si quieres el trabajo fuera de aquí."
-          : "Los estudios viven sólo en este navegador. Guarda una copia de vez en cuando y llévatela a otro sitio: si se borran los datos del navegador, esa copia es lo único que queda."}
+      <p style={css("font-size:var(--t-mini);line-height:1.5;margin:var(--s3) 0 0;" + (estadoEstudios === "pendiente" || estadoEstudios === "fallo" ? "color:var(--red);" : "color:var(--text-4);"))}>
+        {/* Con la cuenta, lo que dice sale de lo que ha contestado la base de
+            datos (`estadoEstudios`), no de que esté configurada. */}
+        {estadoEstudios === "pendiente"
+          ? "Algún estudio todavía no ha llegado a tu cuenta, porque no hay conexión. Se queda guardado en este ordenador solo hasta que suba, y lo vuelve a intentar al guardar o al volver a entrar."
+          : estadoEstudios === "fallo"
+            ? "Ahora mismo no se puede conectar con tu cuenta. Ves lo que había en este ordenador, y lo nuevo sube cuando vuelva la conexión."
+            : guardadoEnLaNube
+              ? "Los estudios se guardan en tu cuenta, no en este ordenador. Los tienes en cualquier sitio donde entres. Esta copia es solo si quieres llevarte un archivo aparte."
+              : "Los estudios viven sólo en este navegador. Guarda una copia de vez en cuando y llévatela a otro sitio: si se borran los datos del navegador, esa copia es lo único que queda."}
       </p>
 
       <AnimatePresence initial={false}>

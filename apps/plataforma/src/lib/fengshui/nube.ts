@@ -10,14 +10,13 @@
  * perderlo, plano incluido. Esto lo sube a Firestore, igual que se hizo con
  * los estudios de Kábala (`lib/estudios.ts`), y con las mismas reglas:
  *
- *   · El navegador sigue siendo la copia rápida: se pinta lo de aquí al
- *     momento y después se funde con lo de arriba.
+ *   · La cuenta es el único sitio donde se guardan. En el navegador sólo
+ *     queda lo que espera a subir (sin red), y se borra al confirmarse.
  *   · NUNCA SE BORRA AL FUNDIR. Lo que está aquí y no arriba, sube. Lo que
  *     está arriba y no aquí, baja. Borrar es un botón, y entonces se borra en
  *     los dos sitios.
  *   · Cada estudio que sube se apunta como subido, con la fecha de la versión
- *     que subió. Lo local no se toca hasta tener esa confirmación — y ni
- *     siquiera entonces se borra: se queda de copia.
+ *     que subió. Lo de aquí no se borra hasta tener esa confirmación.
  *
  * DOS COLECCIONES, Y POR QUÉ
  * ---------------------------------------------------------------------------
@@ -46,6 +45,38 @@ const PLANOS = "fengshui-planos";
 const LLAVE_SUBIDOS = "fengshui-subidos";
 /** Lo mismo para los planos: id → huella de la imagen que está arriba. */
 const LLAVE_PLANOS_SUBIDOS = "fengshui-planos-subidos";
+
+/**
+ * LO QUE AÚN NO HA SUBIDO. Gerson, 15 de noviembre de 2026: los estudios se
+ * guardan en la base de datos, no en el ordenador. Con la cuenta conectada,
+ * en el navegador sólo queda un estudio mientras espera a subir —sin red, por
+ * ejemplo— y se borra de aquí en cuanto Firestore lo confirma.
+ */
+const LLAVE_PENDIENTES = "fengshui-pendientes";
+
+export function pendientesFs(): EstudioFs[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(LLAVE_PENDIENTES) || "[]");
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+function escribePendientes(xs: EstudioFs[]) {
+  try {
+    if (xs.length) localStorage.setItem(LLAVE_PENDIENTES, JSON.stringify(xs));
+    else localStorage.removeItem(LLAVE_PENDIENTES);
+  } catch {
+    /* sin sitio: se intenta subir igual */
+  }
+}
+function apuntaPendiente(e: EstudioFs) {
+  escribePendientes([e, ...pendientesFs().filter((x) => x.id !== e.id)]);
+}
+function quitaPendiente(e: EstudioFs) {
+  /* Sólo si lo apuntado es la versión que acaba de subir. */
+  escribePendientes(pendientesFs().filter((x) => !(x.id === e.id && x.actualizado === e.actualizado)));
+}
 
 /** Tope de lo que se guarda de un plano. Firestore admite 1 MB por documento. */
 const TOPE_PLANO = 900_000;
@@ -134,6 +165,7 @@ async function subeUno(e: EstudioFs): Promise<void> {
   if (!b) throw new Error("La plataforma no está conectada a Firebase.");
   await setDoc(doc(b, COLECCION, e.id), limpio(e));
   apunta(LLAVE_SUBIDOS, e.id, e.actualizado);
+  quitaPendiente(e);
 }
 
 /** ¿Lo que hay aquí es exactamente lo que hay arriba? */
@@ -156,6 +188,9 @@ let reloj: ReturnType<typeof setTimeout> | null = null;
 
 export function programaSubida(lista: EstudioFs[]) {
   if (!hayNubeFs()) return;
+  /* Lo que no está arriba se apunta como pendiente ANTES de esperar: si se
+     cierra la pestaña en ese segundo, no se pierde. */
+  for (const e of lista) if (!estaSubido(e)) apuntaPendiente(e);
   pendiente = lista;
   if (reloj) clearTimeout(reloj);
   pon("subiendo");
@@ -186,6 +221,7 @@ export async function borraEstudioNube(id: string): Promise<void> {
   const b = nube();
   if (!b) return;
   try {
+    escribePendientes(pendientesFs().filter((x) => x.id !== id));
     await Promise.all([deleteDoc(doc(b, COLECCION, id)), deleteDoc(doc(b, PLANOS, id))]);
     apunta(LLAVE_SUBIDOS, id, null);
     apunta(LLAVE_PLANOS_SUBIDOS, id, null);
