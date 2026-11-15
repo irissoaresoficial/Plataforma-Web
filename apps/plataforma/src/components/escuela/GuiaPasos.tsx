@@ -77,6 +77,16 @@ function visible(el: Element): Caja | null {
   return { x: r.left, y: r.top, w: r.width, h: r.height };
 }
 
+/* Dos cajas iguales son la misma caja. Sin esto, cada vuelta del reloj de
+   abajo guardaba un objeto nuevo con los mismos números y React repintaba la
+   guía entera —con sus animaciones— tres veces por segundo y en cada píxel de
+   scroll, aunque no se hubiera movido nada. */
+function mismaCaja(a: Caja | null, b: Caja | null): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h;
+}
+
 /** El primer sitio del paso que se ve ahora mismo, o null. */
 function buscaSitio(k: string): Caja | null {
   for (const g of DONDE[k] ?? []) {
@@ -183,21 +193,38 @@ export default function GuiaPasos() {
         /* sin almacenamiento: no se espera a nada */
       }
       setListo(bienvenidaVista);
-      setSitio(buscaSitio(siguiente.k));
+      const nuevo = buscaSitio(siguiente.k);
+      setSitio((viejo) => (mismaCaja(viejo, nuevo) ? viejo : nuevo));
       const a = document.querySelector<HTMLElement>("[data-guia-ancla]");
       const r = a ? a.getBoundingClientRect() : null;
       const vale = a && r && r.width > 30 && a.offsetParent !== null;
       setAncla(vale ? a : null);
-      setCajaAncla(vale && r ? { x: r.left, y: r.top, w: r.width, h: r.height } : null);
+      const caja = vale && r ? { x: r.left, y: r.top, w: r.width, h: r.height } : null;
+      setCajaAncla((vieja) => (mismaCaja(vieja, caja) ? vieja : caja));
+    };
+    /* El scroll dispara decenas de avisos por segundo y medir la página en
+       cada uno la frena. Se mide como mucho una vez por fotograma. Y con la
+       pestaña escondida el reloj no mide: no hay nadie mirando la nube. */
+    let pendiente = 0;
+    const pide = () => {
+      if (pendiente) return;
+      pendiente = requestAnimationFrame(() => {
+        pendiente = 0;
+        mira();
+      });
+    };
+    const late = () => {
+      if (document.visibilityState === "visible") mira();
     };
     mira();
-    const t = window.setInterval(mira, 350);
-    window.addEventListener("resize", mira);
-    window.addEventListener("scroll", mira, true);
+    const t = window.setInterval(late, 350);
+    window.addEventListener("resize", pide);
+    window.addEventListener("scroll", pide, true);
     return () => {
       window.clearInterval(t);
-      window.removeEventListener("resize", mira);
-      window.removeEventListener("scroll", mira, true);
+      cancelAnimationFrame(pendiente);
+      window.removeEventListener("resize", pide);
+      window.removeEventListener("scroll", pide, true);
     };
   }, [siguiente, uid]);
 

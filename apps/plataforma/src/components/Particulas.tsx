@@ -111,6 +111,12 @@ export default function Particulas({ cantidad = 26, color }: { cantidad?: number
       lienzo.width = Math.round(ancho * dpr);
       lienzo.height = Math.round(alto * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      /* Cambiar el tamaño de un lienzo lo borra; si está quieto no hay bucle
+         que lo vuelva a pintar, así que se pinta aquí. */
+      if (quieto && cuadro) {
+        cancelAnimationFrame(cuadro);
+        cuadro = requestAnimationFrame(pintar);
+      }
     };
     medir();
 
@@ -171,7 +177,10 @@ export default function Particulas({ cantidad = 26, color }: { cantidad?: number
     const ENTRADA = 1.4;
 
     const pintar = (ahora: number) => {
-      cuadro = requestAnimationFrame(pintar);
+      /* Con el movimiento reducido el polvo está quieto: basta con pintarlo
+         una vez (y otra si cambia el tamaño). Antes se repintaba igual sesenta
+         veces por segundo, idéntico, para nadie. */
+      if (!quieto) cuadro = requestAnimationFrame(pintar);
       const dt = Math.min((ahora - previo) / 1000, 0.05);
       previo = ahora;
       if (!visible || ancho === 0) return;
