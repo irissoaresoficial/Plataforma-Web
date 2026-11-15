@@ -29,7 +29,7 @@
 
 import { subeArriba } from "@/lib/arriba";
 import Rescate from "../despacho/Rescate";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
 import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
@@ -56,8 +56,9 @@ import {
   type DatosFiscales,
   type Factura,
 } from "@/lib/despacho";
-import { AvisoNavegador, Cabecera, Estado, Vacio, useLlevaAlDetalle } from "../despacho/Piezas";
+import { AvisoNavegador, Cabecera, useEstrecho, useLlevaAlDetalle } from "../despacho/Piezas";
 import HojaFactura from "../despacho/HojaFactura";
+import Mesa, { VerGrande } from "../despacho/Mesa";
 import Control from "../despacho/Control";
 import Resumen from "../despacho/Resumen";
 import Plantillas, { GuardarPlantilla, usePlantillas } from "../despacho/Plantillas";
@@ -125,6 +126,47 @@ export default function FacturasScreen() {
   /** Las plantillas de factura: las de la casa y las que ha guardado Iris. */
   const { propias, setPropias } = usePlantillas();
   const [elegida, setElegida] = useState<string | null>(null);
+
+  /*
+   * LA VENTANA PARTIDA. Por debajo de 900 px no cabe: va el formulario y el
+   * folio se abre en grande. Por encima, cada mitad tiene su propio
+   * desplazamiento, así que el editor mide justo lo que queda de ventana —si
+   * midiera más, se desplazaría la ventana entera y el folio se iría con ella.
+   */
+  const estrecho = useEstrecho(900);
+  const [grande, setGrande] = useState(false);
+  const editor = useRef<HTMLDivElement>(null);
+  const [altoEditor, setAltoEditor] = useState(640);
+  useEffect(() => {
+    if (apartado !== "facturas" || estrecho) return;
+    const mide = () => {
+      const el = editor.current;
+      if (!el) return;
+      const arriba = el.getBoundingClientRect().top;
+      const v = el.closest<HTMLElement>("[data-ventana]");
+      if (v) {
+        /* Lo que queda de ventana: su alto, menos lo que hay encima del
+           editor, menos el relleno de abajo de la ventana y el de la pantalla. */
+        const dentro = arriba - v.getBoundingClientRect().top + v.scrollTop;
+        const relleno = (x: Element | null) => (x ? parseFloat(getComputedStyle(x).paddingBottom) || 0 : 0);
+        setAltoEditor(Math.max(460, Math.floor(v.clientHeight - dentro - relleno(v) - relleno(el.closest("main")) - 2)));
+      } else {
+        setAltoEditor(Math.max(460, Math.floor(window.innerHeight - arriba - 24)));
+      }
+    };
+    mide();
+    window.addEventListener("resize", mide);
+    return () => window.removeEventListener("resize", mide);
+  }, [apartado, estrecho, cargando]);
+
+  /** Pulsar un texto del folio lleva a su campo del formulario. */
+  const vaAlCampo = (campo: string) => {
+    const el = document.querySelector<HTMLElement>(`[data-campo-input="${campo}"]`);
+    if (!el) return;
+    const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ block: "center", behavior: quieto ? "auto" : "smooth" });
+    el.focus({ preventScroll: true });
+  };
 
 
   /*
@@ -373,7 +415,13 @@ export default function FacturasScreen() {
   );
 
   return (
-    <main style={css("max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) var(--s8);")}>
+    <main
+      style={css(
+        /* En el editor partido el relleno de abajo es corto: cada mitad ya se
+           desplaza por su cuenta, y un margen grande debajo sería un hueco. */
+        "max-width:var(--ancho);margin:0 auto;padding:var(--s6) var(--gutter) " + (apartado === "facturas" && !estrecho ? "var(--s4)" : "var(--s8)") + ";"
+      )}
+    >
       <div data-chrome="1">
         <Cabecera
           titulo="Facturas"
@@ -539,399 +587,410 @@ export default function FacturasScreen() {
         )}
       </div>
 
-      {/* `data-folio` (antes `data-hoja`, que ahora es el nombre de las hojas
-       * laterales y les pone 580 px de ancho) lo lee la hoja de impresión: al imprimir, la rejilla de dos
-       * columnas se deshace para que la factura salga a todo el folio. */}
+      {/*
+          LA PESTAÑA FACTURAS, COMO UN EDITOR (15 de noviembre de 2026).
+
+          Ger: «para que se vea la factura tiene que verse arriba, o haz que
+          se subdivida la ventana y que se pueda ver, editar y ampliar, tipo
+          Word». Antes: una tarjeta con la lista que, vacía, dejaba media
+          ventana en blanco, y la factura debajo del formulario, cortada.
+
+          Ahora: las facturas en una tira arriba, y debajo la ventana partida
+          —el formulario estrecho a la izquierda, el folio entero a la
+          derecha—, cada mitad con su propio desplazamiento. En el móvil no
+          cabe partida: va el formulario y «Ver la factura» abre el folio a
+          pantalla completa.
+
+          `data-folio` lo lee la hoja de impresión: al imprimir, la rejilla se
+          deshace y sólo queda el papel, a escala 1.
+      */}
       {apartado === "facturas" && (
-      <div data-dos="" data-folio="">
-        {/* ------------------------------------------------------- la lista */}
-        {/* El aviso va FUERA de la tarjeta de la lista, no dentro: dentro de
-         * una tarjeta no va otra tarjeta — lo que separa es una línea. */}
-        <div data-chrome="1" data-anclado="" style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;position:sticky;top:var(--pegado, 79px);")}>
-          <section
-            style={css(TARJETA + PAD + "max-height:calc(100vh - 220px);overflow-y:auto;min-width:0;")}
-          >
-            <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s3);")}>
+        <>
+          {/* ------------------------------------------------ la tira */}
+          <div data-chrome="1" style={css(TARJETA + "padding:var(--s2) var(--s2) var(--s2) var(--s4);display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--gap);min-width:0;")}>
+            <span style={css(rotulo() + "flex:none;")}>
               {cargando ? "Un momento…" : lista.length === 1 ? "1 factura" : `${lista.length} facturas`}
-            </div>
-
-            {!cargando && lista.length === 0 && <Vacio>Todavía no has hecho ninguna. Empieza por la de al lado.</Vacio>}
-
-            <div style={css("display:flex;flex-direction:column;")}>
-              {lista.map((f, i) => {
+            </span>
+            <div style={css("flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding:2px;")}>
+              {!cargando && lista.length === 0 && !estrecho && <span style={css(NOTA + "align-self:center;")}>Todavía ninguna. La primera ya está empezada aquí abajo.</span>}
+              {lista.map((f) => {
                 const on = enPantalla?.id === f.id;
-                const t = totales(f);
                 return (
                   <button
                     key={f.id}
                     onClick={() => abrir(f)}
+                    aria-pressed={on}
                     style={css(
-                      /* La línea va siempre puesta y cambia de color; ver la nota
-                         en PersonasScreen sobre por qué no se quita y se pone. */
-                      "display:flex;align-items:center;gap:var(--s3);width:100%;text-align:left;padding:var(--s3) var(--s2);border:none;cursor:pointer;border-radius:var(--r-sm);border-top:1px solid " +
-                        (i ? "var(--border)" : "transparent") +
-                        ";" +
-                        "background:" +
-                        (on ? "var(--accion-suave)" : "transparent") +
-                        ";color:" +
-                        (on ? "var(--accion)" : "var(--text)") +
-                        ";"
+                      "flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:var(--r-pill);cursor:pointer;font:inherit;font-size:var(--t-mini);white-space:nowrap;" +
+                        (on ? "background:var(--accion-suave);border:1px solid var(--accion-borde);color:var(--accion);" : "background:transparent;border:1px solid var(--border);color:var(--text-2);")
                     )}
                   >
-                    {/* En un borrador el renglón de arriba era «Borrador» y la
-                        pastilla de la derecha, otra vez «Borrador»: la misma
-                        palabra dos veces en la misma fila y ni rastro de a
-                        quién era. El estado lo dice la pastilla, que es su
-                        oficio; arriba va lo que identifica la factura — el
-                        número cuando lo tiene y, mientras no, la persona. */}
-                    <span style={css("flex:1;min-width:0;")}>
-                      <span data-cifras="" style={css("display:block;font-size:var(--t-body);font-weight:590;overflow-wrap:anywhere;")}>
-                        {f.estado === "borrador" ? f.cliente.nombre || "Sin nombre" : numeroDe(f)}
-                      </span>
-                      <span style={css(NOTA + "display:block;margin-top:2px;overflow-wrap:anywhere;")}>
-                        {f.estado === "borrador" ? euros(t.total) : `${f.cliente.nombre || "Sin nombre"} · ${euros(t.total)}`}
-                      </span>
-                    </span>
-                    <Estado
-                      texto={f.estado === "borrador" ? "Borrador" : f.estado === "anulada" ? "Anulada" : "Emitida"}
-                      color={COLOR_ESTADO[f.estado]}
-                    />
+                    <span style={css("width:7px;height:7px;border-radius:50%;background:" + COLOR_ESTADO[f.estado] + ";")} />
+                    <span data-cifras="" style={css("font-weight:500;")}>{f.estado === "borrador" ? "Borrador" : numeroDe(f)}</span>
+                    <span style={css("max-width:14ch;overflow:hidden;text-overflow:ellipsis;")}>{f.cliente.nombre || "Sin nombre"}</span>
+                    <span data-cifras="">{euros(totales(f).total)}</span>
                   </button>
                 );
               })}
             </div>
-
-            <div style={css(RAYA + "margin-top:var(--s4);padding-top:var(--s4);")}>
-              <button onClick={nueva} style={css(BOTON_NORMAL + "width:100%;")}>
-                Nueva factura
+            {/* En el móvil el folio no cabe al lado: se abre desde aquí arriba,
+                que es donde se mira antes de bajar por el formulario. */}
+            {estrecho && enPantalla && (
+              <button onClick={() => setGrande(true)} style={css(BOTON_PLANO + "flex:none;")}>
+                Ver
               </button>
-            </div>
-          </section>
+            )}
+            <button onClick={nueva} style={css(BOTON_NORMAL + "flex:none;")}>
+              {estrecho ? "Nueva" : "Nueva factura"}
+            </button>
+          </div>
 
-          {/* EN TONO DE NOTA, NO DE ALARMA — Y ES UN CAMBIO A PROPÓSITO.
-              Iba en tarjeta con la raya roja al canto por ser las facturas lo
-              que menos se puede perder, y el argumento sigue siendo verdad. Lo
-              que no funcionaba era el resultado: en esta pantalla convivían dos
-              bloques rojos a la vez —éste y el de los datos fiscales— más tres
-              pastillas rojas, y con la pantalla entera en rojo ninguno de los
-              dos avisaba de nada. Un solo rojo por pantalla, y aquí ese rojo es
-              el que se puede arreglar pulsando: el de arriba. El texto es el
-              mismo, dicho con la voz con la que se dice en las otras tres. */}
-          <AvisoNavegador que="Las facturas" />
-        </div>
-
-        {/* ------------------------------------------- el formulario o la hoja */}
-        <div ref={alDetalle} style={css("display:flex;flex-direction:column;gap:var(--gap);min-width:0;scroll-margin-top:var(--pegado, 79px);")}>
+          {/* ------------------------------------------------ la ventana partida */}
+          <div
+            data-folio=""
+            data-editor=""
+            ref={editor}
+            style={css(
+              estrecho
+                ? "display:flex;flex-direction:column;gap:var(--gap);min-width:0;"
+                : `display:grid;grid-template-columns:minmax(330px,400px) minmax(0,1fr);gap:var(--gap);min-width:0;height:${altoEditor}px;`
+            )}
+          >
+            <div
+              ref={alDetalle}
+              data-chrome="1"
+              style={css(
+                "display:flex;flex-direction:column;gap:var(--gap);min-width:0;" +
+                  (estrecho ? "" : "min-height:0;overflow-y:auto;padding:2px 6px 2px 2px;scrollbar-width:thin;")
+              )}
+            >
           {abierta ? (
-            /* --------------------------------------------- una ya emitida */
-            <section data-chrome="1" style={css(TARJETA + PAD)}>
-              <h2 style={css(TITULO + "margin:0 0 var(--s2);")}>Factura {numeroDe(abierta)}</h2>
-              <p style={css(APOYO + "margin:0 0 var(--s4);")}>
-                {abierta.estado === "anulada"
-                  ? `Anulada${abierta.motivoAnulacion ? ": " + abierta.motivoAnulacion : "."} Su número sigue ocupado, que es lo que mantiene la serie seguida.`
-                  : `Emitida el ${fechaDeFactura(abierta.fecha)}. Una factura emitida no se cambia: si está mal, anúlala y haz otra.`}
-              </p>
-
-              <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;")}>
-                {/* La única mancha de granate: descargarla es a lo que se
-                    viene aquí una vez emitida. */}
-                <button onClick={exporta} style={css(botonPrincipal())}>
-                  Descargar la factura
-                </button>
-                {abierta.estado === "emitida" && !anulando && (
-                  <button onClick={() => setAnulando(true)} style={css(BOTON_PLANO + "color:var(--red);")}>
-                    Anular
-                  </button>
-                )}
-                {abierta.clienteId && (
-                  <button
-                    onClick={() => {
-                      setClienteAbierto(abierta.clienteId);
-                      setView("personas");
-                    }}
-                    style={css(BOTON_PLANO + "margin-left:auto;")}
-                  >
-                    Ver su ficha
-                  </button>
-                )}
-              </div>
-
-              {anulando && (
-                <div style={css(RAYA + "margin-top:var(--s4);padding-top:var(--s4);display:flex;flex-direction:column;gap:var(--s2);")}>
-                  <span style={css(rotulo("var(--red)"))}>¿Por qué se anula?</span>
-                  <p style={css(NOTA + "margin:0 0 var(--s2);line-height:1.5;")}>
-                    Se queda escrito en la propia factura. No se borra: su número no puede quedar vacío.
-                  </p>
-                  <input
-                    value={motivo}
-                    onChange={(e) => setMotivo(e.target.value)}
-                    placeholder="Error en el importe · la sesión no llegó a darse"
-                    style={css(entrada)}
-                  />
-                  <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;")}>
-                    <button onClick={() => void confirmarAnular()} style={css(BOTON_NORMAL)}>
-                      Anular la factura
-                    </button>
-                    <button onClick={() => setAnulando(false)} style={css(BOTON_PLANO)}>
-                      Dejarlo
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <p style={css(NOTA + "margin:var(--s4) 0 0;line-height:1.5;")}>{ayuda}</p>
-              {sinDialogo && (
-                <p role="alert" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--red);")}>
-                  {AVISO_SIN_DIALOGO}
-                </p>
-              )}
-              {trasPulsar && (
-                <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-3);")}>
-                  {trasPulsar}
-                </p>
-              )}
-              {guiaApple && <GuiaApple alCerrar={cierraGuia} enApp={enApp} aSafari={aSafari} />}
-              {mensaje && (
-                <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-2);")}>
-                  {mensaje}
-                </p>
-              )}
-            </section>
-          ) : (
-            /* ------------------------------------------------ el borrador */
-            borrador && (
+              /* --------------------------------------------- una ya emitida */
               <section data-chrome="1" style={css(TARJETA + PAD)}>
-                {/* Sobraba debajo: «Mientras sea un borrador puedes cambiar lo
-                    que quieras y tirarlo si no vale. El número se le pone al
-                    emitirla». Los tres botones del pie —emitir, guardar el
-                    borrador, tirarlo— ya dicen las tres cosas, y la hoja de
-                    abajo lleva su propia banda de BORRADOR. Contarlo además en
-                    un párrafo es explicar lo que ya se está viendo. */}
-                <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s4);")}>Nueva factura</div>
-
-                <div style={css("display:flex;flex-direction:column;gap:var(--s4);")}>
-                  {/* -------------------------------------------- qué: plantillas */}
-                  <Plantillas propias={propias} setPropias={setPropias} elegida={elegida} onElige={aplicaPlantilla} />
-
-                  {/* -------------------------------------------- a quién */}
-                  <div style={css(RAYA + "padding-top:var(--s4);")} />
-                  <div style={css("display:flex;flex-direction:column;gap:var(--s3);")}>
-                    {campo(
-                      "¿A quién le facturas?",
-                      <>
-                        <input
-                          value={borrador.cliente.nombre}
-                          onChange={(e) => cambiaCliente(e.target.value)}
-                          list="es33-clientes-factura"
-                          placeholder="Nombre o razón social"
-                          style={css(entrada)}
-                        />
-                        <datalist id="es33-clientes-factura">
-                          {gente.map((g) => (
-                            <option key={g.id} value={g.nombre} />
-                          ))}
-                        </datalist>
-                      </>
-                    )}
-                    <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:var(--s3);")}>
-                      {campo(
-                        "Su NIF",
-                        <input
-                          value={borrador.cliente.nif}
-                          onChange={(e) => cambia({ cliente: { ...borrador.cliente, nif: e.target.value } })}
-                          placeholder="Si hace falta"
-                          style={css(entrada)}
-                        />
-                      )}
-                      {campo(
-                        "Su domicilio",
-                        <input
-                          value={borrador.cliente.direccion}
-                          onChange={(e) => cambia({ cliente: { ...borrador.cliente, direccion: e.target.value } })}
-                          placeholder="Si hace falta"
-                          style={css(entrada)}
-                        />
-                      )}
-                    </div>
-                    {/* Sobraba: «Si no pones NIF ni domicilio, la factura sale
-                        sin ellos…». Los dos campos ya llevan «Si hace falta»
-                        escrito dentro, que dice lo mismo en tres palabras y en
-                        el sitio donde se está mirando. */}
-                  </div>
-
-                  {/* --------------------------------------------- qué se factura */}
-                  <div style={css(RAYA + "padding-top:var(--s4);display:flex;flex-direction:column;gap:var(--s3);")}>
-                    <span style={css(rotulo())}>Lo que sale en la factura</span>
-
-                    {/* Las tres casillas de cada línea no llevan rótulo encima
-                     * —serían tres rótulos por línea y la tarjeta se llenaría
-                     * de letra pequeña—. Se decía en un renglón aparte: «En
-                     * cada línea: qué es, cuántas veces y a cuánto sale la
-                     * unidad sin IVA». Ahora lo dice cada casilla desde dentro,
-                     * que es donde se mira al escribir, y el renglón se ha ido.
-                     * Los `aria-label` ya estaban y siguen: quien no ve el
-                     * hueco escrito oye el nombre entero del campo. */}
-                    {borrador.lineas.map((l, i) => (
-                      <div key={i} data-linea-factura="" style={css("display:grid;grid-template-columns:minmax(0,1fr) 74px 96px auto;gap:var(--s2);align-items:center;")}>
-                        <input
-                          value={l.concepto}
-                          onChange={(e) =>
-                            cambia({ lineas: borrador.lineas.map((x, j) => (j === i ? { ...x, concepto: e.target.value } : x)) })
-                          }
-                          placeholder="Concepto"
-                          aria-label="Concepto"
-                          style={css(entrada)}
-                        />
-                        <input
-                          value={l.cantidad}
-                          inputMode="numeric"
-                          onChange={(e) =>
-                            cambia({ lineas: borrador.lineas.map((x, j) => (j === i ? { ...x, cantidad: Number(e.target.value.replace(/\D/g, "")) || 0 } : x)) })
-                          }
-                          placeholder="Cant."
-                          aria-label="Cantidad"
-                          style={css(entrada + "text-align:right;")}
-                        />
-                        <input
-                          value={l.precio}
-                          inputMode="decimal"
-                          onChange={(e) =>
-                            cambia({ lineas: borrador.lineas.map((x, j) => (j === i ? { ...x, precio: Number(e.target.value.replace(",", ".").replace(/[^\d.]/g, "")) || 0 } : x)) })
-                          }
-                          placeholder="€ sin IVA"
-                          aria-label="Precio sin IVA"
-                          style={css(entrada + "text-align:right;")}
-                        />
-                        <button
-                          onClick={() => cambia({ lineas: borrador.lineas.filter((_, j) => j !== i) })}
-                          disabled={borrador.lineas.length === 1}
-                          title="Quitar esta línea"
-                          aria-label="Quitar esta línea"
-                          style={css(
-                            "flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--border-strong);background:none;cursor:pointer;font-size:var(--t-body);line-height:1;color:" +
-                              (borrador.lineas.length === 1 ? "var(--text-4)" : "var(--text-3)") +
-                              ";"
-                          )}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-
-                    <button
-                      onClick={() => cambia({ lineas: [...borrador.lineas, { concepto: "", cantidad: 1, precio: 0 }] })}
-                      style={css(BOTON_PLANO + "align-self:flex-start;")}
-                    >
-                      Añadir otra línea
+                <h2 style={css(TITULO + "margin:0 0 var(--s2);")}>Factura {numeroDe(abierta)}</h2>
+                <p style={css(APOYO + "margin:0 0 var(--s4);")}>
+                  {abierta.estado === "anulada"
+                    ? `Anulada${abierta.motivoAnulacion ? ": " + abierta.motivoAnulacion : "."} Su número sigue ocupado, que es lo que mantiene la serie seguida.`
+                    : `Emitida el ${fechaDeFactura(abierta.fecha)}. Una factura emitida no se cambia: si está mal, anúlala y haz otra.`}
+                </p>
+  
+                <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;")}>
+                  {/* La única mancha de granate: descargarla es a lo que se
+                      viene aquí una vez emitida. */}
+                  <button onClick={exporta} style={css(botonPrincipal())}>
+                    Descargar la factura
+                  </button>
+                  {abierta.estado === "emitida" && !anulando && (
+                    <button onClick={() => setAnulando(true)} style={css(BOTON_PLANO + "color:var(--red);")}>
+                      Anular
                     </button>
-                  </div>
-
-                  {/* ------------------------------------------ fecha, IVA y pie */}
-                  <div style={css(RAYA + "padding-top:var(--s4);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:var(--s3);")}>
-                    {campo("Fecha", <input type="date" value={borrador.fecha} onChange={(e) => cambia({ fecha: e.target.value })} style={css(entrada)} />)}
-                    {campo(
-                      "IVA (%)",
-                      <input
-                        value={borrador.iva}
-                        inputMode="numeric"
-                        onChange={(e) => cambiaIva(Number(e.target.value.replace(/\D/g, "")) || 0)}
-                        style={css(entrada + "text-align:right;")}
-                      />
-                    )}
-                  </div>
-                  {/* Sobraba: «El 21 % es el tipo general. Cámbialo si a lo que
-                      facturas le corresponde otro». El campo se llama «IVA (%)»
-                      y viene con 21 puesto: la frase repetía las dos cosas que
-                      ya se ven. */}
-
-                  {campo(
-                    "Al pie de la factura (si quieres)",
-                    <textarea
-                      value={borrador.notas}
-                      onChange={(e) => cambia({ notas: e.target.value })}
-                      rows={2}
-                      placeholder="Forma de pago, número de cuenta…"
-                      style={css(entrada + "resize:vertical;line-height:1.5;")}
-                    />
                   )}
-                </div>
-
-                <div style={css(RAYA + "margin-top:var(--s5);padding-top:var(--s4);display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;")}>
-                  {/* La única mancha de granate de la pantalla. Apagada
-                      mientras falten los datos fiscales: se ve que existe y que
-                      hoy no se puede pulsar, que es más honesto que esconderla. */}
-                  <button
-                    onClick={() => void emitir()}
-                    disabled={!completo}
-                    title={completo ? undefined : "Faltan tus datos fiscales: " + huecos.join(", ")}
-                    style={css(botonPrincipal(completo))}
-                  >
-                    Emitir la factura
-                  </button>
-                  <button onClick={() => void guardarBorrador()} style={css(BOTON_NORMAL)}>
-                    Guardar el borrador
-                  </button>
-                  <GuardarPlantilla
-                    lineas={borrador.lineas}
-                    iva={borrador.iva}
-                    onGuardada={(l, nombre) => {
-                      setPropias(l);
-                      setMensaje(`Plantilla «${nombre}» guardada. La tienes arriba, con las demás.`);
-                    }}
-                  />
-                  <button onClick={() => void tirarBorrador()} style={css(BOTON_PLANO + "margin-left:auto;color:var(--red);")}>
-                    Tirar el borrador
-                  </button>
-                </div>
-
-                {/* UN BOTÓN APAGADO TIENE QUE DECIR POR QUÉ, Y AQUÍ SE PUEDE
-                    ARREGLAR SIN MOVERSE. Antes esta línea sólo explicaba; el
-                    remedio estaba en un archivo del código. Ahora lleva al
-                    formulario de arriba y lo abre. */}
-                {sabemosDelEmisor && !completo && (
-                  <p style={css(NOTA + "margin:var(--s3) 0 0;line-height:1.5;")}>
-                    {/* Los huecos van con su nombre tal cual —«NIF», no «nif»—:
-                        pasarlos a minúscula para que encajaran en la frase
-                        dejaba las siglas escritas mal en un texto sobre la ley. */}
-                    <span style={css("color:var(--red);")}>
-                      En España no hay factura sin {huecos.length === 3 ? "tus datos fiscales" : huecos.join(" ni ")}.
-                    </span>{" "}
-                    El borrador sí se guarda.{" "}
+                  {abierta.clienteId && (
                     <button
                       onClick={() => {
-                        setAbriendoDatos(true);
-                        /* El desplazamiento suave se apaga con el resto del
-                           movimiento: quien pide menos animación no quiere que
-                           la página se le mueva sola durante medio segundo. */
-                        const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-                        subeArriba(quieto);
+                        setClienteAbierto(abierta.clienteId);
+                        setView("personas");
                       }}
-                      style={css(
-                        "background:none;border:none;padding:0;cursor:pointer;font:inherit;color:var(--accion);font-weight:590;text-decoration:underline;"
-                      )}
+                      style={css(BOTON_PLANO + "margin-left:auto;")}
                     >
-                      Ponlos ahora
+                      Ver su ficha
                     </button>
-                    .
+                  )}
+                </div>
+  
+                {anulando && (
+                  <div style={css(RAYA + "margin-top:var(--s4);padding-top:var(--s4);display:flex;flex-direction:column;gap:var(--s2);")}>
+                    <span style={css(rotulo("var(--red)"))}>¿Por qué se anula?</span>
+                    <p style={css(NOTA + "margin:0 0 var(--s2);line-height:1.5;")}>
+                      Se queda escrito en la propia factura. No se borra: su número no puede quedar vacío.
+                    </p>
+                    <input
+                      value={motivo}
+                      onChange={(e) => setMotivo(e.target.value)}
+                      placeholder="Error en el importe · la sesión no llegó a darse"
+                      style={css(entrada)}
+                    />
+                    <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;")}>
+                      <button onClick={() => void confirmarAnular()} style={css(BOTON_NORMAL)}>
+                        Anular la factura
+                      </button>
+                      <button onClick={() => setAnulando(false)} style={css(BOTON_PLANO)}>
+                        Dejarlo
+                      </button>
+                    </div>
+                  </div>
+                )}
+  
+                <p style={css(NOTA + "margin:var(--s4) 0 0;line-height:1.5;")}>{ayuda}</p>
+                {sinDialogo && (
+                  <p role="alert" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--red);")}>
+                    {AVISO_SIN_DIALOGO}
                   </p>
                 )}
-
+                {trasPulsar && (
+                  <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-3);")}>
+                    {trasPulsar}
+                  </p>
+                )}
+                {guiaApple && <GuiaApple alCerrar={cierraGuia} enApp={enApp} aSafari={aSafari} />}
                 {mensaje && (
                   <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-2);")}>
                     {mensaje}
                   </p>
                 )}
               </section>
-            )
-          )}
+            ) : (
+              /* ------------------------------------------------ el borrador */
+              borrador && (
+                <section data-chrome="1" style={css(TARJETA + PAD)}>
+                  {/* Sobraba debajo: «Mientras sea un borrador puedes cambiar lo
+                      que quieras y tirarlo si no vale. El número se le pone al
+                      emitirla». Los tres botones del pie —emitir, guardar el
+                      borrador, tirarlo— ya dicen las tres cosas, y la hoja de
+                      abajo lleva su propia banda de BORRADOR. Contarlo además en
+                      un párrafo es explicar lo que ya se está viendo. */}
+                  <div style={css(rotulo("var(--gold)") + "margin-bottom:var(--s4);")}>Nueva factura</div>
+  
+                  <div style={css("display:flex;flex-direction:column;gap:var(--s4);")}>
+                    {/* -------------------------------------------- qué: plantillas */}
+                    <Plantillas propias={propias} setPropias={setPropias} elegida={elegida} onElige={aplicaPlantilla} />
+  
+                    {/* -------------------------------------------- a quién */}
+                    <div style={css(RAYA + "padding-top:var(--s4);")} />
+                    <div style={css("display:flex;flex-direction:column;gap:var(--s3);")}>
+                      {campo(
+                        "¿A quién le facturas?",
+                        <>
+                          <input
+                            value={borrador.cliente.nombre}
+                            onChange={(e) => cambiaCliente(e.target.value)}
+                            list="es33-clientes-factura"
+                            data-campo-input="cliente"
+                            placeholder="Nombre o razón social"
+                            style={css(entrada)}
+                          />
+                          <datalist id="es33-clientes-factura">
+                            {gente.map((g) => (
+                              <option key={g.id} value={g.nombre} />
+                            ))}
+                          </datalist>
+                        </>
+                      )}
+                      <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:var(--s3);")}>
+                        {campo(
+                          "Su NIF",
+                          <input
+                            value={borrador.cliente.nif}
+                            onChange={(e) => cambia({ cliente: { ...borrador.cliente, nif: e.target.value } })}
+                            placeholder="Si hace falta"
+                            style={css(entrada)}
+                          />
+                        )}
+                        {campo(
+                          "Su domicilio",
+                          <input
+                            value={borrador.cliente.direccion}
+                            onChange={(e) => cambia({ cliente: { ...borrador.cliente, direccion: e.target.value } })}
+                            placeholder="Si hace falta"
+                            style={css(entrada)}
+                          />
+                        )}
+                      </div>
+                      {/* Sobraba: «Si no pones NIF ni domicilio, la factura sale
+                          sin ellos…». Los dos campos ya llevan «Si hace falta»
+                          escrito dentro, que dice lo mismo en tres palabras y en
+                          el sitio donde se está mirando. */}
+                    </div>
+  
+                    {/* --------------------------------------------- qué se factura */}
+                    <div style={css(RAYA + "padding-top:var(--s4);display:flex;flex-direction:column;gap:var(--s3);")}>
+                      <span style={css(rotulo())}>Lo que sale en la factura</span>
+  
+                      {/* Las tres casillas de cada línea no llevan rótulo encima
+                       * —serían tres rótulos por línea y la tarjeta se llenaría
+                       * de letra pequeña—. Se decía en un renglón aparte: «En
+                       * cada línea: qué es, cuántas veces y a cuánto sale la
+                       * unidad sin IVA». Ahora lo dice cada casilla desde dentro,
+                       * que es donde se mira al escribir, y el renglón se ha ido.
+                       * Los `aria-label` ya estaban y siguen: quien no ve el
+                       * hueco escrito oye el nombre entero del campo. */}
+                      {borrador.lineas.map((l, i) => (
+                        <div key={i} data-linea-factura="" style={css("display:grid;grid-template-columns:minmax(0,1fr) 74px 96px auto;gap:var(--s2);align-items:center;")}>
+                          <input
+                            value={l.concepto}
+                            onChange={(e) =>
+                              cambia({ lineas: borrador.lineas.map((x, j) => (j === i ? { ...x, concepto: e.target.value } : x)) })
+                            }
+                            placeholder="Concepto"
+                            data-campo-input={`concepto-${i}`}
+                            aria-label="Concepto"
+                            style={css(entrada)}
+                          />
+                          <input
+                            value={l.cantidad}
+                            inputMode="numeric"
+                            onChange={(e) =>
+                              cambia({ lineas: borrador.lineas.map((x, j) => (j === i ? { ...x, cantidad: Number(e.target.value.replace(/\D/g, "")) || 0 } : x)) })
+                            }
+                            placeholder="Cant."
+                            aria-label="Cantidad"
+                            style={css(entrada + "text-align:right;")}
+                          />
+                          <input
+                            value={l.precio}
+                            inputMode="decimal"
+                            onChange={(e) =>
+                              cambia({ lineas: borrador.lineas.map((x, j) => (j === i ? { ...x, precio: Number(e.target.value.replace(",", ".").replace(/[^\d.]/g, "")) || 0 } : x)) })
+                            }
+                            placeholder="€ sin IVA"
+                            aria-label="Precio sin IVA"
+                            style={css(entrada + "text-align:right;")}
+                          />
+                          <button
+                            onClick={() => cambia({ lineas: borrador.lineas.filter((_, j) => j !== i) })}
+                            disabled={borrador.lineas.length === 1}
+                            title="Quitar esta línea"
+                            aria-label="Quitar esta línea"
+                            style={css(
+                              "flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--border-strong);background:none;cursor:pointer;font-size:var(--t-body);line-height:1;color:" +
+                                (borrador.lineas.length === 1 ? "var(--text-4)" : "var(--text-3)") +
+                                ";"
+                            )}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+  
+                      <button
+                        onClick={() => cambia({ lineas: [...borrador.lineas, { concepto: "", cantidad: 1, precio: 0 }] })}
+                        style={css(BOTON_PLANO + "align-self:flex-start;")}
+                      >
+                        Añadir otra línea
+                      </button>
+                    </div>
+  
+                    {/* ------------------------------------------ fecha, IVA y pie */}
+                    <div style={css(RAYA + "padding-top:var(--s4);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:var(--s3);")}>
+                      {campo("Fecha", <input type="date" data-campo-input="fecha" value={borrador.fecha} onChange={(e) => cambia({ fecha: e.target.value })} style={css(entrada)} />)}
+                      {campo(
+                        "IVA (%)",
+                        <input
+                          value={borrador.iva}
+                          inputMode="numeric"
+                          onChange={(e) => cambiaIva(Number(e.target.value.replace(/\D/g, "")) || 0)}
+                          style={css(entrada + "text-align:right;")}
+                        />
+                      )}
+                    </div>
+                    {/* Sobraba: «El 21 % es el tipo general. Cámbialo si a lo que
+                        facturas le corresponde otro». El campo se llama «IVA (%)»
+                        y viene con 21 puesto: la frase repetía las dos cosas que
+                        ya se ven. */}
+  
+                    {campo(
+                      "Al pie de la factura (si quieres)",
+                      <textarea
+                        value={borrador.notas}
+                        onChange={(e) => cambia({ notas: e.target.value })}
+                        data-campo-input="notas"
+                        rows={2}
+                        placeholder="Forma de pago, número de cuenta…"
+                        style={css(entrada + "resize:vertical;line-height:1.5;")}
+                      />
+                    )}
+                  </div>
+  
+                  <div style={css(RAYA + "margin-top:var(--s5);padding-top:var(--s4);display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;")}>
+                    {/* La única mancha de granate de la pantalla. Apagada
+                        mientras falten los datos fiscales: se ve que existe y que
+                        hoy no se puede pulsar, que es más honesto que esconderla. */}
+                    <button
+                      onClick={() => void emitir()}
+                      disabled={!completo}
+                      title={completo ? undefined : "Faltan tus datos fiscales: " + huecos.join(", ")}
+                      style={css(botonPrincipal(completo))}
+                    >
+                      Emitir la factura
+                    </button>
+                    <button onClick={() => void guardarBorrador()} style={css(BOTON_NORMAL)}>
+                      Guardar el borrador
+                    </button>
+                    <GuardarPlantilla
+                      lineas={borrador.lineas}
+                      iva={borrador.iva}
+                      onGuardada={(l, nombre) => {
+                        setPropias(l);
+                        setMensaje(`Plantilla «${nombre}» guardada. La tienes arriba, con las demás.`);
+                      }}
+                    />
+                    <button onClick={() => void tirarBorrador()} style={css(BOTON_PLANO + "margin-left:auto;color:var(--red);")}>
+                      Tirar el borrador
+                    </button>
+                  </div>
+  
+                  {/* UN BOTÓN APAGADO TIENE QUE DECIR POR QUÉ, Y AQUÍ SE PUEDE
+                      ARREGLAR SIN MOVERSE. Antes esta línea sólo explicaba; el
+                      remedio estaba en un archivo del código. Ahora lleva al
+                      formulario de arriba y lo abre. */}
+                  {sabemosDelEmisor && !completo && (
+                    <p style={css(NOTA + "margin:var(--s3) 0 0;line-height:1.5;")}>
+                      {/* Los huecos van con su nombre tal cual —«NIF», no «nif»—:
+                          pasarlos a minúscula para que encajaran en la frase
+                          dejaba las siglas escritas mal en un texto sobre la ley. */}
+                      <span style={css("color:var(--red);")}>
+                        En España no hay factura sin {huecos.length === 3 ? "tus datos fiscales" : huecos.join(" ni ")}.
+                      </span>{" "}
+                      El borrador sí se guarda.{" "}
+                      <button
+                        onClick={() => {
+                          setAbriendoDatos(true);
+                          /* El desplazamiento suave se apaga con el resto del
+                             movimiento: quien pide menos animación no quiere que
+                             la página se le mueva sola durante medio segundo. */
+                          const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                          subeArriba(quieto);
+                        }}
+                        style={css(
+                          "background:none;border:none;padding:0;cursor:pointer;font:inherit;color:var(--accion);font-weight:590;text-decoration:underline;"
+                        )}
+                      >
+                        Ponlos ahora
+                      </button>
+                      .
+                    </p>
+                  )}
+  
+                  {mensaje && (
+                    <p role="status" style={css(APOYO + "margin:var(--s3) 0 0;color:var(--text-2);")}>
+                      {mensaje}
+                    </p>
+                  )}
+                </section>
+              )
+            )}
+              {estrecho && enPantalla && (
+                <button onClick={() => setGrande(true)} style={css(BOTON_NORMAL + "align-self:stretch;")}>
+                  Ver la factura
+                </button>
+              )}
+              <AvisoNavegador que="Las facturas" />
+            </div>
 
-          {/* La hoja va debajo, siempre. Es la misma en pantalla y en papel: no
-           * hay una versión «de ver» y otra «de imprimir» que puedan
-           * discrepar. Al imprimir desaparece todo lo demás — está marcado
-           * `data-chrome`— y sale sólo esto. */}
-          {enPantalla && <HojaFactura f={enPantalla} marca={marca} />}
-        </div>
-      </div>
+            {/* El folio. En ancho, a la derecha y siempre a la vista. En
+                estrecho no se pinta en la pantalla —se abre en grande— pero
+                sigue en la página para que imprimir y el PDF lo encuentren. */}
+            {enPantalla &&
+              (estrecho ? (
+                <div data-solo-papel="">
+                  <HojaFactura f={enPantalla} marca={marca} />
+                </div>
+              ) : (
+                <Mesa f={enPantalla} marca={marca} editable={!abierta} onCampo={vaAlCampo} />
+              ))}
+          </div>
+          {grande && enPantalla && <VerGrande f={enPantalla} marca={marca} alCerrar={() => setGrande(false)} />}
+        </>
       )}
     </main>
   );

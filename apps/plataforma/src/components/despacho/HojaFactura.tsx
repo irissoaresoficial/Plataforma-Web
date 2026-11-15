@@ -109,10 +109,13 @@ function Bloque({
   rotulo,
   datos,
   exigidos,
+  campo,
 }: {
   rotulo: string;
   datos: DatosFiscales;
   exigidos: Array<keyof DatosFiscales>;
+  /** Si se pulsa en el editor, a qué campo del formulario lleva. */
+  campo?: string;
 }) {
   /* Cuando falta, la etiqueta roja dice QUÉ falta: tres pastillas iguales que
      ponen «PENDIENTE» no distinguen si lo que no hay es el NIF o el domicilio. */
@@ -122,7 +125,9 @@ function Bloque({
     return (
       <>
         {prefijo}
-        {v}
+        {/* El NIF se pinta en mayúsculas («36177246V», no «36177246v»). El
+            dato guardado no se toca: sólo cómo se escribe en el papel. */}
+        {campo === "nif" ? String(v).toUpperCase() : v}
       </>
     );
   };
@@ -130,7 +135,7 @@ function Bloque({
   const direccion = linea("direccion", "Domicilio pendiente");
 
   return (
-    <div style={css("min-width:0;flex:1 1 220px;")}>
+    <div data-campo={campo} style={css("min-width:0;flex:1 1 220px;")}>
       <div
         style={css(
           "font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:" +
@@ -170,11 +175,15 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
     <article
       data-factura=""
       style={css(
-        "width:8.5in;max-width:100%;margin:0 auto;box-sizing:border-box;background:" +
+        /* UN A4 DE VERDAD: 210 × 297 mm, la hoja que se usa en España. En el
+           editor se amplía o se reduce con una escala por fuera, sin tocar
+           estas medidas, para que el PDF salga siempre igual. Esquinas rectas:
+           es un papel, no una tarjeta. */
+        "width:210mm;min-height:297mm;display:flex;flex-direction:column;box-sizing:border-box;background:" +
           PAPEL +
           ";color:" +
           TINTA +
-          ";border-radius:var(--r-tarjeta);box-shadow:var(--shadow-lg);overflow:hidden;break-inside:avoid;"
+          ";box-shadow:0 1px 2px rgba(0,0,0,.08),0 12px 40px rgba(40,20,25,.18);overflow:hidden;break-inside:avoid;"
       )}
     >
       {/*
@@ -187,46 +196,45 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
           de color que, sobre vino oscuro, se leía como una pegatina pegada
           encima.
       */}
+      {/*
+          LA CABECERA, EN PAPEL (15 de noviembre de 2026).
+
+          Era una banda granate con la flor de lis. Ger: el logo de la escuela
+          sale en todo. El logo a color sobre granate no se lee —los colores del
+          mandala se apagan contra el vino—, así que la cabecera pasa a papel y
+          el logo va a color, que es para lo que existe esa versión. El granate
+          se queda donde pesa: la palabra FACTURA, la tabla y el total.
+      */}
       <div
         style={css(
-          "display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:22px clamp(20px,4vw,44px);background:" +
-            VINO +
-            ";color:" +
-            SOBRE_VINO +
-            ";"
+          "display:flex;align-items:center;gap:20px;padding:34px 44px 22px;border-bottom:1px solid " + ORO_LINEA + ";"
         )}
       >
-        <div style={css("display:flex;align-items:center;gap:13px;flex:1 1 220px;min-width:0;")}>
+        <div style={css("display:flex;align-items:center;gap:16px;flex:1 1 auto;min-width:0;")}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/flor-de-lis.png" alt="" style={css("width:44px;height:44px;flex:none;object-fit:contain;opacity:.95;")} />
+          <img src="/logo-33.png" alt="Escuela de Sabiduría 33" style={css("width:72px;height:72px;flex:none;object-fit:contain;")} />
           <div style={css("min-width:0;")}>
-            <div style={css("font-family:var(--font-doc);font-size:17px;font-weight:500;line-height:1.2;letter-spacing:-.01em;")}>
+            <div style={css("font-family:var(--font-doc);font-size:19px;font-weight:500;line-height:1.2;letter-spacing:-.01em;color:" + VINO_HONDO + ";")}>
               {marca}
             </div>
             {emisor.nif && !falta(emisor.nif) && (
-              <div style={css("font-size:10.5px;letter-spacing:.08em;margin-top:4px;opacity:.72;")}>NIF {emisor.nif}</div>
+              <div data-cifras="" style={css("font-size:10.5px;letter-spacing:.08em;margin-top:4px;color:" + TINTA_SUAVE + ";")}>
+                NIF {emisor.nif.toUpperCase()}
+              </div>
             )}
           </div>
         </div>
 
-        <div style={css("text-align:right;margin-left:auto;min-width:0;")}>
-          {/* La palabra y el número: lo que se lee desde el otro lado de la
-              mesa. La palabra grande y espaciada, el número debajo en cifras
-              tabulares para que no baile entre una factura y la siguiente. */}
-          <div style={css("font-size:26px;font-weight:700;letter-spacing:.2em;line-height:1;text-transform:uppercase;")}>
-            Factura
+        <div data-campo="fecha" style={css("text-align:right;margin-left:auto;min-width:0;color:" + VINO + ";")}>
+          <div style={css("font-size:26px;font-weight:700;letter-spacing:.2em;line-height:1;text-transform:uppercase;")}>Factura</div>
+          <div data-cifras="" style={css("font-size:16px;font-weight:600;letter-spacing:.02em;margin-top:8px;color:" + TINTA + ";")}>
+            {borrador ? <Falta>Sin número</Falta> : numeroDe(f)}
           </div>
-          <div
-            data-cifras=""
-            style={css("font-size:16px;font-weight:600;letter-spacing:.02em;margin-top:8px;")}
-          >
-            {borrador ? <Falta claro>Sin número</Falta> : numeroDe(f)}
-          </div>
-          {f.fecha && <div style={css("font-size:11.5px;margin-top:6px;opacity:.72;")}>{fechaDeFactura(f.fecha)}</div>}
+          {f.fecha && <div style={css("font-size:11.5px;margin-top:6px;color:" + TINTA_SUAVE + ";")}>{fechaDeFactura(f.fecha)}</div>}
         </div>
       </div>
 
-      <div style={css("padding:clamp(20px,4vw,44px);")}>
+      <div style={css("padding:30px 44px 40px;flex:1;display:flex;flex-direction:column;")}>
         {/* La banda que dice que esto todavía no es una factura, o que ya no lo
          * es. Va arriba del todo del cuerpo y no en una esquina: es lo primero
          * que tiene que leer quien la reciba por error. */}
@@ -256,7 +264,7 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
           />
           {/* Del cliente sólo se exige el nombre: a un particular se le factura
               sin NIF ni domicilio, y ahí un hueco no es un fallo. */}
-          <Bloque rotulo="A quien se factura" datos={f.cliente} exigidos={["nombre"]} />
+          <Bloque rotulo="A quien se factura" datos={f.cliente} exigidos={["nombre"]} campo="cliente" />
         </div>
 
         {/* La tabla ya no lleva marco: lo que la delimita arriba es la fila de
@@ -281,7 +289,7 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
             ) : (
               f.lineas.map((l, i) => (
                 <tr key={i} style={css("border-bottom:1px solid " + ORO_LINEA + ";")}>
-                  <td style={css(celda)}>{l.concepto || <Falta>Sin concepto</Falta>}</td>
+                  <td data-campo={`concepto-${i}`} style={css(celda)}>{l.concepto || <Falta>Sin concepto</Falta>}</td>
                   <td data-cifras="" style={css(celda + "text-align:right;color:" + TINTA_SUAVE + ";")}>
                     {l.cantidad}
                   </td>
@@ -336,6 +344,7 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
 
         {f.notas && (
           <p
+            data-campo="notas"
             style={css(
               "margin:26px 0 0;padding:13px 15px;border-left:3px solid " +
                 ORO +
@@ -356,9 +365,12 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
             Un teléfono y un correo inventados en una factura no son un adorno de
             maqueta — son datos falsos en un documento con validez legal.
         */}
+        {/* El pie va al fondo del folio, como en un papel de verdad: lo que
+            sobra de hoja queda entre el total y el pie, no debajo del pie. */}
+        <div style={css("flex:1;min-height:30px;")} />
         <div
           style={css(
-            "margin-top:30px;padding-top:14px;border-top:1px solid " +
+            "padding-top:14px;border-top:1px solid " +
               ORO_LINEA +
               ";display:flex;gap:16px;flex-wrap:wrap;align-items:baseline;font-size:10.5px;line-height:1.6;color:" +
               TINTA_SUAVE +
@@ -367,7 +379,7 @@ export default function HojaFactura({ f, marca }: { f: Factura; marca: string })
         >
           <span style={css("font-weight:600;color:" + VINO_HONDO + ";")}>{marca}</span>
           {!falta(emisor.direccion) && <span style={css("min-width:0;")}>{emisor.direccion}</span>}
-          {!falta(emisor.nif) && <span data-cifras="">NIF {emisor.nif}</span>}
+          {!falta(emisor.nif) && <span data-cifras="">NIF {emisor.nif.toUpperCase()}</span>}
         </div>
 
         {/* Mientras falten los datos de arriba, la propia hoja lo dice. Una

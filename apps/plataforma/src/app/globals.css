@@ -1456,6 +1456,34 @@ button:not(:disabled):active {
   [data-folio] {
     display: block !important;
   }
+  /* El editor de Facturas (15 de noviembre de 2026): en pantalla el folio va
+     escalado, en una mesa con su propio desplazamiento y una altura fija. En
+     papel nada de eso: escala 1, sin recorte y sin la mesa de fondo. En el
+     móvil el folio no se pinta en pantalla (`data-solo-papel`), pero se imprime. */
+  [data-editor],
+  [data-mesa],
+  [data-mesa-fondo] {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    border: none !important;
+    background: none !important;
+  }
+  [data-mesa-fondo] > div {
+    width: auto !important;
+    height: auto !important;
+  }
+  [data-escala] {
+    position: static !important;
+    transform: none !important;
+  }
+  [data-solo-papel] {
+    display: block !important;
+  }
+  [data-factura] {
+    min-height: 0 !important;
+  }
 
   /* -------------------------------------------------------------------------
      LA FACTURA, EN PAPEL DE VERDAD.
@@ -2887,4 +2915,13 @@ html[data-guia="1"] body {
 }
 .puerta-volver:hover {
   color: var(--text);
+}
+
+/* El folio de la factura en el móvil: no se pinta en la pantalla (se abre en
+   grande con «Ver la factura»), pero está en la página para imprimirlo. La
+   regla de impresión lo vuelve a mostrar. */
+@media screen {
+  [data-solo-papel] {
+    display: none;
+  }
 }
