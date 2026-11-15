@@ -33,6 +33,7 @@ import VistaCorreos, { fecha, hoyMadrid, type Conf, type Contacto, type Envio, t
 const WEB = (process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com").replace("://escueladesabiduria33.com", "://www.escueladesabiduria33.com");
 const LISTA = "marco";
 const TOPE_POR_DEFECTO = 95;
+const CACHE = "correos-envios-v1";
 
 /** Saca los correos de un CSV, de una lista pegada o de lo que sea: cualquier
  *  cosa con forma de correo, en minúsculas y sin repetir. */
@@ -76,10 +77,22 @@ export default function CorreosScreen() {
     }
   }, []);
 
+  /* RÁPIDO: los textos de los tres correos se guardan en este navegador y se
+     pintan al momento; por detrás se piden a la web y se cambian si hay algo
+     nuevo. Son los textos de la plantilla, no hay ningún dato de nadie. */
   const cargaEnvios = useCallback(() => {
+    try {
+      const guardado = localStorage.getItem(CACHE);
+      if (guardado) setEnvios((e) => e ?? (JSON.parse(guardado) as Envio[]));
+    } catch {}
     fetch(`${WEB}/api/difusion/vista`, { cache: "no-store" })
       .then((r) => r.json())
-      .then((j) => setEnvios(j.envios ?? []))
+      .then((j) => {
+        setEnvios(j.envios ?? []);
+        try {
+          localStorage.setItem(CACHE, JSON.stringify(j.envios ?? []));
+        } catch {}
+      })
       .catch(() => setFallo("No se ha podido leer la lista de correos de la web."));
   }, []);
 

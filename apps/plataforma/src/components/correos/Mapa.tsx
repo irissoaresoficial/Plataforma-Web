@@ -44,6 +44,9 @@ export type Flujo = {
   titulo: string;
   firma: string;
   encendido: boolean;
+  /** Si corre de verdad: encendido y con algo que mandar. Sólo entonces
+   *  las flechas llevan el pulso que viaja de una caja a la siguiente. */
+  vivo: boolean;
   estado: string;
   nodos: Nodo[];
 };
@@ -117,25 +120,33 @@ const COLOR: Record<Estado, string> = {
   siempre: "var(--green)",
 };
 
-function Caja({ n, elegido, onElige }: { n: Nodo; elegido: boolean; onElige: (id: string) => void }) {
+function Caja({ n, paso, elegido, onElige }: { n: Nodo; paso: number; elegido: boolean; onElige: (id: string) => void }) {
+  const vivo = n.estado === "saliendo" || n.estado === "siempre";
   return (
     <button
       type="button"
       className="mapa-caja"
       data-tipo={n.tipo}
+      data-vivo={vivo ? "" : undefined}
+      style={{ animationDelay: `${paso * 45}ms` }}
       data-elegido={elegido ? "" : undefined}
       aria-pressed={elegido}
       onClick={() => onElige(n.id)}
     >
-      <span className="mapa-ico" aria-hidden="true">
-        {ICONOS[n.icono]}
+      <span className="mapa-arriba">
+        <span className="mapa-ico" aria-hidden="true">
+          {ICONOS[n.icono]}
+        </span>
+        <span className="mapa-num" aria-hidden="true">
+          {String(paso + 1).padStart(2, "0")}
+        </span>
       </span>
       <span className="mapa-texto">
         <span className="mapa-cuando">{n.cuando}</span>
         <span className="mapa-titulo">{n.titulo}</span>
         <span className="mapa-linea">{n.linea}</span>
         <span className="mapa-cifra">
-          <span style={css("width:7px;height:7px;border-radius:50%;flex:none;background:" + COLOR[n.estado] + ";")} />
+          <span className="mapa-led" style={css("background:" + COLOR[n.estado] + ";color:" + COLOR[n.estado] + ";")} />
           {n.cifra}
         </span>
       </span>
@@ -166,7 +177,7 @@ export default function Mapa({
   return (
     <div className="mapa-pista" style={{ zoom }}>
       {flujos.map((f) => (
-        <section key={f.id} className="mapa-flujo" aria-label={f.titulo}>
+        <section key={f.id} className="mapa-flujo" data-vivo={f.vivo ? "" : undefined} aria-label={f.titulo}>
           <header className="mapa-cabeza">
             <span className="mapa-nombre">{f.titulo}</span>
             <span className="mapa-chip" data-encendido={f.encendido ? "" : undefined}>
@@ -179,7 +190,7 @@ export default function Mapa({
             {f.nodos.map((n, i) => (
               <li key={n.id} className="mapa-paso">
                 <span className="mapa-columna">
-                  <Caja n={n} elegido={elegido === n.id} onElige={onElige} />
+                  <Caja n={n} paso={i} elegido={elegido === n.id} onElige={onElige} />
                   {n.rama && (
                     <span className="mapa-rama">
                       <span className="mapa-bajada" aria-hidden="true">
@@ -228,6 +239,14 @@ const ESTILO = `
 .mapa-caja:focus-visible { outline:2px solid var(--accion); outline-offset:3px; }
 .mapa-caja[data-elegido] { border-color:var(--accion); box-shadow:0 0 0 3px var(--accion-suave), 0 12px 30px color-mix(in srgb, var(--text) 14%, transparent); }
 
+.mapa-caja { animation:mapa-entra 300ms var(--curva) both; }
+@keyframes mapa-entra { from { opacity:0; transform:translateY(8px) scale(.98); } to { opacity:1; transform:none; } }
+.mapa-arriba { width:100%; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.mapa-num { font-size:var(--t-mini); font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:.04em; color:var(--text-4); padding:3px 8px; border-radius:var(--r-pill); background:var(--surface-2); }
+.mapa-caja[data-vivo] .mapa-ico { box-shadow:0 0 0 4px var(--accion-suave), 0 6px 18px color-mix(in srgb, var(--accion) 22%, transparent); }
+.mapa-led { position:relative; width:7px; height:7px; border-radius:50%; flex:none; }
+.mapa-caja[data-vivo] .mapa-led::after { content:""; position:absolute; inset:-4px; border-radius:50%; border:1.5px solid currentColor; animation:mapa-late 2s var(--curva) infinite; }
+@keyframes mapa-late { from { transform:scale(.5); opacity:.9; } to { transform:scale(1.7); opacity:0; } }
 .mapa-ico { width:44px; height:44px; border-radius:var(--r-sm); display:grid; place-items:center; flex:none; }
 .mapa-caja[data-tipo="disparador"] .mapa-ico { background:var(--accion); color:var(--sobre-accion); }
 .mapa-caja[data-tipo="correo"] .mapa-ico { background:var(--accion-suave); color:var(--accion); border:1px solid var(--accion-borde); }
@@ -244,6 +263,13 @@ const ESTILO = `
 .mapa-raya::after { content:""; position:absolute; right:-1px; top:50%; width:8px; height:8px; border-top:2px solid color-mix(in srgb, var(--text) 30%, transparent); border-right:2px solid color-mix(in srgb, var(--text) 30%, transparent); transform:translateY(-50%) rotate(45deg); border-radius:1px; }
 .mapa-etiqueta { position:absolute; left:50%; top:-26px; transform:translateX(-50%); padding:2px 8px; border-radius:var(--r-pill); font-size:var(--t-mini); font-weight:500; color:var(--text-2); background:var(--surface-solid); border:1px solid var(--border); white-space:nowrap; }
 
+/* El pulso: una luz que viaja por la flecha, sólo en el flujo que corre. Se
+   lee «de aquí pasa a aquí» sin decir nada. */
+.mapa-flujo[data-vivo] .mapa-raya { overflow:visible; background:linear-gradient(90deg, color-mix(in srgb, var(--accion) 45%, transparent), color-mix(in srgb, var(--accion) 70%, transparent)); }
+.mapa-flujo[data-vivo] .mapa-raya::before { content:""; position:absolute; top:50%; left:0; width:10px; height:10px; margin-top:-5px; border-radius:50%;
+  background:var(--accion); box-shadow:0 0 0 3px var(--accion-suave), 0 0 12px var(--accion); animation:mapa-viaja 1.8s var(--curva) infinite; }
+@keyframes mapa-viaja { 0% { left:0; opacity:0; } 15% { opacity:1; } 85% { opacity:1; } 100% { left:calc(100% - 10px); opacity:0; } }
+.mapa-flujo:not([data-vivo]) .mapa-raya { background:repeating-linear-gradient(90deg, color-mix(in srgb, var(--text) 30%, transparent) 0 6px, transparent 6px 11px); }
 .mapa-rama { display:flex; flex-direction:column; align-items:center; }
 .mapa-bajada { position:relative; width:2px; height:44px; background:color-mix(in srgb, var(--text) 30%, transparent); }
 .mapa-bajada .mapa-etiqueta { top:50%; left:12px; transform:translateY(-50%); }
@@ -254,12 +280,21 @@ const ESTILO = `
   .mapa-pista { width:100%; zoom:1 !important; }
   .mapa-fila, .mapa-paso { flex-direction:column; align-items:stretch; }
   .mapa-columna { align-items:stretch; }
-  .mapa-caja { width:100%; flex-direction:row; align-items:flex-start; gap:14px; }
+  .mapa-caja { position:relative; width:100%; flex-direction:row; align-items:flex-start; gap:14px; padding-right:52px; }
+  .mapa-arriba { width:auto; }
+  .mapa-num { position:absolute; top:14px; right:14px; }
   .mapa-flecha { width:2px; height:36px; margin:0 0 0 37px; }
   .mapa-raya::after { right:auto; top:auto; bottom:-1px; left:50%; transform:translateX(-50%) rotate(135deg); }
+  .mapa-flujo[data-vivo] .mapa-raya { background:linear-gradient(180deg, color-mix(in srgb, var(--accion) 45%, transparent), color-mix(in srgb, var(--accion) 70%, transparent)); }
+  .mapa-flujo[data-vivo] .mapa-raya::before { left:50%; margin:0 0 0 -5px; animation-name:mapa-baja; }
+  .mapa-flujo:not([data-vivo]) .mapa-raya { background:repeating-linear-gradient(180deg, color-mix(in srgb, var(--text) 30%, transparent) 0 6px, transparent 6px 11px); }
   .mapa-etiqueta { top:50%; left:14px; transform:translateY(-50%); }
   .mapa-rama { align-items:flex-start; padding-left:37px; }
   .mapa-bajada { height:30px; }
   .mapa-fin { max-width:none; margin-left:-37px; margin-bottom:4px; text-align:left; }
+}
+@keyframes mapa-baja { 0% { top:0; opacity:0; } 15% { opacity:1; } 85% { opacity:1; } 100% { top:calc(100% - 10px); opacity:0; } }
+@media (prefers-reduced-motion: reduce) {
+  .mapa-caja, .mapa-led::after, .mapa-raya::before { animation:none !important; }
 }
 `;

@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { css } from "@/lib/css";
 import { APOYO, BOTON_NORMAL, BOTON_PLANO, CAMPO, NOTA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
 import Mapa, { type Estado, type Flujo, type Nodo } from "./Mapa";
+import Agente, { proximaRonda, type Paso } from "./Agente";
 
 export type Textos = { dia: string; asunto: string; previo: string; titular: string; cuerpo: string; boton: string };
 export type Envio = Textos & { id: string; aInscritas: boolean };
@@ -194,6 +195,7 @@ export default function VistaCorreos({
         titulo: "Clientas de Marco",
         firma: "Firmados por Marco Célio Sousa · en portugués",
         encendido: conf.activa,
+        vivo: conf.activa && n.total > 0,
         estado: conf.activa ? "Encendido" : "Apagado",
         nodos: marco,
       },
@@ -202,11 +204,45 @@ export default function VistaCorreos({
         titulo: "Inscritas a la masterclass",
         firma: "Firmados por Iris",
         encendido: true,
+        vivo: true,
         estado: "Siempre encendido",
         nodos: inscritasF,
       },
     ];
   }, [envios, n, conf, hoy, inscritas, vivas, cargando]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ------------------------------------------------- el plan de la ronda
+     Las mismas reglas que la web, en el mismo orden: primero los
+     recordatorios de las inscritas que toquen ese día; después la lista de
+     Marco con lo que quede del tope. */
+  const plan: Paso[] = useMemo(() => {
+    const dia = proximaRonda().toLocaleDateString("sv-SE", { timeZone: "Europe/Madrid" });
+    const pasos: Paso[] = [];
+    let usados = 0;
+    for (const r of RECORDATORIOS.filter((x) => x.dia === dia)) {
+      const van = (inscritas ?? []).filter((i) => !i.baja && !i.recordatorios?.[r.id]).length;
+      usados += van;
+      pasos.push({ tipo: "sale", texto: <>Mandará «{r.que}» a <b>{van}</b> {van === 1 ? "inscrita" : "inscritas"}.</> });
+    }
+    const orden = [...(envios ?? [])].sort((a, b) => (a.dia < b.dia ? -1 : 1));
+    const toca = orden.length && dia <= orden[orden.length - 1].dia ? orden.filter((e) => e.dia <= dia).pop() ?? null : null;
+    if (!conf.activa) pasos.push({ tipo: "parado", texto: "Clientas de Marco: apagado. No mandará ninguno hasta que lo enciendas." });
+    else if (!n.total) pasos.push({ tipo: "parado", texto: "Clientas de Marco: falta subir la lista." });
+    else if (!toca) {
+      const sig = orden.find((e) => e.dia > dia);
+      pasos.push({ tipo: "espera", texto: sig ? `Clientas de Marco: ese día no toca ninguno. El siguiente, «${sig.asunto}», el ${corta(sig.dia)}.` : "Clientas de Marco: ya salieron todos." });
+    } else {
+      const faltan = n.faltan(toca);
+      const van = Math.min(faltan, Math.max(0, conf.tope - usados));
+      pasos.push(
+        faltan
+          ? { tipo: "sale", texto: <>Mandará «{toca.asunto}» a <b>{van}</b> clientas de Marco{faltan > van ? `. Quedarán ${faltan - van} para las mañanas siguientes` : ""}.</> }
+          : { tipo: "espera", texto: `Clientas de Marco: «${toca.asunto}» ya les llegó a todas.` },
+      );
+    }
+    pasos.push({ tipo: "espera", texto: "Saltará a quien se dio de baja. Todos llevan su enlace para darse de baja." });
+    return pasos;
+  }, [envios, inscritas, conf, n]);
 
   const nodo = flujos.flatMap((f) => f.nodos).find((x) => x.id === elegido) ?? null;
   const envio = (envios ?? []).find((e) => e.id === elegido) ?? null;
@@ -282,6 +318,8 @@ export default function VistaCorreos({
           {encender}
         </div>
       </header>
+
+      <Agente activo={conf.activa || vivas > 0} plan={plan} cargando={cargando} />
 
       {fallo && <p role="alert" style={css(NOTA + "margin:0;color:var(--red);")}>{fallo}</p>}
       {aviso && <p role="status" style={css(NOTA + "margin:0;color:var(--text-2);")}>{aviso}</p>}
