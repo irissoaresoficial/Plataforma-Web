@@ -42,7 +42,6 @@ export type Nodo = {
 export type Flujo = {
   id: string;
   titulo: string;
-  firma: string;
   encendido: boolean;
   /** Si corre de verdad: encendido y con algo que mandar. Sólo entonces
    *  las flechas llevan el pulso que viaja de una caja a la siguiente. */
@@ -184,7 +183,6 @@ export default function Mapa({
               <span style={css("width:7px;height:7px;border-radius:50%;background:" + (f.encendido ? "var(--green)" : "var(--red)") + ";")} />
               {f.estado}
             </span>
-            <span className="mapa-firma">{f.firma}</span>
           </header>
           <ol className="mapa-fila">
             {f.nodos.map((n, i) => (
@@ -222,7 +220,6 @@ const ESTILO = `
 .mapa-cabeza { display:flex; align-items:center; gap:10px 14px; flex-wrap:wrap; }
 .mapa-nombre { font-family:var(--font-display); font-size:var(--t-title); font-weight:500; letter-spacing:-.02em; color:var(--text); }
 .mapa-chip { display:inline-flex; align-items:center; gap:7px; padding:5px 11px; border-radius:var(--r-pill); font-size:var(--t-mini); font-weight:500; color:var(--text-2); background:var(--surface-2); border:1px solid var(--border); }
-.mapa-firma { font-size:var(--t-mini); color:var(--text-3); }
 .mapa-fila { list-style:none; margin:0; padding:0; display:flex; align-items:flex-start; }
 .mapa-paso { display:flex; align-items:flex-start; }
 .mapa-columna { display:flex; flex-direction:column; align-items:center; }

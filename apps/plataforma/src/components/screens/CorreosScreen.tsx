@@ -163,7 +163,7 @@ export default function CorreosScreen() {
     if (cambio.activa) {
       const e = (envios ?? []).filter((x) => x.dia <= hoy).pop() ?? envios?.[0];
       const ok = window.confirm(
-        `Vas a encender los correos de Marco.\n\nCada mañana a las 8:00 saldrán hasta ${conf.tope} correos` +
+        `Vas a encender los correos de la lista subida.\n\nCada mañana a las 8:00 saldrán hasta ${conf.tope} correos` +
           (e ? `, empezando por «${e.asunto}» el ${fecha(e.dia > hoy ? e.dia : hoy)}` : "") +
           ".\n\n¿Has leído el correo y está bien?",
       );

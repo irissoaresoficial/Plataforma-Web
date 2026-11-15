@@ -15,6 +15,7 @@ import { css } from "@/lib/css";
 import { APOYO, BOTON_NORMAL, BOTON_PLANO, CAMPO, NOTA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
 import Mapa, { type Estado, type Flujo, type Nodo } from "./Mapa";
 import Agente, { proximaRonda, type Paso } from "./Agente";
+import DiaADia from "./DiaADia";
 
 export type Textos = { dia: string; asunto: string; previo: string; titular: string; cuerpo: string; boton: string };
 export type Envio = Textos & { id: string; aInscritas: boolean };
@@ -97,7 +98,7 @@ export default function VistaCorreos({
 
   /* ------------------------------------------------------------ los flujos */
   const flujos: Flujo[] = useMemo(() => {
-    const correoMarco = (e: Envio): Nodo => {
+    const correoLista = (e: Envio): Nodo => {
       const enviados = n.enviados(e.id);
       const faltan = n.faltan(e);
       let estado: Estado, cifra: string;
@@ -124,8 +125,8 @@ export default function VistaCorreos({
         tipo: "disparador",
         icono: "lista",
         cuando: "Empieza aquí",
-        titulo: "Lista subida",
-        linea: "Las clientas de Marco, en CSV.",
+        titulo: "Se sube la lista",
+        linea: "Un CSV con los correos.",
         estado: n.total ? "hecho" : "falta",
         cifra: guion(n.total ? `${n.total} correos · ${n.bajas} bajas` : "Aún no hay lista"),
       },
@@ -139,7 +140,7 @@ export default function VistaCorreos({
         estado: conf.activa ? "saliendo" : "parado",
         cifra: conf.activa ? "Encendido" : "Apagado: no sale nada",
       },
-      ...(inv ? [correoMarco(inv)] : []),
+      ...(inv ? [correoLista(inv)] : []),
       ...(inv
         ? [
             {
@@ -148,15 +149,15 @@ export default function VistaCorreos({
               icono: "pregunta" as const,
               cuando: "Antes de cada aviso",
               titulo: "¿Se inscribió?",
-              linea: "Se mira en las inscritas de la web.",
+              linea: "Mira si ya se apuntó a la masterclass.",
               estado: "siempre" as const,
               cifra: guion(`${n.yaInscritas} ya inscritas`),
               salida: "no",
-              rama: { etiqueta: "sí", texto: "Ya no le llegan los de Marco: recibe los de inscritas." },
+              rama: { etiqueta: "sí", texto: "Ya está apuntada: sale de esta lista y le llegan los correos de inscritas." },
             },
           ]
         : []),
-      ...resto.map(correoMarco),
+      ...resto.map(correoLista),
     ];
 
     const reco = (r: (typeof RECORDATORIOS)[number]): Nodo => {
@@ -192,8 +193,7 @@ export default function VistaCorreos({
     return [
       {
         id: "marco",
-        titulo: "Clientas de Marco",
-        firma: "Firmados por Marco Célio Sousa · en portugués",
+        titulo: "Lista subida",
         encendido: conf.activa,
         vivo: conf.activa && n.total > 0,
         estado: conf.activa ? "Encendido" : "Apagado",
@@ -202,7 +202,6 @@ export default function VistaCorreos({
       {
         id: "inscritas",
         titulo: "Inscritas a la masterclass",
-        firma: "Firmados por Iris",
         encendido: true,
         vivo: true,
         estado: "Siempre encendido",
@@ -226,18 +225,18 @@ export default function VistaCorreos({
     }
     const orden = [...(envios ?? [])].sort((a, b) => (a.dia < b.dia ? -1 : 1));
     const toca = orden.length && dia <= orden[orden.length - 1].dia ? orden.filter((e) => e.dia <= dia).pop() ?? null : null;
-    if (!conf.activa) pasos.push({ tipo: "parado", texto: "Clientas de Marco: apagado. No mandará ninguno hasta que lo enciendas." });
-    else if (!n.total) pasos.push({ tipo: "parado", texto: "Clientas de Marco: falta subir la lista." });
+    if (!conf.activa) pasos.push({ tipo: "parado", texto: "Lista subida: apagada. No mandará nada hasta que la enciendas." });
+    else if (!n.total) pasos.push({ tipo: "parado", texto: "Lista subida: todavía no hay ninguna lista." });
     else if (!toca) {
       const sig = orden.find((e) => e.dia > dia);
-      pasos.push({ tipo: "espera", texto: sig ? `Clientas de Marco: ese día no toca ninguno. El siguiente, «${sig.asunto}», el ${corta(sig.dia)}.` : "Clientas de Marco: ya salieron todos." });
+      pasos.push({ tipo: "espera", texto: sig ? `Lista subida: ese día no toca ningún correo. El siguiente, «${sig.asunto}», sale el ${corta(sig.dia)}.` : "Lista subida: ya salieron todos los correos." });
     } else {
       const faltan = n.faltan(toca);
       const van = Math.min(faltan, Math.max(0, conf.tope - usados));
       pasos.push(
         faltan
-          ? { tipo: "sale", texto: <>Mandará «{toca.asunto}» a <b>{van}</b> clientas de Marco{faltan > van ? `. Quedarán ${faltan - van} para las mañanas siguientes` : ""}.</> }
-          : { tipo: "espera", texto: `Clientas de Marco: «${toca.asunto}» ya les llegó a todas.` },
+          ? { tipo: "sale", texto: <>Mandará «{toca.asunto}» a <b>{van}</b> personas de la lista{faltan > van ? `. Las otras ${faltan - van} lo recibirán las mañanas siguientes` : ""}.</> }
+          : { tipo: "espera", texto: `Lista subida: «${toca.asunto}» ya le llegó a todo el mundo.` },
       );
     }
     pasos.push({ tipo: "espera", texto: "Saltará a quien se dio de baja. Todos llevan su enlace para darse de baja." });
@@ -310,7 +309,7 @@ export default function VistaCorreos({
           <p style={css(rotulo() + "margin:0;")}>Sólo administración</p>
           <h1 style={css(TITULO + "margin:0;")}>Correos automáticos</h1>
           <p style={css(APOYO + "margin:0;max-width:60ch;")}>
-            Cada caja es un paso. Toca una para ver el correo tal cual sale y cambiar su texto.
+            Cada caja es un paso. Toca un correo para leerlo tal como llega y cambiar su texto.
           </p>
         </div>
         <div style={css("display:flex;gap:8px;flex-wrap:wrap;")}>
@@ -330,7 +329,7 @@ export default function VistaCorreos({
         </div>
 
         {nodo && (
-          <aside ref={panel} className="correos-panel" data-corto={envio ? undefined : ""} aria-label={nodo.titulo}>
+          <aside ref={panel} className="correos-panel" data-corto={envio || ["confirmacion", "semana", "manana", "hoy"].includes(nodo.id) ? undefined : ""} aria-label={nodo.titulo}>
             <div style={css("display:flex;align-items:flex-start;gap:12px;")}>
               <div style={css("display:grid;gap:4px;min-width:0;flex:1;")}>
                 <span style={css(rotulo("var(--gold)"))}>{envio ? fecha(envio.dia) : nodo.cuando}</span>
@@ -422,7 +421,7 @@ export default function VistaCorreos({
             {nodo.id === "lista" && (
               <div style={css("display:grid;gap:12px;")}>
                 <p style={css(APOYO + "margin:0;")}>
-                  Sube el CSV de Marco. Se queda con cualquier cosa con forma de correo y no repite. Volver a subirla no borra lo enviado ni las bajas.
+                  Sube un CSV (una hoja de cálculo guardada como CSV). Se cogen todos los correos que haya, sin repetir. Si la vuelves a subir, no se pierde lo ya enviado ni las bajas.
                 </p>
                 <div>{botonSubir}</div>
               </div>
@@ -442,15 +441,21 @@ export default function VistaCorreos({
             )}
             {nodo.id === "inscrita" && (
               <p style={css(APOYO + "margin:0;")}>
-                Antes del recordatorio y del «es hoy», la web mira si ese correo ya está entre las inscritas. Si lo está, no se le manda: ya recibe los avisos de las inscritas, firmados por Iris.
+                Antes de mandar el recordatorio y el «es hoy», se mira si esa persona ya se ha apuntado a la masterclass. Si ya está apuntada, no se le manda: ya le llegan los correos de las inscritas.
               </p>
             )}
-            {["apunta", "confirmacion", "semana", "manana", "hoy"].includes(nodo.id) && (
+            {nodo.id === "apunta" && (
               <p style={css(APOYO + "margin:0;")}>
-                {nodo.id === "apunta"
-                  ? "Quien rellena el formulario de la masterclass entra en este flujo. Las que se dan de baja dejan de recibirlo."
-                  : "Este correo está escrito en la web, no en la plataforma. Poder verlo y cambiarlo desde aquí llega en la próxima entrega."}
+                Cuando alguien se apunta a la masterclass desde la web, entra aquí. Si se da de baja, deja de recibir estos correos.
               </p>
+            )}
+            {["confirmacion", "semana", "manana", "hoy"].includes(nodo.id) && (
+              <>
+                <iframe title={nodo.titulo} src={`${web}/api/difusion/vista?id=${nodo.id}`} className="correos-vista" />
+                <p style={css(NOTA + "margin:0;")}>
+                  Así le llega a cada inscrita (aquí con un nombre de ejemplo). Este texto todavía no se puede cambiar desde aquí.
+                </p>
+              </>
             )}
           </aside>
         )}
@@ -476,6 +481,16 @@ export default function VistaCorreos({
           </span>
         </div>
       </div>
+
+      {!cargando && envios && (
+        <DiaADia
+          envios={envios}
+          contactos={contactos ?? []}
+          inscritas={inscritas ?? []}
+          conf={conf}
+          diaRonda={proximaRonda().toLocaleDateString("sv-SE", { timeZone: "Europe/Madrid" })}
+        />
+      )}
 
       <style>{ESTILO}</style>
     </div>
