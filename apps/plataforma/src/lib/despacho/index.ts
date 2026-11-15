@@ -53,4 +53,5 @@ export * from "./relacion";
    `relacion.ts`, que es de donde salía el dato. */
 export * from "./rejilla";
 export * from "./avisos";
+export * from "./gastos";
 export type { RepoAvisos, RepoCitas, RepoClientes, RepoFacturas, Repositorio } from "./repositorio";

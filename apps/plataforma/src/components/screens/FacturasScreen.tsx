@@ -56,8 +56,9 @@ import {
   type DatosFiscales,
   type Factura,
 } from "@/lib/despacho";
-import { AvisoNavegador, Cabecera, Estado, Vacio, useEstrecho, useLlevaAlDetalle } from "../despacho/Piezas";
+import { AvisoNavegador, Cabecera, Estado, Vacio, useLlevaAlDetalle } from "../despacho/Piezas";
 import HojaFactura from "../despacho/HojaFactura";
+import Control from "../despacho/Control";
 
 /** El tipo general de IVA en España. Se puede cambiar en el formulario: no
  *  todos los servicios llevan el mismo, y adivinar cuál toca no es cosa nuestra. */
@@ -122,11 +123,9 @@ export default function FacturasScreen() {
   const [anulando, setAnulando] = useState(false);
   const [motivo, setMotivo] = useState("");
   const [cargando, setCargando] = useState(true);
+  /** Las dos mitades de la pantalla: hacer facturas, o llevar las cuentas. */
+  const [apartado, setApartado] = useState<"facturas" | "control">("facturas");
 
-  /* El mismo corte que usa `[data-dos]` en globals.css para dejar la lista y el
-     documento en una sola columna. Aquí sólo decide una cosa: si el botón de los
-     datos fiscales cabe al final del renglón o necesita el suyo. */
-  const estrecho = useEstrecho(900);
 
   /*
    * LOS DATOS FISCALES, QUE AHORA SE ESCRIBEN AQUÍ.
@@ -342,9 +341,41 @@ export default function FacturasScreen() {
       <div data-chrome="1">
         <Cabecera
           titulo="Facturas"
-          pie="Numeradas seguidas, sin saltarse ninguna."
+          pie={apartado === "facturas" ? "Numeradas seguidas, sin saltarse ninguna." : "Lo que entra, lo que sale y el trimestre, para tu gestor."}
         />
-        <Rescate facturas />
+        {/* LAS DOS MITADES. El control va aquí dentro y no en el menú porque
+            es la misma cosa vista desde el otro lado: los ingresos del control
+            SON estas facturas. La elegida va en vino suave y no sólido: el
+            vino lleno es del botón principal, y sólo hay uno por pantalla. */}
+        <div
+          role="tablist"
+          aria-label="Facturas o control"
+          style={css(
+            "display:flex;gap:6px;margin-bottom:var(--gap-lg);padding:5px;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--border);width:max-content;max-width:100%;box-shadow:var(--shadow-sm);"
+          )}
+        >
+          {(
+            [
+              ["facturas", "Hacer facturas"],
+              ["control", "Control y gastos"],
+            ] as const
+          ).map(([k, label]) => (
+            <button
+              key={k}
+              role="tab"
+              aria-selected={apartado === k}
+              onClick={() => setApartado(k)}
+              style={css(
+                "padding:8px 18px;border:none;border-radius:var(--r-pill);cursor:pointer;font:inherit;font-size:var(--t-mini);font-weight:500;white-space:nowrap;" +
+                  (apartado === k ? "background:var(--accion-suave);color:var(--accion);" : "background:transparent;color:var(--text-2);")
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {apartado === "control" && <Control facturas={lista} />}
+        {apartado === "facturas" && <Rescate facturas />}
 
         {/* ------------------------------------------------ quién factura */}
         {/*
@@ -366,24 +397,24 @@ export default function FacturasScreen() {
             se emite. Eso no es una limitación nuestra, es la ley española, y
             está dicho junto al botón apagado, que es donde hace falta leerlo.
         */}
-        {sabemosDelEmisor && mios && (
-          <section style={css(TARJETA + PAD + "margin-bottom:var(--gap-lg);")}>
-            <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;")}>
-              <span style={css(rotulo(completo ? "var(--gold)" : "var(--red)"))}>
-                {completo ? "Quien factura" : "Faltan tus datos fiscales"}
-              </span>
+        {apartado === "facturas" && sabemosDelEmisor && mios && (
+          /* UNA LÍNEA, NO UN BLOQUE (15 de noviembre de 2026). Era una tarjeta
+             entera con un rótulo rojo y el botón principal de la pantalla, y
+             Ger la tenía delante cada vez que entraba: los datos se escriben
+             una vez en la vida y no pueden mandar más que el trabajo de todos
+             los días. Ahora es un renglón de nota; la tarjeta sólo aparece
+             mientras se están escribiendo. La regla no cambia: sin los tres no
+             se emite, y eso lo vuelve a decir el botón apagado. */
+          <section style={css((abriendoDatos ? TARJETA + PAD : "") + "margin-bottom:var(--gap-lg);")}>
+            <div style={css("display:flex;align-items:baseline;gap:var(--s2) var(--s3);flex-wrap:wrap;")}>
               <span style={css(NOTA + "min-width:0;overflow-wrap:anywhere;")}>
-                {completo ? `${EMISOR.nombre} · ${EMISOR.nif}` : `${huecos.join(", ")} — sin ellos no se puede emitir.`}
+                {completo
+                  ? `Facturas como ${EMISOR.nombre} · NIF ${EMISOR.nif}`
+                  : `Para emitir te falta: ${huecos.join(", ").replace(/, ([^,]*)$/, " y $1").replace(/^N/, "n").replace("Domicilio", "domicilio")}.`}
               </span>
               {!abriendoDatos && (
-                <button
-                  onClick={() => setAbriendoDatos(true)}
-                  /* En ancho va al final del renglón; en estrecho el renglón es
-                     suyo entero, porque un botón colgando a la derecha debajo de
-                     dos líneas de texto se lee como si se hubiera caído ahí. */
-                  style={css((completo ? BOTON_PLANO : botonPrincipal()) + (estrecho ? "flex:1 1 100%;" : "margin-left:auto;"))}
-                >
-                  {completo ? "Cambiarlos" : "Ponerlos ahora"}
+                <button onClick={() => setAbriendoDatos(true)} style={css(BOTON_PLANO)}>
+                  {completo ? "Cambiarlos" : "Ponerlos"}
                 </button>
               )}
             </div>
@@ -449,6 +480,7 @@ export default function FacturasScreen() {
 
       {/* `data-hoja` lo lee la hoja de impresión: al imprimir, la rejilla de dos
        * columnas se deshace para que la factura salga a todo el folio. */}
+      {apartado === "facturas" && (
       <div data-dos="" data-hoja="">
         {/* ------------------------------------------------------- la lista */}
         {/* El aviso va FUERA de la tarjeta de la lista, no dentro: dentro de
@@ -842,6 +874,7 @@ export default function FacturasScreen() {
           {enPantalla && <HojaFactura f={enPantalla} marca={marca} />}
         </div>
       </div>
+      )}
     </main>
   );
 }

@@ -294,6 +294,10 @@ service cloud.firestore {
        — y sólo la necesita quien ya está dentro. */
     match /ajustes/{id}  { allow read, write: if esAdmin(); }
 
+    /* Los gastos de la actividad, para el control trimestral que se le pasa
+       al gestor. Los apunta Iris desde Facturas → Control y gastos. */
+    match /gastos/{id}   { allow read, write: if esAdmin(); }
+
     /* ---------------------------------------------------------------- */
     /*  LA ESCUELA                                                       */
     /* ---------------------------------------------------------------- */

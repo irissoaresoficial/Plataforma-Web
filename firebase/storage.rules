@@ -176,6 +176,19 @@ service firebase.storage {
       allow delete: if request.auth != null && request.auth.uid == uid;
     }
 
+    /*
+     * LOS TIQUES DE LOS GASTOS. Una foto o un PDF por gasto, para que el
+     * gestor pueda justificarlo. Son papeles de Iris y de nadie más: sólo
+     * ella lee y escribe. Menos de 10 MB, que es el tope de la pantalla.
+     */
+    match /justificantes/{archivo} {
+      allow read: if esIris();
+      allow create, update: if esIris()
+        && request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*') || request.resource.contentType == 'application/pdf');
+      allow delete: if esIris();
+    }
+
     match /{todo=**} {
       allow read, write: if false;
     }
