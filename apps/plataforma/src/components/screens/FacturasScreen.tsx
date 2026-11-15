@@ -32,7 +32,7 @@ import Rescate from "../despacho/Rescate";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { css } from "@/lib/css";
 import { useApp } from "@/lib/app-context";
-import { APOYO, BOTON_NORMAL, BOTON_PLANO, NOTA, PAD, RAYA, TARJETA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
+import { APOYO, BOTON_NORMAL, BOTON_PLANO, CABECERA, NOTA, PAD, RAYA, TARJETA, TITULO, botonPrincipal, rotulo } from "@/lib/ui";
 import { useExportar, AVISO_SIN_DIALOGO } from "@/lib/imprimir";
 import GuiaApple from "../GuiaApple";
 import {
@@ -56,7 +56,7 @@ import {
   type DatosFiscales,
   type Factura,
 } from "@/lib/despacho";
-import { AvisoNavegador, Cabecera, useEstrecho, useLlevaAlDetalle } from "../despacho/Piezas";
+import { AvisoNavegador, useEstrecho, useLlevaAlDetalle } from "../despacho/Piezas";
 import HojaFactura from "../despacho/HojaFactura";
 import Mesa, { VerGrande } from "../despacho/Mesa";
 import Control from "../despacho/Control";
@@ -158,6 +158,14 @@ export default function FacturasScreen() {
     window.addEventListener("resize", mide);
     return () => window.removeEventListener("resize", mide);
   }, [apartado, estrecho, cargando]);
+
+  /** Una factura nueva recién abierta, sin guardar y sin nada escrito. */
+  const borradorIntacto =
+    !abierta &&
+    !!borrador &&
+    !lista.some((f) => f.id === borrador.id) &&
+    !borrador.cliente.nombre.trim() &&
+    borrador.lineas.every((l) => !l.precio);
 
   /** Pulsar un texto del folio lleva a su campo del formulario. */
   const vaAlCampo = (campo: string) => {
@@ -423,25 +431,26 @@ export default function FacturasScreen() {
       )}
     >
       <div data-chrome="1">
-        <Cabecera
-          titulo="Facturas"
-          pie={
-            apartado === "resumen"
-              ? "Cómo va el trimestre, de un vistazo."
-              : apartado === "facturas"
-                ? "Numeradas seguidas, sin saltarse ninguna."
-                : "Lo que pagas por tu trabajo, con su tique."
-          }
-        />
-        {/* LAS DOS MITADES. El control va aquí dentro y no en el menú porque
-            es la misma cosa vista desde el otro lado: los ingresos del control
-            SON estas facturas. La elegida va en vino suave y no sólido: el
-            vino lleno es del botón principal, y sólo hay uno por pantalla. */}
+        {/* EL TÍTULO Y LAS PESTAÑAS EN UNA SOLA LÍNEA. Apilados se comían
+            casi 300 px de alto, y en el editor ese alto es el del folio. */}
+        <div style={css("display:flex;align-items:center;gap:var(--s3) var(--gap);flex-wrap:wrap;margin-bottom:var(--gap);")}>
+          <div style={css("display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;min-width:0;")}>
+            <h1 style={css(CABECERA + "margin:0;")}>Facturas</h1>
+            <p style={css(NOTA + "margin:0;")}>
+              {apartado === "resumen"
+                ? "Cómo va el trimestre, de un vistazo."
+                : apartado === "facturas"
+                  ? "Numeradas seguidas, sin saltarse ninguna."
+                  : "Lo que pagas por tu trabajo, con su tique."}
+            </p>
+          </div>
+        {/* Tres pestañas. La elegida va en vino suave y no sólido: el vino
+            lleno es del botón principal, y sólo hay uno por pantalla. */}
         <div
           role="tablist"
           aria-label="Resumen, facturas o gastos"
           style={css(
-            "display:flex;gap:6px;margin-bottom:var(--gap-lg);padding:5px;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--border);width:max-content;max-width:100%;box-shadow:var(--shadow-sm);"
+            "display:flex;gap:6px;margin-left:" + (estrecho ? "0" : "auto") + ";padding:5px;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--border);width:max-content;max-width:100%;box-shadow:var(--shadow-sm);"
           )}
         >
           {(
@@ -464,6 +473,7 @@ export default function FacturasScreen() {
               {label}
             </button>
           ))}
+        </div>
         </div>
         {apartado === "resumen" && (
           <Resumen
@@ -607,7 +617,7 @@ export default function FacturasScreen() {
       {apartado === "facturas" && (
         <>
           {/* ------------------------------------------------ la tira */}
-          <div data-chrome="1" style={css(TARJETA + "padding:var(--s2) var(--s2) var(--s2) var(--s4);display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--gap);min-width:0;")}>
+          <div data-chrome="1" style={css(TARJETA + "padding:5px 5px 5px var(--s4);display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3);min-width:0;min-height:46px;")}>
             <span style={css(rotulo() + "flex:none;")}>
               {cargando ? "Un momento…" : lista.length === 1 ? "1 factura" : `${lista.length} facturas`}
             </span>
@@ -640,9 +650,13 @@ export default function FacturasScreen() {
                 Ver
               </button>
             )}
-            <button onClick={nueva} style={css(BOTON_NORMAL + "flex:none;")}>
-              {estrecho ? "Nueva" : "Nueva factura"}
-            </button>
+            {/* Con una factura nueva sin tocar ya abierta, «Nueva factura» no
+                hace nada: ya estás en ella. Sale en cuanto hay otra cosa. */}
+            {!borradorIntacto && (
+              <button onClick={nueva} style={css(BOTON_NORMAL + "flex:none;padding:7px 16px;")}>
+                {estrecho ? "Nueva" : "Nueva factura"}
+              </button>
+            )}
           </div>
 
           {/* ------------------------------------------------ la ventana partida */}
