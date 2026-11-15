@@ -139,6 +139,17 @@ En la plataforma, además:
 | `--sobre-bloque` | `#fbf6ee` | La tinta sobre el bloque (13,7:1) |
 | `--accion` | `#451a25` | El vino exacto de la web. Antes era `#4a1a26`, casi igual, que es peor que distinto |
 
+Las tintas de la ficha de Kábala, sólo para el método (no son colores de
+interfaz: son los de la ficha que Iris rellena a mano, y cada uno significa
+algo). Mismo valor en claro y en oscuro:
+
+| Token | Valor | Qué es |
+|---|---|---|
+| `--ficha-azul` | `#2c5d9e` | Plano bloqueado, aprendizaje |
+| `--ficha-rojo` | `#c0392b` | Ayuda espiritual, eje o plano en tensión |
+| `--ficha-verde` | `#4c9a5a` | Maestría, punto verde |
+| `--ficha-amarillo` | `#e5b63c` | Portal que se repite (con `--vino` encima) |
+
 Y los que cambian según el bloque (`.claro`, `.arena`, `.vino`):
 `--bg`, `--tx`, `--tx-2`, `--tx-3`, `--acento`, `--superficie`.
 

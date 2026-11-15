@@ -3,9 +3,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import type { ImagenAlma } from "@/lib/engine";
 
-const AZUL = "#2C5D9E";
-const ROJO = "#C0392B";
-const VERDE = "#4C9A5A";
+const AZUL = "var(--ficha-azul)";
+const ROJO = "var(--ficha-rojo)";
+const VERDE = "var(--ficha-verde)";
 
 /**
  * La tabla de la imagen del alma con la notación de la ficha

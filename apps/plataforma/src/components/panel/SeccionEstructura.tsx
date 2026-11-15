@@ -49,7 +49,7 @@ export default function SeccionEstructura() {
     {
       muestra: (
         <span style={css("display:inline-flex;align-items:center;justify-content:center;width:40px;")}>
-          <span style={css("display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:26px;padding:0 7px;border-radius:var(--r-xs);background:var(--surface-solid);border:2.2px solid #2C5D9E;font-size:var(--t-body);font-weight:700;color:#2C5D9E;")}>
+          <span style={css("display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:26px;padding:0 7px;border-radius:var(--r-xs);background:var(--surface-solid);border:2.2px solid var(--ficha-azul);font-size:var(--t-body);font-weight:700;color:var(--ficha-azul);")}>
             {String(est.dinamicos[1]).repeat(2)}
           </span>
         </span>
@@ -60,7 +60,7 @@ export default function SeccionEstructura() {
     {
       muestra: (
         <span style={css("display:inline-flex;align-items:center;justify-content:center;width:40px;")}>
-          <span style={css("width:26px;height:3.4px;border-radius:2px;background:#4C9A5A;opacity:.85;")} />
+          <span style={css("width:26px;height:3.4px;border-radius:2px;background:var(--ficha-verde);opacity:.85;")} />
         </span>
       ),
       titulo: "Subrayado verde · maestría",
@@ -192,9 +192,9 @@ export default function SeccionEstructura() {
                       <span
                         style={css(
                           "flex:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;font-size:var(--t-body);font-weight:700;background:" +
-                            (veces ? "#E5B63C" : "color-mix(in srgb, var(--text) 5%, transparent)") +
+                            (veces ? "var(--ficha-amarillo)" : "color-mix(in srgb, var(--text) 5%, transparent)") +
                             ";color:" +
-                            (veces ? "#2B1119" : "var(--text-3)") +
+                            (veces ? "var(--vino)" : "var(--text-3)") +
                             ";border:" +
                             (escudo ? "2.5px solid var(--blue)" : "1px solid var(--border)") +
                             ";"

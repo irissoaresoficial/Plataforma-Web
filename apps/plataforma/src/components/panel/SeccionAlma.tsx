@@ -39,9 +39,9 @@ export default function SeccionAlma() {
         {/* El resumen que va escrito al pie de la ficha, a mano. */}
         <div style={css("display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--border);")}>
           {[
-            { l: "Planos bloqueados", v: Object.keys(ia.bloqueos).map(Number).sort((a, b) => a - b), c: "#2C5D9E" },
-            { l: "Ayudas espirituales", v: Object.keys(ia.ayudas).map(Number).sort((a, b) => a - b), c: "#C0392B" },
-            { l: "Punto verde", v: ia.proyeccion ? [ia.proyeccion] : [], c: "#4C9A5A" },
+            { l: "Planos bloqueados", v: Object.keys(ia.bloqueos).map(Number).sort((a, b) => a - b), c: "var(--ficha-azul)" },
+            { l: "Ayudas espirituales", v: Object.keys(ia.ayudas).map(Number).sort((a, b) => a - b), c: "var(--ficha-rojo)" },
+            { l: "Punto verde", v: ia.proyeccion ? [ia.proyeccion] : [], c: "var(--ficha-verde)" },
           ].map((x) => (
             <div key={x.l} style={css("display:flex;align-items:baseline;gap:var(--s3);font-size:var(--t-body);")}>
               <span style={css("color:var(--text-3);min-width:130px;")}>{x.l}</span>

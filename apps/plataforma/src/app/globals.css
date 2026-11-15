@@ -344,6 +344,19 @@
   --blue: #0071e3;
   --purple: #8e44ad;
 
+  /* LAS TINTAS DE LA FICHA DE KÁBALA. No son colores de interfaz: son los de
+     la ficha que Iris rellena a mano (NUEVA_FICHA_KABBALAH_IMPRIMIR.pdf), y
+     cada uno dice una cosa del método — azul, el plano bloqueado y el
+     aprendizaje; rojo, la ayuda espiritual y la tensión; verde, la maestría y
+     el punto verde; amarillo, el portal que se repite. Iban escritos a mano en
+     cinco archivos. Se llaman por su nombre para que, si un día cambia el
+     tono, cambie en todos a la vez. Mismo valor en claro y en oscuro: es la
+     tinta de un papel, no la de la pantalla. */
+  --ficha-azul: #2c5d9e;
+  --ficha-rojo: #c0392b;
+  --ficha-verde: #4c9a5a;
+  --ficha-amarillo: #e5b63c;
+
   /* Las tres sombras de la casa son ahora relieve: siguen llamándose igual, así
    * que ninguna pantalla ha tenido que tocarse — piden `--shadow` como pedían
    * antes y lo que les llega es el volumen nuevo. La línea de un pelo sigue en

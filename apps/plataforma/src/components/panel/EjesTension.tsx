@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import type { Resultado } from "@/lib/engine";
 
-const ROJO = "#C0392B";
+const ROJO = "var(--ficha-rojo)";
 
 /**
  * La escalera E/M de la ficha (NUEVA_FICHA_KABBALAH_IMPRIMIR.pdf, pág. 2).

@@ -121,7 +121,7 @@ export default function SeccionResumen() {
               {cicloActual.nombre} · {cicloActual.numero}
             </div>
             <div style={css("height:9px;border-radius:var(--r-pill);background:color-mix(in srgb, var(--text) 10%, transparent);overflow:hidden;margin-top:var(--s3);")}>
-              <div style={css("height:100%;width:" + avance.toFixed(1) + "%;border-radius:var(--r-pill);background:linear-gradient(90deg,#C9A84C,#9A7B2E);")} />
+              <div style={css("height:100%;width:" + avance.toFixed(1) + "%;border-radius:var(--r-pill);background:linear-gradient(90deg,var(--oro),var(--gold));")} />
             </div>
             <div style={css("display:flex;justify-content:space-between;font-size:var(--t-mini);color:var(--text-4);margin-top:7px;")}>
               <span>{cicloActual.desde} años</span>
@@ -188,7 +188,7 @@ export default function SeccionResumen() {
                         "width:100%;border-radius:var(--r-xs) 7px 3px 3px;height:" +
                           Math.round(28 + (n / maxEtapa) * 72) +
                           "%;background:" +
-                          (on ? "linear-gradient(180deg,#C9A84C,#8A6A1B)" : "color-mix(in srgb, var(--text) 10%, transparent)") +
+                          (on ? "linear-gradient(180deg,var(--oro),var(--gold))" : "color-mix(in srgb, var(--text) 10%, transparent)") +
                           ";"
                       )}
                     />
