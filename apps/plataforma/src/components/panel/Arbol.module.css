@@ -1,0 +1,27 @@
+/*
+ * EL ÁRBOL, LEGIBLE EN EL MÓVIL.
+ *
+ * El dibujo está hecho para 488 unidades de ancho. En un móvil se pinta a unos
+ * 310 píxeles, el 63 %, y los nombres —13, 12 y 11 unidades— quedaban en 8 y
+ * 7 píxeles: no se leía ni «Tiphereth». Aquí, sólo en pantalla estrecha y
+ * sólo en el panel, los textos crecen dentro del dibujo hasta llegar a unos
+ * 11 píxeles de verdad. El trazo no cambia, y el documento que se imprime usa
+ * el mismo componente sin esta clase, así que tampoco.
+ *
+ * Una regla de CSS gana a un atributo de presentación del SVG, por eso basta
+ * con apuntar a cada tamaño por el atributo que ya lleva.
+ */
+@media (max-width: 600px) {
+  .arbol text[font-size="13"] {
+    font-size: 18px;
+  }
+  .arbol text[font-size="14"] {
+    font-size: 19px;
+  }
+  .arbol text[font-size="12"] {
+    font-size: 16px;
+  }
+  .arbol text[font-size="11"] {
+    font-size: 15px;
+  }
+}

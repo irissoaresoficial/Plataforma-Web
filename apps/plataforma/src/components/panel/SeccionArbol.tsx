@@ -11,6 +11,7 @@ import Parrafo from "./Parrafo";
 import { tarjetaCon, PAD_SM, NOTA } from "@/lib/ui";
 import Lienzo from "../Lienzo";
 import ArbolVida from "../ArbolVida";
+import arbol from "./Arbol.module.css";
 import FichaGrafico, { type Contenido } from "./FichaGrafico";
 
 const ETAPA = { origen: "camino de origen", transformacion: "camino de transformación", destino: "camino de destino" } as const;
@@ -75,7 +76,7 @@ export default function SeccionArbol() {
         <div style={css("display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s2);")}>
           <span style={css("font-size:var(--t-read);font-weight:600;letter-spacing:-.022em;color:var(--text);")}>Árbol de la Vida</span>
         </div>
-        <div style={css("position:relative;")}>
+        <div className={arbol.arbol} style={css("position:relative;")}>
           <Particulas cantidad={20} />
           <ArbolVida
             r={r}

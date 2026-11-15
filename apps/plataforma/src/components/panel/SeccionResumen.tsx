@@ -2,6 +2,7 @@
 import { css } from "@/lib/css";
 import { BOTON_NORMAL, BOTON_PLANO, botonPrincipal } from "@/lib/ui";
 import resumen from "./Resumen.module.css";
+import arbol from "./Arbol.module.css";
 import { useApp } from "@/lib/app-context";
 import { COL, COL_TX } from "@/lib/tree";
 import { frase, titulo } from "@/lib/format";
@@ -213,7 +214,9 @@ export default function SeccionResumen() {
                 Abrir
               </button>
             </div>
-            <ArbolVida r={r} estilo="width:100%;max-width:390px;height:auto;display:block;margin:6px auto 0;" />
+            <div className={arbol.arbol}>
+              <ArbolVida r={r} estilo="width:100%;max-width:390px;height:auto;display:block;margin:6px auto 0;" />
+            </div>
           </section>
         </div>
       </div>
