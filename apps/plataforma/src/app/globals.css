@@ -2951,3 +2951,40 @@ html[data-guia="1"] body {
     display: none;
   }
 }
+
+/* ===========================================================================
+   MENOS CAPAS DESENFOCADAS (aviso de rendimiento de la sesión principal)
+   ===========================================================================
+   El desenfoque es lo que más cuesta al pintar, y apilado —barra, columna,
+   ventana, dock, pestañas pegadas— es lo primero que hace ir el scroll a
+   tirones en un portátil modesto o en el móvil. Dentro del cristal:
+
+   · `--vidrio-difuminado` (el cristal de antes: pestañas pegadas, la barra del
+     plano, piezas sueltas) deja de desenfocar y a cambio es casi opaco, que en
+     una pieza que se queda quieta encima del contenido es lo que hace que se
+     lea, no el desenfoque.
+   · El cristal oscuro de Feng Shui, que sí va encima de una foto nítida (la
+     vivienda), baja de 34 a 16 px: se sigue viendo esmerilado.
+   · El dock: 16 px en tableta y NINGUNO en el móvil, donde va opaco.
+
+   Lo que se abre y se cierra (una hoja, el menú) conserva su velo: dura lo que
+   se tarda en cerrarlo y no corre con el scroll. */
+[data-cristal],
+:root[data-en-cristal] {
+  --vidrio: var(--cristal-barra-densa);
+  --vidrio-denso: var(--cristal-barra-densa);
+  --vidrio-difuminado: none;
+  --cristal-oscuro-difuminado: blur(16px) saturate(115%);
+  --cristal-dock-filtro: blur(16px) saturate(1.2);
+}
+@media (max-width: 680px) {
+  [data-cristal],
+  :root[data-en-cristal] {
+    --cristal-dock-filtro: none;
+  }
+  /* Sin desenfoque, el dock se pinta sobre su color sólido: si no, las cifras
+     de detrás se leerían a través de los iconos. */
+  [data-dock] {
+    background: var(--cristal-dock), var(--surface-solid) !important;
+  }
+}

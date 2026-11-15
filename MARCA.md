@@ -205,6 +205,11 @@ Más reglas del cristal, todas medidas:
   aviso sube a `#f6b0a9`: los de siempre se quedaban por debajo de 4,5:1.
 - **Se entra en claro.** El oscuro es una elección del botón de la luna, no se
   copia del ordenador.
+- **Pocas capas desenfocadas.** Dentro del cristal sólo desenfocan el dock
+  (16 px; en el móvil ninguno, va opaco), el cristal oscuro de Feng Shui
+  sobre la foto de la vivienda (16 px) y lo que se abre encima un momento.
+  Lo que se queda quieto encima del contenido (`--vidrio`) es casi opaco y
+  sin desenfoque: se lee igual y no hace ir el scroll a tirones.
 - **Pesos: sólo se descargan 400 y 500** y `font-synthesis-weight` está
   apagado. Cualquier regla que pida 600 o 700 recibe el 500.
 
