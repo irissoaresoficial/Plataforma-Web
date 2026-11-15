@@ -47,6 +47,7 @@ import { css } from "@/lib/css";
 import { BOTON_NORMAL, BOTON_PLANO, CAMPO, NOTA, PANTALLA, TARJETA, botonPrincipal, rotulo } from "@/lib/ui";
 import Confirmar from "../Confirmar";
 import SubirVideo from "./SubirVideo";
+import SubirPortada from "./SubirPortada";
 import Recursos from "./Recursos";
 import { portadaDe } from "@/lib/escuela/portadas";
 import { cursos as repo, nuevoId, totalLecciones, type Curso, type Leccion, type Modulo } from "@/lib/escuela";
@@ -356,19 +357,10 @@ export default function EditorCurso({
             </div>
 
             <div>
-              <label htmlFor="curso-portada" style={etiqueta("")}>
+              <span style={etiqueta("")}>
                 Portada <span style={css(NOTA)}>— opcional</span>
-              </label>
-              <input
-                id="curso-portada"
-                value={c.portada}
-                onChange={(e) => cambia({ portada: e.target.value })}
-                placeholder="Pega aquí la dirección de una imagen"
-                style={css(CAMPO)}
-              />
-              <p style={css(NOTA + "margin:6px 0 0;")}>
-                Si lo dejas vacío sale un fondo liso con la inicial. No pasa nada por no poner ninguna.
-              </p>
+              </span>
+              <SubirPortada cursoId={c.id} valor={c.portada} alCambiar={(portada) => cambia({ portada })} />
             </div>
           </Paso>
 

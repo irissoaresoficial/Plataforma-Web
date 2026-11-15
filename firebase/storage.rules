@@ -150,6 +150,19 @@ service firebase.storage {
      * momento, para probar».
      */
     /*
+     * LA PORTADA DE CADA CURSO. Escriben los mismos que en la carpeta del
+     * curso: Iris o quien lo monta. Sólo imágenes y de menos de 10 MB: la
+     * plataforma la encoge antes a unos 200 KB. La lee quien haya entrado.
+     */
+    match /portadas/{cursoId}/{archivo} {
+      allow read: if request.auth != null;
+      allow create, update: if (esIris() || esAutor(cursoId))
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if esIris() || esAutor(cursoId);
+    }
+
+    /*
      * LA FOTO DE PERFIL. Cada uno sube la suya a su carpeta y a ninguna otra.
      * La lee cualquiera que haya entrado, porque sale en la comunidad. Sólo
      * imágenes y de menos de 5 MB: la plataforma la encoge antes a unos 40 KB,
