@@ -39,17 +39,24 @@ export type Plantilla = {
   nombre: string;
   /** Lo que sale escrito en la factura. */
   concepto: string;
-  /** De la casa: lo que paga la clienta, IVA incluido. null = PENDIENTE. */
+  /** Lo que paga la clienta, IVA incluido. Lo tienen la de la casa y las que
+   *  Iris crea con «Nueva plantilla». */
   precioFinal: number | null;
   /** De dónde sale el precio, dicho corto: «precio de la web». */
   origen: string;
-  /** Las suyas: las líneas tal cual (precio sin IVA) y el IVA que llevaban. */
+  /** Las guardadas desde una factura: sus líneas tal cual (sin IVA) y su IVA. */
   lineas?: LineaFactura[];
   iva?: number;
   propia: boolean;
 };
 
-/** Las de la casa. Valores de `apps/web/content/site.ts` a 15 de noviembre de 2026. */
+/**
+ * La de la casa: sólo la sesión, que es lo que Iris factura casi siempre.
+ * Ger, 15 de noviembre de 2026: fuera el aniversario, Kábala, los cursos y la
+ * membresía — «ella tiene que tener la capacidad de crear estas cosas». Lo
+ * demás lo crea Iris con «Nueva plantilla», con su nombre y su precio.
+ * El precio sale de `SESION.precio` en `apps/web/content/site.ts`.
+ */
 export const PLANTILLAS_CASA: Plantilla[] = [
   {
     id: "casa-sesion",
@@ -57,46 +64,6 @@ export const PLANTILLAS_CASA: Plantilla[] = [
     concepto: "Sesión individual de numerología transgeneracional",
     precioFinal: 150,
     origen: "precio de la web",
-    propia: false,
-  },
-  {
-    id: "casa-sesion-aniversario",
-    nombre: "Sesión · aniversario",
-    concepto: "Sesión individual de numerología transgeneracional (precio de aniversario)",
-    precioFinal: 111,
-    origen: "oferta de la web, 16 plazas",
-    propia: false,
-  },
-  {
-    id: "casa-kabala",
-    nombre: "Consulta de Kábala",
-    concepto: "Consulta de Kábala",
-    precioFinal: 333,
-    origen: "precio de la web",
-    propia: false,
-  },
-  {
-    id: "casa-desordenes",
-    nombre: "Curso Desórdenes Amorosos",
-    concepto: "Curso Desórdenes Amorosos",
-    precioFinal: null,
-    origen: "la web aún no tiene precio",
-    propia: false,
-  },
-  {
-    id: "casa-arbol",
-    nombre: "Curso Numerología y Árbol",
-    concepto: "Curso Numerología Transgeneracional y Estudio del Árbol Genealógico",
-    precioFinal: null,
-    origen: "la web aún no tiene precio",
-    propia: false,
-  },
-  {
-    id: "casa-membresia",
-    nombre: "Membresía",
-    concepto: "Membresía Escuela de Sabiduría 33",
-    precioFinal: null,
-    origen: "aún no ha abierto",
     propia: false,
   },
 ];
@@ -157,6 +124,21 @@ export async function guardaPropia(nombre: string, lineas: LineaFactura[], iva: 
     origen: "tuya",
     lineas: lineas.map((l) => ({ ...l })),
     iva,
+    propia: true,
+  };
+  const lista = [...(await listaPropias()), nueva];
+  await escribe(lista);
+  return lista;
+}
+
+/** Una plantilla nueva desde cero: un nombre y lo que paga la clienta. */
+export async function creaPropia(nombre: string, precioFinal: number): Promise<Plantilla[]> {
+  const nueva: Plantilla = {
+    id: nuevoId(),
+    nombre: nombre.trim(),
+    concepto: nombre.trim(),
+    precioFinal: redondea(precioFinal),
+    origen: "tuya",
     propia: true,
   };
   const lista = [...(await listaPropias()), nueva];

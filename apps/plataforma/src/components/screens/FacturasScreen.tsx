@@ -192,20 +192,20 @@ export default function FacturasScreen() {
 
   /*
    * ELEGIR UNA PLANTILLA. Las de la casa traen lo que paga la clienta y aquí se
-   * saca la base con el IVA que tenga la factura; las suyas traen sus líneas
-   * tal cual. Un precio PENDIENTE no se rellena con nada: se dice.
+   * saca la base con el IVA que tenga la factura —también las que Iris crea
+   * con nombre y precio—; las guardadas desde una factura traen sus líneas.
    */
   const aplicaPlantilla = (p: Plantilla) => {
     if (!borrador) return;
     setElegida(p.id);
-    if (p.propia && p.lineas) {
+    if (p.precioFinal == null && p.lineas) {
       cambia({ lineas: p.lineas.map((l) => ({ ...l })), iva: p.iva ?? borrador.iva });
       setMensaje("");
       return;
     }
     const precio = p.precioFinal == null ? 0 : baseDesdeFinal(p.precioFinal, borrador.iva);
     cambia({ lineas: [{ concepto: p.concepto, cantidad: 1, precio }] });
-    setMensaje(p.precioFinal == null ? `El precio de «${p.nombre}» está PENDIENTE: escríbelo sin IVA en la línea.` : "");
+    setMensaje("");
   };
 
   /** Si cambia el IVA con una plantilla de la casa puesta, la base se recalcula
@@ -213,7 +213,7 @@ export default function FacturasScreen() {
    *  no: entonces manda lo que Iris haya escrito. */
   const cambiaIva = (iva: number) => {
     if (!borrador) return;
-    const p = PLANTILLAS_CASA.find((x) => x.id === elegida);
+    const p = [...PLANTILLAS_CASA, ...propias].find((x) => x.id === elegida);
     const intacta = p && p.precioFinal != null && borrador.lineas.length === 1 && borrador.lineas[0].concepto === p.concepto && borrador.lineas[0].cantidad === 1;
     if (p && p.precioFinal != null && intacta) cambia({ iva, lineas: [{ ...borrador.lineas[0], precio: baseDesdeFinal(p.precioFinal, iva) }] });
     else cambia({ iva });

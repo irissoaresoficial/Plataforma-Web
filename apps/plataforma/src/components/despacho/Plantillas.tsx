@@ -16,7 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import { css } from "@/lib/css";
 import { BOTON_PLANO, NOTA, PASTILLA, PASTILLA_ELEGIDA, rotulo } from "@/lib/ui";
 import { euros, PENDIENTE, type LineaFactura } from "@/lib/despacho";
-import { PLANTILLAS_CASA, guardaPropia, listaPropias, quitaPropia, type Plantilla } from "@/lib/despacho/plantillas";
+import { PLANTILLAS_CASA, creaPropia, guardaPropia, listaPropias, quitaPropia, type Plantilla } from "@/lib/despacho/plantillas";
 
 export function usePlantillas() {
   const [propias, setPropias] = useState<Plantilla[]>([]);
@@ -34,7 +34,8 @@ export function usePlantillas() {
 
 /** Lo que cuesta una tarjeta, escrito como se lee. */
 function precioDe(p: Plantilla): { texto: string; pendiente: boolean } {
-  if (p.propia && p.lineas) {
+  if (p.precioFinal != null) return { texto: euros(p.precioFinal), pendiente: false };
+  if (p.lineas) {
     const base = p.lineas.reduce((s, l) => s + l.cantidad * l.precio, 0);
     const total = base * (1 + (p.iva ?? 0) / 100);
     return { texto: euros(Math.round(total * 100) / 100), pendiente: false };
@@ -54,6 +55,31 @@ export default function Plantillas({
   onElige: (p: Plantilla) => void;
 }) {
   const [fallo, setFallo] = useState("");
+  /* «Nueva plantilla»: un nombre y lo que paga la clienta. Nada más. */
+  const [creando, setCreando] = useState(false);
+  const [nombre, setNombre] = useState("");
+  const [precio, setPrecio] = useState("");
+  const [guardando, setGuardando] = useState(false);
+
+  const crear = async () => {
+    const n = Number(precio.replace(",", "."));
+    if (!nombre.trim()) return setFallo("Ponle un nombre: es lo que saldrá escrito en la factura.");
+    if (!(n > 0)) return setFallo("Pon lo que paga la clienta, con el IVA dentro.");
+    setGuardando(true);
+    setFallo("");
+    try {
+      const lista = await creaPropia(nombre, n);
+      setPropias(lista);
+      setCreando(false);
+      setNombre("");
+      setPrecio("");
+      onElige(lista[lista.length - 1]);
+    } catch (e) {
+      setFallo((e instanceof Error ? e.message : "No se ha podido guardar.") + " La plantilla no se ha guardado.");
+    } finally {
+      setGuardando(false);
+    }
+  };
 
   const quitar = async (id: string) => {
     setFallo("");
@@ -94,7 +120,7 @@ export default function Plantillas({
           >
             {pendiente ? PENDIENTE : texto}
           </span>
-          <span style={css(NOTA + "line-height:1.35;")}>{p.propia ? "Guardada por ti" : pendiente ? p.origen : `Lo que paga · ${p.origen}`}</span>
+          <span style={css(NOTA + "line-height:1.35;")}>{p.propia ? "Tuya" : `Lo que paga · ${p.origen}`}</span>
         </button>
         {p.propia && (
           <button
@@ -119,10 +145,55 @@ export default function Plantillas({
       <div style={css("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,128px),1fr));gap:var(--s2);")}>
         {PLANTILLAS_CASA.map(tarjeta)}
         {propias.map(tarjeta)}
+        {!creando && (
+          <button
+            type="button"
+            onClick={() => {
+              setFallo("");
+              setCreando(true);
+            }}
+            style={css(
+              "display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;text-align:left;cursor:pointer;font:inherit;" +
+                "padding:var(--s3) var(--s4);border-radius:var(--r);border:1px dashed var(--border-strong);background:transparent;color:var(--text-2);min-height:96px;"
+            )}
+          >
+            <span style={css("font-size:var(--t-title);font-weight:300;line-height:1;color:var(--accion);")}>+</span>
+            <span style={css("font-size:var(--t-body);font-weight:500;")}>Nueva plantilla</span>
+            <span style={css(NOTA)}>Un curso, una consulta…</span>
+          </button>
+        )}
       </div>
-      <p style={css(NOTA + "margin:0;line-height:1.5;")}>
-        Los precios son los de la web: lo que paga la clienta, con el 21 % de IVA ya dentro.
-      </p>
+
+      {creando && (
+        <div style={css("display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center;")}>
+          <input
+            autoFocus
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Qué es: Consulta de Kábala"
+            aria-label="Nombre de la plantilla"
+            style={css("flex:2 1 200px;min-width:0;padding:10px 13px;color:var(--text);font-family:var(--font-ui);font-size:var(--t-body);")}
+          />
+          <input
+            value={precio}
+            inputMode="decimal"
+            onChange={(e) => setPrecio(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && void crear()}
+            placeholder="Precio con IVA"
+            aria-label="Lo que paga la clienta, con IVA"
+            data-cifras=""
+            style={css("flex:1 1 120px;min-width:0;padding:10px 13px;color:var(--text);font-family:var(--font-ui);font-size:var(--t-body);text-align:right;")}
+          />
+          <button type="button" onClick={() => void crear()} disabled={guardando} style={css(BOTON_PLANO)}>
+            {guardando ? "Guardando…" : "Crear"}
+          </button>
+          <button type="button" onClick={() => setCreando(false)} style={css(BOTON_PLANO)}>
+            Dejarlo
+          </button>
+        </div>
+      )}
+
+      <p style={css(NOTA + "margin:0;line-height:1.5;")}>Los precios son lo que paga la clienta, con el 21 % de IVA ya dentro.</p>
       {fallo && (
         <p role="alert" style={css(NOTA + "margin:0;color:var(--red);")}>
           {fallo}
