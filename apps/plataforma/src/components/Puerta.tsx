@@ -97,7 +97,9 @@ export default function Puerta() {
         transition={{ duration: 0.7, ease: CURVA }}
       >
         <div className="puerta-sello">
-          <Image src="/flor-de-lis.png" alt="" width={62} height={62} priority />
+          {/* El sello de la escuela, el mismo de la barra de arriba de dentro:
+              quien entra tiene que reconocer la casa antes de estar dentro. */}
+          <Image src="/logo.jpeg" alt="" width={56} height={56} priority />
           <span className="puerta-marca">Escuela de Sabiduría 33</span>
         </div>
 

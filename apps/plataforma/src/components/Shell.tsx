@@ -61,8 +61,9 @@ const CRISTAL: View[] = [
   "metricas",
   "correos",
   "gestion",
-  /* Feng Shui entra cuando su chat lo cierre: lo está rediseñando con estos
-     mismos tokens y no se le pisa la pantalla. */
+  /* Feng Shui, desde el 15 de noviembre: su chat ya lo hizo con estos mismos
+     tokens. Ger: «TODOS LOS APARTADOS TENGAN NUESTRO DISEÑO». */
+  "fengshui",
 ];
 
 export default function Shell() {
@@ -154,6 +155,16 @@ export default function Shell() {
   const cristal = CRISTAL.includes(vista);
   const nombreVista =
     PESTANAS.find((t) => t.k === vista)?.label ?? (vista === "pareja" ? "Comparativa" : vista === "fengshui" ? "Feng Shui" : "");
+
+  /* Las hojas que se abren encima (la ficha de una persona, una cita) se
+     pintan fuera de este árbol, directamente en <body>, y no ven el
+     `data-cristal` de aquí abajo. La marca se repite en <html> para que
+     globals.css también las alcance. */
+  useEffect(() => {
+    const raiz = document.documentElement;
+    if (cristal) raiz.dataset.enCristal = "";
+    else delete raiz.dataset.enCristal;
+  }, [cristal]);
 
   const faltaEstudio = rehidratado && VISTAS_DE_ESTUDIO.includes(vista) && !r && !re;
 

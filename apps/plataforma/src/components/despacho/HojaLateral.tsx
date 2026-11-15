@@ -103,6 +103,7 @@ export default function HojaLateral({
         >
           <motion.div
             ref={panel}
+            data-hoja=""
             role="dialog"
             aria-modal="true"
             aria-label={titulo}

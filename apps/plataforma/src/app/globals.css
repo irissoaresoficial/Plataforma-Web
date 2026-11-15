@@ -2726,3 +2726,163 @@ html[data-guia="1"] body {
     background: none !important;
   }
 }
+
+/* ------------------------------------------- lo que se abre encima, en cristal
+   El cajón del menú, la hoja lateral (citas, fichas) y la ficha de un número
+   eran planos y pegados al borde: el diseño de antes asomando en cuanto se
+   abría algo. Ahora flotan con el mismo canto que todo lo demás. Van con
+   `!important` porque sus medidas llegan en línea desde el componente. */
+:root[data-en-cristal] [data-cajon] {
+  top: 10px !important;
+  left: 10px !important;
+  bottom: 10px !important;
+  border: none !important;
+  border-radius: var(--r-panel) !important;
+  background: var(--surface-solid) !important;
+  box-shadow: var(--cristal-riel-sombra) !important;
+}
+:root[data-en-cristal] [data-hoja] {
+  width: min(580px, calc(100% - 20px)) !important;
+  height: calc(100% - 20px) !important;
+  margin: 10px !important;
+  overflow: hidden;
+  border: none !important;
+  border-radius: var(--r-panel) !important;
+  background: var(--surface-solid) !important;
+  box-shadow: var(--cristal-dock-sombra) !important;
+}
+:root[data-en-cristal] [data-detalle] {
+  border-radius: var(--r-panel) !important;
+}
+
+/* ===========================================================================
+   LA PUERTA, EN CRISTAL (15 de noviembre de 2026)
+   ===========================================================================
+   Ger: «quiero que TODOS los apartados tengan nuestro diseño». La entrada era
+   la única pantalla que seguía en el granate plano con la flor de lis: lo
+   primero que veía Iris cada mañana era otra casa. Ahora es la misma foto, el
+   mismo cristal y el mismo sello que dentro, y sigue el tema elegido.
+
+   Va aquí, después de las reglas de antes, y las pisa: no se borran por si
+   hubiera que volver atrás (MARCA.md §8.4). */
+.puerta,
+.puerta-espera {
+  background: var(--cristal-velo), var(--cristal-foto) center / cover no-repeat, var(--bg);
+  color: var(--text);
+}
+.puerta-velo {
+  display: none;
+}
+.puerta-caja {
+  width: min(460px, 100%);
+  padding: clamp(28px, 4vw, 44px);
+  border-radius: var(--r-ventana);
+  background: var(--cristal-barra-densa);
+  box-shadow: var(--cristal-ventana-filo), var(--cristal-barra-sombra);
+}
+.puerta-sello img {
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 1;
+  box-shadow: 0 0 0 1px var(--border-accent);
+}
+.puerta-marca {
+  font-size: var(--t-body);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text);
+  max-width: none;
+}
+.puerta-titulo {
+  color: var(--text);
+}
+.puerta-sub {
+  font-size: var(--t-body);
+  color: var(--text-2);
+}
+.puerta-campo label {
+  font-size: var(--t-mini);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--text-2);
+}
+.puerta-campo input {
+  color: var(--text);
+  background: var(--cristal-campo);
+  border: 1px solid var(--border-strong);
+}
+.puerta-campo input::placeholder {
+  color: var(--text-4);
+}
+.puerta-campo input:focus {
+  border-color: var(--accion);
+  background: var(--cristal-campo);
+}
+.puerta-campo input:-webkit-autofill,
+.puerta-campo input:-webkit-autofill:hover,
+.puerta-campo input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 60px var(--surface-solid) inset;
+  caret-color: var(--text);
+}
+.puerta-ojo {
+  color: var(--text-3);
+}
+.puerta-ojo:hover,
+.puerta-ojo[aria-pressed="true"] {
+  color: var(--accion);
+}
+.puerta-ojo:focus-visible {
+  outline-color: var(--accion);
+}
+.puerta-boton {
+  font-weight: 500;
+  color: var(--sobre-accion);
+  background: var(--accion);
+}
+.puerta-error {
+  border-color: var(--red-border);
+  background: var(--red-soft);
+  color: var(--red);
+}
+.puerta-aviso {
+  border-color: var(--red-border);
+}
+.puerta-aviso > span {
+  font-size: var(--t-mini);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--red);
+}
+.puerta-aviso p {
+  font-size: var(--t-mini);
+  color: var(--text-2);
+}
+.puerta-aviso strong {
+  color: var(--text);
+  font-weight: 500;
+}
+/* «Volver a la web» iba suelto abajo del todo y, con la tarjeta de cristal,
+   le pisaba el canto en pantalla ancha. Ahora va debajo de la tarjeta, en su
+   sitio, sin solaparse nunca. */
+.puerta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s4);
+  /* En una pantalla baja la tarjeta y el enlace no caben: se baja, no se corta. */
+  overflow-y: auto;
+}
+.puerta-volver {
+  position: static;
+  transform: none;
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  background: var(--cristal-barra-densa);
+  color: var(--text-2);
+}
+.puerta-volver:hover {
+  color: var(--text);
+}

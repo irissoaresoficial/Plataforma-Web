@@ -106,7 +106,7 @@ function Hoja({ detalle }: { detalle: Detalle }) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={quieto ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.99 }}
         transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-        style={css(
+        data-detalle="" style={css(
           "max-width:760px;width:100%;background:var(--surface-solid);box-shadow:var(--shadow-lg);border:1px solid var(--border-accent);border-radius:var(--r);padding:clamp(22px,3.4vw,34px) clamp(20px,3.6vw,38px) clamp(26px,4vw,40px);position:relative;"
         )}
       >
