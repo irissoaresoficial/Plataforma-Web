@@ -344,3 +344,41 @@
     min-height: calc(100vh - 32mm);
   }
 }
+
+/*
+ * EL CUERPO, LA ESCALERA Y LA LISTA DE EJES.
+ *
+ * En papel van los tres en fila: 186 + 124 + la lista. En un móvil eso son
+ * 342 píxeles antes de escribir una sola letra, y la hoja se salía 89 por la
+ * derecha: el documento entero se movía de lado. En pantalla estrecha el
+ * cuerpo y la escalera se quedan juntos arriba y la lista baja debajo, a todo
+ * lo ancho. La impresión no lo nota: la regla es sólo de pantalla.
+ */
+.tensiones {
+  display: grid;
+  grid-template-columns: 186px 124px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+@media screen and (max-width: 600px) {
+  .tensiones {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .tensiones > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Las cifras del documento: dos columnas en papel, una en el móvil. A dos
+   columnas en 390 píxeles el pie de cada cifra no cabía y empujaba la hoja
+   17 píxeles fuera de la pantalla. */
+.cifrasDoc {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 26px;
+}
+@media screen and (max-width: 600px) {
+  .cifrasDoc {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

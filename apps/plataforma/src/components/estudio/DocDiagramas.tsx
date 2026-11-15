@@ -83,7 +83,7 @@ export function DocEstructura({ r, T }: { r: Resultado; T: CopiaEstudio }) {
     .concat(r.planosTension.map((p) => ({ nombre: p.plano.nombre, a: p.plano.a, b: p.plano.b, activo: p.activo, esEje: false, tipo: T.digPlano })));
 
   return (
-    <div style={css("display:grid;grid-template-columns:186px 124px 1fr;gap:16px;align-items:center;")}>
+    <div className={styles.tensiones}>
       <CuerpoPortales r={r} />
       {/* La escalera E/M de la pág. 2 de la ficha: los diez portales puestos en
        * su sitio, y cada eje como una línea que cruza de un lado al otro. Va al
