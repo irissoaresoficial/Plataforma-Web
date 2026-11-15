@@ -251,10 +251,15 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
         title={compacta ? label : apagado ? "Primero genera un estudio" : undefined}
         aria-label={compacta ? label : undefined}
         aria-current={activo ? "page" : undefined}
+        data-nav-boton=""
         style={css(
-          "display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;white-space:nowrap;border:none;border-radius:var(--r);letter-spacing:-.01em;line-height:1.25;transition:background var(--t-normal),color var(--t-normal);" +
+          /* Plegada, cada fila es un círculo dentro del riel de iconos.
+             Y a 500 como mucho: por encima no se sube (MARCA.md, «Los pesos»). */
+          "display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;white-space:nowrap;border:none;border-radius:" +
+            (compacta ? "var(--r-pill)" : "var(--r)") +
+            ";letter-spacing:-.01em;line-height:1.25;transition:background var(--t-normal),color var(--t-normal),box-shadow .18s ease,transform .16s ease;" +
             (apagado ? "cursor:not-allowed;" : "cursor:pointer;") +
-            (grande ? "font-size:var(--t-read);font-weight:600;" : "font-size:var(--t-body);font-weight:590;") +
+            (grande ? "font-size:var(--t-read);font-weight:500;" : "font-size:var(--t-body);font-weight:500;") +
             /*
              * DÓNDE ESTÁS: UNA PASTILLA SÓLIDA, NO UN TINTE.
              *
@@ -268,11 +273,14 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
              * que comparar unas filas con otras; con un bloque sólido, el ojo
              * lo encuentra antes de empezar a leer. Es la única cosa de toda la
              * columna que puede gritar, y por eso no grita nada más.
+             *
+             * Va por `--nav-activo`: fuera del cristal es el vino de siempre;
+             * en el cristal oscuro, el círculo claro de la referencia.
              */
             "background:" +
-            (activo ? "var(--accion)" : "transparent") +
+            (activo ? "var(--nav-activo)" : "transparent") +
             ";color:" +
-            (activo ? "var(--sobre-accion)" : apagado ? "var(--text-4)" : grande ? "var(--text)" : "var(--text-3)") +
+            (activo ? "var(--nav-activo-tx)" : apagado ? "var(--text-4)" : grande ? "var(--text)" : "var(--text-3)") +
             ";"
         )}
       >
@@ -284,7 +292,7 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
               (apagado
                 ? "var(--text-4)"
                 : activo
-                  ? "var(--sobre-accion)"
+                  ? "var(--nav-activo-tx)"
                   : grande
                     ? "var(--gold)"
                     : "var(--text-4)") +
@@ -623,8 +631,60 @@ export function NavDisciplinas({ alCambiar, compacta }: { alCambiar?: () => void
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ cristal = false }: { cristal?: boolean }) {
   const { lateral, setLateral } = useApp();
+
+  const plegar = (
+    <button
+      onClick={() => setLateral(!lateral)}
+      title={lateral ? "Plegar la columna" : "Desplegar la columna"}
+      aria-label={lateral ? "Plegar la columna" : "Desplegar la columna"}
+      data-nav-boton=""
+      style={css(
+        "display:flex;align-items:center;gap:9px;width:100%;margin-bottom:var(--s4);padding:8px;border:none;border-radius:" +
+          (cristal ? "var(--r-pill)" : "var(--r-sm)") +
+          ";background:none;color:var(--text-4);cursor:pointer;font-size:var(--t-mini);font-weight:500;white-space:nowrap;" +
+          (cristal && !lateral ? "justify-content:center;" : "")
+      )}
+    >
+      <span style={css("flex:none;display:grid;place-items:center;")}>
+        <IcoPlegar size={19} abierto={lateral} />
+      </span>
+      {lateral && "Plegar"}
+    </button>
+  );
+
+  const pie = (
+    <div style={css("margin-top:auto;padding-top:var(--s4);display:flex;flex-direction:column;gap:6px;")}>
+      <div data-guia-ancla="" />
+      <AcercaDe compacta={!lateral} />
+    </div>
+  );
+
+  /*
+   * EN CRISTAL, LA COLUMNA ES UN RIEL QUE FLOTA.
+   *
+   * No va pegada al borde: es una pieza de cristal suelta a la izquierda,
+   * centrada en vertical, como el riel de la referencia. Plegada es eso mismo,
+   * una píldora de iconos; desplegada lleva los nombres, porque la casa tiene
+   * más de doce sitios y sólo con iconos habría que aprendérselos de memoria.
+   * La forma la pone globals.css (`data-riel`).
+   */
+  if (cristal) {
+    return (
+      <aside data-sidebar="" data-chrome="1" data-riel="">
+        <div
+          data-riel-pastilla=""
+          data-plegado={lateral ? undefined : ""}
+          style={css("width:" + (lateral ? "232px" : "64px") + ";")}
+        >
+          {plegar}
+          <NavDisciplinas compacta={!lateral} />
+          {pie}
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside
@@ -638,26 +698,76 @@ export default function Sidebar() {
           ";height:calc(100vh - 63px);overflow-y:auto;overflow-x:hidden;padding:14px 12px 16px;display:flex;flex-direction:column;background:var(--vidrio);backdrop-filter:var(--vidrio-difuminado);-webkit-backdrop-filter:var(--vidrio-difuminado);border-right:1px solid var(--border);transition:width var(--t-lento) var(--curva);"
       )}
     >
-      <button
-        onClick={() => setLateral(!lateral)}
-        title={lateral ? "Plegar la columna" : "Desplegar la columna"}
-        aria-label={lateral ? "Plegar la columna" : "Desplegar la columna"}
-        style={css(
-          "display:flex;align-items:center;gap:9px;width:100%;margin-bottom:var(--s4);padding:8px;border:none;border-radius:var(--r-sm);background:none;color:var(--text-4);cursor:pointer;font-size:var(--t-mini);font-weight:590;white-space:nowrap;"
-        )}
-      >
-        <span style={css("flex:none;display:grid;place-items:center;")}>
-          <IcoPlegar size={19} abierto={lateral} />
-        </span>
-        {lateral && "Plegar"}
-      </button>
+      {plegar}
       <NavDisciplinas compacta={!lateral} />
       {/* Abajo del todo: los primeros pasos (los pinta `escuela/GuiaPasos.tsx`
           aquí dentro, en `data-guia-ancla`) y «Acerca de esto». */}
-      <div style={css("margin-top:auto;padding-top:var(--s4);display:flex;flex-direction:column;gap:6px;")}>
-        <div data-guia-ancla="" />
-        <AcercaDe compacta={!lateral} />
-      </div>
+      {pie}
     </aside>
+  );
+}
+
+/*
+ * EL DOCK. Por debajo de 1130 px el riel no cabe al lado de la ventana y pasa
+ * a ser esto: una fila de iconos flotando abajo, en el centro, como el dock de
+ * la referencia.
+ *
+ * No caben los doce sitios, así que lleva los cinco primeros que puede abrir
+ * quien está dentro —en el mismo orden que la columna— y un «Más» que abre el
+ * cajón entero. Nada que no pueda abrir sale aquí: las llaves son las mismas
+ * que en la columna (`puede`).
+ */
+export function Dock({ abrirMenu }: { abrirMenu: () => void }) {
+  const { view, setView } = useApp();
+  const { puede } = useSesion();
+  const despacho = puede("despacho");
+
+  const todos: Array<{ k: View; label: string; Ico: Ico; ok: boolean }> = [
+    { k: "tablero", label: "Inicio", Ico: IcoTablero, ok: despacho },
+    { k: "inicio", label: "Consulta", Ico: IcoConsulta, ok: puede("estudio") },
+    ...DESPACHO.map((x) => ({ ...x, ok: despacho })),
+    ...ESCUELA.map((x) => ({ k: x.k, label: x.label, Ico: x.Ico, ok: puede(x.llave) && !(x.k === "escuela" && despacho) })),
+    { k: "miagenda" as View, label: "Mi agenda", Ico: IcoAgenda, ok: puede("crear") && !despacho },
+    { k: "mismetricas" as View, label: "Mis métricas", Ico: IcoMetricas, ok: puede("crear") && !despacho },
+    ...DIRECCION.map((x) => ({ k: x.k, label: x.label, Ico: x.Ico, ok: puede(x.llave) })),
+  ];
+  const fijos = todos.filter((x) => x.ok).slice(0, 5);
+
+  const boton = (activo: boolean, label: string, Ico: Ico, onClick: () => void) => (
+    <button
+      key={label}
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      aria-current={activo ? "page" : undefined}
+      data-nav-boton=""
+      style={css(
+        "flex:none;display:grid;place-items:center;width:46px;height:46px;border:none;border-radius:50%;cursor:pointer;background:" +
+          (activo ? "var(--nav-activo)" : "transparent") +
+          ";color:" +
+          (activo ? "var(--nav-activo-tx)" : "var(--text-2)") +
+          ";"
+      )}
+    >
+      <Ico size={21} />
+    </button>
+  );
+
+  return (
+    <nav data-dock="" data-chrome="1" aria-label="Secciones">
+      {fijos.map(({ k, label, Ico }) => boton(view === k, label, Ico, () => setView(k)))}
+      {boton(false, "Más", IcoMas, abrirMenu)}
+    </nav>
+  );
+}
+
+/** Tres puntos: «hay más sitios», sin decir cuáles. */
+function IcoMas({ size = 21 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="5.5" cy="12" r="1.7" />
+      <circle cx="12" cy="12" r="1.7" />
+      <circle cx="18.5" cy="12" r="1.7" />
+    </svg>
   );
 }

@@ -110,12 +110,14 @@ function useDatos() {
 
 /* ------------------------------------------------------------- vocabulario */
 
-/** La pieza: blanca, canto blando, borde que se ve. */
+/** La pieza: blanca, canto blando, borde que se ve. En cristal, además,
+ *  esmerila la foto de detrás (`--pieza-filtro`; fuera del cristal no hace
+ *  nada). */
 export const PIEZA =
-  "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);box-shadow:var(--nm-alto);padding:var(--pad-card-sm);min-width:0;display:flex;flex-direction:column;gap:var(--s3);";
+  "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);box-shadow:var(--nm-alto);backdrop-filter:var(--pieza-filtro);-webkit-backdrop-filter:var(--pieza-filtro);padding:var(--pad-card-sm);min-width:0;display:flex;flex-direction:column;gap:var(--s3);";
 /** La pieza oscura. Una por pantalla: si hubiera dos, ninguna anclaría. */
 export const PIEZA_OSCURA =
-  "background:var(--bloque);border:1px solid var(--bloque-borde);border-radius:var(--r-tarjeta);box-shadow:var(--shadow-lg);padding:var(--pad-card-sm);min-width:0;display:flex;flex-direction:column;gap:var(--s3);color:var(--sobre-bloque);";
+  "background:var(--bloque);border:1px solid var(--bloque-borde);border-radius:var(--r-tarjeta);box-shadow:var(--shadow-lg);backdrop-filter:var(--pieza-filtro);-webkit-backdrop-filter:var(--pieza-filtro);padding:var(--pad-card-sm);min-width:0;display:flex;flex-direction:column;gap:var(--s3);color:var(--sobre-bloque);";
 export const TITULO_PIEZA = "font-size:var(--t-title);font-weight:500;letter-spacing:-.02em;line-height:1.15;color:var(--text);";
 export const CIFRA = "font-weight:300;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;";
 export const APOYO = "font-size:var(--t-mini);color:var(--text-3);line-height:1.4;";
@@ -347,7 +349,7 @@ function Retrato({ alPulsar }: { alPulsar: () => void }) {
       )}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/iris.jpg" alt="Iris Soares" style={css("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%;")} />
+      <img src="/iris.jpg" alt="Iris Soares" style={css("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 35%;")} />
       <div aria-hidden="true" style={css("position:absolute;inset:0;background:linear-gradient(180deg,transparent 38%,rgba(34,29,31,.55) 66%,rgba(34,29,31,.86) 100%);")} />
       <div style={css("position:relative;padding:var(--pad-card-sm);display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;")}>
         <div style={css("min-width:0;")}>
