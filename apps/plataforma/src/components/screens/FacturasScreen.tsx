@@ -63,8 +63,9 @@ import Resumen from "../despacho/Resumen";
 import Plantillas, { GuardarPlantilla, usePlantillas } from "../despacho/Plantillas";
 import { PLANTILLAS_CASA, baseDesdeFinal, type Plantilla } from "@/lib/despacho/plantillas";
 
-/** El tipo general de IVA en España. Se puede cambiar en el formulario: no
- *  todos los servicios llevan el mismo, y adivinar cuál toca no es cosa nuestra. */
+/** El IVA de Iris: el 21 %, confirmado por Ger el 15 de noviembre de 2026.
+ *  Sólo factura a particulares, así que no lleva retención de IRPF. Se puede
+ *  cambiar en el formulario por si un día factura algo distinto. */
 const IVA_GENERAL = 21;
 
 function facturaVacia(fecha: string): Factura {

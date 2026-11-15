@@ -23,8 +23,9 @@
  * sin IVA. Así que al aplicar una plantilla de la casa se saca la base a partir
  * del IVA que tenga puesto la factura, y la clienta paga lo anunciado.
  *
- * QUÉ IVA LLEVAN SUS SERVICIOS NO LO DECIDE ESTE ARCHIVO. Queda PENDIENTE de que
- * lo confirme su gestor, y la pantalla lo dice.
+ * EL IVA ES EL 21 %. Lo confirmó Ger el 15 de noviembre de 2026: Iris sólo
+ * factura a particulares (sin retención de IRPF) y sus servicios llevan el
+ * tipo general. Por eso la factura arranca en 21 y no hay campo de retención.
  */
 
 import { doc, getDoc, setDoc } from "firebase/firestore";

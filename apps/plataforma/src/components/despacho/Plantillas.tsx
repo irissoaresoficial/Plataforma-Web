@@ -121,8 +121,7 @@ export default function Plantillas({
         {propias.map(tarjeta)}
       </div>
       <p style={css(NOTA + "margin:0;line-height:1.5;")}>
-        IVA {PENDIENTE}: los precios son los de la web, lo que paga la clienta. La base se saca con el IVA que pongas abajo.
-        Pregúntale a tu gestor si tus sesiones llevan el 21 % o van exentas.
+        Los precios son los de la web: lo que paga la clienta, con el 21 % de IVA ya dentro.
       </p>
       {fallo && (
         <p role="alert" style={css(NOTA + "margin:0;color:var(--red);")}>
