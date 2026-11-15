@@ -36,6 +36,15 @@ const display = Fraunces({
   axes: ["SOFT", "WONK", "opsz"],
   variable: "--f-display",
   display: "swap",
+  /* SIN PRECARGA, ni ésta ni las tres del documento de abajo. Con la precarga
+     puesta, cada visita a cualquier pantalla pedía las siete letras antes que
+     nada —unos 310 KB, compitiendo con el código que tiene que pintar— y
+     cuatro de ellas sólo salen en el papel: el estudio y la factura. Sin
+     precarga la regla `@font-face` sigue ahí, y el navegador se la trae sola
+     en cuanto una línea de esa letra aparece en pantalla, que es justo
+     cuando se abre el documento. La única que se precarga es Instrument Sans,
+     la de la interfaz. */
+  preload: false,
 });
 
 const texto = Instrument_Sans({
@@ -103,6 +112,7 @@ const lectura = Cormorant_Garamond({
   style: ["normal", "italic"],
   variable: "--f-lectura",
   display: "swap",
+  preload: false,
 });
 
 const cifra = Cinzel({
@@ -116,6 +126,7 @@ const cifra = Cinzel({
   weight: ["400", "500"],
   variable: "--f-cifra",
   display: "swap",
+  preload: false,
 });
 
 const rotulo = Karla({
@@ -129,6 +140,7 @@ const rotulo = Karla({
   weight: ["400", "500"],
   variable: "--f-rotulo",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
