@@ -27,14 +27,12 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
 import { useSesion } from "@/lib/sesion";
-import { BOTON_NORMAL, CABECERA, LECTURA, NOTA, botonPrincipal , PANTALLA} from "@/lib/ui";
+import { CABECERA, LECTURA, NOTA, botonPrincipal, PANTALLA } from "@/lib/ui";
 import EditorCurso, { cursoNuevo } from "../escuela/EditorCurso";
 import Biblioteca from "../escuela/Biblioteca";
 import Banda from "../Banda";
-import { portadaDe } from "@/lib/escuela/portadas";
 import Reproductor from "../escuela/Reproductor";
 import {
   avance as repoAvance,
@@ -48,6 +46,7 @@ import {
 } from "@/lib/escuela";
 import { loLleva } from "@/lib/escuela/tipos";
 import SecretariaIA from "../escuela/SecretariaIA";
+import FichaCurso, { FichaNueva } from "../escuela/FichaCurso";
 
 
 type Donde =
@@ -66,7 +65,9 @@ export default function CursosScreen() {
   const [lista, setLista] = useState<Curso[] | null>(null);
   const [avances, setAvances] = useState<Record<string, Avance | null>>({});
   const [fallo, setFallo] = useState("");
-  const quieto = useReducedMotion();
+  const [filtro, setFiltro] = useState<"todos" | "publicados" | "borradores">("todos");
+  /* Inscritos por curso, sólo de los que monta quien mira. */
+  const [alumnos, setAlumnos] = useState<Record<string, number>>({});
 
   /**
    * CADA UNO PIDE LO SUYO, y no es lo mismo filtrar aquí que pedir distinto.
@@ -126,6 +127,53 @@ export default function CursosScreen() {
   useEffect(() => {
     void carga();
   }, [carga]);
+
+  const mios = (lista ?? []).filter((c) => esMio(c));
+
+  /*
+   * BORRAR UN CURSO. Lo puede hacer Iris con cualquiera y un creador con sus
+   * borradores: es exactamente lo que ya dejaban las reglas de Firestore, no
+   * se ha abierto nada nuevo. Lo publicado de un creador lo borra Iris.
+   *
+   * Los archivos (vídeos, portada, material) se quedan en el almacén. Es a
+   * propósito, por lo mismo que en `subir.ts`: borrar un curso es un gesto de
+   * un clic, y borrar además sus vídeos lo haría irrecuperable de verdad.
+   */
+  const puedeBorrar = (c: Curso) => esAdmin || (creador && c.autor === uid && !c.publicado);
+
+  async function borra(c: Curso) {
+    setFallo("");
+    try {
+      await repoCursos.borrar(c.id);
+      setLista((xs) => (xs ?? []).filter((x) => x.id !== c.id));
+    } catch (e) {
+      setFallo(
+        "No se ha borrado «" + (c.titulo.trim() || "Curso sin nombre") + "». " +
+          (e instanceof Error ? e.message : "Revisa la conexión y vuelve a probar.")
+      );
+    }
+  }
+
+  /* Los inscritos de cada curso propio. Falla en silencio: sin el dato la
+     ficha no enseña la cifra, que es mejor que enseñar un cero falso. */
+  useEffect(() => {
+    if (!lista || !(esAdmin || creador)) return;
+    let vivo = true;
+    const propios = lista.filter((c) => esMio(c));
+    Promise.all(propios.map((c) => repoInscripciones.deCurso(c.id).then((xs) => xs.length).catch(() => null))).then((ns) => {
+      if (!vivo) return;
+      const m: Record<string, number> = {};
+      propios.forEach((c, i) => {
+        const n = ns[i];
+        if (n !== null) m[c.id] = n;
+      });
+      setAlumnos(m);
+    });
+    return () => {
+      vivo = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lista, esAdmin, creador]);
 
   /* El avance de cada curso, para pintar la barra en su tarjeta. Falla en
      silencio a propósito: sin avance la tarjeta sale sin barra, que es mucho
@@ -288,127 +336,73 @@ export default function CursosScreen() {
       {creador && (lista ?? []).some(esMio) && (lista ?? []).some((c) => !esMio(c)) && (
         <h2 style={css("margin:var(--s4) 0 0;font-size:var(--t-head);font-weight:500;letter-spacing:-.02em;")}>Los que montas</h2>
       )}
-      <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(270px,1fr));")}>
-        {(lista ?? []).filter((c) => esAdmin || esMio(c)).map((c, i) => {
-          const total = totalLecciones(c);
-          const parte = progreso(c, avances[c.id] ?? null);
-          return (
-            <motion.article
-              key={c.id}
-              initial={quieto ? false : { opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(0.06 * i, 0.3), duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              style={css(
-                "background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tarjeta);" +
-                  "box-shadow:var(--nm-alto);overflow:hidden;display:flex;flex-direction:column;"
-              )}
-            >
-              {/* La portada. Sin imagen sale la inicial sobre un fondo liso, y
-                  eso es suficiente: obligar a tener una imagen para poder crear
-                  un curso es lo que hace que el curso no se cree. */}
-              <div
+      {/* ---------------------------------------- los filtros, si hay de qué */}
+      {(esAdmin || creador) && mios.length > 2 && (
+        <div role="tablist" aria-label="Qué cursos ver" style={css("display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 calc(var(--s1) * -1);padding:2px var(--s1);")}>
+          {(
+            [
+              ["todos", "Todos", mios.length],
+              ["publicados", "Publicados", mios.filter((c) => c.publicado).length],
+              ["borradores", "Borradores", mios.filter((c) => !c.publicado).length],
+            ] as const
+          ).map(([k, t, n]) => {
+            const activo = filtro === k;
+            return (
+              <button
+                key={k}
+                role="tab"
+                aria-selected={activo}
+                onClick={() => setFiltro(k)}
                 style={css(
-                  "position:relative;aspect-ratio:16/9;background:var(--bloque);" +
-                    "display:grid;place-items:center;overflow:hidden;"
+                  "display:inline-flex;align-items:center;gap:8px;padding:7px 8px 7px 15px;border-radius:var(--r-pill);cursor:pointer;flex:none;white-space:nowrap;" +
+                    "font:inherit;font-size:var(--t-body);font-weight:500;" +
+                    (activo
+                      ? "background:var(--vino);color:var(--sobre-bloque);border:1px solid var(--vino);"
+                      : "background:var(--surface);color:var(--text-2);border:1px solid var(--border);")
                 )}
               >
-                {c.portada ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={c.portada}
-                    alt=""
-                    style={css("width:100%;height:100%;object-fit:cover;display:block;")}
-                  />
-                ) : (
-                  /* Sin portada, una foto de la casa en vez del cuadro gris
-                     con una letra: así cada curso se ve como un curso aunque
-                     no tenga imagen propia todavía. */
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={portadaDe(c, i)}
-                      alt=""
-                      style={css("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")}
-                    />
-                    <span
-                      aria-hidden="true"
-                      style={css("position:absolute;inset:0;background:linear-gradient(180deg,rgba(34,29,31,.15),rgba(34,29,31,.75));")}
-                    />
-                  </>
-                )}
-              </div>
-
-              <div style={css("padding:var(--s3) var(--s4) var(--s4);display:flex;flex-direction:column;gap:8px;flex:1;")}>
-                <div style={css("display:flex;align-items:center;gap:8px;flex-wrap:wrap;")}>
-                  <h2 style={css("font-size:var(--t-body);font-weight:600;margin:0;")}>
-                    {c.titulo || "Curso sin nombre"}
-                  </h2>
-                  {/* El borrador se marca con una palabra y no con un color: un
-                      color hay que haber aprendido qué significa. */}
-                  {esMio(c) && !c.publicado && !c.revision && (
-                    <span
-                      style={css(
-                        "font-size:var(--t-micro);font-weight:600;letter-spacing:.08em;text-transform:uppercase;" +
-                          "padding:2px 8px;border-radius:var(--r-pill);color:var(--text-3);" +
-                          "background:color-mix(in srgb, var(--text) 9%, transparent);"
-                      )}
-                    >
-                      Borrador
-                    </span>
+                {t}
+                <span
+                  style={css(
+                    "min-width:24px;padding:1px 7px;border-radius:var(--r-pill);font-size:var(--t-mini);font-variant-numeric:tabular-nums;" +
+                      (activo
+                        ? "background:rgba(255,255,255,.16);color:var(--sobre-bloque);"
+                        : "background:var(--surface-2);color:var(--text-3);")
                   )}
-                  {/* Para Iris es una tarea; para el creador, un estado. */}
-                  {esMio(c) && !c.publicado && c.revision && (
-                    <span
-                      style={css(
-                        "font-size:var(--t-micro);font-weight:500;padding:2px 8px;border-radius:var(--r-pill);" +
-                          "background:var(--oro-luz);color:var(--vino);"
-                      )}
-                    >
-                      {esAdmin ? "Pide publicar" : "En revisión"}
-                    </span>
-                  )}
-                </div>
-
-                {esAdmin && c.autorNombre && <span style={css(NOTA)}>De {c.autorNombre}</span>}
-
-                {c.descripcion && (
-                  <p style={css(NOTA + "margin:0;line-height:1.5;")}>
-                    {c.descripcion.length > 120 ? c.descripcion.slice(0, 117) + "…" : c.descripcion}
-                  </p>
-                )}
-
-                <span style={css(NOTA + "margin-top:auto;")}>
-                  {total === 0 ? "Sin lecciones todavía" : `${total} ${total === 1 ? "lección" : "lecciones"}`}
+                >
+                  {n}
                 </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-                {total > 0 && parte > 0 && (
-                  <div
-                    role="progressbar"
-                    aria-valuenow={Math.round(parte * 100)}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`Lo que llevas de ${c.titulo}`}
-                    style={css("height:4px;border-radius:999px;background:color-mix(in srgb, var(--text) 10%, transparent);overflow:hidden;")}
-                  >
-                    <div style={css(`height:100%;width:${parte * 100}%;background:var(--gold-deep, var(--text));`)} />
-                  </div>
-                )}
-
-                <div style={css("display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;")}>
-                  <button onClick={() => setDonde({ que: "ve", curso: c })} style={css(botonPrincipal() + "flex:1 1 auto;")}>
-                    {parte > 0 && parte < 1 ? "Seguir" : "Entrar"}
-                  </button>
-                  {esMio(c) && (
-                    <button data-guia="editar" onClick={() => setDonde({ que: "edita", curso: c })} style={css(BOTON_NORMAL)}>
-                      Editar
-                    </button>
-                  )}
-                </div>
-              </div>
-            </motion.article>
-          );
-        })}
-      </div>
+      {lista !== null && lista.length > 0 && (
+        <div style={css("display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));")}>
+          {(lista ?? [])
+            .filter((c) => esAdmin || esMio(c))
+            .filter((c) => (filtro === "publicados" ? c.publicado : filtro === "borradores" ? !c.publicado : true))
+            .map((c, i) => (
+              <FichaCurso
+                key={c.id}
+                c={c}
+                i={i}
+                total={totalLecciones(c)}
+                minutos={c.modulos.reduce((n, m) => n + m.lecciones.reduce((k, l) => k + (l.minutos || 0), 0), 0)}
+                parte={progreso(c, avances[c.id] ?? null)}
+                alumnos={esMio(c) && c.id in alumnos ? alumnos[c.id] : null}
+                esMio={esMio(c)}
+                esAdmin={esAdmin}
+                puedeBorrar={puedeBorrar(c)}
+                entrar={() => setDonde({ que: "ve", curso: c })}
+                editar={() => setDonde({ que: "edita", curso: c })}
+                borrar={() => void borra(c)}
+              />
+            ))}
+          {(esAdmin || creador) && filtro !== "publicados" && <FichaNueva alPulsar={() => void nuevo()} />}
+        </div>
+      )}
       {/* La empresa conectada, en cada pantalla del creador. */}
       {puede("crear") && !puede("despacho") && <SecretariaIA compacta />}
     </div>
