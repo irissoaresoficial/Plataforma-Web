@@ -3034,8 +3034,13 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
 }
 
 /* El vídeo del curso, entre el banner y «Qué aprendes». */
+/* Sobre el mismo crema que «Qué aprendes»: con fondo blanco quedaba una
+   franja suelta entre el banner oscuro y la sección de debajo. */
 .casa-fm-video {
+  background: var(--arena);
+  padding: clamp(40px, 6vw, 80px) var(--hueco) 0;
+}
+.casa-fm-video .casa-mc-video {
   max-width: var(--ancho);
   margin: 0 auto;
-  padding: clamp(40px, 6vw, 80px) var(--hueco) 0;
 }
