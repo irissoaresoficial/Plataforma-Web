@@ -29,7 +29,7 @@
  * una línea con [botón] dice dónde va el botón de reservar.
  */
 
-import { MASTERCLASS } from '@/content/site';
+import { CONTACTO, MASTERCLASS } from '@/content/site';
 import { boton, marco } from '@/lib/correo';
 import type { db } from '@/lib/firebase';
 
@@ -54,6 +54,13 @@ export type Envio = Textos & {
   id: IdEnvio;
   /** Si va también a quien ya se apuntó a la masterclass. */
   aInscritas: boolean;
+  /**
+   * Si el botón lleva al GRUPO DE WHATSAPP en vez de a la página de la
+   * masterclass. Gerson, 19 nov: «un correo mencionándoles que si quieren
+   * ser parte, hagan parte de esto y clic aquí en el WhatsApp y ya está».
+   * Sin enlace de grupo en content/site.ts, el botón vuelve a la página.
+   */
+  aGrupo?: boolean;
 };
 
 /*
@@ -69,8 +76,9 @@ export const ENVIOS: Envio[] = [
     asunto: 'Porque é que a mesma história se repete sempre?',
     previo: 'Uma aula gratuita com a Iris Soares, quinta-feira, 26 de novembro, às 20h00.',
     titular: 'Porque é que a mesma história se repete sempre?',
-    boton: 'Reservar o meu lugar grátis',
+    boton: 'Entrar no grupo de WhatsApp',
     aInscritas: true,
+    aGrupo: true,
     cuerpo: `Olá,
 
 Escrevo-lhe porque, em algum momento, passou pela minha consulta.
@@ -81,7 +89,11 @@ Quase nunca é azar. Muitas vezes é um padrão que começou na sua família ant
 
 Na **quinta-feira, 26 de novembro, às 20h00** (hora de Portugal; 21h00 em Espanha), dou com a Iris Soares uma masterclass **gratuita e em direto** sobre isto: como se herdam os padrões no amor e o que se pode fazer com eles. Dura uma hora e, no fim, há tempo para perguntas.
 
+**Se quiser fazer parte, entre no grupo de WhatsApp da masterclass.** É lá que partilhamos tudo e, no próprio dia, o link para entrar.
+
 [botón]
+
+[web]
 
 Se conhece alguém a quem isto possa ajudar, reencaminhe-lhe este e-mail.
 
@@ -171,6 +183,9 @@ export async function enviosActuales(base: ReturnType<typeof db>): Promise<Envio
 const enlace = (contenido: IdEnvio) =>
   `${WEB}/masterclass?utm_source=email&utm_medium=correo&utm_campaign=masterclass-desordenes&utm_content=marco-${contenido}`;
 
+/** A dónde lleva el botón de cada correo: el grupo de WhatsApp o la página. */
+const destino = (e: Envio) => (e.aGrupo && CONTACTO.grupo ? CONTACTO.grupo : enlace(e.id));
+
 const limpio = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /** El texto llano, a HTML de correo. Se escapa todo antes de poner negritas. */
@@ -180,12 +195,19 @@ function cuerpoHtml(e: Envio): string {
   const html = partes.map((p) => {
     if (/^\[bot[oó]n\]$/i.test(p)) {
       conBoton = true;
-      return boton(enlace(e.id), limpio(e.boton));
+      return boton(destino(e), limpio(e.boton));
+    }
+    /* [web]: una línea pequeña con la página de la masterclass, para quien
+       prefiera reservar allí. Sólo tiene sentido cuando el botón va al grupo. */
+    if (/^\[web\]$/i.test(p)) {
+      return e.aGrupo
+        ? `<p style="margin:0 0 14px;font-size:14px;color:#6b6564">Também pode reservar o seu lugar <a href="${enlace(e.id)}" style="color:#6b6564">na página da masterclass</a>.</p>`
+        : '';
     }
     const t = limpio(p).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
     return `<p style="margin:0 0 14px">${t}</p>`;
   });
-  if (!conBoton) html.push(boton(enlace(e.id), limpio(e.boton)));
+  if (!conBoton) html.push(boton(destino(e), limpio(e.boton)));
   return html.join('');
 }
 
