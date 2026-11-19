@@ -875,6 +875,11 @@ export const CURSOS: Curso[] = [
     precioAntes: null,
     plazas: null,
     videoUrl: '',
+    /* La portada del curso es Iris, la del cartel (blusa verde, la mano en
+       la barbilla, el árbol dorado), recortada en cuadrado con ella en el
+       centro: la estantería de /cursos corta en cuadrado y el banner de la
+       landing la lleva a la derecha. Gerson, 19 de noviembre. */
+    cartel: '/images/curso-numerologia-portada.jpg',
     stripeUrl: '',
     descripcion: 'Una formación profunda y transformadora para comprender, sanar y evolucionar.',
     bloques: [],

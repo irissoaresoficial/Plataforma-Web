@@ -2991,3 +2991,44 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
 .casa-pack-boton:hover {
   background: var(--arena);
 }
+
+/* EL BANNER DEL CURSO DE NUMEROLOGÍA (19 de noviembre de 2026). La foto es
+   Iris a la derecha y se ve ENTERA, a lo ancho: si cubre la sección completa
+   (que es alta, lleva el formulario) se amplía tanto que la cara sale gigante
+   y el titular le pisa el pelo. Así que la foto mide lo que mide en 16:9,
+   el velo oscurece sólo el lado del titular, y abajo funde con la tinta, que
+   es donde siguen la ficha y el formulario. En el móvil es una franja arriba
+   y el texto empieza debajo: encima de la cara no se lee nada. */
+.casa-fm-alto {
+  background: var(--tinta);
+}
+.casa-fm-alto .casa-mc-fondo {
+  height: 56.25vw !important;
+  object-position: right top;
+}
+.casa-fm-alto .casa-mc-velo {
+  bottom: auto;
+  height: calc(56.25vw + 2px);
+  background:
+    linear-gradient(90deg, rgba(23, 18, 14, 0.94) 0%, rgba(23, 18, 14, 0.82) 38%, rgba(23, 18, 14, 0.3) 58%, rgba(23, 18, 14, 0) 76%),
+    linear-gradient(180deg, rgba(23, 18, 14, 0) 55%, var(--tinta) 100%);
+}
+@media (min-width: 960px) {
+  .casa-fm-alto .casa-mc-texto {
+    max-width: min(640px, 46vw);
+  }
+}
+@media (max-width: 959px) {
+  .casa-fm-alto .casa-mc-fondo {
+    height: 92vw !important;
+    object-position: 88% 30%;
+  }
+  .casa-fm-alto .casa-mc-velo {
+    height: calc(92vw + 2px);
+    background:
+      linear-gradient(180deg, rgba(23, 18, 14, 0.3) 0%, rgba(23, 18, 14, 0) 25%, rgba(23, 18, 14, 0) 62%, var(--tinta) 100%);
+  }
+  .casa-fm-alto .casa-mc-dentro {
+    padding-top: calc(92vw - 170px);
+  }
+}

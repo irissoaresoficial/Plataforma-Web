@@ -40,8 +40,24 @@ export default function CursoNumerologia() {
     <div id="app" className="claro casa casa-mc-cuenta-hueco" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <CuentaAtras iso={FORMACION.iso} fecha="Domingo 22 de noviembre · 10:00 h (Madrid)" />
 
-      <section className="casa-mc-alto">
-        <Image className="casa-mc-fondo" src="/images/camino-escuela.jpg" alt="" fill priority sizes="100vw" />
+      {/* LA FOTO DEL CURSO ES IRIS (19 de noviembre de 2026). Gerson: «tiene
+          que tener una foto diferente el curso, tanto el banner como la
+          portada… la foto de inicio, tómala como referencia». Es la Iris del
+          cartel —blusa verde, la mano en la barbilla, el árbol dorado— hecha
+          de nuevo en apaisado y sin letras, porque el cartel trae el texto
+          pintado encima y a ese tamaño se veía pixelada. Ella va a la
+          derecha y la izquierda queda oscura para el titular: por eso el velo
+          de aquí va de lado y no tapa la foto entera como el de la
+          masterclass. */}
+      <section className="casa-mc-alto casa-fm-alto">
+        <Image
+          className="casa-mc-fondo"
+          src="/images/curso-numerologia-iris.jpg"
+          alt="Iris Soares sonriendo, con la mano en la barbilla, delante de un árbol dorado con una familia de la mano en sus raíces."
+          fill
+          priority
+          sizes="100vw"
+        />
         <div className="casa-mc-velo" aria-hidden="true" />
 
         <header>
