@@ -34,12 +34,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { SESION } from '@/content/site';
+import { BIO_IRIS } from '@/content/site';
 import Sello from './Sello';
 
-/* Los años salen de la fecha, no escritos a mano: una frase de autoridad que
-   se queda vieja deja de sostener nada. */
-const ANOS = new Date().getFullYear() - SESION.desde;
+/* AQUÍ SE CALCULABAN LOS AÑOS (`ANOS`, desde `SESION.desde`) para la frase
+   de Iris. Desde el 19 de noviembre la ficha lleva su bio, con sus cifras
+   escritas por ella («16 años de trayectoria»): si cambian, se cambian en
+   `BIO_IRIS`, content/site.ts. */
 
 export type FichaClave = {
   id: string;
@@ -47,7 +48,17 @@ export type FichaClave = {
   titulo: string;
   /** Cómo se llama en el índice de la izquierda. Corto, que es un botón. */
   corto: string;
-  texto: string;
+  /** Un párrafo, o varios. */
+  texto: string | string[];
+  /**
+   * LO QUE SE LEE AL DESPLEGAR. Para las fichas cuyo texto es largo de verdad
+   * (el de Iris en «Qué te llevas»): arriba la frase principal, y la lista y
+   * el cierre detrás de «Seguir leyendo». En un móvil, nueve párrafos
+   * seguidos en una ficha empujan el resto de la portada dos pantallas.
+   */
+  mas?: { intro?: string; lista?: string[]; cierre?: string[] };
+  /** Una línea de cierre, destacada con el filete dorado. */
+  remate?: string[];
   /** Una foto. Si la lleva, el hueco pasa a vertical (4:5). */
   foto?: string;
   alt?: string;
@@ -69,8 +80,11 @@ const FICHAS: FichaClave[] = [
        de una sala, sí. La autoridad se enseña, no se escribe. */
     foto: '/images/iris-consulta.jpg',
     alt: 'Iris Soares, sonriendo, en su consulta.',
-    texto:
-      `Creadora de la Escuela de Sabiduría 33. Numerología transgeneracional y Kábala, desde ${SESION.desde}: ${ANOS} años mirando la misma cuenta en gente que no se parece en nada.`,
+    /* LA BIO DE IRIS, la que aprobó ella (19 de noviembre de 2026). En la
+       ficha van los dos primeros párrafos y, de cierre, su filosofía y su
+       metodología. El tercer párrafo va entero en la landing de la formación. */
+    texto: BIO_IRIS.parrafos.slice(0, 2),
+    remate: [BIO_IRIS.filosofia, BIO_IRIS.metodo],
   },
   {
     id: 'distinto',
@@ -91,8 +105,25 @@ const FICHAS: FichaClave[] = [
        con `ls`, no supuesto. */
     fuentes: ['arbol-scroll.mp4', 'arbol-scroll.webm'],
     cartel: '/images/arbol-scroll-cartel.jpg',
+    /* TEXTO DE IRIS (19 de noviembre de 2026). Sustituye a «Tu patrón por
+       escrito y con nombres…». Es largo, así que la frase principal va a la
+       vista y la lista y el cierre, al desplegar. */
     texto:
-      'Tu patrón por escrito y con nombres: de quién viene, en qué se repite y por dónde se sale. Y detrás una escuela, que es lo que sigue abierto cuando se acaba la consulta.',
+      'Te llevas un análisis numerológico profundo y un estudio exhaustivo de tu árbol genealógico para comprender tu historia, identificar patrones, reconocer lealtades familiares y descubrir aquello que puede estar condicionando tu presente.',
+    mas: {
+      intro: 'Pero, sobre todo, te llevas:',
+      lista: [
+        'Conocimiento: una comprensión más profunda de ti y de tu historia.',
+        'Conciencia: identificar patrones y repeticiones que antes pasaban desapercibidos.',
+        'Paz y armonía con tu clan: aprender a mirar tu historia familiar desde un lugar diferente.',
+        'Libertad personal: diferenciar tu propio camino de las historias heredadas.',
+        'Claridad: reconocer tus recursos, capacidades y nuevas posibilidades.',
+        'Autonomía: disponer de herramientas para tomar decisiones más conscientes y construir tu propio futuro.',
+      ],
+      cierre: [
+        'Porque conocer tu historia no significa quedarte viviendo en ella. Significa tener más recursos para decidir cómo quieres continuarla.',
+      ],
+    },
   },
 ];
 
@@ -256,7 +287,38 @@ export default function Claves({
                 </div>
               )}
 
-              <p className="casa-ficha-p">{f.texto}</p>
+              {(Array.isArray(f.texto) ? f.texto : [f.texto]).map((t) => (
+                <p className="casa-ficha-p" key={t.slice(0, 32)}>{t}</p>
+              ))}
+
+              {f.remate?.map((t) => (
+                <p className="casa-ficha-p casa-ficha-remate" key={t.slice(0, 32)}>{t}</p>
+              ))}
+
+              {/* `<details>` y no un botón con estado: se abre sin JavaScript,
+                  lo anuncia bien un lector de pantalla y el buscador lee el
+                  texto entero aunque esté plegado. */}
+              {f.mas && (
+                <details className="casa-ficha-mas">
+                  <summary>Seguir leyendo</summary>
+                  {f.mas.intro && <p className="casa-ficha-p casa-ficha-intro">{f.mas.intro}</p>}
+                  {f.mas.lista && (
+                    <ul className="casa-ficha-lista">
+                      {f.mas.lista.map((t) => {
+                        const [clave, ...resto] = t.split(': ');
+                        return (
+                          <li key={clave}>
+                            <b>{clave}:</b> {resto.join(': ')}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                  {f.mas.cierre?.map((t) => (
+                    <p className="casa-ficha-p casa-ficha-remate" key={t.slice(0, 32)}>{t}</p>
+                  ))}
+                </details>
+              )}
             </article>
           ))}
         </div>

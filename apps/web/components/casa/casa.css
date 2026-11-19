@@ -2853,3 +2853,80 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
 .casa-fm-cierre {
   background: var(--vino);
 }
+
+/* ---------------------------------------------- las fichas largas de Iris */
+/* El cierre de la bio (su filosofía, su metodología) y el de «Qué te
+   llevas»: con el filete dorado, como en la landing de la formación. */
+.casa-ficha-remate {
+  padding-left: 14px;
+  border-left: 2px solid var(--oro);
+  color: var(--oro-luz);
+}
+/* Sin flex en el `<details>`: Safari antiguo no lo aplica; el aire lo dan
+   los márgenes de abajo. */
+.casa-ficha-mas {
+  display: block;
+}
+.casa-ficha-mas > summary {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radio-pildora);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--papel);
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  list-style: none;
+}
+.casa-ficha-mas > summary::-webkit-details-marker {
+  display: none;
+}
+.casa-ficha-mas > summary::after {
+  content: '+';
+  color: var(--oro-luz);
+}
+.casa-ficha-mas[open] > summary::after {
+  content: '−';
+}
+.casa-ficha-mas[open] > * + * {
+  margin-top: 14px;
+}
+.casa-ficha-intro {
+  color: var(--papel);
+  font-weight: var(--peso-medio);
+}
+.casa-ficha-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.casa-ficha-lista li {
+  position: relative;
+  padding-left: 18px;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+.casa-ficha-lista li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--oro);
+}
+.casa-ficha-lista b {
+  font-weight: var(--peso-medio);
+  color: var(--papel);
+}

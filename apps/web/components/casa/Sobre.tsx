@@ -63,7 +63,8 @@ export default function Sobre({
   /* «No hace falta creer en nada» se ha ido: ponía la fe sobre la mesa, y aquí
      la fe no pinta nada. Esto va de algo que se repite y de dónde viene. */
   entrada = 'Lo que se repite no es mala suerte. Es un patrón. Y los patrones se heredan.',
-  texto = 'Tu abuela tomó una decisión para sobrevivir a lo suyo: callarse, aguantar, irse. Tu madre creció con esa decisión puesta en casa, sin que nadie se la explicara. Y tú no repites lo que les pasó: repites la salida que encontraron ellas. Eso es lo que venimos a mirar.',
+  /* Texto de Iris, 19 de noviembre de 2026. */
+  texto = 'Tu abuela no tomó decisiones para sobrevivir y mantener la armonía familiar: se calló, aguantó en lugar de irse. Tu madre creció con decisiones impuestas, y ahora ella quiere hacerlo diferente pero no es capaz. Y tú repites patrones, situaciones, personalidades. Eso es lo que vamos a mirar en tu árbol genealógico y en tu estudio numerológico.',
   botones = POR_DEFECTO,
 }: {
   id?: string;

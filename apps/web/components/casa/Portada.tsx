@@ -70,10 +70,12 @@ export default function Portada() {
               cursiva en NADA». El titular se parte igual, y el corte hace el
               trabajo que hacía la cursiva: «por qué se repite» / «siempre lo
               mismo» se leen como dos golpes y no como una frase larga. */}
+          {/* CON INTERROGACIÓN DESDE EL 19 DE NOVIEMBRE: lo pidió Iris
+              («ponerle interrogación»). Es una pregunta, y se lee como tal. */}
           <h1 className="casa-h1">
-            Por qué se repite
+            ¿Por qué se repite
             <br />
-            siempre lo mismo
+            siempre lo mismo?
           </h1>
 
           {/* Esta frase hace dos cosas y las dos a propósito: nombra el
@@ -83,9 +85,13 @@ export default function Portada() {
               Y NO dice lo que esto NO es. Nombrar las cartas o la
               adivinación para negarlas se lo mete en la cabeza a quien no
               lo había pensado. */}
+          {/* EL TEXTO ES DE IRIS (WhatsApp, 19 de noviembre). Sustituye a «La
+              misma discusión con otra persona. El mismo muro en otro trabajo.
+              Debajo hay un patrón, y se aprende a leerlo.» */}
           <p className="casa-portada-p">
-            La misma discusión con otra persona. El mismo muro en otro trabajo.
-            Debajo hay un patrón, y se aprende a leerlo.
+            La misma temática de discusión, pero con personas diferentes. Los
+            mismos problemas en el trabajo, pero en empresas diferentes. Todo
+            esto encierra el mismo patrón, y analizando tu fecha se descubre.
           </p>
 
           <div className="casa-llamada">

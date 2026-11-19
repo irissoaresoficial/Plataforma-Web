@@ -124,7 +124,8 @@ export const COPY = {
      * que permite que el resto de la página se lea sin sospecha.
      */
     q_h: 'Lo que no se habla, se hereda.',
-    q_p1: 'Tu abuela tomó una decisión para sobrevivir a lo suyo: callarse, aguantar, irse, no fiarse de nadie. Tu madre creció con esa decisión puesta en casa, aunque nadie se la explicara nunca. Y tú no repites lo que les pasó a ellas: repites la salida que encontraron.',
+    /* Texto de Iris, 19 de noviembre de 2026 (el mismo que `Sobre.tsx`). */
+    q_p1: 'Tu abuela no tomó decisiones para sobrevivir y mantener la armonía familiar: se calló, aguantó en lugar de irse. Tu madre creció con decisiones impuestas, y ahora ella quiere hacerlo diferente pero no es capaz. Y tú repites patrones, situaciones, personalidades. Eso es lo que vamos a mirar en tu árbol genealógico y en tu estudio numerológico.',
     q_p2: 'Eso es lo que se ve en los números. En qué generación empezó, quién lo pasó, y qué parte te ha tocado cargar a ti sin haberlo elegido.',
     /*
      * EL REGALO.
