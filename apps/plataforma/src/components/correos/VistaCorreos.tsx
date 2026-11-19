@@ -17,6 +17,7 @@ import Mapa, { type Estado, type Flujo, type Nodo } from "./Mapa";
 import Agente, { proximaRonda, type Paso } from "./Agente";
 import DiaADia from "./DiaADia";
 import PersonaAPersona from "./PersonaAPersona";
+import PdfInscritas from "./PdfInscritas";
 
 export type Textos = { dia: string; asunto: string; previo: string; titular: string; cuerpo: string; boton: string };
 export type Envio = Textos & { id: string; aInscritas: boolean };
@@ -482,6 +483,8 @@ export default function VistaCorreos({
           </span>
         </div>
       </div>
+
+      {!cargando && <PdfInscritas />}
 
       {!cargando && envios && (
         <DiaADia
