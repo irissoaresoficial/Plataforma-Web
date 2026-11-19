@@ -3032,3 +3032,10 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
     padding-top: calc(92vw - 170px);
   }
 }
+
+/* El vídeo del curso, entre el banner y «Qué aprendes». */
+.casa-fm-video {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 80px) var(--hueco) 0;
+}

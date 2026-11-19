@@ -31,6 +31,7 @@ import Barra from './Barra';
 import Pie from './Pie';
 import CuentaAtras from './CuentaAtras';
 import Registro from './Registro';
+import VideoMedido from './VideoMedido';
 import Pendiente from '@/components/Pendiente';
 import { BIO_IRIS, CONTACTO, FOTOS, FORMACION, falta } from '@/content/site';
 import './casa.css';
@@ -127,6 +128,16 @@ export default function CursoNumerologia() {
       </section>
 
       <main>
+        {/* ── EL VÍDEO DEL CURSO, en horizontal y a todo lo ancho. Arranca sin
+            sonido; el primer toque lo enciende (VideoMedido). */}
+        {FORMACION.video && (
+          <section className="casa-fm-video" aria-label="Vídeo de la formación">
+            <div className="casa-mc-video">
+              <VideoMedido src={FORMACION.video} poster={FORMACION.poster} nombre="curso-numerologia" />
+            </div>
+          </section>
+        )}
+
         {/* ── QUÉ APRENDES ─────────────────────────────── */}
         <section className="casa-mc-quien" aria-labelledby="aprendes-h">
           <h2 className="casa-mc-quien-h" id="aprendes-h">Qué aprendes</h2>
