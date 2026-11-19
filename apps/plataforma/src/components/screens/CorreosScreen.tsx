@@ -69,7 +69,15 @@ export default function CorreosScreen() {
         getDoc(doc(base, "difusion-config", LISTA)),
       ]);
       setContactos(c.docs.map((d) => ({ email: d.get("email") ?? "", baja: !!d.get("baja"), enviados: d.get("enviados") ?? {} })));
-      setInscritas(l.docs.map((d) => ({ email: d.get("email") ?? "", baja: !!d.get("baja"), recordatorios: d.get("recordatorios") ?? {} })));
+      /* Sólo las de la masterclass: quien se inscribe en la formación de
+         Numerología también entra como `curso`, con `detalle` empezando por
+         «Formación: » (PREFIJO_FORMACION en apps/web/lib/booking.ts). A ésa
+         no le llegan los recordatorios del 26, así que aquí no se cuenta. */
+      setInscritas(
+        l.docs
+          .filter((d) => !String(d.get("detalle") ?? "").startsWith("Formación: "))
+          .map((d) => ({ email: d.get("email") ?? "", baja: !!d.get("baja"), recordatorios: d.get("recordatorios") ?? {} })),
+      );
       const x = k.data();
       setConf({ activa: !!x?.activa, tope: TOPE_POR_DEFECTO });
     } catch (e) {
