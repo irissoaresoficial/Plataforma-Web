@@ -266,8 +266,8 @@ export const FORMACION = {
   precio: PENDIENTE as string,
   /** EL VÍDEO DEL CURSO, EN HORIZONTAL (Gerson, 19 de noviembre: «tiene que
    *  estar ahí en versión horizontal»). Vacío = la landing no enseña el hueco. */
-  video: '/video/curso-numerologia.mp4' as string,
-  poster: '/images/curso-numerologia-poster.jpg',
+  video: '/video/curso-numerologia-iris.mp4' as string,
+  poster: '/images/curso-numerologia-poster-iris.jpg',
   /** El del cartel, con espacios para leerlo. */
   telefono: '619 500 002',
   telefonoHref: 'tel:+34619500002',
