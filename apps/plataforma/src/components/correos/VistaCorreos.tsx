@@ -16,6 +16,7 @@ import { APOYO, BOTON_NORMAL, BOTON_PLANO, CAMPO, NOTA, TITULO, botonPrincipal, 
 import Mapa, { type Estado, type Flujo, type Nodo } from "./Mapa";
 import Agente, { proximaRonda, type Paso } from "./Agente";
 import DiaADia from "./DiaADia";
+import PersonaAPersona from "./PersonaAPersona";
 
 export type Textos = { dia: string; asunto: string; previo: string; titular: string; cuerpo: string; boton: string };
 export type Envio = Textos & { id: string; aInscritas: boolean };
@@ -491,6 +492,8 @@ export default function VistaCorreos({
           diaRonda={proximaRonda().toLocaleDateString("sv-SE", { timeZone: "Europe/Madrid" })}
         />
       )}
+
+      {!cargando && envios && (contactos ?? []).length > 0 && <PersonaAPersona envios={envios} contactos={contactos ?? []} />}
 
       <style>{ESTILO}</style>
     </div>
