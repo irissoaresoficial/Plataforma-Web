@@ -493,6 +493,30 @@ export const SESION = {
  * una web que dice «16 años» cuando ya son 17 se lee como abandonada, y es el
  * dato que sostiene el motivo de la oferta.
  */
+/**
+ * EL PACK DE 8 SESIONES. Datos y precios de Iris (WhatsApp, 19 de noviembre
+ * de 2026), no inventados.
+ *
+ * `sueltas` NO es un precio anterior: es 8 × 111 €, la suma de comprarlas
+ * una a una. Por eso se escribe como comparación y NUNCA tachado (MARCA.md
+ * §7 sólo deja tachar un precio al que se haya vendido en los últimos 30
+ * días). El cobro y el fraccionado se gestionan como hoy: se reserva por
+ * correo y lo cierra Iris.
+ */
+export const PACK_SESIONES = {
+  sesiones: 8,
+  /** Cada cuánto, en semanas. */
+  cadaSemanas: 3,
+  /** Precio de la sesión suelta con el que se compara. */
+  precioSesion: 111,
+  /** Pago único. */
+  precio: 740,
+  /** En dos cuotas: al inicio y en la sesión 4. */
+  cuotas: 2,
+  precioCuota: 385,
+  cuotaEnSesion: 4,
+};
+
 export function aniosDeConsulta(): number {
   return new Date().getFullYear() - SESION.desde;
 }

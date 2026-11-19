@@ -55,7 +55,7 @@ import Entrada from '@/components/casa/Entrada';
 import Pie from '@/components/casa/Pie';
 import Sobre from '@/components/casa/Sobre';
 import '@/components/casa/casa.css';
-import { CONTACTO, FOTOS, SESION, eur } from '@/content/site';
+import { CONTACTO, FOTOS, PACK_SESIONES, SESION, eur } from '@/content/site';
 
 /*
  * QUÉ SALE DE LA CUENTA. Son las cinco cosas que la plataforma calcula de
@@ -85,7 +85,8 @@ const QUE_SALE: FichaClave[] = [
     corto: 'Los tramos',
     titulo: 'Realizaciones y ciclos',
     texto:
-      'La vida no va en línea recta: va por tramos, y cada uno tiene su asunto. Saber en cuál estás cambia lo que merece la pena intentar este año.',
+      /* Texto de Iris, 19 de noviembre de 2026. */
+      'La vida no va en línea recta: va por ciclos, y cada uno tiene su temática. Saber en cuál estás puede cambiar tu forma de vivir y de tomar decisiones este año.',
   },
   {
     id: 'dificil',
@@ -104,7 +105,8 @@ const QUE_SALE: FichaClave[] = [
     corto: 'Tu línea',
     titulo: 'La herencia',
     texto:
-      'Con las fechas de tus padres y tus abuelos se ve qué número viene de dónde. Es la parte transgeneracional: lo que no empezó en ti.',
+      /* Texto de Iris, 19 de noviembre de 2026. */
+      'Con las fechas de tus ancestros podemos ver qué patrones, qué temáticas, qué lealtades y qué mensajes ocultos quieren transmitirte. Es en lo transgeneracional donde empezó la vida que tienes hoy.',
     foto: FOTOS.generaciones,
     alt: 'Una fila de hombres de distintas edades, uno detrás de otro, en la misma postura y con las mismas manos sobre la mesa, repitiéndose hacia el fondo.',
   },
@@ -115,15 +117,15 @@ const QUE_SALE: FichaClave[] = [
 const QUE_NO_ES = [
   {
     t: 'No adivina el futuro',
-    d: 'Mira hacia atrás, no hacia delante. Nadie te va a decir con quién te vas a casar ni cuándo te va a tocar la lotería.',
+    d: 'Mira arriba, en tus ancestros. Estudia lo que ya pasó, no lo que está por venir: no te dice con quién te casarás ni cuándo te tocará la lotería.',
   },
   {
     t: 'No hay que creer en nada',
-    d: 'No hay religión, ni grupo, ni nada a lo que apuntarse. La cuenta se hace con números, delante de ti, y la puedes rehacer tú.',
+    d: 'Sin religiones ni grupos a los que unirse. Ves el cálculo con números delante de ti y puedes rehacerlo tú.',
   },
   {
     t: 'No sustituye a un psicólogo',
-    d: 'Si estás en terapia, sigue con ella. Esto acompaña y no interfiere.',
+    d: 'Si haces terapia, continúa con ella. Esto acompaña y suma; no interfiere.',
   },
 ];
 
@@ -197,10 +199,13 @@ export default function Numerologia() {
           rotulo="Para que no haya dudas"
           titulo="Y qué no es"
           texto={
+            /* La entrada es de Iris (19 de noviembre de 2026): que lo diga
+               claro, antes de la lista. */
             <p>
-              Es la primera pregunta de quien llega sin conocer esto. Va aquí y
-              no enterrada al final, porque contestarla antes del precio es lo
-              que permite leer el resto sin sospechar.
+              La numerología no es adivinación, ni un juego de azar, ni una
+              etiqueta que te encasilla. Tampoco es magia vacía ni una fórmula
+              cerrada para predecir el futuro: es un espejo para mirar lo que
+              ya habita en ti y empezar a transformarlo.
             </p>
           }
         >
@@ -221,13 +226,19 @@ export default function Numerologia() {
           id="consulta"
           tono="arena"
           rotulo="La consulta"
-          titulo="Tu historia, puesta en números y explicada delante de ti"
+          titulo="Tu historia, puesta en números y explicada para ti"
           texto={
             <>
+              {/* Texto de Iris (19 de noviembre de 2026). Su primera frase
+                  («Tu historia, puesta en números y explicada para ti») es el
+                  titular de arriba; aquí sigue. Desde hoy, online o
+                  presencial. */}
               <p>
-                Online, con tu carta ya preparada antes de vernos. Miramos de
-                dónde viene lo que se repite, en qué generación empezó y qué
-                parte te toca soltar a ti.
+                De manera online o presencial, con tu estudio ya preparado
+                antes de vernos. Miramos de dónde viene lo que se repite, en qué
+                generación empezó y qué quieres soltar tú para llevar una vida
+                diferente a la de tus ancestros, soltando patrones y lealtades
+                siempre con amor y reconocimiento a tus orígenes.
               </p>
               <p>
                 Sales con tu patrón por escrito y con nombres. No con una lista
@@ -249,7 +260,8 @@ export default function Numerologia() {
               )}
             </p>
             <p className="casa-precio-que">
-              Una sesión online, con tu carta preparada de antes.
+              Una sesión online o presencial donde estudiamos todo tu estudio
+              numerológico transgeneracional.
               {ofertaViva
                 ? ` Es el precio de aniversario, que cae en día 14: son ${SESION.plazasOferta} plazas, una por cada año de consulta, y se acaba cuando se llenen.`
                 : ''}
@@ -266,6 +278,33 @@ export default function Numerologia() {
               Se reserva por correo y te contesto yo. Si prefieres preguntar
               antes, escríbeme y ya está.
             </p>
+
+            {/* EL PACK, COMO OPCIÓN SEGUNDA (datos de Iris, 19 nov 2026).
+                Botón secundario: en esta pantalla la petición principal es
+                la consulta (MARCA.md §5). Los 888 € NO van tachados: no son
+                un precio anterior, son 8 × 111 €. Se cobra como hoy: se
+                reserva por correo y lo cierra Iris. */}
+            <div className="casa-pack">
+              <p className="casa-pack-rotulo">O el pack de {PACK_SESIONES.sesiones} sesiones</p>
+              <p className="casa-pack-que">
+                {PACK_SESIONES.sesiones} sesiones personalizadas · una cada {PACK_SESIONES.cadaSemanas} semanas
+              </p>
+              <p className="casa-pack-cifra">
+                {eur(PACK_SESIONES.precio)} <span>en un pago</span>
+              </p>
+              <p className="casa-pack-que">
+                o {PACK_SESIONES.cuotas} cuotas de {eur(PACK_SESIONES.precioCuota)} ({eur(PACK_SESIONES.precioCuota * PACK_SESIONES.cuotas)}): una al empezar y otra en la sesión {PACK_SESIONES.cuotaEnSesion}.
+              </p>
+              <p className="casa-pack-compara">
+                Sueltas, a {eur(PACK_SESIONES.precioSesion)} cada una, serían {eur(PACK_SESIONES.precioSesion * PACK_SESIONES.sesiones)}.
+              </p>
+              <a
+                className="casa-pack-boton"
+                href={`mailto:${CONTACTO.email}?subject=${encodeURIComponent(`Reservar el pack de ${PACK_SESIONES.sesiones} sesiones`)}`}
+              >
+                Reservar el pack
+              </a>
+            </div>
           </div>
         </Banda>
       </main>

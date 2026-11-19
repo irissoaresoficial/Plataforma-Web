@@ -2930,3 +2930,64 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
   font-weight: var(--peso-medio);
   color: var(--papel);
 }
+
+/* ------------------------------------------------ el pack de 8 sesiones */
+/* La opción segunda del precio: debajo de la consulta, separada por un
+   filete y con el botón secundario (MARCA.md §5: una sola petición fuerte
+   por pantalla). Los 888 € van como comparación, nunca tachados. */
+.casa-pack {
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 20px;
+  border-top: 1px solid var(--linea);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.casa-pack-rotulo {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  color: var(--oro-tinta);
+}
+.casa-pack-cifra {
+  margin: 4px 0 0;
+  font-family: var(--sans);
+  font-size: var(--t-h3);
+  font-weight: var(--peso-medio);
+  line-height: 1.2;
+  color: var(--tinta);
+}
+.casa-pack-cifra span {
+  font-size: var(--t-nota);
+  font-weight: var(--peso-texto);
+  color: #55504f;
+}
+.casa-pack-que,
+.casa-pack-compara {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  line-height: 1.55;
+  color: #55504f;
+}
+.casa-pack-compara {
+  color: var(--oro-tinta);
+}
+.casa-pack-boton {
+  margin-top: 8px;
+  padding: 12px 22px;
+  border-radius: var(--radio-medio);
+  border: 1px solid var(--vino);
+  background: transparent;
+  color: var(--vino);
+  font-family: var(--sans);
+  font-size: var(--t-nota);
+  font-weight: var(--peso-medio);
+  text-decoration: none;
+}
+.casa-pack-boton:hover {
+  background: var(--arena);
+}

@@ -71,7 +71,7 @@ const FRASES = [
   { de: 'Los senderos', txt: 'Entre esas diez paradas hay veintidós caminos. En tu carta se encienden los que te tocan a ti, y cada uno cuenta algo tuyo.' },
   { de: 'Numerología', txt: 'No adivina el futuro. Ordena el presente: te enseña de dónde viene eso que ya te está pasando.' },
   { de: 'El Tikun', txt: 'Tikun significa reparar. Lo que te llega de tu familia no hay que aguantarlo: se repara y se le devuelve a quien era.' },
-  { de: 'Los ciclos', txt: 'La vida no va en línea recta, va por tramos. Saber en cuál estás cambia lo que merece la pena intentar este año.' },
+  { de: 'Los ciclos', txt: 'La vida no va en línea recta, va por ciclos, y cada uno tiene su temática. Saber en cuál estás puede cambiar tu forma de vivir y de decidir este año.' },
   { de: 'Kábala', txt: 'No es una religión, ni es para elegidos. Es un mapa. Y un mapa sirve para dejar de dar vueltas en círculo.' },
   { de: 'Tu nombre', txt: 'Tu nombre también cuenta. Fue lo primero que alguien decidió por ti, y viene con lo que esa persona esperaba de ti.' },
 ];
