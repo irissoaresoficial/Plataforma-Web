@@ -42,6 +42,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { css } from "@/lib/css";
+import ConectarCalendario from "@/components/agenda/ConectarCalendario";
 import { useApp } from "@/lib/app-context";
 import { APOYO, BOTON_PLANO, NOTA, PAD_SM, RAYA, TARJETA, botonPrincipal, rotulo } from "@/lib/ui";
 import Confirmar from "../Confirmar";
@@ -800,6 +801,7 @@ export default function AgendaScreen() {
             Agenda
           </h1>
           <p style={css(APOYO + "margin:8px 0 0;")}>{hoyLargo}</p>
+          <ConectarCalendario />
         </div>
 
         {!estrecho && selector}
