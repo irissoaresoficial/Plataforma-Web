@@ -20,6 +20,7 @@ export default function Banda({
   cifras = [],
   accion,
   encuadre = "50% 50%",
+  fotoALaDerecha = false,
 }: {
   foto: string;
   titulo: string;
@@ -27,6 +28,9 @@ export default function Banda({
   cifras?: Array<{ n: string | number; que: string }>;
   accion?: ReactNode;
   encuadre?: string;
+  /** La foto lleva a alguien a la derecha (sin cifras encima): el velo sólo
+   *  oscurece el lado del título y la deja verse. */
+  fotoALaDerecha?: boolean;
 }) {
   return (
     <header
@@ -40,7 +44,15 @@ export default function Banda({
       {/* El velo vuelve a oscurecer a la derecha, que es donde van las cifras:
           acababa en .25 y los rótulos dorados quedaban a 3,2:1 encima de la
           foto de los cristales. */}
-      <span aria-hidden="true" style={css("position:absolute;inset:0;background:linear-gradient(90deg,rgba(34,29,31,.88) 0%,rgba(34,29,31,.6) 50%,rgba(34,29,31,.72) 100%);")} />
+      <span
+        aria-hidden="true"
+        style={css(
+          "position:absolute;inset:0;background:" +
+            (fotoALaDerecha
+              ? "linear-gradient(90deg,rgba(34,29,31,.9) 0%,rgba(34,29,31,.7) 32%,rgba(34,29,31,.1) 62%,rgba(34,29,31,0) 100%);"
+              : "linear-gradient(90deg,rgba(34,29,31,.88) 0%,rgba(34,29,31,.6) 50%,rgba(34,29,31,.72) 100%);")
+        )}
+      />
       <div
         style={css(
           "position:relative;width:100%;padding:var(--pad-card);display:flex;align-items:flex-end;justify-content:space-between;gap:var(--gap-lg);flex-wrap:wrap;"
@@ -51,7 +63,8 @@ export default function Banda({
           {sub && <p style={css("margin:0;font-size:var(--t-body);color:var(--sobre-bloque-2);max-width:52ch;")}>{sub}</p>}
           {accion && <div style={css("margin-top:8px;")}>{accion}</div>}
         </div>
-        {cifras.length > 0 && (
+        {/* Con la persona a la derecha, las cifras irían encima de ella. */}
+        {cifras.length > 0 && !fotoALaDerecha && (
           <dl style={css("margin:0;display:flex;gap:clamp(18px,3vw,40px);")}>
             {cifras.map((c) => (
               <div key={c.que} style={css("display:flex;flex-direction:column;gap:4px;")}>

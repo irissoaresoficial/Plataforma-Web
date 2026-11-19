@@ -230,8 +230,10 @@ export default function CursosScreen() {
   return (
     <div style={css(PANTALLA + "display:flex;flex-direction:column;gap:var(--s4);")}>
       <Banda
-        foto="/escuela/banda-cursos.jpg"
-        encuadre="50% 30%"
+        /* La Iris del curso, la misma del banner de la web (19 nov 2026). */
+        foto="/escuela/numerologia-iris.jpg"
+        encuadre="100% 22%"
+        fotoALaDerecha
         titulo={esAdmin ? "Cursos" : "Mis cursos"}
         sub={
           esAdmin
