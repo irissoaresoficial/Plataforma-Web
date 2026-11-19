@@ -49,7 +49,7 @@ const POR_DEFECTO: Decision[] = [
     etiqueta: "Desde el 11 nov",
     tono: "en-marcha",
     titulo: "Correos a las clientas de Marco",
-    porque: "Gente que ya le conoce y confía en él. Salen 95 al día desde la plataforma.",
+    porque: "Gente que ya le conoce y confía en él. Salen 85 al día desde la plataforma.",
   },
   {
     etiqueta: "13 nov",
@@ -95,7 +95,7 @@ const HECHO: Decision[] = [
   { etiqueta: "10 nov", tono: "hecho", titulo: "Anuncios nuevos", porque: "8 imágenes y vídeos que hablan del dolor, más «La espera» en vertical." },
   { etiqueta: "10 nov", tono: "hecho", titulo: "Presentación del directo", porque: "En la web, automática, con música, cuentas atrás y el vídeo «La espera» antes del curso." },
   { etiqueta: "10 nov", tono: "hecho", titulo: "Clientas de Marco", porque: "373 correos limpios y un público parecido creado en Meta." },
-  { etiqueta: "10 nov", tono: "hecho", titulo: "Correos automáticos", porque: "Recordatorios a las inscritas y la lista de Marco, 95 al día. Se ven y se editan en Correos." },
+  { etiqueta: "10 nov", tono: "hecho", titulo: "Correos automáticos", porque: "Recordatorios a las inscritas y la lista de Marco, 85 al día. Se ven y se editan en Correos." },
   { etiqueta: "10 nov", tono: "hecho", titulo: "Métricas al día", porque: "Esta pantalla se actualiza sola cada mañana con los datos de Meta." },
 ];
 

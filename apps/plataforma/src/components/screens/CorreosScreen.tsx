@@ -32,7 +32,7 @@ import VistaCorreos, { fecha, hoyMadrid, type Conf, type Contacto, type Envio, t
    de correos llegaba vacía y la pantalla no enseñaba ninguno. */
 const WEB = (process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com").replace("://escueladesabiduria33.com", "://www.escueladesabiduria33.com");
 const LISTA = "marco";
-const TOPE_POR_DEFECTO = 95;
+const TOPE_POR_DEFECTO = 85; // el mismo que apps/web/lib/difusion.ts
 const CACHE = "correos-envios-v1";
 
 /** Saca los correos de un CSV, de una lista pegada o de lo que sea: cualquier

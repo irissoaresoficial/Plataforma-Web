@@ -145,8 +145,14 @@ export const CONFIG = 'difusion-config';
 /** Noventa y cinco al día. Gerson lo puso en 50 el 10 de noviembre y lo subió
  *  a 95 el 15 («sí, súbelo a 95 al día»): con 50 la invitación no llegaba a
  *  todas antes del recordatorio del 23. 95 cabe en el plan gratuito de Resend
- *  (100 al día), y cuenta también los recordatorios que salgan ese día. */
-export const TOPE_POR_DEFECTO = 95;
+ *  (100 al día), y cuenta también los recordatorios que salgan ese día.
+ *
+ *  BAJADO A 85 EL 19 DE NOVIEMBRE. Gerson: «no pagaremos nada, tú sólo
+ *  intenta enviar diarios menos de 100». Las 8:00 no son lo único que sale en
+ *  el día: cada inscrita nueva recibe su confirmación al momento, y el 25 y el
+ *  26 se apunta más gente. Con 95 a las 8:00 quedaban 5 de margen para todo el
+ *  día. Con 85 quedan 15, y Resend no corta ninguno. */
+export const TOPE_POR_DEFECTO = 85;
 
 const CAMPOS: Array<keyof Textos> = ['dia', 'asunto', 'previo', 'titular', 'cuerpo', 'boton'];
 
