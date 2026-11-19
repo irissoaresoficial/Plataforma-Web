@@ -153,7 +153,7 @@ export function marco(opciones: {
   cuerpo: string;
   email: string;
   /** Quién firma. Por defecto Iris; los correos a la lista de Marco los firma él. */
-  firma?: { nombre: string; cargo: string };
+  firma?: { nombre: string; cargo: string; foto?: string };
   /** Por qué le llega. Por defecto, porque dejó su correo en la web. */
   motivo?: string;
   /** El texto del enlace de baja y el aviso legal, en otro idioma. */
@@ -179,8 +179,19 @@ export function marco(opciones: {
       <h1 style="margin:0 0 20px;font-size:27px;line-height:1.2;font-weight:600;letter-spacing:-.02em;color:${TINTA}">${opciones.titular}</h1>
       <div style="font-size:16px;line-height:1.65;color:${TINTA}">${opciones.cuerpo}</div>
       <div style="margin:30px 0 0;padding-top:20px;border-top:1px solid #ece8e0">
-        <p style="margin:0;font-size:16px;line-height:1.6;color:${TINTA}">${firma.nombre}</p>
-        <p style="margin:2px 0 0;font-size:13px;color:#6b6564">${firma.cargo}</p>
+        ${
+          /* Con foto, la firma va en una tabla: es lo único que los clientes de
+             correo respetan para poner una imagen al lado de un texto. */
+          firma.foto
+            ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="vertical-align:middle;padding-right:14px"><img src="${firma.foto}" width="56" height="56" alt="${firma.nombre}" style="display:block;width:56px;height:56px;border-radius:50%;border:0"></td>
+          <td style="vertical-align:middle">
+            <p style="margin:0;font-size:16px;line-height:1.4;color:${TINTA}">${firma.nombre}</p>
+            <p style="margin:2px 0 0;font-size:13px;color:#6b6564">${firma.cargo}</p>
+          </td></tr></table>`
+            : `<p style="margin:0;font-size:16px;line-height:1.6;color:${TINTA}">${firma.nombre}</p>
+        <p style="margin:2px 0 0;font-size:13px;color:#6b6564">${firma.cargo}</p>`
+        }
       </div>
     </div>
 

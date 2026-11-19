@@ -220,7 +220,14 @@ export function correoDifusion(e: Envio, email: string): { asunto: string; html:
       titular: limpio(e.titular),
       email,
       cuerpo: cuerpoHtml(e),
-      firma: { nombre: 'Marco Célio Sousa', cargo: 'Psicólogo e terapeuta psicossomático clínico' },
+      /* La foto de Marco junto a su firma. Gerson, 19 nov: «importante que la
+         foto de Marco aparezca». Va por la dirección con www: sin ella la web
+         redirige y hay clientes de correo que no siguen la redirección. */
+      firma: {
+        nombre: 'Marco Célio Sousa',
+        cargo: 'Psicólogo e terapeuta psicossomático clínico',
+        foto: 'https://www.escueladesabiduria33.com/images/correo/marco-firma.jpg',
+      },
       motivo:
         'Recebe este e-mail porque passou pela consulta de Marco Célio Sousa. É enviado, com a autorização dele, pela Escuela de Sabiduría 33, onde dá aulas.',
       pie: {
