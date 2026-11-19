@@ -8,7 +8,7 @@
  * ordenada por fecha en vez de cuatro listas que hay que juntar a mano.
  */
 
-import type { Lead } from './booking';
+import { esFormacion, type Lead } from './booking';
 import { db, FieldValue } from './firebase';
 
 /** El identificador de un lead: su correo y de dónde vino. */
@@ -40,7 +40,12 @@ export async function guardaLead(lead: Lead, extra?: Record<string, unknown>): P
   if (!base) return { guardado: false, motivo: 'sin_configurar' };
 
   try {
-    const ref = base.collection('leads').doc(idDe(lead.email, lead.origen));
+    /* LA FORMACIÓN LLEVA SU PROPIA FICHA. Entra como `curso`, igual que la
+       masterclass, y con el id de siempre la misma persona apuntándose a las
+       dos pisaría su ficha de la masterclass con la de la formación: perdería
+       los recordatorios del 26 sin que nadie lo viera. El campo `origen` sigue
+       siendo `curso`; sólo cambia el nombre del documento. */
+    const ref = base.collection('leads').doc(idDe(lead.email, esFormacion(lead.detalle) ? 'formacion' : lead.origen));
 
     /*
      * SE LEE ANTES DE ESCRIBIR, Y HAY DOS COSAS QUE DEPENDEN DE ESA LECTURA.

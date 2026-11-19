@@ -2774,3 +2774,82 @@ a.casa-disco-ficha:hover .casa-disco-brillo {
     transform: scale(1.04);
   }
 }
+
+/* ===================================================================
+   LA FORMACIÓN DE NUMEROLOGÍA TRANSGENERACIONAL (/curso-numerologia)
+   Monta sobre las piezas de la masterclass (`.casa-mc-*`); aquí sólo va
+   lo que esa página no tiene: la ficha de fechas, la lista de cuatro y el
+   cierre de la bio.
+   =================================================================== */
+.casa-fm-nombre {
+  font-weight: var(--peso-medio);
+  color: var(--papel);
+}
+/* La ficha de fechas, en cristal sobre la foto, en la columna del vídeo. */
+.casa-fm-ficha {
+  margin: 0;
+  padding: clamp(18px, 2vw, 26px);
+  display: grid;
+  gap: 0;
+  border-radius: var(--radio-suave);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.casa-fm-ficha > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+.casa-fm-ficha > div:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.casa-fm-ficha > div:last-child {
+  padding-bottom: 0;
+}
+.casa-fm-ficha dt {
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  font-weight: var(--peso-medio);
+  color: var(--papel);
+}
+.casa-fm-ficha dd {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--t-cuerpo);
+  color: var(--oro-luz);
+  text-align: right;
+}
+/* Cuatro puntos: de dos en dos en tableta y los cuatro en fila en ancho. */
+@media (min-width: 620px) {
+  .casa-mc-lista.casa-fm-cuatro {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1080px) {
+  .casa-mc-lista.casa-fm-cuatro {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+/* El segundo bloque, en papel: arena y papel alternan y no se funden. */
+.casa-fm-claro {
+  background: var(--papel);
+}
+.casa-fm-filosofia {
+  padding-left: 16px;
+  border-left: 2px solid var(--oro);
+  color: var(--oro-luz) !important;
+}
+.casa-mc-cierre-p a {
+  color: var(--oro-luz);
+}
+/* Va en vino y no en tinta: justo encima está «Quién imparte», también
+   oscuro, y dos negros seguidos se leen como un solo bloque. */
+.casa-fm-cierre {
+  background: var(--vino);
+}

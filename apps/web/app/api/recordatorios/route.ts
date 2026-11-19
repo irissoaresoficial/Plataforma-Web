@@ -44,6 +44,7 @@ import { Resend } from 'resend';
 import { db, FieldValue } from '@/lib/firebase';
 import { correoRecordatorio, type Recordatorio } from '@/lib/correo';
 import { MASTERCLASS } from '@/content/site';
+import { esFormacion } from '@/lib/booking';
 import { sincronizaCampana } from '@/lib/campana-sync';
 import { CONFIG, COLECCION, LISTA, TOPE_POR_DEFECTO, correoDifusion, envioDeHoy, conCambios, type Textos } from '@/lib/difusion';
 
@@ -102,12 +103,18 @@ export async function GET(peticion: Request) {
   /* Las inscritas, de una vez: se usan para los recordatorios y para no
      mandarle a una inscrita el «aún puedes apuntarte» de la lista de Marco. */
   const r = await base.collection('leads').where('origen', '==', 'curso').get();
+  /* SÓLO LAS DE LA MASTERCLASS. Desde el 19 de noviembre también entra como
+     `curso` quien se inscribe en la formación del 22 y el 28: a ésa no se le
+     recuerda una clase del 26 a la que no se apuntó, ni cuenta como inscrita
+     de la masterclass para la lista de Marco. La diferencia está en cómo
+     empieza `detalle` (ver `esFormacion`, lib/booking.ts). */
+  const deLaMasterclass = r.docs.filter((d) => !esFormacion((d.data() as { detalle?: unknown }).detalle));
 
   let enviados = 0;
   let saltados = 0;
   let fallados = 0;
 
-  for (const doc of tipo ? r.docs : []) {
+  for (const doc of tipo ? deLaMasterclass : []) {
     const v = doc.data() as {
       email?: string;
       nombre?: string;
@@ -145,7 +152,7 @@ export async function GET(peticion: Request) {
   }
 
   const inscritas = new Set(
-    r.docs.map((d) => String((d.data() as { email?: string }).email || '').trim().toLowerCase()).filter(Boolean),
+    deLaMasterclass.map((d) => String((d.data() as { email?: string }).email || '').trim().toLowerCase()).filter(Boolean),
   );
   const difusion = await enviaDifusion(base, resend, inscritas, enviados);
 

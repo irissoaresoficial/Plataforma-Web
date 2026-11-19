@@ -36,6 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     /* Lo que se vende. `weekly` porque las fechas y las plazas cambian. */
     { url: `${SITIO}/cursos`, lastModified: hoy, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${SITIO}/curso-numerologia`, lastModified: hoy, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${SITIO}/taller`, lastModified: hoy, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${SITIO}/kabala`, lastModified: hoy, changeFrequency: 'monthly', priority: 0.7 },
 

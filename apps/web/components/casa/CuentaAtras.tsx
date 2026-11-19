@@ -35,7 +35,7 @@
 import { useEffect, useState } from 'react';
 import { MASTERCLASS } from '@/content/site';
 
-const FIN = new Date(MASTERCLASS.iso).getTime();
+const FIN_MASTERCLASS = new Date(MASTERCLASS.iso).getTime();
 
 function reparte(ms: number) {
   const s = Math.max(0, Math.floor(ms / 1000));
@@ -47,7 +47,10 @@ function reparte(ms: number) {
   };
 }
 
-export default function CuentaAtras() {
+/* Sin props es la de la masterclass, como siempre. La formación de noviembre
+   le pasa su fecha y su rótulo: el mismo reloj, otro día. */
+export default function CuentaAtras({ iso, fecha }: { iso?: string; fecha?: string } = {}) {
+  const FIN = iso ? new Date(iso).getTime() : FIN_MASTERCLASS;
   /*
    * `null` hasta que monta, Y ESO NO ES PEREZA.
    *
@@ -64,7 +67,7 @@ export default function CuentaAtras() {
     tic();
     const id = setInterval(tic, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [FIN]);
 
   /* Pasada la hora, ni cuenta atrás ni nada: una barra a cero es peor que no
      tener barra. */
@@ -80,7 +83,7 @@ export default function CuentaAtras() {
   return (
     <div className="casa-cuenta" role="timer" aria-live="off">
       <span className="casa-cuenta-fecha">
-        Jueves 26 de noviembre · 21:00 h (Madrid)
+        {fecha || 'Jueves 26 de noviembre · 21:00 h (Madrid)'}
       </span>
       {falta ? (
         <span className="casa-cuenta-reloj">

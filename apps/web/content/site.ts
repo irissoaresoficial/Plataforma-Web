@@ -222,6 +222,72 @@ export const MASTERCLASS = {
   isoFin: '2026-11-26T22:00:00+01:00',
 };
 
+/**
+ * ============================================================================
+ * LA FORMACIÓN DE NOVIEMBRE: NUMEROLOGÍA TRANSGENERACIONAL
+ * ============================================================================
+ *
+ * La landing con inscripción (`/curso-numerologia`). Todo sale del cartel de
+ * Iris (15 de noviembre de 2026), pasado por Gerson. Lo que el cartel no dice
+ * no se escribe: el precio va en rojo y las plazas son «limitadas», sin
+ * número. «Ayuda a millones de personas» NO va: es una cifra sin respaldo.
+ *
+ * OJO CON EL CORREO DEL CARTEL: pone «irisoaresoficial@gmail.com», con una
+ * «s» de menos. Aquí se usa `CONTACTO.email`, que es el que funciona.
+ */
+export const FORMACION = {
+  titulo: 'Numerología Transgeneracional y Estudio del Árbol Genealógico',
+  /** Corto, para un botón, un asunto o la ficha de Iris. */
+  corto: 'Numerología Transgeneracional',
+  lema: 'Conoce tus raíces, libera patrones y crea tu propio destino.',
+  subtitulo: 'Una formación profunda y transformadora para comprender, sanar y evolucionar.',
+  modalidad: 'Online',
+  zona: 'hora de España (Madrid)',
+  /** Como se lee en una frase. */
+  cuando: 'el domingo 22 y el sábado 28 de noviembre',
+  dias: [
+    { dia: 'Domingo 22 de noviembre', horas: '10:00 → 14:00' },
+    { dia: 'Sábado 28 de noviembre', horas: '10:00 → 19:00' },
+  ],
+  /** El primer día, para la cuenta atrás. Hora de Madrid (+01:00 en noviembre). */
+  iso: '2026-11-22T10:00:00+01:00',
+  aprendes: [
+    'Descubre los patrones heredados.',
+    'Comprende los ciclos de tu vida.',
+    'Sana relaciones y libera bloqueos.',
+    'Potencia tu propósito.',
+  ],
+  porQue: [
+    'Transforma tu vida y la de tu familia.',
+    'Amplía tu conocimiento profesional.',
+    'Combina esta sabiduría con tu profesión.',
+  ],
+  /** En euros. PENDIENTE hasta que Iris lo diga: sale en rojo. */
+  precio: PENDIENTE as string,
+  /** El del cartel, con espacios para leerlo. */
+  telefono: '619 500 002',
+  telefonoHref: 'tel:+34619500002',
+};
+
+/**
+ * QUIÉN ES IRIS, CON SUS PALABRAS.
+ *
+ * Texto aprobado por ella (noviembre de 2026). Va en la landing de la
+ * formación y en el bloque «quién soy» de la portada. Es dato suyo: las cifras
+ * (desde 2010, 16 años, más de 15.000 estudios) son las que da ella.
+ * El último párrafo es su filosofía y se pinta como cierre.
+ */
+export const BIO_IRIS = {
+  parrafos: [
+    'Fundadora de Escuela de Sabiduría 33 y creadora de la Numerología Transgeneracional.',
+    'Desde 2010 me dedico a la investigación, el estudio y la enseñanza de la numerología y la cábala. Con 16 años de trayectoria y más de 15.000 estudios numerológicos, he desarrollado y creado la Numerología Transgeneracional, un sistema propio que integra el lenguaje de los números con el estudio del árbol genealógico y los patrones heredados.',
+    'Mi trabajo nace de la investigación, la experiencia y una profunda vocación por el conocimiento del ser humano. Creo en el autoconocimiento como herramienta para comprender nuestra historia, romper repeticiones y construir nuestro propio camino.',
+  ],
+  filosofia: 'Mi filosofía: conocer de dónde vienes para decidir conscientemente hacia dónde vas.',
+  metodo:
+    'Mi metodología IRIS transforma la investigación en conocimiento, el conocimiento en conciencia y la conciencia en nuevas posibilidades de vida.',
+};
+
 export const CONTACTO = {
   /** Correo al que se escribe la gente si algo falla. */
   email: 'irissoaresoficial@gmail.com',
@@ -800,9 +866,9 @@ export const CURSOS: Curso[] = [
       'Potenciar tu propósito.',
     ],
     incluye: [],
-    enlace:
-      'mailto:irissoaresoficial@gmail.com?subject=' +
-      encodeURIComponent('Formación Numerología Transgeneracional y Árbol Genealógico'),
+    /* Desde el 19 de noviembre tiene página propia con inscripción. Antes era
+       un correo a Iris, que era lo honrado mientras no hubiera formulario. */
+    enlace: '/curso-numerologia',
   },
   /*
    * AQUÍ ESTABA LA FORMACIÓN EN NUMEROLOGÍA TRANSGENERACIONAL, la de los días

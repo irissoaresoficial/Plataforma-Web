@@ -162,6 +162,28 @@ export const LEAD_SOURCES = ['sinergia', 'membresia', 'curso'] as const;
  */
 export type LeadSource = (typeof LEAD_SOURCES)[number];
 
+/**
+ * LA FORMACIÓN NO ES LA MASTERCLASS, AUNQUE LAS DOS ENTREN COMO `curso`.
+ *
+ * Noviembre de 2026: además de la masterclass gratuita (26 nov) se abre la
+ * inscripción a la formación de Numerología Transgeneracional (22 y 28 nov).
+ * Las dos son `origen: 'curso'` —no se inventa un cuarto origen, por lo que
+ * explica `LEAD_SOURCES`— y se distinguen por cómo EMPIEZA `detalle`:
+ *
+ *   «Masterclass: Desórdenes Amorosos · …»   → la masterclass
+ *   «Formación: Numerología Transgeneracional · …» → la formación
+ *
+ * Lo que depende de esto, y por eso es una función y no un `startsWith`
+ * suelto en cada sitio:
+ *   · los recordatorios del 26 (`/api/recordatorios`): a quien se apuntó a la
+ *     formación no se le recuerda una clase a la que no se apuntó;
+ *   · el correo de confirmación (`lib/correo.ts`): cada uno dice SU evento.
+ */
+export const PREFIJO_FORMACION = 'Formación: ';
+export function esFormacion(detalle: unknown): boolean {
+  return typeof detalle === 'string' && detalle.startsWith(PREFIJO_FORMACION);
+}
+
 export function parseLead(input: unknown): { lead: Lead | null; error: string } {
   if (!input || typeof input !== 'object') return { lead: null, error: 'payload' };
   const raw = input as Record<string, unknown>;

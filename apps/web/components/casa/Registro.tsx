@@ -53,7 +53,8 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { marcaPaso } from '@/lib/paso';
 import { sendLead } from '@/lib/sendLead';
 import { medir } from '@/lib/medir';
-import { CONTACTO, MASTERCLASS } from '@/content/site';
+import { CONTACTO, FORMACION, MASTERCLASS } from '@/content/site';
+import { PREFIJO_FORMACION } from '@/lib/booking';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -70,7 +71,27 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const TEXTO_CONSENTIMIENTO =
   'Acepto que Iris Soares guarde mi nombre y mi correo para mandarme la confirmación, avisarme de la fecha y contarme los talleres que abra.';
 
-export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: string }) {
+/* EL DE LA FORMACIÓN DICE LO QUE DE VERDAD PASA CON ESA INSCRIPCIÓN: no hay
+   grupo de WhatsApp de la formación ni recordatorios automáticos, así que no
+   se nombran. Lo que sí pasa: la confirmación, y que Iris escriba para cerrar
+   la plaza. */
+const TEXTO_CONSENTIMIENTO_FORMACION =
+  'Acepto que Iris Soares guarde mi nombre y mi correo para gestionar mi inscripción en la formación, mandarme la confirmación y contarme los talleres que abra.';
+
+/**
+ * `formacion` = el formulario de la formación de Numerología Transgeneracional
+ * (`/curso-numerologia`). Mismo formulario, misma ruta (`/api/lead`), mismo
+ * origen (`curso`), pero:
+ *   · `detalle` empieza por «Formación: », que es lo que la saca de los
+ *     recordatorios de la masterclass (`esFormacion`, lib/booking.ts);
+ *   · NO cuenta en el embudo de la masterclass (`marcaPaso`): ese contador es
+ *     de la campaña del 26 y mezclarlo falsea sus números;
+ *   · Meta recibe los mismos eventos, con `origen: 'formacion'`.
+ * Sin la prop, todo es exactamente como estaba.
+ */
+export default function Registro({ curso = 'Desórdenes Amorosos', formacion = false }: { curso?: string; formacion?: boolean }) {
+  const consentimiento = formacion ? TEXTO_CONSENTIMIENTO_FORMACION : TEXTO_CONSENTIMIENTO;
+  const deDonde = formacion ? 'formacion' : 'masterclass';
   const id = useId();
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -110,8 +131,8 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
      Va junto a las medidas de Meta y no en su lugar — Meta sólo ve a quien
      acepta, y esto los ve a todos, que es justo lo que faltaba. */
   useEffect(() => {
-    marcaPaso('llega');
-  }, []);
+    if (!formacion) marcaPaso('llega');
+  }, [formacion]);
 
   useEffect(() => {
     const el = caja.current;
@@ -122,8 +143,8 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
         for (const e of entradas) {
           if (!contado && e.isIntersecting) {
             contado = true;
-            medir('formularioVisto', { origen: 'masterclass' });
-            marcaPaso('ve-formulario');
+            medir('formularioVisto', { origen: deDonde });
+            if (!formacion) marcaPaso('ve-formulario');
             vigia.disconnect();
           }
         }
@@ -132,7 +153,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
     );
     vigia.observe(el);
     return () => vigia.disconnect();
-  }, []);
+  }, [deDonde, formacion]);
 
   /* El primer carácter que escribe, en el campo que sea. A partir de aquí la
      persona ya decidió apuntarse: si no acaba, el formulario le ha fallado a
@@ -140,8 +161,8 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
   const haEmpezado = () => {
     if (yaEmpezado.current) return;
     yaEmpezado.current = true;
-    medir('formularioEmpezado', { origen: 'masterclass' });
-    marcaPaso('escribe');
+    medir('formularioEmpezado', { origen: deDonde });
+    if (!formacion) marcaPaso('escribe');
   };
 
   const enviar = async (e: React.FormEvent) => {
@@ -153,11 +174,11 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
 
     setEnviando(true);
     const prueba = [
-      `Masterclass: ${curso}`,
+      formacion ? `${PREFIJO_FORMACION}${FORMACION.titulo}` : `Masterclass: ${curso}`,
       /* La trampa llena ya no tira el lead: lo marca. El porqué, arriba. */
       trampa ? 'REVISAR: campo oculto relleno (¿robot?)' : '',
       whatsapp.trim() ? `WhatsApp: ${whatsapp.trim()}` : '',
-      `Consentimiento: ${new Date().toISOString()} — «${TEXTO_CONSENTIMIENTO}»`,
+      `Consentimiento: ${new Date().toISOString()} — «${consentimiento}»`,
     ]
       .filter(Boolean)
       .join(' · ');
@@ -178,7 +199,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
       /* `eventoId` es el mismo con el que el servidor ha avisado a Meta por su
          cuenta. Los dos avisos se juntan en UN registro, no en dos: el porqué
          está en `lib/capi.ts`. */
-      medir('lead', { origen: 'masterclass' }, eventoId);
+      medir('lead', { origen: deDonde }, eventoId);
       setHecho(true);
     } else {
       setError(`No he podido guardarlo ahora mismo. Inténtalo en un minuto o escribe a ${CONTACTO.email}.`);
@@ -229,7 +250,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
               <path d="m4 12.5 5.5 5.5L20 6.5" />
             </svg>
           </span>
-          <span className="casa-gracias-rotulo">Plaza confirmada</span>
+          <span className="casa-gracias-rotulo">{formacion ? 'Inscripción recibida' : 'Plaza confirmada'}</span>
         </div>
 
         {/* EL TROQUELADO. Dos muescas y una línea de puntos: es el corte por
@@ -246,6 +267,28 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
           <h2 className="casa-gracias-h">
             Gracias{nombrePila ? `, ${nombrePila}` : ''}.
           </h2>
+          {formacion ? (
+            /* LA FORMACIÓN NO TIENE GRUPO NI PAGO EN LA WEB TODAVÍA. El grupo
+               de `CONTACTO.grupo` es el de la masterclass: mandar ahí a quien
+               se inscribe en la formación es mandarla al sitio equivocado. Y
+               el precio está PENDIENTE, así que no se dice «plaza pagada» ni
+               «plaza confirmada»: se dice lo que pasa. */
+            <>
+              <p className="casa-gracias-p">
+                Tu inscripción está guardada. Te he mandado la confirmación a{' '}
+                <strong>{email.trim()}</strong>.
+              </p>
+              <p className="casa-gracias-paso">
+                Es {FORMACION.cuando}, online, {FORMACION.zona}. Te escribo a
+                ese correo para cerrar tu plaza.
+              </p>
+              <p className="casa-gracias-letra">
+                Si no te llega, mira en «correo no deseado» o escríbeme a{' '}
+                <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a> o al{' '}
+                <a href={FORMACION.telefonoHref}>{FORMACION.telefono}</a>.
+              </p>
+            </>
+          ) : (<>
           <p className="casa-gracias-p">
             Ya tienes tu plaza. Te he mandado la confirmación a{' '}
             <strong>{email.trim()}</strong>.
@@ -296,6 +339,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
               <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
             </p>
           )}
+          </>)}
         </div>
       </div>
     );
@@ -303,7 +347,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
 
   return (
     <form ref={caja} className="casa-registro" onSubmit={enviar} noValidate>
-      <h2 className="casa-registro-h">Apúntate gratis a la masterclass</h2>
+      <h2 className="casa-registro-h">{formacion ? 'Inscríbete en la formación' : 'Apúntate gratis a la masterclass'}</h2>
       {/* UNA LÍNEA Y NO TRES. Decía «déjame tu nombre y tu correo y te
           escribo en cuanto haya fecha, la masterclass es gratuita», y de ahí
           «tu nombre y tu correo» lo dicen las dos casillas de debajo y «es
@@ -322,7 +366,9 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
           titular se lee como un descuido. Se arregla aquí y no en el dato,
           que es el que tiene la forma correcta. */}
       <p className="casa-registro-p">
-        {MASTERCLASS.cuando.charAt(0).toUpperCase() + MASTERCLASS.cuando.slice(1)}.
+        {formacion
+          ? `22 y 28 de noviembre · ${FORMACION.modalidad} · Plazas limitadas.`
+          : `${MASTERCLASS.cuando.charAt(0).toUpperCase() + MASTERCLASS.cuando.slice(1)}.`}
       </p>
 
       <label className="casa-campo" htmlFor={`${id}-n`}>
@@ -409,7 +455,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
           onChange={(e) => setAceptado(e.target.checked)}
         />
         <span>
-          {TEXTO_CONSENTIMIENTO} Puedo borrarme cuando quiera.{' '}
+          {consentimiento} Puedo borrarme cuando quiera.{' '}
           <Link href="/privacidad">Cómo trato tus datos</Link>.
         </span>
       </label>
@@ -421,7 +467,7 @@ export default function Registro({ curso = 'Desórdenes Amorosos' }: { curso?: s
       )}
 
       <button type="submit" className="casa-registro-boton casa-brillo" disabled={enviando}>
-        {enviando ? 'Un segundo…' : 'Quiero mi plaza gratis'}
+        {enviando ? 'Un segundo…' : formacion ? 'Quiero inscribirme' : 'Quiero mi plaza gratis'}
       </button>
     </form>
   );

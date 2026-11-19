@@ -38,8 +38,8 @@
 
 import { createHmac } from 'node:crypto';
 import { Resend } from 'resend';
-import { CONTACTO, MASTERCLASS } from '@/content/site';
-import type { Lead } from './booking';
+import { CONTACTO, FORMACION, MASTERCLASS } from '@/content/site';
+import { esFormacion, type Lead } from './booking';
 
 /* El cliente se crea una vez. Sin clave es `null`, y todo lo de abajo lo mira
    antes de intentar nada. */
@@ -300,6 +300,33 @@ function correoDeCurso(lead: Lead): { asunto: string; html: string } {
   };
 }
 
+/**
+ * LA CONFIRMACIÓN DE LA FORMACIÓN (22 y 28 de noviembre).
+ *
+ * Entra como `curso` igual que la masterclass, pero es otra cosa y el correo
+ * lo dice: su título, sus dos días y sus horas. Sin grupo de WhatsApp (el de
+ * `CONTACTO.grupo` es el de la masterclass) y sin precio (está PENDIENTE):
+ * lo que sigue es que Iris escribe para cerrar la plaza.
+ */
+function correoDeFormacion(lead: Lead): { asunto: string; html: string } {
+  const dias = FORMACION.dias.map((d) => `<b>${d.dia}</b>, de ${d.horas.replace(' → ', ' a ')}`).join('<br>');
+  return {
+    asunto: `Tu inscripción · ${FORMACION.corto} (22 y 28 de noviembre)`,
+    html: marco({
+      previo: `Tu inscripción está guardada. Es ${FORMACION.cuando}, online.`,
+      titular: 'Tu inscripción está guardada',
+      email: lead.email,
+      cuerpo: `<p style="margin:0 0 14px">Hola ${primerNombre(lead.nombre)}, gracias por inscribirte en <b>${FORMACION.titulo}</b>.</p>
+         <p style="margin:0 0 14px">${dias}<br>Online, ${FORMACION.zona}.</p>
+         ${pasos([
+           { que: 'Te escribo para cerrar tu plaza', detalle: 'A este mismo correo, con lo que necesitas para entrar.' },
+           { que: 'Apúntate ya las dos fechas', detalle: 'Son dos días y se dan en directo.' },
+         ])}
+         <p style="margin:18px 0 0">Si te surge cualquier duda, contesta a este correo o llama al ${FORMACION.telefono.replace(/ /g, '&nbsp;')}.</p>`,
+    }),
+  };
+}
+
 /** La confirmación de quien reserva su sitio en la lista de la comunidad. */
 function correoDeMembresia(lead: Lead): { asunto: string; html: string } {
   return {
@@ -360,7 +387,9 @@ function avisoParaIris(lead: Lead): { asunto: string; html: string } {
     membresia: 'la lista de espera de la comunidad',
     sinergia: 'la prueba de sinergia',
   };
-  const que = de[lead.origen] || lead.origen;
+  const que = esFormacion(lead.detalle)
+    ? `la formación ${FORMACION.corto} (22 y 28 nov)`
+    : de[lead.origen] || lead.origen;
   return {
     asunto: `Nuevo apuntado: ${que}`,
     html: `<div style="font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6;color:${TINTA}">
@@ -376,7 +405,7 @@ function avisoParaIris(lead: Lead): { asunto: string; html: string } {
 /** Qué plantilla le toca a cada origen. Un origen sin plantilla no manda nada
  *  en vez de mandar algo genérico: ver `LEAD_SOURCES` en lib/booking.ts. */
 function plantillaDe(lead: Lead): { asunto: string; html: string } | null {
-  if (lead.origen === 'curso') return correoDeCurso(lead);
+  if (lead.origen === 'curso') return esFormacion(lead.detalle) ? correoDeFormacion(lead) : correoDeCurso(lead);
   if (lead.origen === 'membresia') return correoDeMembresia(lead);
   if (lead.origen === 'sinergia') return correoDeSinergia(lead);
   return null;
