@@ -157,8 +157,9 @@ export default function Numerologia() {
         {/* ── 2. LA AFIRMACIÓN ─────────────────────────────── */}
         <Sobre
           id="esto"
-          entrada="Tu fecha de nacimiento no es un número de la suerte. Es el resumen de lo que ya estaba pasando en tu familia el día que llegaste."
-          texto="Un hijo que no se reconoció. Alguien que estuvo preso. Una muerte de la que no se volvió a hablar. Cosas que pasaron de verdad y que nadie cerró. Nadie tuvo la culpa, pero una historia que no se cierra sigue bajando: se convierte en una manera de hacer las cosas que en tu casa parecía lo normal, y que tú repites sin haberla elegido nunca."
+          /* Los dos textos son de Iris (WhatsApp, 19 de noviembre de 2026). */
+          entrada="Tu fecha de nacimiento no es un número al azar. Es un profundo mensaje de amor y de deseos no cumplidos de tu clan, que te transmiten todos tus ancestros para que se haga lo que ellos no pudieron: para que repitas o repares situaciones que causaron dolor y situaciones que no se lograron."
+          texto="Un hijo que no se reconoció. Secretos de niños no reconocidos, infidelidades, alguien que estuvo preso o una muerte de la que no se volvió a hablar. Cosas que pasaron de verdad y que nadie resolvió. Nadie tuvo la culpa, pero lo que arriba no se cierra, abajo se repite de generación en generación, y se convierte en la forma de vivir de quienes vienen detrás. Lo que antes parecía normal en tu casa, hoy tú lo repites sin haberlo elegido nunca: ya te duele, quieres cambiarlo y sientes que no puedes."
           botones={[
             { a: '#consulta', texto: 'Ver la consulta', icono: 'abajo' },
             { a: '/cursos', texto: 'Ver los talleres', icono: 'mas' },
