@@ -17,7 +17,8 @@
 
 import { useState } from "react";
 import { css } from "@/lib/css";
-import { auth } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { nube } from "@/lib/firebase";
 import { BOTON_NORMAL, NOTA } from "@/lib/ui";
 
 const WEB = (process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.com").replace("://escueladesabiduria33.com", "://www.escueladesabiduria33.com");
@@ -25,14 +26,19 @@ const WEB = (process.env.NEXT_PUBLIC_WEB_URL || "https://escueladesabiduria33.co
 type Enlaces = { google: string; webcal: string; https: string };
 
 async function pideEnlaces(): Promise<Enlaces> {
-  const yo = auth()?.currentUser;
-  if (!yo) throw new Error("Hay que entrar primero.");
-  const r = await fetch(`${WEB}/api/calendario`, { headers: { Authorization: `Bearer ${await yo.getIdToken()}` } });
-  const j = (await r.json().catch(() => ({}))) as Partial<Enlaces> & { ok?: boolean; motivo?: string };
-  if (!r.ok || !j.ok || !j.google) {
-    throw new Error(j.motivo === "permiso" ? "Sólo la administradora puede conectar el calendario." : "La web no ha contestado. Prueba en un momento.");
+  const base = nube();
+  if (!base) throw new Error("No hay conexión con la base de datos.");
+  /* La web escribe la dirección en una ficha que sólo lee la administración
+     (apps/web/app/api/calendario); aquí se lee con la sesión de Iris. */
+  await fetch(`${WEB}/api/calendario`, { cache: "no-store" }).catch(() => null);
+  let d;
+  try {
+    d = (await getDoc(doc(base, "difusion-config", "calendario"))).data() as Partial<Enlaces> | undefined;
+  } catch {
+    throw new Error("Sólo la administradora puede conectar el calendario.");
   }
-  return j as Enlaces;
+  if (!d?.google || !d.webcal) throw new Error("La web no ha contestado. Prueba en un momento.");
+  return d as Enlaces;
 }
 
 export default function ConectarCalendario() {
