@@ -16,15 +16,27 @@ const FOTOS = ["/escuela/basico.jpg", "/escuela/temario.jpg", "/escuela/material
 
 /** Los cursos con marca propia: su portada y, si lo tiene, su logo. */
 const DE_LA_CASA: Array<{ nombre: RegExp; portada: string; logo?: string }> = [
-  { nombre: /des[oó]rdenes\s+amorosos/i, portada: "/escuela/desordenes-portada.jpg", logo: "/escuela/desordenes-logo.jpg" },
+  /* «Tres generaciones», la imagen del anuncio que más inscritas trae, con un
+     velo vino abajo. El logo sobre granate liso se quedaba en un cuadro plano. */
+  { nombre: /des[oó]rdenes\s+amorosos/i, portada: "/escuela/desordenes-tres-generaciones.jpg", logo: "/escuela/desordenes-logo.jpg" },
+  /* La Iris del cartel, la misma del banner de la web. */
+  { nombre: /numerolog[ií]a/i, portada: "/escuela/numerologia-iris.jpg" },
 ];
 
 const esImagen = (u: string) => Boolean(u) && !/\.(mp4|webm|mov)(\?|$)/i.test(u);
 
+/*
+ * LOS CURSOS DE LA CASA LLEVAN SU PORTADA SIEMPRE (19 de noviembre de 2026).
+ * Gerson: «las imágenes de los cursos, ahí debe ir la imagen de la portada».
+ * La de Desórdenes guardada en la base no cargaba y caía a la lámpara de
+ * relleno; la de Numerología no tenía y salía una «C». Para estos dos manda
+ * la de aquí; un curso nuevo sigue usando la que le suban.
+ */
 export function portadaDe(c: Pick<Curso, "titulo" | "portada">, i = 0): string {
-  if (esImagen(c.portada)) return c.portada;
   const casa = DE_LA_CASA.find((x) => x.nombre.test(c.titulo));
-  return casa ? casa.portada : FOTOS[i % FOTOS.length];
+  if (casa) return casa.portada;
+  if (esImagen(c.portada)) return c.portada;
+  return FOTOS[i % FOTOS.length];
 }
 
 /** El logo del curso, si tiene marca propia. */

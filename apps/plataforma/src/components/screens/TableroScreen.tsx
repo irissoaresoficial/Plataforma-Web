@@ -51,6 +51,7 @@ import {
   type Cliente,
   type Factura,
 } from "@/lib/despacho";
+import { portadaDe } from "@/lib/escuela/portadas";
 import { cursos as repoCursos, inscripciones as repoInscripciones, type Curso } from "@/lib/escuela";
 import { IcoAgenda, IcoClientes, IcoComunidad, IcoMetricas } from "../Iconos";
 
@@ -680,14 +681,15 @@ function Atajos({ datos, ir }: { datos: Datos | null; ir: (v: View) => void }) {
   );
 }
 
-/** La miniatura del curso. Sin portada, la inicial sobre vino: nunca un roto. */
+/** La miniatura del curso: la misma portada que en Cursos, y si no carga, la
+ *  inicial sobre vino. Nunca un roto. */
 function Portada({ curso }: { curso: Curso }) {
-  const esImagen = curso.portada && !/\.(mp4|webm|mov)(\?|$)/i.test(curso.portada);
+  const [rota, setRota] = useState(false);
   return (
     <span style={css("flex:none;width:56px;height:40px;border-radius:var(--r-sm);overflow:hidden;display:grid;place-items:center;background:var(--bloque);color:var(--oro-luz);font-size:var(--t-body);font-weight:500;")}>
-      {esImagen ? (
+      {!rota ? (
         /* eslint-disable-next-line @next/next/no-img-element */
-        <img src={curso.portada} alt="" style={css("width:100%;height:100%;object-fit:cover;")} />
+        <img src={portadaDe(curso)} alt="" onError={() => setRota(true)} style={css("width:100%;height:100%;object-fit:cover;")} />
       ) : (
         (curso.titulo || "?").slice(0, 1).toLocaleUpperCase("es")
       )}
