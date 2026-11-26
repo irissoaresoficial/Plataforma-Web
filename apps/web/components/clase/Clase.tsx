@@ -663,7 +663,7 @@ const DIAPOS: Diapo[] = [
         <p className="cl-rotulo cl-entra-1">Cómo apuntarte</p>
         <h2 className="cl-h3 cl-entra-2">Tres pasos</h2>
         <div className="cl-pasos3 cl-pasos3-claro">
-          <V en={1} c={c} className="cl-paso3"><span className="cl-paso3-num">1</span><div><h3>Entra en el enlace</h3><p>{campo(c, 'pago-enlace') || c.editar ? <Campo k="pago-enlace" c={c} ayuda="Enlace corto de pago" /> : 'Te lo dejamos ahora en el chat.'}</p></div></V>
+          <V en={1} c={c} className="cl-paso3"><span className="cl-paso3-num">1</span><div><h3>Escanea o entra en el enlace</h3><p>{campo(c, 'pago-enlace') || c.editar ? <Campo k="pago-enlace" c={c} ayuda="Enlace corto de pago" /> : 'Te lo dejamos ahora en el chat.'}</p><img className="cl-qr" src="/images/qr-curso-desordenes.svg" alt="Código QR de la página de pago del curso" /></div></V>
           <V en={2} c={c} className="cl-paso3"><span className="cl-paso3-num">2</span><div><h3>Elige cómo pagar</h3><p>Hoy, 999 €. Desde mañana, 1.297 € en 1, 3 o 6 pagos.</p></div></V>
           <V en={3} c={c} className="cl-paso3"><span className="cl-paso3-num">3</span><div><h3>Entra en el grupo del curso</h3><p>Al pagar te sale el enlace del grupo de WhatsApp.</p></div></V>
         </div>
