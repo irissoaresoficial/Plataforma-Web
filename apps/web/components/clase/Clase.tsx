@@ -70,6 +70,8 @@ const V = ({ en, c, children, className = '' }: { en: number; c: Ctx; children: 
    manda sobre esto. */
 const DEFECTO: Record<string, string> = {
   'curso-fechas': 'Empieza el 5 y 6 de diciembre',
+  /* Medido en el archivo: la energía sube al estribillo hacia el 1:14. */
+  'cancion-inicio': '1:08',
 };
 const campo = (c: Ctx, k: string) => c.campos[k] || DEFECTO[k] || '';
 
@@ -154,7 +156,7 @@ const DIAPOS: Diapo[] = [
     fondo: 'foto',
     foto: 'hilos-42.jpg',
     pasos: 0,
-    notas: 'Pantalla de espera. Ábrela 10 minutos antes. AL EMPEZAR, Iris lo dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». La cuenta atrás arranca sola; la música suena en cuanto toques la pantalla o una tecla. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha. LA CANCIÓN: suena desde YouTube; antes de empezar, en modo edición (tecla N), escribe en esta diapositiva el minuto en que empieza (un poco antes del estribillo). Vuelve a sonar sola en «Gracias».',
+    notas: 'Pantalla de espera. Ábrela 10 minutos antes. AL EMPEZAR, Iris lo dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». La cuenta atrás arranca sola; la música suena en cuanto toques la pantalla o una tecla. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha. LA CANCIÓN: la primera vez, en este ordenador, pulsa «Elegir canción» abajo y elige el archivo; se queda guardada. Empieza en el 1:08, un poco antes del estribillo (se cambia con la tecla N en esta diapositiva). Volumen y medidor, abajo. Vuelve a sonar sola en «Gracias».',
     pinta: (c) => (
       <div className="cl-fila cl-centro-v">
         <div className="cl-col" style={{ flex: 1 }}>
@@ -652,21 +654,33 @@ const TEMARIO = [
 
 const LLAVE = 'clase-desordenes-campos';
 
-/* LA CANCIÓN DE ENTRADA Y DE CIERRE (26 nov, Gerson). Suena desde YouTube
-   dentro de la presentación: no se descarga ni se sube a la web, porque no es
-   nuestra. Arranca un poco antes del estribillo, en el segundo que se escriba
-   en modo edición (tecla N, en la pantalla de espera). Suena en la espera y en
-   «Gracias»; si YouTube no carga, suena la música de siempre. */
-const CANCION = 'jC6yqI_w0jo';
+/* LA CANCIÓN DE ENTRADA Y DE CIERRE (26 nov, Gerson: «Nací para ser yo»).
+   NO SE SUBE A LA WEB: no es nuestra, y colgarla en una dirección pública es
+   repartirla. Se elige una vez en el ordenador que presenta (botón
+   «Canción»), se guarda en ese navegador y desde entonces suena sola al abrir
+   la presentación, un poco antes del estribillo (segundo editable con la
+   tecla N en la pantalla de espera), y otra vez en «Gracias». Sin canción
+   elegida suena la música de espera de siempre. */
 const CON_CANCION = new Set(['espera', 'gracias']);
 /** «1:05» o «65» → 65. Vacío o raro → 0. */
 const segundos = (t: string) => {
   const m = t.trim().match(/^(?:(\d+):)?(\d+)$/);
   return m ? Number(m[1] || 0) * 60 + Number(m[2]) : 0;
 };
-type YTPlayer = { playVideo(): void; pauseVideo(): void; seekTo(s: number, a: boolean): void; setVolume(v: number): void; getVolume(): number };
-declare global {
-  interface Window { YT?: { Player: new (el: HTMLElement, o: Record<string, unknown>) => YTPlayer }; onYouTubeIframeAPIReady?: () => void }
+const abreBase = () =>
+  new Promise<IDBDatabase>((ok, mal) => {
+    const r = indexedDB.open('clase-desordenes', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('archivos');
+    r.onsuccess = () => ok(r.result);
+    r.onerror = () => mal(r.error);
+  });
+async function guardaCancion(f: Blob) {
+  const db = await abreBase();
+  await new Promise((ok, mal) => { const t = db.transaction('archivos', 'readwrite'); t.objectStore('archivos').put(f, 'cancion'); t.oncomplete = ok; t.onerror = mal; });
+}
+async function leeCancion(): Promise<Blob | null> {
+  const db = await abreBase();
+  return new Promise((ok) => { const r = db.transaction('archivos').objectStore('archivos').get('cancion'); r.onsuccess = () => ok((r.result as Blob) ?? null); r.onerror = () => ok(null); });
 }
 
 export default function Clase() {
@@ -718,80 +732,89 @@ export default function Clase() {
     return () => clearInterval(t);
   }, []);
 
-  /* EL REPRODUCTOR DE YOUTUBE, oculto: sólo se oye. */
-  const yt = useRef<YTPlayer | null>(null);
-  const ytCaja = useRef<HTMLDivElement>(null);
-  const [ytListo, setYtListo] = useState(false);
-  const [ytFallo, setYtFallo] = useState(false);
+  /* LA CANCIÓN, el volumen y el medidor. */
+  const [cancion, setCancion] = useState<string | null>(null);
+  const [volumen, setVolumen] = useState(70);
+  const medidor = useRef<HTMLSpanElement>(null);
+  const analizador = useRef<AnalyserNode | null>(null);
   useEffect(() => {
-    const crea = () => {
-      if (!window.YT || !ytCaja.current || yt.current) return;
-      yt.current = new window.YT.Player(ytCaja.current, {
-        videoId: CANCION,
-        width: 200,
-        height: 113,
-        playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0 },
-        events: { onReady: () => setYtListo(true), onError: () => setYtFallo(true) },
-      });
-    };
-    if (window.YT?.Player) crea();
-    else {
-      window.onYouTubeIframeAPIReady = crea;
-      const sc = document.createElement('script');
-      sc.src = 'https://www.youtube.com/iframe_api';
-      sc.onerror = () => setYtFallo(true);
-      document.head.appendChild(sc);
-    }
+    try { const v = Number(localStorage.getItem('clase-volumen')); if (v >= 0 && v <= 100 && localStorage.getItem('clase-volumen') !== null) setVolumen(v); } catch { /* sin almacenamiento */ }
+    leeCancion().then((b) => { if (b) setCancion(URL.createObjectURL(b)); }).catch(() => {});
   }, []);
-  const inicioCancion = segundos(campos['cancion-inicio'] || '');
+  const eligeCancion = async (f: File | undefined) => {
+    if (!f) return;
+    try { await guardaCancion(f); } catch { /* si no se guarda, suena igual esta vez */ }
+    setCancion(URL.createObjectURL(f));
+  };
+  const cambiaVolumen = (v: number) => {
+    setVolumen(v);
+    try { localStorage.setItem('clase-volumen', String(v)); } catch { /* nada */ }
+    const a = audio.current;
+    if (a && !a.paused) a.volume = v / 100;
+  };
+  /* El medidor necesita un contexto de audio, y el navegador sólo lo deja
+     crear tras un toque: se monta en el primer toque o tecla. */
   useEffect(() => {
-    const p = yt.current;
-    if (!p || !ytListo || ytFallo) return;
-    let t: ReturnType<typeof setInterval> | undefined;
-    if (CON_CANCION.has(d.id) && musica) {
-      const suena = () => {
-        p.seekTo(inicioCancion, true);
-        p.setVolume(0);
-        p.playVideo();
-        let v = 0;
-        t = setInterval(() => { v = Math.min(70, v + 4); p.setVolume(v); if (v >= 70 && t) clearInterval(t); }, 120);
-      };
-      suena();
-      /* Si el navegador no deja sonar sin un toque, el primer toque la arranca. */
-      const otra = () => p.playVideo();
-      window.addEventListener('pointerdown', otra, { once: true });
-      window.addEventListener('keydown', otra, { once: true });
-      return () => { if (t) clearInterval(t); window.removeEventListener('pointerdown', otra); window.removeEventListener('keydown', otra); };
-    }
-    let v = p.getVolume?.() ?? 70;
-    t = setInterval(() => { v = Math.max(0, v - 6); p.setVolume(v); if (v === 0) { p.pauseVideo(); if (t) clearInterval(t); } }, 90);
-    return () => { if (t) clearInterval(t); };
-  }, [d.id, musica, ytListo, ytFallo, inicioCancion]);
+    const monta = () => {
+      const a = audio.current;
+      if (!a || analizador.current) return;
+      try {
+        const ctx = new AudioContext();
+        const fuente = ctx.createMediaElementSource(a);
+        const an = ctx.createAnalyser();
+        an.fftSize = 256;
+        fuente.connect(an);
+        an.connect(ctx.destination);
+        analizador.current = an;
+        const datos = new Uint8Array(an.frequencyBinCount);
+        const pinta = () => {
+          an.getByteTimeDomainData(datos);
+          let pico = 0;
+          for (const x of datos) pico = Math.max(pico, Math.abs(x - 128));
+          medidor.current?.style.setProperty('--nivel', String(Math.min(1, pico / 90)));
+          requestAnimationFrame(pinta);
+        };
+        pinta();
+      } catch { /* sin medidor; la música suena igual */ }
+    };
+    window.addEventListener('pointerdown', monta, { once: true });
+    window.addEventListener('keydown', monta, { once: true });
+    return () => { window.removeEventListener('pointerdown', monta); window.removeEventListener('keydown', monta); };
+  }, []);
+  const inicioCancion = segundos(campos['cancion-inicio'] || DEFECTO['cancion-inicio']);
 
-  /* La música de siempre: sólo si YouTube no carga. */
+  /* Suena en la espera (al abrir) y en «Gracias»; entra suave y se va despacio. */
   useEffect(() => {
     const a = audio.current;
     if (!a) return;
-    if (ytFallo && CON_CANCION.has(d.id) && musica) {
-      a.volume = 0.55;
-      const intenta = () => { a.play().catch(() => {}); };
-      a.play().catch(() => {
-        window.addEventListener('pointerdown', intenta, { once: true });
-        window.addEventListener('keydown', intenta, { once: true });
-      });
+    let t: ReturnType<typeof setInterval> | undefined;
+    if (CON_CANCION.has(d.id) && musica) {
+      const meta = volumen / 100;
+      const arranca = () => {
+        if (cancion) { try { a.currentTime = inicioCancion; } catch { /* aún sin cargar */ } }
+        a.volume = 0;
+        a.play().then(() => {
+          let v = 0;
+          t = setInterval(() => { v = Math.min(meta, v + meta / 15); a.volume = v; if (v >= meta && t) clearInterval(t); }, 100);
+        }).catch(() => {
+          window.addEventListener('pointerdown', arranca, { once: true });
+          window.addEventListener('keydown', arranca, { once: true });
+        });
+      };
+      if (a.readyState >= 1) arranca();
+      else a.addEventListener('loadedmetadata', arranca, { once: true });
       return () => {
-        window.removeEventListener('pointerdown', intenta);
-        window.removeEventListener('keydown', intenta);
+        if (t) clearInterval(t);
+        a.removeEventListener('loadedmetadata', arranca);
+        window.removeEventListener('pointerdown', arranca);
+        window.removeEventListener('keydown', arranca);
       };
     }
     let v = a.volume;
-    const t = setInterval(() => {
-      v = Math.max(0, v - 0.05);
-      a.volume = v;
-      if (v === 0) { a.pause(); clearInterval(t); }
-    }, 80);
-    return () => clearInterval(t);
-  }, [d.id, musica, ytFallo]);
+    t = setInterval(() => { v = Math.max(0, v - 0.05); a.volume = v; if (v === 0) { a.pause(); if (t) clearInterval(t); } }, 80);
+    return () => { if (t) clearInterval(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [d.id, musica, cancion, inicioCancion]);
 
   /* Al empezar la cuenta atrás de la espera arranca también la música: el
      clic en «Empezar» es el gesto que el navegador pide para sonar. */
@@ -859,8 +882,7 @@ export default function Clase() {
 
   return (
     <div className="cl-raiz" ref={raiz}>
-      <audio ref={audio} src="/audio/espera.mp3" loop preload="auto" />
-      <div aria-hidden="true" style={{ position: 'fixed', left: -400, bottom: 0, width: 200, height: 113, opacity: 0, pointerEvents: 'none' }}><div ref={ytCaja} /></div>
+      <audio ref={audio} src={cancion ?? '/audio/espera.mp3'} loop preload="auto" />
       <div className="cl-escenario" style={{ transform: `translate(-50%, -50%) scale(${escala})` }}>
         <section key={d.id} className={`cl-diapo cl-${d.fondo}`} onClick={clic}>
           {d.foto && <img className="cl-fondo" src={IMG + d.foto} alt="" />}
@@ -881,6 +903,14 @@ export default function Clase() {
         <span className="cl-contador">{i + 1} / {DIAPOS.length}</span>
         <button type="button" onClick={siguiente} aria-label="Siguiente">›</button>
         <button type="button" onClick={() => setMusica((x) => !x)} aria-pressed={musica}>Música</button>
+        <label className="cl-cancion-btn" title={cancion ? 'Canción elegida. Pulsa para cambiarla.' : 'Elige el archivo de la canción (se queda guardada en este ordenador)'}>
+          {cancion ? 'Canción ✓' : 'Elegir canción'}
+          <input type="file" accept="audio/*" hidden onChange={(e) => void eligeCancion(e.target.files?.[0])} />
+        </label>
+        <span className="cl-volumen" onClick={(e) => e.stopPropagation()}>
+          <span className="cl-medidor" ref={medidor} aria-hidden="true"><i /><i /><i /><i /><i /></span>
+          <input type="range" min={0} max={100} value={volumen} aria-label="Volumen de la música" onChange={(e) => cambiaVolumen(Number(e.target.value))} onKeyDown={(e) => e.stopPropagation()} />
+        </span>
         <button type="button" onClick={() => setIndice((x) => !x)}>Índice</button>
         <button type="button" onClick={() => setNotas((x) => !x)} aria-pressed={notas}>Notas y edición</button>
         <button type="button" onClick={pantallaCompleta}>Pantalla completa</button>

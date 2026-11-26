@@ -461,3 +461,14 @@
 .cl-tarifa-plazo { margin-top: 22px !important; font-size: 25px; line-height: 1.4; }
 .cl-tarifa-plazo b { color: var(--oro-luz); font-weight: 500; }
 @media (prefers-reduced-motion: reduce) { .cl-oferta-sello { animation: none; } }
+
+/* La canción y el volumen, en la barra de abajo. */
+.cl-mandos .cl-cancion-btn { font-size: 14px; font-weight: 500; color: var(--oro-luz); border-radius: var(--radio-pildora); padding: 8px 14px; cursor: pointer; }
+.cl-mandos .cl-cancion-btn:hover { background: rgba(255, 255, 255, 0.14); }
+.cl-volumen { display: inline-flex; align-items: center; gap: 10px; padding: 0 8px; }
+.cl-volumen input[type='range'] { width: 110px; accent-color: var(--oro-luz); }
+.cl-medidor { --nivel: 0; display: inline-flex; align-items: flex-end; gap: 3px; height: 22px; }
+.cl-medidor i { width: 4px; border-radius: 2px; background: var(--oro-luz); height: calc(4px + 18px * var(--nivel)); opacity: 0.85; transition: height 80ms linear; }
+.cl-medidor i:nth-child(2) { height: calc(4px + 18px * var(--nivel) * 0.7); }
+.cl-medidor i:nth-child(4) { height: calc(4px + 18px * var(--nivel) * 0.8); }
+.cl-medidor i:nth-child(5) { height: calc(4px + 18px * var(--nivel) * 0.5); }
