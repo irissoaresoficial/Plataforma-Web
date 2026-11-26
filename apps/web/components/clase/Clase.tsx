@@ -168,7 +168,6 @@ const DIAPOS: Diapo[] = [
           <h1 className="cl-h1 cl-entra-3">Desórdenes<br />Amorosos</h1>
           <p className="cl-lead cl-entra-4">Por qué repites la misma historia <b>y dónde empezó</b></p>
           <p className="cl-nota cl-entra-5">Mientras empezamos, escribe en el chat desde dónde nos ves.</p>
-          <p className="cl-nota cl-entra-5">Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación.</p>
           {c.editar && <p className="cl-nota">Canción: empieza en <Campo k="cancion-inicio" c={c} ayuda="minuto:segundo, antes del estribillo (ej. 1:05)" /></p>}
         </div>
         <Reloj id="espera" c={c} etiqueta="para empezar" />
