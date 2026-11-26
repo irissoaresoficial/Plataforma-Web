@@ -559,17 +559,23 @@ const DIAPOS: Diapo[] = [
       <div className="cl-col">
         <p className="cl-rotulo cl-entra-1">Tu siguiente diapositiva</p>
         <h2 className="cl-h3 cl-entra-2">Elige cómo seguir con nosotros</h2>
-        <div className="cl-precios">
-          <V en={1} c={c} className="cl-precio cl-precio-top">
-            <p className="cl-rotulo">El recomendado · Curso completo · Solo hoy</p>
-            <p className="cl-cifra">999 €</p>
-            <p>Con el enlace de esta noche.</p>
-            <p className="cl-nota">Desde mañana: 1.297 € en un pago, 3 pagos de 499 € (1.497 €) o 6 pagos de 282,83 € (1.697 €). Plazo para apuntarte: hasta el 1 de diciembre.</p>
+        {/* COMO EN EL PAPEL DE IRIS (26 nov): la oferta de hoy, grande, y
+            debajo el precio con sus tres formas de pago y el plazo. El 1.297 €
+            NO se tacha: no se ha vendido a ese precio en los 30 días
+            anteriores (MARCA.md §7). La terapia grupal va en «Antes de irte». */}
+        <div className="cl-oferta-fila">
+          <V en={1} c={c} className="cl-oferta">
+            <span className="cl-oferta-sello">Oferta 24 h · Solo hoy</span>
+            <p className="cl-oferta-cifra">999 €</p>
+            <p className="cl-oferta-que">Curso completo Desórdenes Amorosos</p>
+            <p className="cl-oferta-nota">Con el enlace de esta noche. Mañana ya no.</p>
           </V>
-          <V en={2} c={c} className="cl-precio">
-            <p className="cl-rotulo">Para empezar en grupo · Terapia grupal</p>
-            <p className="cl-cifra">111 €</p>
-            <p>Una sesión de 2 horas al mes, en grupo.</p>
+          <V en={2} c={c} className="cl-tarifa">
+            <p className="cl-rotulo">Desde mañana</p>
+            <div className="cl-tarifa-fila"><span>1 pago</span><b>1.297 €</b></div>
+            <div className="cl-tarifa-fila"><span>3 pagos</span><b>499 €</b><small>1.497 € en total</small></div>
+            <div className="cl-tarifa-fila"><span>6 pagos</span><b>282,83 €</b><small>1.697 € en total</small></div>
+            <p className="cl-tarifa-plazo">Plazo máximo: <b>1 de diciembre</b> · Empieza el <b>5 y 6 de diciembre</b></p>
           </V>
         </div>
       </div>
