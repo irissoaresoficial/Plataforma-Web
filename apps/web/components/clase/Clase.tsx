@@ -154,7 +154,7 @@ const DIAPOS: Diapo[] = [
     fondo: 'foto',
     foto: 'hilos-42.jpg',
     pasos: 0,
-    notas: 'Pantalla de espera. Ábrela 10 minutos antes. AL EMPEZAR, Iris lo dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». La cuenta atrás arranca sola; la música suena en cuanto toques la pantalla o una tecla. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha.',
+    notas: 'Pantalla de espera. Ábrela 10 minutos antes. AL EMPEZAR, Iris lo dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». La cuenta atrás arranca sola; la música suena en cuanto toques la pantalla o una tecla. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha. LA CANCIÓN: suena desde YouTube; antes de empezar, en modo edición (tecla N), escribe en esta diapositiva el minuto en que empieza (un poco antes del estribillo). Vuelve a sonar sola en «Gracias».',
     pinta: (c) => (
       <div className="cl-fila cl-centro-v">
         <div className="cl-col" style={{ flex: 1 }}>
@@ -167,6 +167,7 @@ const DIAPOS: Diapo[] = [
           <p className="cl-lead cl-entra-4">Por qué repites la misma historia <b>y dónde empezó</b></p>
           <p className="cl-nota cl-entra-5">Mientras empezamos, escribe en el chat desde dónde nos ves.</p>
           <p className="cl-nota cl-entra-5">Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación.</p>
+          {c.editar && <p className="cl-nota">Canción: empieza en <Campo k="cancion-inicio" c={c} ayuda="minuto:segundo, antes del estribillo (ej. 1:05)" /></p>}
         </div>
         <Reloj id="espera" c={c} etiqueta="para empezar" />
       </div>
@@ -651,6 +652,23 @@ const TEMARIO = [
 
 const LLAVE = 'clase-desordenes-campos';
 
+/* LA CANCIÓN DE ENTRADA Y DE CIERRE (26 nov, Gerson). Suena desde YouTube
+   dentro de la presentación: no se descarga ni se sube a la web, porque no es
+   nuestra. Arranca un poco antes del estribillo, en el segundo que se escriba
+   en modo edición (tecla N, en la pantalla de espera). Suena en la espera y en
+   «Gracias»; si YouTube no carga, suena la música de siempre. */
+const CANCION = 'jC6yqI_w0jo';
+const CON_CANCION = new Set(['espera', 'gracias']);
+/** «1:05» o «65» → 65. Vacío o raro → 0. */
+const segundos = (t: string) => {
+  const m = t.trim().match(/^(?:(\d+):)?(\d+)$/);
+  return m ? Number(m[1] || 0) * 60 + Number(m[2]) : 0;
+};
+type YTPlayer = { playVideo(): void; pauseVideo(): void; seekTo(s: number, a: boolean): void; setVolume(v: number): void; getVolume(): number };
+declare global {
+  interface Window { YT?: { Player: new (el: HTMLElement, o: Record<string, unknown>) => YTPlayer }; onYouTubeIframeAPIReady?: () => void }
+}
+
 export default function Clase() {
   const [i, setI] = useState(0);
   const [paso, setPaso] = useState(0);
@@ -700,11 +718,61 @@ export default function Clase() {
     return () => clearInterval(t);
   }, []);
 
-  /* La música suena en la pantalla de espera y se apaga despacio al salir. */
+  /* EL REPRODUCTOR DE YOUTUBE, oculto: sólo se oye. */
+  const yt = useRef<YTPlayer | null>(null);
+  const ytCaja = useRef<HTMLDivElement>(null);
+  const [ytListo, setYtListo] = useState(false);
+  const [ytFallo, setYtFallo] = useState(false);
+  useEffect(() => {
+    const crea = () => {
+      if (!window.YT || !ytCaja.current || yt.current) return;
+      yt.current = new window.YT.Player(ytCaja.current, {
+        videoId: CANCION,
+        width: 200,
+        height: 113,
+        playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0 },
+        events: { onReady: () => setYtListo(true), onError: () => setYtFallo(true) },
+      });
+    };
+    if (window.YT?.Player) crea();
+    else {
+      window.onYouTubeIframeAPIReady = crea;
+      const sc = document.createElement('script');
+      sc.src = 'https://www.youtube.com/iframe_api';
+      sc.onerror = () => setYtFallo(true);
+      document.head.appendChild(sc);
+    }
+  }, []);
+  const inicioCancion = segundos(campos['cancion-inicio'] || '');
+  useEffect(() => {
+    const p = yt.current;
+    if (!p || !ytListo || ytFallo) return;
+    let t: ReturnType<typeof setInterval> | undefined;
+    if (CON_CANCION.has(d.id) && musica) {
+      const suena = () => {
+        p.seekTo(inicioCancion, true);
+        p.setVolume(0);
+        p.playVideo();
+        let v = 0;
+        t = setInterval(() => { v = Math.min(70, v + 4); p.setVolume(v); if (v >= 70 && t) clearInterval(t); }, 120);
+      };
+      suena();
+      /* Si el navegador no deja sonar sin un toque, el primer toque la arranca. */
+      const otra = () => p.playVideo();
+      window.addEventListener('pointerdown', otra, { once: true });
+      window.addEventListener('keydown', otra, { once: true });
+      return () => { if (t) clearInterval(t); window.removeEventListener('pointerdown', otra); window.removeEventListener('keydown', otra); };
+    }
+    let v = p.getVolume?.() ?? 70;
+    t = setInterval(() => { v = Math.max(0, v - 6); p.setVolume(v); if (v === 0) { p.pauseVideo(); if (t) clearInterval(t); } }, 90);
+    return () => { if (t) clearInterval(t); };
+  }, [d.id, musica, ytListo, ytFallo, inicioCancion]);
+
+  /* La música de siempre: sólo si YouTube no carga. */
   useEffect(() => {
     const a = audio.current;
     if (!a) return;
-    if (d.id === 'espera' && musica) {
+    if (ytFallo && CON_CANCION.has(d.id) && musica) {
       a.volume = 0.55;
       const intenta = () => { a.play().catch(() => {}); };
       a.play().catch(() => {
@@ -723,7 +791,7 @@ export default function Clase() {
       if (v === 0) { a.pause(); clearInterval(t); }
     }, 80);
     return () => clearInterval(t);
-  }, [d.id, musica]);
+  }, [d.id, musica, ytFallo]);
 
   /* Al empezar la cuenta atrás de la espera arranca también la música: el
      clic en «Empezar» es el gesto que el navegador pide para sonar. */
@@ -758,6 +826,7 @@ export default function Clase() {
     });
     if (d.id === 'espera') setMusica(true);
   }, [d.id]);
+  useEffect(() => { if (d.id === 'gracias') setMusica(true); }, [d.id]);
 
   const pantallaCompleta = useCallback(() => {
     try {
@@ -791,6 +860,7 @@ export default function Clase() {
   return (
     <div className="cl-raiz" ref={raiz}>
       <audio ref={audio} src="/audio/espera.mp3" loop preload="auto" />
+      <div aria-hidden="true" style={{ position: 'fixed', left: -400, bottom: 0, width: 200, height: 113, opacity: 0, pointerEvents: 'none' }}><div ref={ytCaja} /></div>
       <div className="cl-escenario" style={{ transform: `translate(-50%, -50%) scale(${escala})` }}>
         <section key={d.id} className={`cl-diapo cl-${d.fondo}`} onClick={clic}>
           {d.foto && <img className="cl-fondo" src={IMG + d.foto} alt="" />}
