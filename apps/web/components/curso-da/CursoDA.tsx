@@ -130,6 +130,15 @@ export default function CursoDA({ idioma: inicial = 'es' }: { idioma?: Idioma })
           <p className="da-plazo">
             {pt ? CURSO_DA_PT.plazo : CURSO_DA.plazo} · {pt ? CURSO_DA_PT.empieza : CURSO_DA.empieza} · {pt ? 'IVA incluído' : 'IVA incluido'}
           </p>
+          <div className="da-grupal">
+            <div>
+              <p className="da-grupal-t">{pt ? 'Preferes começar em grupo?' : '¿Prefieres empezar en grupo?'}</p>
+              <p className="da-grupal-s">{pt ? 'Terapia de grupo com a Iris' : 'Terapia grupal con Iris'} · <b>{CURSO_DA.grupal.precio}</b> {pt ? 'por mês, IVA incluído' : 'al mes, IVA incluido'}</p>
+            </div>
+            <a className="da-grupal-boton" href={CURSO_DA.grupal.stripe}>
+              {pt ? 'Entrar no grupo' : 'Entrar en la grupal'} <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </section>
 
         <section className="da-temario" aria-labelledby="temario-h">

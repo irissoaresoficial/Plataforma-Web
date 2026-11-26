@@ -76,3 +76,15 @@
 .da-barra span { display: block; height: 100%; border-radius: inherit; background: var(--vino); transition: width 1s linear; }
 .da-op-quedan { font-size: var(--t-nota); color: var(--vino); font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .da-op, .da-crono-n, .da-op-oferta::after { animation: none; } .da-op:hover, .da-op-oferta:hover { transform: none; } }
+
+/* La terapia grupal: la otra puerta, más baja que las fichas del curso. */
+.da-grupal { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; max-width: 760px; margin: 36px auto 0; padding: 22px 26px; border-radius: 24px; background: var(--arena); border: 1px solid var(--linea); }
+.da-grupal-t { margin: 0; font-size: var(--t-h3); font-weight: 400; color: var(--vino); }
+.da-grupal-s { margin: 4px 0 0; font-size: var(--t-cuerpo); color: var(--tinta); }
+.da-grupal-s b { font-weight: 500; color: var(--vino); }
+.da-grupal-boton { display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 100px; border: 1.5px solid var(--vino); color: var(--vino); font-weight: 500; text-decoration: none; transition: background 0.2s ease, color 0.2s ease; }
+.da-grupal-boton:hover { background: var(--vino); color: var(--oro-luz); }
+/* El brillo pasa POR DEBAJO del texto y del botón: encima los lavaba. */
+.da-op-oferta > * { position: relative; z-index: 1; }
+.da-op-oferta::after { z-index: 0; opacity: 0.55; }
+.da-op-oferta .da-op-boton { white-space: nowrap; }

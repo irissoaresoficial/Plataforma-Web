@@ -1005,11 +1005,13 @@ export const CURSO_DA = {
   ofertaHasta: '2026-11-27T21:00:00+01:00',
   /** El grupo de WhatsApp de las alumnas del curso: sale en la página de gracias. */
   grupo: 'https://chat.whatsapp.com/GfAHKF4cHAkEBxwBdr4Sd2',
+  /** La terapia grupal, 300 € al mes: la alternativa para quien no entra al curso. */
+  grupal: { precio: '300 €', stripe: 'https://buy.stripe.com/cNi3cv5yo3BPgCV80C1ZS07' },
   opciones: [
     { id: 'hoy', rotulo: 'Oferta 24 h', cifra: '999 €', detalle: 'Un solo pago', nota: 'Solo hasta mañana a las 21:00', stripe: 'https://buy.stripe.com/6oUeVdd0Q6O14UddkW1ZS03', oferta: true },
-    { id: 'uno', rotulo: 'Un pago', cifra: '1.297 €', detalle: 'Pago único', nota: '', stripe: '', oferta: false },
-    { id: 'tres', rotulo: 'Tres pagos', cifra: '465,67 €', detalle: 'al mes, 3 meses', nota: '1.397 € en total', stripe: '', oferta: false },
-    { id: 'seis', rotulo: 'Seis pagos', cifra: '266,17 €', detalle: 'al mes, 6 meses', nota: '1.597 € en total', stripe: '', oferta: false },
+    { id: 'uno', rotulo: 'Un pago', cifra: '1.297 €', detalle: 'Pago único', nota: '', stripe: 'https://buy.stripe.com/3cI28rd0Q4FTbiBbcO1ZS04', oferta: false },
+    { id: 'tres', rotulo: 'Tres pagos', cifra: '465,67 €', detalle: 'al mes, 3 meses', nota: '1.397 € en total', stripe: 'https://buy.stripe.com/eVq9AT7Gwfkx1I1gx81ZS05', oferta: false },
+    { id: 'seis', rotulo: 'Seis pagos', cifra: '266,17 €', detalle: 'al mes, 6 meses', nota: '1.597 € en total', stripe: 'https://buy.stripe.com/cNi6oH4uk8W9gCV6Wy1ZS06', oferta: false },
   ],
   seminarios: [
     'Comprender los Desórdenes Amorosos',
