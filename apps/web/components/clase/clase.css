@@ -505,3 +505,4 @@
 @keyframes cl-lv-entra { from { opacity: 0; transform: translateY(30px) scale(0.97); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
 @keyframes cl-lv-sube { from { opacity: 0; transform: translateY(16px); } }
 @media (prefers-reduced-motion: reduce) { .cl-lv p { animation: none; } }
+.cl-lv-credito { margin: 0; font-size: 22px; color: var(--cl-sobre-2); opacity: 0.75; }

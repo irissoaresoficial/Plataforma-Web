@@ -156,7 +156,40 @@ function VideoSolo({ activo, ...p }: React.VideoHTMLAttributes<HTMLVideoElement>
    Gerson): suena el mp3 de «Nací para ser yo» desde el principio y la letra
    va apareciendo frase a frase en nuestra tipografía, con la cuenta atrás al
    lado. Cada frase lleva el segundo en que empieza. */
-const LETRA: Array<{ t: number; l: string }> = [];
+/* Nuestras frases de la masterclass al ritmo de la canción (no la letra de
+   la canción: esa es de su autora y no se copia). Los segundos siguen sus
+   partes, medidas en el archivo: entrada suave hasta el 0:18, sube hasta el
+   1:12 y el estribillo entra hacia el 1:14. «Nací para ser yo» es el título. */
+const LETRA: Array<{ t: number; l: string }> = [
+  { t: 2, l: 'Esta noche hablamos de ti' },
+  { t: 10, l: 'De por qué el amor se repite' },
+  { t: 18, l: 'Cambias de pareja…' },
+  { t: 26, l: '…y vuelve la misma historia' },
+  { t: 34, l: 'No es mala suerte' },
+  { t: 42, l: 'Es algo que aprendiste' },
+  { t: 50, l: 'En casa, antes de saber elegir' },
+  { t: 58, l: 'Tu abuela. Tu madre. Tú.' },
+  { t: 66, l: 'Y ahora, tu turno' },
+  { t: 74, l: 'Esta noche lo ves' },
+  { t: 82, l: 'Y lo que se ve' },
+  { t: 90, l: 'se puede cambiar' },
+  { t: 100, l: 'Escribe en el chat desde dónde nos ves' },
+  { t: 110, l: 'Ten a mano papel y boli' },
+  { t: 120, l: 'Y tu fecha de nacimiento' },
+  { t: 130, l: 'La de tu madre' },
+  { t: 140, l: 'Y la de tu pareja' },
+  { t: 150, l: 'Hoy, en directo' },
+  { t: 160, l: 'Iris Soares' },
+  { t: 168, l: 'y Marco Célio Sousa' },
+  { t: 178, l: 'Desórdenes Amorosos' },
+  { t: 188, l: 'Por qué repites la misma historia' },
+  { t: 198, l: 'y dónde empezó' },
+  { t: 210, l: 'Respira' },
+  { t: 220, l: 'Ya casi empezamos' },
+  { t: 232, l: 'Nací para ser yo' },
+  { t: 248, l: 'Gracias por estar aquí' },
+  { t: 262, l: 'Empezamos enseguida' },
+];
 
 function LetraViva({ t }: { t: number }) {
   if (!LETRA.length) {
@@ -201,6 +234,7 @@ const DIAPOS: Diapo[] = [
         <div className="cl-col" style={{ flex: 1 }}>
           <p className="cl-rotulo cl-yt-marca"><img src="/images/flor-de-lis.png" alt="" />Masterclass gratuita · Desórdenes Amorosos</p>
           <LetraViva t={c.tiempo} />
+          <p className="cl-lv-credito">♪ Suena: «Nací para ser yo» · Lia Monroe</p>
           <p className="cl-nota">Mientras empezamos, escribe en el chat desde dónde nos ves.</p>
         </div>
         <Reloj id="espera" c={c} etiqueta="para empezar" />
