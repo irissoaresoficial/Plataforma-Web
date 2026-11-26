@@ -512,3 +512,8 @@
 
 /* El QR de la página de pago, en la ficha del paso 1: se escanea desde la pantalla del directo. */
 .cl-qr { display: block; width: 240px; height: 240px; margin-top: 22px; padding: 16px; border-radius: 20px; background: var(--papel); box-shadow: 0 0 0 1px var(--linea); }
+
+/* El IVA va aparte (26 nov): pequeño, pegado a la cifra. */
+.cl-iva { margin-left: 0.4em; font-size: 0.2em; font-weight: 500; letter-spacing: 0.04em; vertical-align: 0.9em; opacity: 0.85; }
+.cl-tarifa-fila .cl-iva { font-size: 0.38em; vertical-align: 0.5em; }
+.cl-tarifa-fila small { font-size: 22px; }

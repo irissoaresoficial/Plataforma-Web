@@ -637,16 +637,16 @@ const DIAPOS: Diapo[] = [
         <div className="cl-oferta-fila">
           <V en={1} c={c} className="cl-oferta">
             <span className="cl-oferta-sello">Oferta 24 h · Solo hoy</span>
-            <p className="cl-oferta-cifra">999 €</p>
+            <p className="cl-oferta-cifra">999 €<span className="cl-iva">+ IVA</span></p>
             <p className="cl-oferta-que">Curso completo Desórdenes Amorosos</p>
-            <p className="cl-oferta-nota">IVA incluido. Con el enlace de esta noche. Mañana ya no.</p>
+            <p className="cl-oferta-nota">Con el enlace de esta noche. Mañana ya no.</p>
           </V>
           <V en={2} c={c} className="cl-tarifa">
             <p className="cl-rotulo">Desde mañana</p>
-            <div className="cl-tarifa-fila"><span>1 pago</span><b>1.297 €</b></div>
-            <div className="cl-tarifa-fila"><span>3 pagos</span><b>465,67 €</b><small>1.397 € en total</small></div>
-            <div className="cl-tarifa-fila"><span>6 pagos</span><b>266,17 €</b><small>1.597 € en total</small></div>
-            <p className="cl-tarifa-plazo">Plazo máximo: <b>1 de diciembre</b> · Empieza el <b>5 y 6 de diciembre</b> · IVA incluido</p>
+            <div className="cl-tarifa-fila"><span>1 pago</span><b>1.297 €<span className="cl-iva">+ IVA</span></b></div>
+            <div className="cl-tarifa-fila"><span>3 pagos</span><b>465,67 €<span className="cl-iva">+ IVA</span></b><small>1.397 € en total</small></div>
+            <div className="cl-tarifa-fila"><span>6 pagos</span><b>266,17 €<span className="cl-iva">+ IVA</span></b><small>1.597 € en total</small></div>
+            <p className="cl-tarifa-plazo">Plazo máximo: <b>1 de diciembre</b> · Empieza el <b>5 y 6 de diciembre</b> · Precios + IVA</p>
           </V>
         </div>
       </div>

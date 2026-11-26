@@ -1008,8 +1008,8 @@ export const CURSO_DA = {
   /** La terapia grupal, 300 € al mes: la alternativa para quien no entra al curso. */
   grupal: { precio: '300 €', stripe: 'https://buy.stripe.com/cNi3cv5yo3BPgCV80C1ZS07' },
   opciones: [
-    { id: 'hoy', rotulo: 'Oferta 24 h', cifra: '999 €', detalle: 'Un solo pago', nota: 'Solo hasta mañana a las 21:00', stripe: 'https://buy.stripe.com/6oUeVdd0Q6O14UddkW1ZS03', oferta: true },
-    { id: 'uno', rotulo: 'Un pago', cifra: '1.297 €', detalle: 'Pago único', nota: '', stripe: 'https://buy.stripe.com/3cI28rd0Q4FTbiBbcO1ZS04', oferta: false },
+    { id: 'hoy', rotulo: 'Oferta 24 h', cifra: '999 €', detalle: 'Un solo pago · hasta mañana 21:00', nota: '', stripe: 'https://buy.stripe.com/6oUeVdd0Q6O14UddkW1ZS03', oferta: true },
+    { id: 'uno', rotulo: 'Un pago', cifra: '1.297 €', detalle: 'Pago único', nota: 'Sin cuotas', stripe: 'https://buy.stripe.com/3cI28rd0Q4FTbiBbcO1ZS04', oferta: false },
     { id: 'tres', rotulo: 'Tres pagos', cifra: '465,67 €', detalle: 'al mes, 3 meses', nota: '1.397 € en total', stripe: 'https://buy.stripe.com/eVq9AT7Gwfkx1I1gx81ZS05', oferta: false },
     { id: 'seis', rotulo: 'Seis pagos', cifra: '266,17 €', detalle: 'al mes, 6 meses', nota: '1.597 € en total', stripe: 'https://buy.stripe.com/cNi6oH4uk8W9gCV6Wy1ZS06', oferta: false },
   ],
@@ -1034,8 +1034,8 @@ export const CURSO_DA_PT = {
   empieza: 'Começa a 5 e 6 de dezembro',
   plazo: 'Prazo para te inscreveres: até 1 de dezembro',
   opciones: {
-    hoy: { rotulo: 'Oferta 24 h', detalle: 'Um só pagamento', nota: 'Só até amanhã às 20:00 (hora de Portugal)' },
-    uno: { rotulo: 'Um pagamento', detalle: 'Pagamento único', nota: '' },
+    hoy: { rotulo: 'Oferta 24 h', detalle: 'Um só pagamento · até amanhã 20:00 (Portugal)', nota: '' },
+    uno: { rotulo: 'Um pagamento', detalle: 'Pagamento único', nota: 'Sem prestações' },
     tres: { rotulo: 'Três pagamentos', detalle: 'por mês, 3 meses', nota: '1.397 € no total' },
     seis: { rotulo: 'Seis pagamentos', detalle: 'por mês, 6 meses', nota: '1.597 € no total' },
   } as Record<string, { rotulo: string; detalle: string; nota: string }>,

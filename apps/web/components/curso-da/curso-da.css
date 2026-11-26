@@ -88,3 +88,20 @@
 .da-op-oferta > * { position: relative; z-index: 1; }
 .da-op-oferta::after { z-index: 0; opacity: 0.55; }
 .da-op-oferta .da-op-boton { white-space: nowrap; }
+
+/* Centradas (26 nov): todo al eje, y el botón siempre abajo, a la misma altura en las cuatro. */
+.da-op { align-items: center; text-align: center; gap: 8px; padding: 30px 24px 26px; }
+.da-op-oferta .da-op-rotulo, .da-op-ahorro { align-self: center; }
+.da-op > .da-op-boton, .da-op > .da-op-pendiente { margin-top: auto; }
+.da-op-detalle { margin-bottom: 22px !important; }
+.da-op-nota { margin-top: -18px !important; margin-bottom: 22px !important; }
+.da-barra { align-self: stretch; margin: 8px 4px 0; }
+.da-op-cifra { margin-top: 10px !important; }
+.da-op-oferta .da-op-detalle { font-weight: 500; }
+.da-op-quedan { margin-bottom: 4px !important; }
+.da-op-oferta .da-op-cifra { font-size: var(--t-cifra); }
+@media (max-width: 700px) { .da-op-cifra { font-size: var(--t-cifra); } }
+
+/* El IVA va aparte (26 nov): pequeño, pegado a la cifra. */
+.da-iva { margin-left: 0.35em; font-size: 0.34em; font-weight: 500; letter-spacing: 0.03em; vertical-align: 0.75em; }
+.da-op-nota { font-size: 14px; opacity: 0.9; }

@@ -104,7 +104,7 @@ export default function CursoDA({ idioma: inicial = 'es' }: { idioma?: Idioma })
               return (
               <article key={o.id} className={`da-op${o.oferta ? ' da-op-oferta' : ''}`} style={{ ['--i' as string]: opciones.indexOf(o0) }}>
                 <p className="da-op-rotulo">{o.rotulo}</p>
-                <p className="da-op-cifra">{o.cifra}</p>
+                <p className="da-op-cifra">{o.cifra}<span className="da-iva">+ IVA</span></p>
                 {o.oferta && ahora !== null && (
                   <>
                     <p className="da-op-ahorro">{pt ? 'Poupas 298 €' : 'Ahorras 298 €'}</p>
@@ -128,12 +128,12 @@ export default function CursoDA({ idioma: inicial = 'es' }: { idioma?: Idioma })
             })}
           </div>
           <p className="da-plazo">
-            {pt ? CURSO_DA_PT.plazo : CURSO_DA.plazo} · {pt ? CURSO_DA_PT.empieza : CURSO_DA.empieza} · {pt ? 'IVA incluído' : 'IVA incluido'}
+            {pt ? CURSO_DA_PT.plazo : CURSO_DA.plazo} · {pt ? CURSO_DA_PT.empieza : CURSO_DA.empieza} · {pt ? 'Preços + IVA' : 'Precios + IVA'}
           </p>
           <div className="da-grupal">
             <div>
               <p className="da-grupal-t">{pt ? 'Preferes começar em grupo?' : '¿Prefieres empezar en grupo?'}</p>
-              <p className="da-grupal-s">{pt ? 'Terapia de grupo com a Iris' : 'Terapia grupal con Iris'} · <b>{CURSO_DA.grupal.precio}</b> {pt ? 'por mês, IVA incluído' : 'al mes, IVA incluido'}</p>
+              <p className="da-grupal-s">{pt ? 'Terapia de grupo com a Iris' : 'Terapia grupal con Iris'} · <b>{CURSO_DA.grupal.precio}</b> {pt ? 'por mês + IVA' : 'al mes + IVA'}</p>
             </div>
             <a className="da-grupal-boton" href={CURSO_DA.grupal.stripe}>
               {pt ? 'Entrar no grupo' : 'Entrar en la grupal'} <span aria-hidden="true">→</span>
