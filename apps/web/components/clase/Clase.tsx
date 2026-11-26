@@ -43,6 +43,7 @@ type Ctx = {
   campos: Record<string, string>;
   setCampo: (k: string, v: string) => void;
   ahora: number;
+  volumen: number;
 };
 
 type Diapo = {
@@ -149,29 +150,100 @@ function VideoSolo({ activo, ...p }: React.VideoHTMLAttributes<HTMLVideoElement>
   return <video ref={v} {...p} />;
 }
 
+/* LOS 10 MINUTOS DE ESPERA COMO VÍDEO CON LETRA (26 nov, Gerson: «que se vea
+   como un video lyrics»). Es el vídeo con letra de «Nací para ser yo» que pasó
+   Gerson, puesto desde YouTube a pantalla completa: la letra la trae el
+   vídeo, ya sincronizada. Arranca solo y sin sonido (el navegador no deja
+   otra cosa); el primer clic o tecla le da sonido. Vuelve a empezar al
+   acabar. El volumen sale de la barra de abajo. */
+const VIDEO_LETRA = 'jC6yqI_w0jo';
+type YTPlayer = { playVideo(): void; pauseVideo(): void; mute(): void; unMute(): void; setVolume(v: number): void; destroy(): void };
+declare global {
+  interface Window { YT?: { Player: new (el: HTMLElement, o: Record<string, unknown>) => YTPlayer }; onYouTubeIframeAPIReady?: () => void }
+}
+let ytCargando: Promise<void> | null = null;
+const cargaYT = () =>
+  (ytCargando ??= new Promise<void>((ok) => {
+    if (window.YT?.Player) return ok();
+    window.onYouTubeIframeAPIReady = () => ok();
+    const sc = document.createElement('script');
+    sc.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(sc);
+  }));
+
+function VideoLetra({ volumen, inicio }: { volumen: number; inicio: number }) {
+  const caja = useRef<HTMLDivElement>(null);
+  const yt = useRef<YTPlayer | null>(null);
+  const [conSonido, setConSonido] = useState(false);
+  useEffect(() => {
+    let vivo = true;
+    cargaYT().then(() => {
+      if (!vivo || !caja.current || !window.YT) return;
+      yt.current = new window.YT.Player(caja.current, {
+        videoId: VIDEO_LETRA,
+        width: '100%',
+        height: '100%',
+        playerVars: { autoplay: 1, mute: 1, controls: 0, disablekb: 1, playsinline: 1, rel: 0, modestbranding: 1, start: inicio, loop: 1, playlist: VIDEO_LETRA, iv_load_policy: 3 },
+        events: { onReady: (e: { target: YTPlayer }) => { e.target.mute(); e.target.playVideo(); } },
+      });
+    });
+    const sonido = () => {
+      const p = yt.current;
+      if (!p) return;
+      p.unMute();
+      p.playVideo();
+      setConSonido(true);
+    };
+    window.addEventListener('pointerdown', sonido);
+    window.addEventListener('keydown', sonido);
+    return () => {
+      vivo = false;
+      window.removeEventListener('pointerdown', sonido);
+      window.removeEventListener('keydown', sonido);
+      try { yt.current?.destroy(); } catch { /* ya no está */ }
+      yt.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => { try { yt.current?.setVolume(volumen); } catch { /* aún cargando */ } }, [volumen, conSonido]);
+  return (
+    <div className="cl-yt">
+      <div ref={caja} />
+      {!conSonido && <span className="cl-yt-aviso">Toca la pantalla para activar el sonido</span>}
+    </div>
+  );
+}
+
+/* La cuenta atrás en pequeño, para no tapar la letra. */
+function CuentaMini({ c }: { c: Ctx }) {
+  const r = c.e.relojes.espera;
+  const queda = r ? (r.fin ? Math.max(0, Math.round((r.fin - c.ahora) / 1000)) : r.queda) : TOTAL;
+  return (
+    <span className="cl-cuenta-mini">
+      {queda === 0 ? 'Empezamos' : <>Empezamos en <b>{Math.floor(queda / 60)}:{String(queda % 60).padStart(2, '0')}</b></>}
+    </span>
+  );
+}
+
 const DIAPOS: Diapo[] = [
   {
     id: 'espera',
-    titulo: 'Espera · 10 minutos',
-    fondo: 'foto',
-    foto: 'hilos-42.jpg',
+    titulo: 'Espera · vídeo con letra',
+    fondo: 'negro',
     pasos: 0,
-    notas: 'Pantalla de espera. Ábrela 10 minutos antes. AL EMPEZAR, Iris lo dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». La cuenta atrás arranca sola; la música suena en cuanto toques la pantalla o una tecla. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha. LA CANCIÓN: la primera vez, en este ordenador, pulsa «Elegir canción» abajo y elige el archivo; se queda guardada. Empieza en el 1:08, un poco antes del estribillo (se cambia con la tecla N en esta diapositiva). Volumen y medidor, abajo. Vuelve a sonar sola en «Gracias».',
+    notas: 'Pantalla de espera: el vídeo con la letra de «Nací para ser yo» a pantalla completa. Ábrela 10 minutos antes y haz un clic: con ese clic suena. La cuenta atrás va arriba a la derecha. AL EMPEZAR, Iris dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». A las 21:00, flecha derecha.',
     pinta: (c) => (
-      <div className="cl-fila cl-centro-v">
-        <div className="cl-col" style={{ flex: 1 }}>
-          <img className="cl-logo cl-entra-1" src="/images/logo-33-blanco.png" alt="Escuela de Sabiduría 33" />
-          <p className="cl-rotulo cl-entra-2">Masterclass gratuita en directo</p>
-          {/* La flor de lis del logotipo de Desórdenes Amorosos (Iris, 26 nov). El
-              nombre sigue en nuestra tipografía; del logo sólo va el símbolo. */}
-          <img className="cl-flor cl-entra-3" src="/images/flor-de-lis.png" alt="" />
-          <h1 className="cl-h1 cl-entra-3">Desórdenes<br />Amorosos</h1>
-          <p className="cl-lead cl-entra-4">Por qué repites la misma historia <b>y dónde empezó</b></p>
-          <p className="cl-nota cl-entra-5">Mientras empezamos, escribe en el chat desde dónde nos ves.</p>
-          {c.editar && <p className="cl-nota">Canción: empieza en <Campo k="cancion-inicio" c={c} ayuda="minuto:segundo, antes del estribillo (ej. 1:05)" /></p>}
+      <>
+        <VideoLetra volumen={c.volumen} inicio={segundos(campo(c, 'cancion-inicio'))} />
+        <div className="cl-yt-barra">
+          <span className="cl-yt-marca">
+            <img src="/images/flor-de-lis.png" alt="" />
+            Masterclass gratuita · <b>Desórdenes Amorosos</b>
+          </span>
+          <CuentaMini c={c} />
         </div>
-        <Reloj id="espera" c={c} etiqueta="para empezar" />
-      </div>
+        <p className="cl-yt-chat">Mientras empezamos, escribe en el chat desde dónde nos ves.</p>
+      </>
     ),
   },
   {
@@ -660,7 +732,7 @@ const LLAVE = 'clase-desordenes-campos';
    la presentación, un poco antes del estribillo (segundo editable con la
    tecla N en la pantalla de espera), y otra vez en «Gracias». Sin canción
    elegida suena la música de espera de siempre. */
-const CON_CANCION = new Set(['espera', 'gracias']);
+const CON_CANCION = new Set(['gracias']);
 /** «1:05» o «65» → 65. Vacío o raro → 0. */
 const segundos = (t: string) => {
   const m = t.trim().match(/^(?:(\d+):)?(\d+)$/);
@@ -889,13 +961,16 @@ export default function Clase() {
   }, [siguiente, anterior, pantallaCompleta]);
 
   const clic = (e: React.MouseEvent<HTMLDivElement>) => {
+    /* En la espera el clic sólo da sonido al vídeo: no pasa de diapositiva
+       (se pasa con la flecha a las 21:00). */
+    if (d.id === 'espera') return;
     const r = e.currentTarget.getBoundingClientRect();
     if (e.clientX - r.left > r.width * 0.3) siguiente();
     else anterior();
   };
 
   const progreso = useMemo(() => ((i + (d.pasos ? paso / (d.pasos + 1) : 0)) / (DIAPOS.length - 1)) * 100, [i, paso, d.pasos]);
-  const ctx: Ctx = { paso, e: estado, set: setEstado, editar: notas, campos, setCampo, ahora };
+  const ctx: Ctx = { paso, e: estado, set: setEstado, editar: notas, campos, setCampo, ahora, volumen };
 
   return (
     <div className="cl-raiz" ref={raiz}>
@@ -904,7 +979,7 @@ export default function Clase() {
         <section key={d.id} className={`cl-diapo cl-${d.fondo}`} onClick={clic}>
           {d.foto && <img className="cl-fondo" src={IMG + d.foto} alt="" />}
           <div className="cl-contenido">{d.pinta(ctx)}</div>
-          <p className="cl-pie">Desórdenes Amorosos · Escuela de Sabiduría 33</p>
+          {d.id !== 'espera' && <p className="cl-pie">Desórdenes Amorosos · Escuela de Sabiduría 33</p>}
           {CON_CANCION.has(d.id) && musica && <Letra texto={campos['cancion-letra'] || ''} t={tiempo.t} dur={tiempo.dur} />}
           {false && (
             <div className="cl-puntitos" aria-hidden="true">
