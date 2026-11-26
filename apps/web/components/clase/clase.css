@@ -506,3 +506,6 @@
 @keyframes cl-lv-sube { from { opacity: 0; transform: translateY(16px); } }
 @media (prefers-reduced-motion: reduce) { .cl-lv p { animation: none; } }
 .cl-lv-credito { margin: 0; font-size: 22px; color: var(--cl-sobre-2); opacity: 0.75; }
+
+/* Sobre arena el texto va en vino: la regla general de .cl-lead lo dejaba claro y no se leía. */
+.cl-lead.cl-oscuro, .cl-nota.cl-oscuro { color: var(--vino); }

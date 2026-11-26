@@ -128,7 +128,7 @@ export default function CursoDA({ idioma: inicial = 'es' }: { idioma?: Idioma })
             })}
           </div>
           <p className="da-plazo">
-            {pt ? CURSO_DA_PT.plazo : CURSO_DA.plazo} · {pt ? CURSO_DA_PT.empieza : CURSO_DA.empieza}
+            {pt ? CURSO_DA_PT.plazo : CURSO_DA.plazo} · {pt ? CURSO_DA_PT.empieza : CURSO_DA.empieza} · {pt ? 'IVA incluído' : 'IVA incluido'}
           </p>
         </section>
 

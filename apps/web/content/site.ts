@@ -1003,11 +1003,13 @@ export const CURSO_DA = {
   plazo: 'Plazo para apuntarte: hasta el 1 de diciembre',
   /** La oferta de la masterclass: 24 horas desde que empieza (26 nov, 21:00). */
   ofertaHasta: '2026-11-27T21:00:00+01:00',
+  /** El grupo de WhatsApp de las alumnas del curso: sale en la página de gracias. */
+  grupo: 'https://chat.whatsapp.com/GfAHKF4cHAkEBxwBdr4Sd2',
   opciones: [
-    { id: 'hoy', rotulo: 'Oferta 24 h', cifra: '999 €', detalle: 'Un solo pago', nota: 'Solo hasta mañana a las 21:00', stripe: '', oferta: true },
+    { id: 'hoy', rotulo: 'Oferta 24 h', cifra: '999 €', detalle: 'Un solo pago', nota: 'Solo hasta mañana a las 21:00', stripe: 'https://buy.stripe.com/6oUeVdd0Q6O14UddkW1ZS03', oferta: true },
     { id: 'uno', rotulo: 'Un pago', cifra: '1.297 €', detalle: 'Pago único', nota: '', stripe: '', oferta: false },
-    { id: 'tres', rotulo: 'Tres pagos', cifra: '499 €', detalle: 'al mes, 3 meses', nota: '1.497 € en total', stripe: '', oferta: false },
-    { id: 'seis', rotulo: 'Seis pagos', cifra: '282,83 €', detalle: 'al mes, 6 meses', nota: '1.697 € en total', stripe: '', oferta: false },
+    { id: 'tres', rotulo: 'Tres pagos', cifra: '465,67 €', detalle: 'al mes, 3 meses', nota: '1.397 € en total', stripe: '', oferta: false },
+    { id: 'seis', rotulo: 'Seis pagos', cifra: '266,17 €', detalle: 'al mes, 6 meses', nota: '1.597 € en total', stripe: '', oferta: false },
   ],
   seminarios: [
     'Comprender los Desórdenes Amorosos',
@@ -1015,9 +1017,9 @@ export const CURSO_DA = {
     'Psicología del Inconsciente: profundización emocional',
     'Numerología Transgeneracional: acto terapéutico y teoría del cambio',
     'Dinámicas inconscientes y mecanismos de protección psíquica',
-    'Transgeneracionalidad y psicogenealogía',
+    'Transgeneracional y psicogenealogía',
     'Las cinco heridas emocionales',
-    'Numerología Transgeneracional: Bases 9 y 22',
+    'Numerología psicocomportamental y estructural y sus enfermedades',
     'Trauma, cuerpo y regulación emocional',
     'Integración y ejercicios prácticos',
   ],
@@ -1032,8 +1034,8 @@ export const CURSO_DA_PT = {
   opciones: {
     hoy: { rotulo: 'Oferta 24 h', detalle: 'Um só pagamento', nota: 'Só até amanhã às 20:00 (hora de Portugal)' },
     uno: { rotulo: 'Um pagamento', detalle: 'Pagamento único', nota: '' },
-    tres: { rotulo: 'Três pagamentos', detalle: 'por mês, 3 meses', nota: '1.497 € no total' },
-    seis: { rotulo: 'Seis pagamentos', detalle: 'por mês, 6 meses', nota: '1.697 € no total' },
+    tres: { rotulo: 'Três pagamentos', detalle: 'por mês, 3 meses', nota: '1.397 € no total' },
+    seis: { rotulo: 'Seis pagamentos', detalle: 'por mês, 6 meses', nota: '1.597 € no total' },
   } as Record<string, { rotulo: string; detalle: string; nota: string }>,
   seminarios: [
     'Compreender as Desordens Amorosas',
@@ -1041,9 +1043,9 @@ export const CURSO_DA_PT = {
     'Psicologia do Inconsciente: aprofundamento emocional',
     'Numerologia Transgeracional: ato terapêutico e teoria da mudança',
     'Dinâmicas inconscientes e mecanismos de proteção psíquica',
-    'Transgeracionalidade e psicogenealogia',
+    'Transgeracional e psicogenealogia',
     'As cinco feridas emocionais',
-    'Numerologia Transgeracional: Bases 9 e 22',
+    'Numerologia psicocomportamental e estrutural e as suas doenças',
     'Trauma, corpo e regulação emocional',
     'Integração e exercícios práticos',
   ],

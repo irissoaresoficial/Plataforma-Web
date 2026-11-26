@@ -49,8 +49,8 @@ export default function Gracias({ idioma: inicial = 'es' }: { idioma?: Idioma })
               </li>
             ))}
           </ol>
-          {CONTACTO.grupo && (
-            <a className="da-op-boton" href={CONTACTO.grupo}>
+          {CURSO_DA.grupo && (
+            <a className="da-op-boton" href={CURSO_DA.grupo}>
               {t.grupo} <span aria-hidden="true">→</span>
             </a>
           )}

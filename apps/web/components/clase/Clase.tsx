@@ -75,6 +75,8 @@ const DEFECTO: Record<string, string> = {
   'curso-fechas': 'Empieza el 5 y 6 de diciembre',
   /* Medido en el archivo: la energía sube al estribillo hacia el 1:14. */
   'cancion-inicio': '1:08',
+  /* La página con todas las formas de pago y el cronómetro: más corta de dictar que el enlace de Stripe. */
+  'pago-enlace': 'escueladesabiduria33.com/curso-desordenes',
 };
 const campo = (c: Ctx, k: string) => c.campos[k] || DEFECTO[k] || '';
 
@@ -637,14 +639,14 @@ const DIAPOS: Diapo[] = [
             <span className="cl-oferta-sello">Oferta 24 h · Solo hoy</span>
             <p className="cl-oferta-cifra">999 €</p>
             <p className="cl-oferta-que">Curso completo Desórdenes Amorosos</p>
-            <p className="cl-oferta-nota">Con el enlace de esta noche. Mañana ya no.</p>
+            <p className="cl-oferta-nota">IVA incluido. Con el enlace de esta noche. Mañana ya no.</p>
           </V>
           <V en={2} c={c} className="cl-tarifa">
             <p className="cl-rotulo">Desde mañana</p>
             <div className="cl-tarifa-fila"><span>1 pago</span><b>1.297 €</b></div>
-            <div className="cl-tarifa-fila"><span>3 pagos</span><b>499 €</b><small>1.497 € en total</small></div>
-            <div className="cl-tarifa-fila"><span>6 pagos</span><b>282,83 €</b><small>1.697 € en total</small></div>
-            <p className="cl-tarifa-plazo">Plazo máximo: <b>1 de diciembre</b> · Empieza el <b>5 y 6 de diciembre</b></p>
+            <div className="cl-tarifa-fila"><span>3 pagos</span><b>465,67 €</b><small>1.397 € en total</small></div>
+            <div className="cl-tarifa-fila"><span>6 pagos</span><b>266,17 €</b><small>1.597 € en total</small></div>
+            <p className="cl-tarifa-plazo">Plazo máximo: <b>1 de diciembre</b> · Empieza el <b>5 y 6 de diciembre</b> · IVA incluido</p>
           </V>
         </div>
       </div>
@@ -661,9 +663,9 @@ const DIAPOS: Diapo[] = [
         <p className="cl-rotulo cl-entra-1">Cómo apuntarte</p>
         <h2 className="cl-h3 cl-entra-2">Tres pasos</h2>
         <div className="cl-pasos3 cl-pasos3-claro">
-          <V en={1} c={c} className="cl-paso3"><span className="cl-paso3-num">1</span><div><h3>Entra en el enlace</h3><p>{c.campos['pago-enlace'] || c.editar ? <Campo k="pago-enlace" c={c} ayuda="Enlace corto de pago" /> : 'Te lo dejamos ahora en el chat.'}</p></div></V>
+          <V en={1} c={c} className="cl-paso3"><span className="cl-paso3-num">1</span><div><h3>Entra en el enlace</h3><p>{campo(c, 'pago-enlace') || c.editar ? <Campo k="pago-enlace" c={c} ayuda="Enlace corto de pago" /> : 'Te lo dejamos ahora en el chat.'}</p></div></V>
           <V en={2} c={c} className="cl-paso3"><span className="cl-paso3-num">2</span><div><h3>Elige cómo pagar</h3><p>Hoy, 999 €. Desde mañana, 1.297 € en 1, 3 o 6 pagos.</p></div></V>
-          <V en={3} c={c} className="cl-paso3"><span className="cl-paso3-num">3</span><div><h3>Te llega el acceso</h3><p>Por correo, al momento.</p></div></V>
+          <V en={3} c={c} className="cl-paso3"><span className="cl-paso3-num">3</span><div><h3>Entra en el grupo del curso</h3><p>Al pagar te sale el enlace del grupo de WhatsApp.</p></div></V>
         </div>
       </div>
     ),
@@ -680,7 +682,7 @@ const DIAPOS: Diapo[] = [
         <h2 className="cl-h2 cl-oscuro cl-entra-2">¿Aún no es tu momento?</h2>
         <V en={1} c={c}>
           <p className="cl-lead cl-oscuro">Quédate en el grupo de WhatsApp y sigue mirando tu patrón con nosotros.</p>
-          <p className="cl-nota cl-oscuro">Y si prefieres empezar en grupo: la terapia grupal, 111 € al mes.</p>
+          <p className="cl-nota cl-oscuro">Y si prefieres empezar en grupo: la terapia grupal, 300 € al mes.</p>
         </V>
       </div>
     ),
@@ -711,9 +713,9 @@ const TEMARIO = [
   'Psicología del Inconsciente: profundización emocional',
   'Numerología Transgeneracional: acto terapéutico y teoría del cambio',
   'Dinámicas inconscientes y mecanismos de protección psíquica',
-  'Transgeneracionalidad y psicogenealogía',
+  'Transgeneracional y psicogenealogía',
   'Las cinco heridas emocionales',
-  'Numerología Transgeneracional: Bases 9 y 22',
+  'Numerología psicocomportamental y estructural y sus enfermedades',
   'Trauma, cuerpo y regulación emocional',
   'Integración y ejercicios prácticos',
 ];
