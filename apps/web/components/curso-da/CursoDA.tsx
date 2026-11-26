@@ -21,6 +21,26 @@ import { Selector, useIdioma } from './idioma';
 import '@/components/casa/casa.css';
 import './curso-da.css';
 
+/* El cronómetro de la oferta: horas, minutos y segundos, en vivo. */
+function Crono({ hasta, ahora, pt }: { hasta: number; ahora: number; pt: boolean }) {
+  const s = Math.max(0, Math.floor((hasta - ahora) / 1000));
+  const partes = [
+    [Math.floor(s / 3600), pt ? 'horas' : 'horas'],
+    [Math.floor((s % 3600) / 60), pt ? 'minutos' : 'minutos'],
+    [s % 60, pt ? 'segundos' : 'segundos'],
+  ] as const;
+  return (
+    <div className="da-crono" role="timer" aria-live="off">
+      {partes.map(([n, et], i) => (
+        <div key={et} className="da-crono-caja">
+          <span key={`${et}-${n}`} className={`da-crono-n${i === 2 ? ' da-crono-late' : ''}`}>{String(n).padStart(2, '0')}</span>
+          <span className="da-crono-et">{et}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function quedan(hasta: number, ahora: number) {
   const s = Math.max(0, Math.floor((hasta - ahora) / 1000));
   const h = Math.floor(s / 3600);
@@ -36,7 +56,7 @@ export default function CursoDA({ idioma: inicial = 'es' }: { idioma?: Idioma })
   const [ahora, setAhora] = useState<number | null>(null);
   useEffect(() => {
     setAhora(Date.now());
-    const t = setInterval(() => setAhora(Date.now()), 30000);
+    const t = setInterval(() => setAhora(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
   const ofertaViva = ahora === null || ahora < fin;
@@ -59,9 +79,16 @@ export default function CursoDA({ idioma: inicial = 'es' }: { idioma?: Idioma })
             {pt ? CURSO_DA_PT.con : CURSO_DA.con}. {pt ? CURSO_DA_PT.empieza : CURSO_DA.empieza}.
           </p>
           {ofertaViva && ahora !== null && (
-            <p className="da-cuenta">
-              {t.termina} <b>{quedan(fin, ahora)}</b>
-            </p>
+            <div className="da-oferta-alto">
+              <p className="da-cuenta">
+                {pt ? 'Oferta de hoje' : 'Oferta de hoy'}: <b>999 €</b> · {pt ? 'poupas 298 € face ao pagamento único' : 'ahorras 298 € frente al pago único'}
+              </p>
+              <p className="da-crono-tit">{t.termina}</p>
+              <Crono hasta={fin} ahora={ahora} pt={pt} />
+              <a className="da-op-boton da-alto-boton" href="#pagar-h">
+                {pt ? 'Ver como pagar' : 'Ver cómo pagar'} <span aria-hidden="true">↓</span>
+              </a>
+            </div>
           )}
         </div>
       </section>
@@ -75,9 +102,16 @@ export default function CursoDA({ idioma: inicial = 'es' }: { idioma?: Idioma })
             {opciones.map((o0) => {
               const o = pt ? { ...o0, ...CURSO_DA_PT.opciones[o0.id] } : o0;
               return (
-              <article key={o.id} className={`da-op${o.oferta ? ' da-op-oferta' : ''}`}>
+              <article key={o.id} className={`da-op${o.oferta ? ' da-op-oferta' : ''}`} style={{ ['--i' as string]: opciones.indexOf(o0) }}>
                 <p className="da-op-rotulo">{o.rotulo}</p>
                 <p className="da-op-cifra">{o.cifra}</p>
+                {o.oferta && ahora !== null && (
+                  <>
+                    <p className="da-op-ahorro">{pt ? 'Poupas 298 €' : 'Ahorras 298 €'}</p>
+                    <div className="da-barra" aria-hidden="true"><span style={{ width: `${Math.max(0, Math.min(100, ((fin - ahora) / 86400000) * 100))}%` }} /></div>
+                    <p className="da-op-quedan">{pt ? 'Faltam' : 'Quedan'} {quedan(fin, ahora)}</p>
+                  </>
+                )}
                 <p className="da-op-detalle">{o.detalle}</p>
                 {o.nota && <p className="da-op-nota">{o.nota}</p>}
                 {o.stripe ? (

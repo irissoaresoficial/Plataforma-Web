@@ -52,3 +52,27 @@
 .da-selector button { font: inherit; font-size: var(--t-nota); font-weight: 500; padding: 8px 18px; border-radius: 100px; border: 0; background: transparent; color: var(--papel); cursor: pointer; }
 .da-selector button[aria-pressed='true'] { background: var(--oro-luz); color: var(--vino); }
 .da-selector button:focus-visible { outline: 2px solid var(--oro-luz); outline-offset: 2px; }
+
+/* Más vivo (26 nov): cronómetro grande, ahorro visible y fichas que responden. */
+.da-oferta-alto { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 10px; }
+.da-crono-tit { margin: 8px 0 0; font-size: var(--t-nota); letter-spacing: 0.12em; text-transform: uppercase; color: var(--oro-luz); }
+.da-crono { display: flex; gap: clamp(10px, 2vw, 18px); }
+.da-crono-caja { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: clamp(78px, 14vw, 116px); padding: clamp(12px, 2vw, 18px) 10px; border-radius: 20px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(226, 205, 162, 0.35); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 18px 40px rgba(10, 4, 6, 0.3); backdrop-filter: blur(8px); }
+.da-crono-n { font-size: var(--t-cifra); font-weight: 300; line-height: 1; color: var(--papel); font-variant-numeric: tabular-nums; animation: da-gira 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+.da-crono-late { color: var(--oro-luz); }
+.da-crono-et { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--oro-luz); opacity: 0.85; }
+@keyframes da-gira { from { opacity: 0.2; transform: translateY(-40%) rotateX(60deg); } to { opacity: 1; transform: none; } }
+.da-alto-boton { align-self: center; margin-top: 10px; background: var(--oro-luz); color: var(--vino); padding: 14px 28px; }
+
+.da-op { animation: da-entra 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 90ms); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease; transform-style: preserve-3d; }
+.da-op:hover { transform: translateY(-6px) perspective(900px) rotateX(3deg); box-shadow: 0 28px 60px rgba(34, 29, 31, 0.16); }
+@keyframes da-entra { from { opacity: 0; transform: translateY(24px) scale(0.97); } }
+.da-op-oferta { transform: scale(1.03); }
+.da-op-oferta:hover { transform: scale(1.03) translateY(-6px) perspective(900px) rotateX(3deg); }
+.da-op-oferta::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%); background-size: 250% 100%; animation: da-brillo 3.2s ease-in-out infinite; pointer-events: none; }
+@keyframes da-brillo { 0% { background-position: 120% 0; } 60%, 100% { background-position: -120% 0; } }
+.da-op-ahorro { align-self: flex-start; margin-top: 4px !important; padding: 5px 12px; border-radius: 100px; background: var(--vino); color: var(--oro-luz); font-size: var(--t-nota); font-weight: 500; }
+.da-barra { height: 6px; border-radius: 100px; background: rgba(69, 26, 37, 0.18); overflow: hidden; margin-top: 10px; }
+.da-barra span { display: block; height: 100%; border-radius: inherit; background: var(--vino); transition: width 1s linear; }
+.da-op-quedan { font-size: var(--t-nota); color: var(--vino); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .da-op, .da-crono-n, .da-op-oferta::after { animation: none; } .da-op:hover, .da-op-oferta:hover { transform: none; } }
