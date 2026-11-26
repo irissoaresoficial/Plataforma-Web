@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * LA PÁGINA DE DESPUÉS DEL PAGO (26 de noviembre de 2026).
  *
@@ -8,18 +10,21 @@ import Barra from '@/components/casa/Barra';
 import Pie from '@/components/casa/Pie';
 import { CONTACTO, CURSO_DA, CURSO_DA_PT } from '@/content/site';
 import { T, type Idioma } from './textos';
+import { Selector, useIdioma } from './idioma';
 import '@/components/casa/casa.css';
 import './curso-da.css';
 
-export default function Gracias({ idioma = 'es' }: { idioma?: Idioma }) {
-  const t = T[idioma];
-  const d = idioma === 'pt' ? CURSO_DA_PT : CURSO_DA;
+export default function Gracias({ idioma: inicial = 'es' }: { idioma?: Idioma }) {
+  const idioma = useIdioma(inicial);
+  const t = T[idioma.v];
+  const d = idioma.v === 'pt' ? CURSO_DA_PT : CURSO_DA;
   return (
     <div id="app" className="claro casa" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <section className="da-alto da-alto-gracias">
         <header>
           <Barra />
         </header>
+        <Selector idioma={idioma} />
         <div className="da-dentro">
           <img className="da-flor" src="/images/flor-de-lis.png" alt="" />
           <p className="da-rotulo">{t.recibido}</p>
@@ -52,7 +57,6 @@ export default function Gracias({ idioma = 'es' }: { idioma?: Idioma }) {
           <p className="da-texto da-ayuda">
             {t.ayuda} <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
           </p>
-          <a className="da-idioma" href={t.otroGracias.href}>{t.otroGracias.texto}</a>
         </section>
       </main>
       <Pie />

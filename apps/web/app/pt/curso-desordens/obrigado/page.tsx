@@ -1,11 +1,5 @@
-import type { Metadata } from 'next';
-import Gracias from '@/components/curso-da/Gracias';
-
-export const metadata: Metadata = {
-  title: 'Obrigada · Curso Desordens Amorosas',
-  robots: { index: false, follow: false },
-};
+import { redirect } from 'next/navigation';
 
 export default function Pagina() {
-  return <Gracias idioma="pt" />;
+  redirect('/curso-desordenes/gracias?lang=pt');
 }

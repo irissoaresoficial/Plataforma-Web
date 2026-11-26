@@ -17,6 +17,7 @@ import Pie from '@/components/casa/Pie';
 import Pendiente from '@/components/Pendiente';
 import { CONTACTO, CURSO_DA, CURSO_DA_PT } from '@/content/site';
 import { T, type Idioma } from './textos';
+import { Selector, useIdioma } from './idioma';
 import '@/components/casa/casa.css';
 import './curso-da.css';
 
@@ -27,9 +28,10 @@ function quedan(hasta: number, ahora: number) {
   return `${h} h ${String(m).padStart(2, '0')} min`;
 }
 
-export default function CursoDA({ idioma = 'es' }: { idioma?: Idioma }) {
-  const t = T[idioma];
-  const pt = idioma === 'pt';
+export default function CursoDA({ idioma: inicial = 'es' }: { idioma?: Idioma }) {
+  const idioma = useIdioma(inicial);
+  const t = T[idioma.v];
+  const pt = idioma.v === 'pt';
   const fin = new Date(CURSO_DA.ofertaHasta).getTime();
   const [ahora, setAhora] = useState<number | null>(null);
   useEffect(() => {
@@ -46,6 +48,7 @@ export default function CursoDA({ idioma = 'es' }: { idioma?: Idioma }) {
         <header>
           <Barra />
         </header>
+        <Selector idioma={idioma} />
         <div className="da-dentro">
           <img className="da-flor" src="/images/flor-de-lis.png" alt="" />
           <p className="da-rotulo">{t.rotulo}</p>
@@ -118,7 +121,6 @@ export default function CursoDA({ idioma = 'es' }: { idioma?: Idioma }) {
               {t.grupo} <span aria-hidden="true">→</span>
             </a>
           )}
-          <a className="da-idioma" href={t.otro.href}>{t.otro.texto}</a>
         </section>
       </main>
       <Pie />
