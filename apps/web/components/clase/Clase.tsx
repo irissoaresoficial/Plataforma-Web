@@ -65,8 +65,16 @@ const V = ({ en, c, children, className = '' }: { en: number; c: Ctx; children: 
 
 /* Un dato que aún no existe. En modo edición se escribe; en directo, si está
    vacío, no se pinta nada. */
+/* Lo que ya está decidido y no hace falta escribir a mano en cada ordenador
+   (26 de noviembre de 2026, nota de Iris). Lo que se escriba en modo edición
+   manda sobre esto. */
+const DEFECTO: Record<string, string> = {
+  'curso-fechas': 'Empieza el 5 y 6 de diciembre',
+};
+const campo = (c: Ctx, k: string) => c.campos[k] || DEFECTO[k] || '';
+
 function Campo({ k, c, ayuda }: { k: string; c: Ctx; ayuda: string }) {
-  const v = c.campos[k] ?? '';
+  const v = campo(c, k);
   if (!c.editar) return v ? <span className="cl-campo">{v}</span> : null;
   return (
     <input
@@ -146,15 +154,19 @@ const DIAPOS: Diapo[] = [
     fondo: 'foto',
     foto: 'hilos-42.jpg',
     pasos: 0,
-    notas: 'Pantalla de espera. Ábrela 10 minutos antes. La cuenta atrás arranca sola; la música suena en cuanto toques la pantalla o una tecla. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha.',
+    notas: 'Pantalla de espera. Ábrela 10 minutos antes. AL EMPEZAR, Iris lo dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». La cuenta atrás arranca sola; la música suena en cuanto toques la pantalla o una tecla. Saluda por su nombre a quien escribe en el chat. A las 21:00, flecha derecha.',
     pinta: (c) => (
       <div className="cl-fila cl-centro-v">
         <div className="cl-col" style={{ flex: 1 }}>
           <img className="cl-logo cl-entra-1" src="/images/logo-33-blanco.png" alt="Escuela de Sabiduría 33" />
           <p className="cl-rotulo cl-entra-2">Masterclass gratuita en directo</p>
+          {/* La flor de lis del logotipo de Desórdenes Amorosos (Iris, 26 nov). El
+              nombre sigue en nuestra tipografía; del logo sólo va el símbolo. */}
+          <img className="cl-flor cl-entra-3" src="/images/flor-de-lis.png" alt="" />
           <h1 className="cl-h1 cl-entra-3">Desórdenes<br />Amorosos</h1>
           <p className="cl-lead cl-entra-4">Por qué repites la misma historia <b>y dónde empezó</b></p>
           <p className="cl-nota cl-entra-5">Mientras empezamos, escribe en el chat desde dónde nos ves.</p>
+          <p className="cl-nota cl-entra-5">Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación.</p>
         </div>
         <Reloj id="espera" c={c} etiqueta="para empezar" />
       </div>
@@ -477,12 +489,32 @@ const DIAPOS: Diapo[] = [
         <p className="cl-lead cl-entra-3"><Campo k="curso-frase" c={c} ayuda="Lo que consigues al terminar el curso, en una frase" /></p>
         <V en={1} c={c} className="cl-datos">
           {[['Fechas', 'curso-fechas'], ['Horario', 'curso-horario'], ['Duración', 'curso-duracion'], ['Modalidad', 'curso-modalidad']].map(([t, k]) =>
-            c.editar || c.campos[k] ? (
+            c.editar || campo(c, k) ? (
               <div key={k} className="cl-dato"><span className="cl-rotulo">{t}</span><Campo k={k} c={c} ayuda={t} /></div>
             ) : null,
           )}
         </V>
         <p className="cl-nota cl-entra-4">Con Iris Soares y Marco Célio Sousa</p>
+      </div>
+    ),
+  },
+  {
+    id: 'temario',
+    titulo: 'El curso · los 10 seminarios',
+    fondo: 'arena',
+    pasos: 1,
+    notas: 'Minuto 48 · Marco. No se leen los diez. Di que son diez seminarios, que alternan psicología (Marco) y numerología transgeneracional (Iris), y nombra dos: las cinco heridas y el árbol genealógico.',
+    pinta: (c) => (
+      <div className="cl-col">
+        <p className="cl-rotulo cl-entra-1">Lo que vas a trabajar</p>
+        <h2 className="cl-h3 cl-entra-2">Diez seminarios</h2>
+        <V en={1} c={c}>
+          <ol className="cl-temario">
+            {TEMARIO.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ol>
+        </V>
       </div>
     ),
   },
@@ -522,16 +554,17 @@ const DIAPOS: Diapo[] = [
     titulo: 'Precio',
     fondo: 'vino',
     pasos: 2,
-    notas: 'Minuto 49 a 52 · Iris presenta, Marco remata. Solo: el curso. Solo: la terapia grupal. Di cada precio una vez y calla dos segundos. Nada de cuentas atrás ni plazas inventadas.',
+    notas: 'Minuto 49 a 52 · Iris presenta, Marco remata. Solo: el curso. Solo: la terapia grupal. Di cada precio una vez y calla dos segundos. Los 999 € valen solo hoy con el enlace; a partir de mañana, 1.297 € en 1, 3 o 6 pagos, hasta el 1 de diciembre. Nada de plazas inventadas.',
     pinta: (c) => (
       <div className="cl-col">
         <p className="cl-rotulo cl-entra-1">Tu siguiente diapositiva</p>
         <h2 className="cl-h3 cl-entra-2">Elige cómo seguir con nosotros</h2>
         <div className="cl-precios">
           <V en={1} c={c} className="cl-precio cl-precio-top">
-            <p className="cl-rotulo">El recomendado · Curso completo</p>
-            <p className="cl-cifra">1.297 €</p>
-            <p>En 3 pagos de 432,33 €<br />o <b>desde 233 € al mes</b> (6 meses · 1.397 € en total)</p>
+            <p className="cl-rotulo">El recomendado · Curso completo · Solo hoy</p>
+            <p className="cl-cifra">999 €</p>
+            <p>Con el enlace de esta noche.</p>
+            <p className="cl-nota">Desde mañana: 1.297 € en un pago, 3 pagos de 499 € (1.497 €) o 6 pagos de 282,83 € (1.697 €). Plazo para apuntarte: hasta el 1 de diciembre.</p>
           </V>
           <V en={2} c={c} className="cl-precio">
             <p className="cl-rotulo">Para empezar en grupo · Terapia grupal</p>
@@ -554,7 +587,7 @@ const DIAPOS: Diapo[] = [
         <h2 className="cl-h3 cl-entra-2">Tres pasos</h2>
         <div className="cl-pasos3 cl-pasos3-claro">
           <V en={1} c={c} className="cl-paso3"><span className="cl-paso3-num">1</span><div><h3>Entra en el enlace</h3><p>{c.campos['pago-enlace'] || c.editar ? <Campo k="pago-enlace" c={c} ayuda="Enlace corto de pago" /> : 'Te lo dejamos ahora en el chat.'}</p></div></V>
-          <V en={2} c={c} className="cl-paso3"><span className="cl-paso3-num">2</span><div><h3>Elige cómo pagar</h3><p>En 3 pagos o desde 233 € al mes.</p></div></V>
+          <V en={2} c={c} className="cl-paso3"><span className="cl-paso3-num">2</span><div><h3>Elige cómo pagar</h3><p>Hoy, 999 €. Desde mañana, 1.297 € en 1, 3 o 6 pagos.</p></div></V>
           <V en={3} c={c} className="cl-paso3"><span className="cl-paso3-num">3</span><div><h3>Te llega el acceso</h3><p>Por correo, al momento.</p></div></V>
         </div>
       </div>
@@ -562,17 +595,17 @@ const DIAPOS: Diapo[] = [
   },
   {
     id: 'pdf',
-    titulo: 'La guía en PDF',
+    titulo: 'Antes de irte · el grupo',
     fondo: 'oro',
     pasos: 1,
-    notas: 'Minuto 55 a 58 · Marco. Solo después de vender el curso y para quien aún no lo compra. Una frase y al cierre. El título y el precio se escriben antes en modo edición (tecla N).',
+    notas: 'Minuto 55 a 58 · Marco. Para quien aún no se apunta. No hay guía en PDF: no se promete. Una frase y al cierre.',
     pinta: (c) => (
       <div className="cl-col cl-centro-v">
         <p className="cl-rotulo cl-entra-1">Antes de irte</p>
         <h2 className="cl-h2 cl-oscuro cl-entra-2">¿Aún no es tu momento?</h2>
         <V en={1} c={c}>
-          <p className="cl-lead cl-oscuro">Llévate la guía <Campo k="pdf-titulo" c={c} ayuda="Título de la guía" /> en PDF y sigue mirando tu patrón a tu ritmo. <Campo k="pdf-precio" c={c} ayuda="Precio (20-30 €)" /></p>
-          <p className="cl-nota cl-oscuro">El enlace, en el grupo de WhatsApp.</p>
+          <p className="cl-lead cl-oscuro">Quédate en el grupo de WhatsApp y sigue mirando tu patrón con nosotros.</p>
+          <p className="cl-nota cl-oscuro">Y si prefieres empezar en grupo: la terapia grupal, 111 € al mes.</p>
         </V>
       </div>
     ),
@@ -596,6 +629,20 @@ const DIAPOS: Diapo[] = [
 ];
 
 const INICIAL: Estado = { escala: Array(10).fill(0), claves: [0, 0, 0], edades: ['', '', ''], frases: [], relojes: {} };
+/* Los 10 seminarios del curso, como los pasó Iris el 26 de noviembre. */
+const TEMARIO = [
+  'Comprender los Desórdenes Amorosos',
+  'Numerología Transgeneracional: Proyecto Sentido',
+  'Psicología del Inconsciente: profundización emocional',
+  'Numerología Transgeneracional: acto terapéutico y teoría del cambio',
+  'Dinámicas inconscientes y mecanismos de protección psíquica',
+  'Transgeneracionalidad y psicogenealogía',
+  'Las cinco heridas emocionales',
+  'Numerología Transgeneracional: Bases 9 y 22',
+  'Trauma, cuerpo y regulación emocional',
+  'Integración y ejercicios prácticos',
+];
+
 const LLAVE = 'clase-desordenes-campos';
 
 export default function Clase() {
