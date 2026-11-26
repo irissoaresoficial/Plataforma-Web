@@ -683,6 +683,21 @@ async function leeCancion(): Promise<Blob | null> {
   return new Promise((ok) => { const r = db.transaction('archivos').objectStore('archivos').get('cancion'); r.onsuccess = () => ok((r.result as Blob) ?? null); r.onerror = () => ok(null); });
 }
 
+/* LA LETRA PARA IR LEYENDO: la frase que toca, grande, y la siguiente más
+   suave. Avanza con la canción en proporción a su duración; es aproximado,
+   porque la letra no trae tiempos. Sin letra pegada no se pinta nada. */
+function Letra({ texto, t, dur }: { texto: string; t: number; dur: number }) {
+  const lineas = texto.split('\n').map((x) => x.trim()).filter(Boolean);
+  if (!lineas.length || !dur) return null;
+  const k = Math.min(lineas.length - 1, Math.floor((t / dur) * lineas.length));
+  return (
+    <div className="cl-letra" aria-live="polite">
+      <p key={k} className="cl-letra-ahora">{lineas[k]}</p>
+      {lineas[k + 1] && <p className="cl-letra-luego">{lineas[k + 1]}</p>}
+    </div>
+  );
+}
+
 export default function Clase() {
   const [i, setI] = useState(0);
   const [paso, setPaso] = useState(0);
@@ -733,7 +748,10 @@ export default function Clase() {
   }, []);
 
   /* LA CANCIÓN, el volumen y el medidor. */
-  const [cancion, setCancion] = useState<string | null>(null);
+  /* Gerson, 26 nov: «pon tú la canción, es una orden». Va en la web; se
+     puede cambiar por otra desde «Cambiar canción» en ese ordenador. */
+  const [cancion, setCancion] = useState<string | null>('/audio/naci-para-ser-yo.mp3');
+  const [tiempo, setTiempo] = useState({ t: 0, dur: 0 });
   const [volumen, setVolumen] = useState(70);
   const medidor = useRef<HTMLSpanElement>(null);
   const analizador = useRef<AnalyserNode | null>(null);
@@ -882,12 +900,13 @@ export default function Clase() {
 
   return (
     <div className="cl-raiz" ref={raiz}>
-      <audio ref={audio} src={cancion ?? '/audio/espera.mp3'} loop preload="auto" />
+      <audio ref={audio} src={cancion ?? '/audio/espera.mp3'} loop preload="auto" onTimeUpdate={(e) => setTiempo({ t: e.currentTarget.currentTime, dur: e.currentTarget.duration || 0 })} />
       <div className="cl-escenario" style={{ transform: `translate(-50%, -50%) scale(${escala})` }}>
         <section key={d.id} className={`cl-diapo cl-${d.fondo}`} onClick={clic}>
           {d.foto && <img className="cl-fondo" src={IMG + d.foto} alt="" />}
           <div className="cl-contenido">{d.pinta(ctx)}</div>
           <p className="cl-pie">Desórdenes Amorosos · Escuela de Sabiduría 33</p>
+          {CON_CANCION.has(d.id) && musica && <Letra texto={campos['cancion-letra'] || ''} t={tiempo.t} dur={tiempo.dur} />}
           {false && (
             <div className="cl-puntitos" aria-hidden="true">
               {Array.from({ length: d.pasos + 1 }).map((_, k) => <span key={k} className={k <= paso ? 'cl-on' : ''} />)}
@@ -903,8 +922,8 @@ export default function Clase() {
         <span className="cl-contador">{i + 1} / {DIAPOS.length}</span>
         <button type="button" onClick={siguiente} aria-label="Siguiente">›</button>
         <button type="button" onClick={() => setMusica((x) => !x)} aria-pressed={musica}>Música</button>
-        <label className="cl-cancion-btn" title={cancion ? 'Canción elegida. Pulsa para cambiarla.' : 'Elige el archivo de la canción (se queda guardada en este ordenador)'}>
-          {cancion ? 'Canción ✓' : 'Elegir canción'}
+        <label className="cl-cancion-btn" title="Suena «Nací para ser yo». Para poner otra, elige el archivo (se queda guardada en este ordenador)">
+          Cambiar canción
           <input type="file" accept="audio/*" hidden onChange={(e) => void eligeCancion(e.target.files?.[0])} />
         </label>
         <span className="cl-volumen" onClick={(e) => e.stopPropagation()}>
@@ -920,6 +939,12 @@ export default function Clase() {
         <aside className="cl-notas">
           <p className="cl-rotulo">Notas · {i + 1} · {d.titulo}</p>
           <p>{d.notas}</p>
+          {d.id === 'espera' && (
+            <label className="cl-letra-edita">
+              <span className="cl-rotulo">Letra de la canción (pégala aquí; una frase por línea)</span>
+              <textarea value={campos['cancion-letra'] || ''} onChange={(e) => setCampo('cancion-letra', e.target.value)} onKeyDown={(e) => e.stopPropagation()} rows={8} />
+            </label>
+          )}
         </aside>
       )}
 

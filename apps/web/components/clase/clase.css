@@ -472,3 +472,12 @@
 .cl-medidor i:nth-child(2) { height: calc(4px + 18px * var(--nivel) * 0.7); }
 .cl-medidor i:nth-child(4) { height: calc(4px + 18px * var(--nivel) * 0.8); }
 .cl-medidor i:nth-child(5) { height: calc(4px + 18px * var(--nivel) * 0.5); }
+
+/* La letra de la canción, abajo a la derecha en un cristal. */
+.cl-letra { position: absolute; right: 96px; bottom: 120px; width: 640px; padding: 28px 34px; border-radius: 28px; background: rgba(20, 8, 12, 0.55); backdrop-filter: blur(14px); border: 1px solid rgba(226, 205, 162, 0.35); display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.cl-letra p { margin: 0; }
+.cl-letra-ahora { font-size: 38px; line-height: 1.25; color: var(--oro-luz); font-weight: 500; animation: cl-letra-entra 0.5s ease-out; }
+.cl-letra-luego { font-size: 26px; line-height: 1.3; color: var(--cl-sobre-2); opacity: 0.7; }
+@keyframes cl-letra-entra { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.cl-letra-edita { display: grid; gap: 6px; margin-top: 14px; }
+.cl-letra-edita textarea { font: inherit; font-size: 14px; border-radius: 12px; padding: 10px; width: 100%; }
