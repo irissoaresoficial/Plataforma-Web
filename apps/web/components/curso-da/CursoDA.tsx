@@ -15,7 +15,8 @@ import { useEffect, useState } from 'react';
 import Barra from '@/components/casa/Barra';
 import Pie from '@/components/casa/Pie';
 import Pendiente from '@/components/Pendiente';
-import { CONTACTO, CURSO_DA } from '@/content/site';
+import { CONTACTO, CURSO_DA, CURSO_DA_PT } from '@/content/site';
+import { T, type Idioma } from './textos';
 import '@/components/casa/casa.css';
 import './curso-da.css';
 
@@ -26,7 +27,9 @@ function quedan(hasta: number, ahora: number) {
   return `${h} h ${String(m).padStart(2, '0')} min`;
 }
 
-export default function CursoDA() {
+export default function CursoDA({ idioma = 'es' }: { idioma?: Idioma }) {
+  const t = T[idioma];
+  const pt = idioma === 'pt';
   const fin = new Date(CURSO_DA.ofertaHasta).getTime();
   const [ahora, setAhora] = useState<number | null>(null);
   useEffect(() => {
@@ -45,16 +48,16 @@ export default function CursoDA() {
         </header>
         <div className="da-dentro">
           <img className="da-flor" src="/images/flor-de-lis.png" alt="" />
-          <p className="da-rotulo">Escuela de Sabiduría 33</p>
+          <p className="da-rotulo">{t.rotulo}</p>
           <h1 className="da-h1">
-            Curso <b>Desórdenes Amorosos</b>
+            {t.curso} <b>{t.nombre}</b>
           </h1>
           <p className="da-sub">
-            {CURSO_DA.con}. {CURSO_DA.empieza}.
+            {pt ? CURSO_DA_PT.con : CURSO_DA.con}. {pt ? CURSO_DA_PT.empieza : CURSO_DA.empieza}.
           </p>
           {ofertaViva && ahora !== null && (
             <p className="da-cuenta">
-              La oferta de 999 € termina en <b>{quedan(fin, ahora)}</b>
+              {t.termina} <b>{quedan(fin, ahora)}</b>
             </p>
           )}
         </div>
@@ -63,10 +66,12 @@ export default function CursoDA() {
       <main className="da-main">
         <section aria-labelledby="pagar-h">
           <h2 className="da-h2" id="pagar-h">
-            Elige cómo pagar
+            {t.elige}
           </h2>
           <div className="da-opciones">
-            {opciones.map((o) => (
+            {opciones.map((o0) => {
+              const o = pt ? { ...o0, ...CURSO_DA_PT.opciones[o0.id] } : o0;
+              return (
               <article key={o.id} className={`da-op${o.oferta ? ' da-op-oferta' : ''}`}>
                 <p className="da-op-rotulo">{o.rotulo}</p>
                 <p className="da-op-cifra">{o.cifra}</p>
@@ -74,44 +79,46 @@ export default function CursoDA() {
                 {o.nota && <p className="da-op-nota">{o.nota}</p>}
                 {o.stripe ? (
                   <a className="da-op-boton" href={o.stripe}>
-                    {o.oferta ? 'Pagar 999 € ahora' : 'Pagar así'} <span aria-hidden="true">→</span>
+                    {o.oferta ? t.pagarHoy : t.pagar} <span aria-hidden="true">→</span>
                   </a>
                 ) : (
                   <span className="da-op-pendiente">
-                    Enlace de pago <Pendiente />
+                    {t.enlace} <Pendiente />
                   </span>
                 )}
               </article>
-            ))}
+              );
+            })}
           </div>
           <p className="da-plazo">
-            {CURSO_DA.plazo} · {CURSO_DA.empieza}
+            {pt ? CURSO_DA_PT.plazo : CURSO_DA.plazo} · {pt ? CURSO_DA_PT.empieza : CURSO_DA.empieza}
           </p>
         </section>
 
         <section className="da-temario" aria-labelledby="temario-h">
           <h2 className="da-h2" id="temario-h">
-            Lo que vas a trabajar
+            {t.trabajar}
           </h2>
-          <p className="da-texto">Diez seminarios. Psicología con Marco y numerología transgeneracional con Iris.</p>
+          <p className="da-texto">{t.diez}</p>
           <ol className="da-lista">
-            {CURSO_DA.seminarios.map((s) => (
+            {(pt ? CURSO_DA_PT.seminarios : CURSO_DA.seminarios).map((s) => (
               <li key={s}>{s}</li>
             ))}
           </ol>
         </section>
 
         <section className="da-dudas">
-          <h2 className="da-h2">¿Tienes dudas antes de pagar?</h2>
+          <h2 className="da-h2">{t.dudas}</h2>
           <p className="da-texto">
-            Escríbenos en el grupo de WhatsApp de la masterclass o a{' '}
+            {t.escribe}{' '}
             <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
           </p>
           {CONTACTO.grupo && (
             <a className="da-op-boton da-boton-claro" href={CONTACTO.grupo}>
-              Ir al grupo de WhatsApp <span aria-hidden="true">→</span>
+              {t.grupo} <span aria-hidden="true">→</span>
             </a>
           )}
+          <a className="da-idioma" href={t.otro.href}>{t.otro.texto}</a>
         </section>
       </main>
       <Pie />

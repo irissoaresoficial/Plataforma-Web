@@ -6,11 +6,14 @@
  */
 import Barra from '@/components/casa/Barra';
 import Pie from '@/components/casa/Pie';
-import { CONTACTO, CURSO_DA } from '@/content/site';
+import { CONTACTO, CURSO_DA, CURSO_DA_PT } from '@/content/site';
+import { T, type Idioma } from './textos';
 import '@/components/casa/casa.css';
 import './curso-da.css';
 
-export default function Gracias() {
+export default function Gracias({ idioma = 'es' }: { idioma?: Idioma }) {
+  const t = T[idioma];
+  const d = idioma === 'pt' ? CURSO_DA_PT : CURSO_DA;
   return (
     <div id="app" className="claro casa" style={{ width: '100%', background: 'var(--bg)', color: 'var(--tx)', overflowX: 'clip' }}>
       <section className="da-alto da-alto-gracias">
@@ -19,39 +22,37 @@ export default function Gracias() {
         </header>
         <div className="da-dentro">
           <img className="da-flor" src="/images/flor-de-lis.png" alt="" />
-          <p className="da-rotulo">Pago recibido</p>
+          <p className="da-rotulo">{t.recibido}</p>
           <h1 className="da-h1">
-            Gracias. <b>Ya estás dentro.</b>
+            {t.gracias} <b>{t.dentro}</b>
           </h1>
           <p className="da-sub">
-            Te damos la bienvenida al {CURSO_DA.titulo}. {CURSO_DA.empieza}.
+            {t.bienvenida} {d.titulo}. {d.empieza}.
           </p>
         </div>
       </section>
       <main className="da-main">
         <section aria-labelledby="ahora-h">
           <h2 className="da-h2" id="ahora-h">
-            Qué pasa ahora
+            {t.ahora}
           </h2>
           <ol className="da-pasos">
-            <li>
-              <b>Te llega el recibo de Stripe</b> a tu correo. Guárdalo: es tu justificante.
-            </li>
-            <li>
-              <b>Iris y Marco te escriben</b> antes del 5 de diciembre con el acceso, las fechas y cómo conectarte.
-            </li>
-            <li>
-              <b>Mientras tanto, sigue en el grupo</b> de WhatsApp de la masterclass.
-            </li>
+            {[t.p1, t.p2, t.p3].map(([b, r]) => (
+              <li key={b}>
+                <b>{b}</b>
+                {r}
+              </li>
+            ))}
           </ol>
           {CONTACTO.grupo && (
             <a className="da-op-boton" href={CONTACTO.grupo}>
-              Ir al grupo de WhatsApp <span aria-hidden="true">→</span>
+              {t.grupo} <span aria-hidden="true">→</span>
             </a>
           )}
           <p className="da-texto da-ayuda">
-            ¿No te ha llegado el recibo o tienes una duda? Escribe a <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
+            {t.ayuda} <a href={`mailto:${CONTACTO.email}`}>{CONTACTO.email}</a>.
           </p>
+          <a className="da-idioma" href={t.otroGracias.href}>{t.otroGracias.texto}</a>
         </section>
       </main>
       <Pie />

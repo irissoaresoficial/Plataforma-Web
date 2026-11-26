@@ -1022,3 +1022,29 @@ export const CURSO_DA = {
     'Integración y ejercicios prácticos',
   ],
 };
+
+/** Lo mismo que CURSO_DA, en português de Portugal (para quem vem de Portugal). */
+export const CURSO_DA_PT = {
+  titulo: 'Curso Desordens Amorosas',
+  con: 'Com Iris Soares e Marco Célio Sousa',
+  empieza: 'Começa a 5 e 6 de dezembro',
+  plazo: 'Prazo para te inscreveres: até 1 de dezembro',
+  opciones: {
+    hoy: { rotulo: 'Oferta 24 h', detalle: 'Um só pagamento', nota: 'Só até amanhã às 20:00 (hora de Portugal)' },
+    uno: { rotulo: 'Um pagamento', detalle: 'Pagamento único', nota: '' },
+    tres: { rotulo: 'Três pagamentos', detalle: 'por mês, 3 meses', nota: '1.497 € no total' },
+    seis: { rotulo: 'Seis pagamentos', detalle: 'por mês, 6 meses', nota: '1.697 € no total' },
+  } as Record<string, { rotulo: string; detalle: string; nota: string }>,
+  seminarios: [
+    'Compreender as Desordens Amorosas',
+    'Numerologia Transgeracional: Projeto Sentido',
+    'Psicologia do Inconsciente: aprofundamento emocional',
+    'Numerologia Transgeracional: ato terapêutico e teoria da mudança',
+    'Dinâmicas inconscientes e mecanismos de proteção psíquica',
+    'Transgeracionalidade e psicogenealogia',
+    'As cinco feridas emocionais',
+    'Numerologia Transgeracional: Bases 9 e 22',
+    'Trauma, corpo e regulação emocional',
+    'Integração e exercícios práticos',
+  ],
+};
