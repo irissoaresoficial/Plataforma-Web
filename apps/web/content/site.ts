@@ -982,3 +982,43 @@ export const falta = (v: unknown) => v === PENDIENTE || v === null || v === '' |
 
 export const eur = (n: number) =>
   new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0, useGrouping: true }).format(n);
+
+/**
+ * ============================================================================
+ * EL CURSO DESÓRDENES AMOROSOS: CÓMO PAGAR (26 de noviembre de 2026)
+ * ============================================================================
+ *
+ * Sale del papel de Iris del 26 de noviembre: oferta de 24 h a 999 €, y
+ * después 1.297 € en 1, 3 o 6 pagos, con plazo hasta el 1 de diciembre y el
+ * curso empezando el 5 y 6 de diciembre. Lo usa `/curso-desordenes`.
+ *
+ * Los enlaces de Stripe los pasa Gerson. Vacío = el botón sale como
+ * PENDIENTE y no lleva a ningún sitio: nunca un botón de pago que no cobra.
+ * En Stripe, la página de después del pago es `/curso-desordenes/gracias`.
+ */
+export const CURSO_DA = {
+  titulo: 'Curso Desórdenes Amorosos',
+  con: 'Con Iris Soares y Marco Célio Sousa',
+  empieza: 'Empieza el 5 y 6 de diciembre',
+  plazo: 'Plazo para apuntarte: hasta el 1 de diciembre',
+  /** La oferta de la masterclass: 24 horas desde que empieza (26 nov, 21:00). */
+  ofertaHasta: '2026-11-27T21:00:00+01:00',
+  opciones: [
+    { id: 'hoy', rotulo: 'Oferta 24 h', cifra: '999 €', detalle: 'Un solo pago', nota: 'Solo hasta mañana a las 21:00', stripe: '', oferta: true },
+    { id: 'uno', rotulo: 'Un pago', cifra: '1.297 €', detalle: 'Pago único', nota: '', stripe: '', oferta: false },
+    { id: 'tres', rotulo: 'Tres pagos', cifra: '499 €', detalle: 'al mes, 3 meses', nota: '1.497 € en total', stripe: '', oferta: false },
+    { id: 'seis', rotulo: 'Seis pagos', cifra: '282,83 €', detalle: 'al mes, 6 meses', nota: '1.697 € en total', stripe: '', oferta: false },
+  ],
+  seminarios: [
+    'Comprender los Desórdenes Amorosos',
+    'Numerología Transgeneracional: Proyecto Sentido',
+    'Psicología del Inconsciente: profundización emocional',
+    'Numerología Transgeneracional: acto terapéutico y teoría del cambio',
+    'Dinámicas inconscientes y mecanismos de protección psíquica',
+    'Transgeneracionalidad y psicogenealogía',
+    'Las cinco heridas emocionales',
+    'Numerología Transgeneracional: Bases 9 y 22',
+    'Trauma, cuerpo y regulación emocional',
+    'Integración y ejercicios prácticos',
+  ],
+};

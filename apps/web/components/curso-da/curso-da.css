@@ -1,0 +1,49 @@
+/* El curso Desórdenes Amorosos: cómo pagar y gracias. Una columna, la oferta manda. */
+.da-alto { position: relative; background: radial-gradient(1100px 700px at 85% 0%, color-mix(in srgb, var(--vino) 70%, var(--oro)) 0%, var(--vino) 62%); color: var(--papel); padding: clamp(96px, 13vh, 140px) var(--hueco) clamp(56px, 8vw, 96px); }
+.da-dentro { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; }
+.da-flor { width: 64px; height: auto; filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35)); }
+.da-rotulo { margin: 0; font-size: 14px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--oro-luz); }
+.da-h1 { margin: 0; font-family: var(--serif); font-weight: 300; font-size: var(--t-h1); line-height: 1.05; text-wrap: balance; }
+.da-h1 b { font-weight: 400; color: var(--oro-luz); }
+.da-sub { margin: 0; font-size: var(--t-lead); max-width: 34ch; opacity: 0.92; text-wrap: balance; }
+.da-cuenta { margin: 8px 0 0; padding: 10px 20px; border-radius: 100px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(226, 205, 162, 0.4); font-size: var(--t-cuerpo); font-variant-numeric: tabular-nums; }
+.da-cuenta b { color: var(--oro-luz); font-weight: 500; }
+
+.da-main { max-width: 1120px; margin: 0 auto; padding: clamp(48px, 7vw, 96px) var(--hueco); display: flex; flex-direction: column; gap: clamp(56px, 8vw, 96px); }
+.da-h2 { margin: 0 0 24px; font-family: var(--serif); font-weight: 300; font-size: var(--t-h2); color: var(--vino); text-align: center; }
+.da-texto { margin: 0 auto; max-width: 60ch; font-size: var(--t-cuerpo); line-height: 1.6; text-align: center; color: var(--tx-2, var(--tinta)); }
+.da-texto a { color: var(--vino); }
+
+.da-opciones { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; align-items: stretch; }
+.da-op { display: flex; flex-direction: column; gap: 6px; padding: 28px 26px; border-radius: var(--radio-suave); background: var(--papel); border: 1px solid var(--linea); box-shadow: 0 18px 40px rgba(34, 29, 31, 0.08); }
+.da-op p { margin: 0; }
+.da-op-rotulo { font-size: 14px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--oro-tinta); }
+.da-op-cifra { white-space: nowrap; font-family: var(--serif); font-size: var(--t-h2); font-weight: 300; line-height: 1.05; color: var(--vino); font-variant-numeric: tabular-nums; margin-top: 8px !important; }
+.da-op-detalle { font-size: var(--t-cuerpo); color: var(--tinta); }
+.da-op-nota { font-size: var(--t-nota); color: var(--oro-tinta); }
+.da-op-boton { margin-top: auto; align-self: stretch; display: inline-flex; justify-content: center; align-items: center; gap: 10px; padding: 15px 22px; border-radius: 100px; background: var(--vino); color: var(--oro-luz); font-weight: 500; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.da-op-boton:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(69, 26, 37, 0.3); }
+.da-op-boton:focus-visible { outline: 2px solid var(--oro); outline-offset: 3px; }
+.da-op > .da-op-boton, .da-op > .da-op-pendiente { margin-top: 18px; }
+.da-op-pendiente { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; font-size: var(--t-nota); color: var(--tinta); white-space: nowrap; }
+
+.da-op-oferta { background: linear-gradient(155deg, var(--oro-luz), var(--oro) 90%); border-color: transparent; box-shadow: 0 24px 56px rgba(69, 26, 37, 0.25); position: relative; }
+.da-op-oferta .da-op-rotulo { align-self: flex-start; padding: 6px 14px; border-radius: 100px; background: var(--vino); color: var(--oro-luz); }
+.da-op-oferta .da-op-nota { color: var(--vino); font-weight: 500; }
+.da-op-oferta .da-op-detalle, .da-op-oferta .da-op-pendiente { color: var(--vino); }
+
+.da-plazo { margin: 22px 0 0; text-align: center; font-size: var(--t-cuerpo); color: var(--vino); font-weight: 500; }
+
+.da-lista { margin: 24px auto 0; max-width: 760px; padding: 0 0 0 1.4em; columns: 2; column-gap: 48px; font-size: var(--t-cuerpo); line-height: 1.5; }
+.da-lista li { break-inside: avoid; margin-bottom: 12px; }
+.da-lista li::marker { color: var(--oro-tinta); font-weight: 500; }
+@media (max-width: 640px) { .da-lista { columns: 1; } }
+
+.da-dudas { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.da-boton-claro { align-self: center; }
+
+.da-pasos { margin: 0 auto 28px; max-width: 620px; padding: 0 0 0 1.4em; display: flex; flex-direction: column; gap: 14px; font-size: var(--t-cuerpo); line-height: 1.6; }
+.da-pasos li::marker { color: var(--oro-tinta); font-weight: 500; }
+.da-pasos b { font-weight: 500; color: var(--vino); }
+.da-main section:has(.da-pasos) { display: flex; flex-direction: column; align-items: center; }
+.da-ayuda { margin-top: 18px; }
