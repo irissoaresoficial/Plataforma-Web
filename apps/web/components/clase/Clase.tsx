@@ -44,6 +44,8 @@ type Ctx = {
   setCampo: (k: string, v: string) => void;
   ahora: number;
   volumen: number;
+  /** Segundo de la canción que suena ahora. */
+  tiempo: number;
 };
 
 type Diapo = {
@@ -150,66 +152,28 @@ function VideoSolo({ activo, ...p }: React.VideoHTMLAttributes<HTMLVideoElement>
   return <video ref={v} {...p} />;
 }
 
-/* LOS 10 MINUTOS DE ESPERA COMO VÍDEO CON LETRA (26 nov, Gerson: «que se vea
-   como un video lyrics»). Es el vídeo con letra de «Nací para ser yo» que pasó
-   Gerson, puesto desde YouTube a pantalla completa: la letra la trae el
-   vídeo, ya sincronizada. Arranca solo y sin sonido (el navegador no deja
-   otra cosa); el primer clic o tecla le da sonido. Vuelve a empezar al
-   acabar. El volumen sale de la barra de abajo. */
-const VIDEO_LETRA = 'jC6yqI_w0jo';
-type YTPlayer = { playVideo(): void; pauseVideo(): void; mute(): void; unMute(): void; setVolume(v: number): void; destroy(): void };
-declare global {
-  interface Window { YT?: { Player: new (el: HTMLElement, o: Record<string, unknown>) => YTPlayer }; onYouTubeIframeAPIReady?: () => void }
-}
-let ytCargando: Promise<void> | null = null;
-const cargaYT = () =>
-  (ytCargando ??= new Promise<void>((ok) => {
-    if (window.YT?.Player) return ok();
-    window.onYouTubeIframeAPIReady = () => ok();
-    const sc = document.createElement('script');
-    sc.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(sc);
-  }));
+/* LOS 10 MINUTOS DE ESPERA COMO VÍDEO CON LETRA, HECHO POR NOSOTROS (26 nov,
+   Gerson): suena el mp3 de «Nací para ser yo» desde el principio y la letra
+   va apareciendo frase a frase en nuestra tipografía, con la cuenta atrás al
+   lado. Cada frase lleva el segundo en que empieza. */
+const LETRA: Array<{ t: number; l: string }> = [];
 
-function VideoLetra({ volumen, inicio }: { volumen: number; inicio: number }) {
-  const caja = useRef<HTMLDivElement>(null);
-  const yt = useRef<YTPlayer | null>(null);
-  const [conSonido, setConSonido] = useState(false);
-  useEffect(() => {
-    let vivo = true;
-    cargaYT().then(() => {
-      if (!vivo || !caja.current || !window.YT) return;
-      yt.current = new window.YT.Player(caja.current, {
-        videoId: VIDEO_LETRA,
-        width: '100%',
-        height: '100%',
-        playerVars: { autoplay: 1, mute: 1, controls: 0, disablekb: 1, playsinline: 1, rel: 0, modestbranding: 1, start: inicio, loop: 1, playlist: VIDEO_LETRA, iv_load_policy: 3 },
-        events: { onReady: (e: { target: YTPlayer }) => { e.target.mute(); e.target.playVideo(); } },
-      });
-    });
-    const sonido = () => {
-      const p = yt.current;
-      if (!p) return;
-      p.unMute();
-      p.playVideo();
-      setConSonido(true);
-    };
-    window.addEventListener('pointerdown', sonido);
-    window.addEventListener('keydown', sonido);
-    return () => {
-      vivo = false;
-      window.removeEventListener('pointerdown', sonido);
-      window.removeEventListener('keydown', sonido);
-      try { yt.current?.destroy(); } catch { /* ya no está */ }
-      yt.current = null;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => { try { yt.current?.setVolume(volumen); } catch { /* aún cargando */ } }, [volumen, conSonido]);
+function LetraViva({ t }: { t: number }) {
+  if (!LETRA.length) {
+    return (
+      <div className="cl-lv">
+        <p className="cl-lv-ahora">Nací para ser yo</p>
+        <p className="cl-lv-luego">Lia Monroe</p>
+      </div>
+    );
+  }
+  let k = -1;
+  for (let i = 0; i < LETRA.length; i++) if (LETRA[i].t <= t + 0.15) k = i;
   return (
-    <div className="cl-yt">
-      <div ref={caja} />
-      {!conSonido && <span className="cl-yt-aviso">Toca la pantalla para activar el sonido</span>}
+    <div className="cl-lv">
+      {k > 0 && <p key={'a' + k} className="cl-lv-antes">{LETRA[k - 1].l}</p>}
+      <p key={'b' + k} className="cl-lv-ahora">{k >= 0 ? LETRA[k].l : '♪'}</p>
+      {LETRA[k + 1] && <p key={'c' + k} className="cl-lv-luego">{LETRA[k + 1].l}</p>}
     </div>
   );
 }
@@ -228,22 +192,19 @@ function CuentaMini({ c }: { c: Ctx }) {
 const DIAPOS: Diapo[] = [
   {
     id: 'espera',
-    titulo: 'Espera · vídeo con letra',
+    titulo: 'Espera · la canción con su letra',
     fondo: 'negro',
     pasos: 0,
-    notas: 'Pantalla de espera: el vídeo con la letra de «Nací para ser yo» a pantalla completa. Ábrela 10 minutos antes y haz un clic: con ese clic suena. La cuenta atrás va arriba a la derecha. AL EMPEZAR, Iris dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». A las 21:00, flecha derecha.',
+    notas: 'Pantalla de espera: suena «Nací para ser yo» y la letra va saliendo a la izquierda; la cuenta atrás, a la derecha. Ábrela 10 minutos antes y haz un clic para que suene (el clic no pasa de diapositiva). AL EMPEZAR, Iris dice en voz alta: «Esta clase se graba. Si enciendes la cámara o escribes en el chat, aceptas aparecer en la grabación. Si no quieres, deja la cámara apagada». A las 21:00, flecha derecha.',
     pinta: (c) => (
-      <>
-        <VideoLetra volumen={c.volumen} inicio={segundos(campo(c, 'cancion-inicio'))} />
-        <div className="cl-yt-barra">
-          <span className="cl-yt-marca">
-            <img src="/images/flor-de-lis.png" alt="" />
-            Masterclass gratuita · <b>Desórdenes Amorosos</b>
-          </span>
-          <CuentaMini c={c} />
+      <div className="cl-fila cl-centro-v">
+        <div className="cl-col" style={{ flex: 1 }}>
+          <p className="cl-rotulo cl-yt-marca"><img src="/images/flor-de-lis.png" alt="" />Masterclass gratuita · Desórdenes Amorosos</p>
+          <LetraViva t={c.tiempo} />
+          <p className="cl-nota">Mientras empezamos, escribe en el chat desde dónde nos ves.</p>
         </div>
-        <p className="cl-yt-chat">Mientras empezamos, escribe en el chat desde dónde nos ves.</p>
-      </>
+        <Reloj id="espera" c={c} etiqueta="para empezar" />
+      </div>
     ),
   },
   {
@@ -732,7 +693,7 @@ const LLAVE = 'clase-desordenes-campos';
    la presentación, un poco antes del estribillo (segundo editable con la
    tecla N en la pantalla de espera), y otra vez en «Gracias». Sin canción
    elegida suena la música de espera de siempre. */
-const CON_CANCION = new Set(['gracias']);
+const CON_CANCION = new Set(['espera', 'gracias']);
 /** «1:05» o «65» → 65. Vacío o raro → 0. */
 const segundos = (t: string) => {
   const m = t.trim().match(/^(?:(\d+):)?(\d+)$/);
@@ -752,21 +713,6 @@ async function guardaCancion(f: Blob) {
 async function leeCancion(): Promise<Blob | null> {
   const db = await abreBase();
   return new Promise((ok) => { const r = db.transaction('archivos').objectStore('archivos').get('cancion'); r.onsuccess = () => ok((r.result as Blob) ?? null); r.onerror = () => ok(null); });
-}
-
-/* LA LETRA PARA IR LEYENDO: la frase que toca, grande, y la siguiente más
-   suave. Avanza con la canción en proporción a su duración; es aproximado,
-   porque la letra no trae tiempos. Sin letra pegada no se pinta nada. */
-function Letra({ texto, t, dur }: { texto: string; t: number; dur: number }) {
-  const lineas = texto.split('\n').map((x) => x.trim()).filter(Boolean);
-  if (!lineas.length || !dur) return null;
-  const k = Math.min(lineas.length - 1, Math.floor((t / dur) * lineas.length));
-  return (
-    <div className="cl-letra" aria-live="polite">
-      <p key={k} className="cl-letra-ahora">{lineas[k]}</p>
-      {lineas[k + 1] && <p className="cl-letra-luego">{lineas[k + 1]}</p>}
-    </div>
-  );
 }
 
 export default function Clase() {
@@ -880,7 +826,7 @@ export default function Clase() {
     if (CON_CANCION.has(d.id) && musica) {
       const meta = volumen / 100;
       const arranca = () => {
-        if (cancion) { try { a.currentTime = inicioCancion; } catch { /* aún sin cargar */ } }
+        if (cancion) { try { a.currentTime = d.id === 'espera' ? 0 : inicioCancion; } catch { /* aún sin cargar */ } }
         a.volume = 0;
         a.play().then(() => {
           let v = 0;
@@ -970,7 +916,7 @@ export default function Clase() {
   };
 
   const progreso = useMemo(() => ((i + (d.pasos ? paso / (d.pasos + 1) : 0)) / (DIAPOS.length - 1)) * 100, [i, paso, d.pasos]);
-  const ctx: Ctx = { paso, e: estado, set: setEstado, editar: notas, campos, setCampo, ahora, volumen };
+  const ctx: Ctx = { paso, e: estado, set: setEstado, editar: notas, campos, setCampo, ahora, volumen, tiempo: tiempo.t };
 
   return (
     <div className="cl-raiz" ref={raiz}>
@@ -980,7 +926,6 @@ export default function Clase() {
           {d.foto && <img className="cl-fondo" src={IMG + d.foto} alt="" />}
           <div className="cl-contenido">{d.pinta(ctx)}</div>
           {d.id !== 'espera' && <p className="cl-pie">Desórdenes Amorosos · Escuela de Sabiduría 33</p>}
-          {CON_CANCION.has(d.id) && musica && <Letra texto={campos['cancion-letra'] || ''} t={tiempo.t} dur={tiempo.dur} />}
           {false && (
             <div className="cl-puntitos" aria-hidden="true">
               {Array.from({ length: d.pasos + 1 }).map((_, k) => <span key={k} className={k <= paso ? 'cl-on' : ''} />)}
@@ -1013,12 +958,6 @@ export default function Clase() {
         <aside className="cl-notas">
           <p className="cl-rotulo">Notas · {i + 1} · {d.titulo}</p>
           <p>{d.notas}</p>
-          {d.id === 'espera' && (
-            <label className="cl-letra-edita">
-              <span className="cl-rotulo">Letra de la canción (pégala aquí; una frase por línea)</span>
-              <textarea value={campos['cancion-letra'] || ''} onChange={(e) => setCampo('cancion-letra', e.target.value)} onKeyDown={(e) => e.stopPropagation()} rows={8} />
-            </label>
-          )}
         </aside>
       )}
 
